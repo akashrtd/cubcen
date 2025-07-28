@@ -1,0 +1,50 @@
+2025-07-28 14:58:37 [ERROR]: Database schema validation failed setImmediate is not defined
+ReferenceError: setImmediate is not defined
+    at Console.log (/Users/akashrathod/cubcen/cubcen/node_modules/winston/lib/winston/transports/console.js:53:5)
+    at Console._write (/Users/akashrathod/cubcen/cubcen/node_modules/winston-transport/modern.js:103:17)
+    at doWrite (/Users/akashrathod/cubcen/cubcen/node_modules/readable-stream/lib/_stream_writable.js:390:139)
+    at writeOrBuffer (/Users/akashrathod/cubcen/cubcen/node_modules/readable-stream/lib/_stream_writable.js:381:5)
+    at Console.Writable.write (/Users/akashrathod/cubcen/cubcen/node_modules/readable-stream/lib/_stream_writable.js:302:11)
+    at DerivedLogger.ondata (/Users/akashrathod/cubcen/cubcen/node_modules/readable-stream/lib/_stream_readable.js:629:20)
+    at DerivedLogger.emit (node:events:519:35)
+    at addChunk (/Users/akashrathod/cubcen/cubcen/node_modules/readable-stream/lib/_stream_readable.js:279:12)
+    at readableAddChunk (/Users/akashrathod/cubcen/cubcen/node_modules/readable-stream/lib/_stream_readable.js:262:11)
+    at DerivedLogger.Readable.push (/Users/akashrathod/cubcen/cubcen/node_modules/readable-stream/lib/_stream_readable.js:228:10)
+    at DerivedLogger.Transform.push (/Users/akashrathod/cubcen/cubcen/node_modules/readable-stream/lib/_stream_transform.js:132:32)
+    at DerivedLogger._transform (/Users/akashrathod/cubcen/cubcen/node_modules/winston/lib/winston/logger.js:314:12)
+    at DerivedLogger.Transform._read (/Users/akashrathod/cubcen/cubcen/node_modules/readable-stream/lib/_stream_transform.js:166:10)
+    at DerivedLogger.Transform._write (/Users/akashrathod/cubcen/cubcen/node_modules/readable-stream/lib/_stream_transform.js:155:83)
+    at doWrite (/Users/akashrathod/cubcen/cubcen/node_modules/readable-stream/lib/_stream_writable.js:390:139)
+    at writeOrBuffer (/Users/akashrathod/cubcen/cubcen/node_modules/readable-stream/lib/_stream_writable.js:381:5)
+    at DerivedLogger.Writable.write (/Users/akashrathod/cubcen/cubcen/node_modules/readable-stream/lib/_stream_writable.js:302:11)
+    at DerivedLogger.<computed> [as info] (/Users/akashrathod/cubcen/cubcen/node_modules/winston/lib/winston/create-logger.js:81:14)
+    at info (/Users/akashrathod/cubcen/cubcen/src/lib/database-utils.ts:99:12)
+    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/lib/__tests__/database-integration.test.ts:27:22)
+2025-07-28 14:58:52 [ERROR]: Database schema validation failed setImmediate is not defined
+ReferenceError: setImmediate is not defined
+    at Console.log (/Users/akashrathod/cubcen/cubcen/node_modules/winston/lib/winston/transports/console.js:53:5)
+    at Console._write (/Users/akashrathod/cubcen/cubcen/node_modules/winston-transport/modern.js:103:17)
+    at doWrite (/Users/akashrathod/cubcen/cubcen/node_modules/readable-stream/lib/_stream_writable.js:390:139)
+    at writeOrBuffer (/Users/akashrathod/cubcen/cubcen/node_modules/readable-stream/lib/_stream_writable.js:381:5)
+    at Console.Writable.write (/Users/akashrathod/cubcen/cubcen/node_modules/readable-stream/lib/_stream_writable.js:302:11)
+    at DerivedLogger.ondata (/Users/akashrathod/cubcen/cubcen/node_modules/readable-stream/lib/_stream_readable.js:629:20)
+    at DerivedLogger.emit (node:events:519:35)
+    at addChunk (/Users/akashrathod/cubcen/cubcen/node_modules/readable-stream/lib/_stream_readable.js:279:12)
+    at readableAddChunk (/Users/akashrathod/cubcen/cubcen/node_modules/readable-stream/lib/_stream_readable.js:262:11)
+    at DerivedLogger.Readable.push (/Users/akashrathod/cubcen/cubcen/node_modules/readable-stream/lib/_stream_readable.js:228:10)
+    at DerivedLogger.Transform.push (/Users/akashrathod/cubcen/cubcen/node_modules/readable-stream/lib/_stream_transform.js:132:32)
+    at DerivedLogger._transform (/Users/akashrathod/cubcen/cubcen/node_modules/winston/lib/winston/logger.js:314:12)
+    at DerivedLogger.Transform._read (/Users/akashrathod/cubcen/cubcen/node_modules/readable-stream/lib/_stream_transform.js:166:10)
+    at DerivedLogger.Transform._write (/Users/akashrathod/cubcen/cubcen/node_modules/readable-stream/lib/_stream_transform.js:155:83)
+    at doWrite (/Users/akashrathod/cubcen/cubcen/node_modules/readable-stream/lib/_stream_writable.js:390:139)
+    at writeOrBuffer (/Users/akashrathod/cubcen/cubcen/node_modules/readable-stream/lib/_stream_writable.js:381:5)
+    at DerivedLogger.Writable.write (/Users/akashrathod/cubcen/cubcen/node_modules/readable-stream/lib/_stream_writable.js:302:11)
+    at DerivedLogger.<computed> [as info] (/Users/akashrathod/cubcen/cubcen/node_modules/winston/lib/winston/create-logger.js:81:14)
+    at info (/Users/akashrathod/cubcen/cubcen/src/lib/database-utils.ts:99:12)
+    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/lib/__tests__/database-integration.test.ts:27:22)
+2025-07-28 14:59:11 [INFO]: Database schema validation completed successfully
+2025-07-28 14:59:24 [INFO]: Database schema validation completed successfully
+2025-07-28 14:59:59 [INFO]: Database schema validation completed successfully
+2025-07-28 15:00:37 [INFO]: Database schema validation completed successfully
+2025-07-28 15:00:50 [INFO]: Database schema validation completed successfully
+2025-07-28 15:31:48 [INFO]: Database schema validation completed successfully

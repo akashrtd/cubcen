@@ -1,0 +1,242 @@
+// Cubcen AI Agent Management Platform - Database Schema
+// This schema defines the core data models for managing AI agents across multiple platforms
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// User management and authentication
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String   // bcrypt hashed
+  role      UserRole @default(VIEWER)
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  createdWorkflows Workflow[]
+  createdTasks     Task[]
+
+  @@map("cubcen_users")
+}
+
+enum UserRole {
+  ADMIN
+  OPERATOR
+  VIEWER
+}
+
+// Platform connections (n8n, Make.com, Zapier, etc.)
+model Platform {
+  id          String         @id @default(cuid())
+  name        String
+  type        PlatformType
+  baseUrl     String
+  status      PlatformStatus @default(DISCONNECTED)
+  authConfig  String         // JSON string for auth configuration
+  lastSyncAt  DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  // Relations
+  agents Agent[]
+
+  @@unique([name, type])
+  @@map("cubcen_platforms")
+}
+
+enum PlatformType {
+  N8N
+  MAKE
+  ZAPIER
+}
+
+enum PlatformStatus {
+  CONNECTED
+  DISCONNECTED
+  ERROR
+}
+
+// AI Agents from various platforms
+model Agent {
+  id           String      @id @default(cuid())
+  name         String
+  platformId   String
+  externalId   String      // ID from the external platform
+  status       AgentStatus @default(INACTIVE)
+  capabilities String      // JSON array of capabilities
+  configuration String     // JSON configuration object
+  healthStatus String      // JSON health status object
+  description  String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  // Relations
+  platform Platform @relation(fields: [platformId], references: [id], onDelete: Cascade)
+  tasks    Task[]
+  workflowSteps WorkflowStep[]
+
+  @@unique([platformId, externalId])
+  @@map("cubcen_agents")
+}
+
+enum AgentStatus {
+  ACTIVE
+  INACTIVE
+  ERROR
+  MAINTENANCE
+}
+
+// Tasks for agent execution
+model Task {
+  id          String     @id @default(cuid())
+  agentId     String
+  workflowId  String?
+  status      TaskStatus @default(PENDING)
+  priority    TaskPriority @default(MEDIUM)
+  name        String
+  description String?
+  parameters  String     // JSON parameters for execution
+  result      String?    // JSON result from execution
+  error       String?    // JSON error information
+  scheduledAt DateTime
+  startedAt   DateTime?
+  completedAt DateTime?
+  retryCount  Int        @default(0)
+  maxRetries  Int        @default(3)
+  createdBy   String
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  // Relations
+  agent    Agent     @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  workflow Workflow? @relation(fields: [workflowId], references: [id], onDelete: SetNull)
+  creator  User      @relation(fields: [createdBy], references: [id])
+
+  @@map("cubcen_tasks")
+}
+
+enum TaskStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+// Workflows for orchestrating multiple agents
+model Workflow {
+  id          String         @id @default(cuid())
+  name        String
+  description String?
+  status      WorkflowStatus @default(DRAFT)
+  createdBy   String
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  // Relations
+  creator User           @relation(fields: [createdBy], references: [id])
+  steps   WorkflowStep[]
+  tasks   Task[]
+
+  @@map("cubcen_workflows")
+}
+
+enum WorkflowStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  ARCHIVED
+}
+
+// Individual steps within a workflow
+model WorkflowStep {
+  id         String @id @default(cuid())
+  workflowId String
+  agentId    String
+  stepOrder  Int
+  name       String
+  parameters String // JSON parameters for this step
+  conditions String // JSON conditions for execution
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  workflow Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  agent    Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@unique([workflowId, stepOrder])
+  @@map("cubcen_workflow_steps")
+}
+
+// System logs for monitoring and debugging
+model SystemLog {
+  id        String   @id @default(cuid())
+  level     LogLevel
+  message   String
+  context   String?  // JSON context information
+  source    String   // Component or service that generated the log
+  timestamp DateTime @default(now())
+
+  @@index([level, timestamp])
+  @@index([source, timestamp])
+  @@map("cubcen_system_logs")
+}
+
+enum LogLevel {
+  DEBUG
+  INFO
+  WARN
+  ERROR
+  FATAL
+}
+
+// Agent health monitoring
+model AgentHealth {
+  id              String   @id @default(cuid())
+  agentId         String
+  status          String   // JSON health status
+  responseTime    Int?     // Response time in milliseconds
+  lastCheckAt     DateTime @default(now())
+  errorCount      Int      @default(0)
+  consecutiveErrors Int    @default(0)
+
+  @@index([agentId, lastCheckAt])
+  @@map("cubcen_agent_health")
+}
+
+// Performance metrics for analytics
+model Metric {
+  id        String     @id @default(cuid())
+  type      MetricType
+  name      String
+  value     Float
+  tags      String?    // JSON tags for filtering
+  timestamp DateTime   @default(now())
+
+  @@index([type, timestamp])
+  @@index([name, timestamp])
+  @@map("cubcen_metrics")
+}
+
+enum MetricType {
+  COUNTER
+  GAUGE
+  HISTOGRAM
+  TIMER
+}
