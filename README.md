@@ -1,35 +1,37 @@
-Cubcen - AI Agent Management Platform
+# Cubcen - AI Agent Management Platform
 
 A centralized platform to manage, monitor, and orchestrate AI agents from various automation platforms including n8n, Make.com, Zapier, and more.
-🚀 Features
 
-    Multi-Platform Integration: Connect and manage AI agents from various automation platforms
-    Platform Adapter Framework: Extensible architecture for integrating with n8n, Make.com, Zapier, and more
-    Circuit Breaker Pattern: Resilient external API calls with automatic failure recovery
-    Real-time Monitoring: Monitor agent status, track progress, and receive instant alerts
-    Task Scheduling: Schedule and automate workflows with advanced retry logic
-    Modern UI: Built with shadcn/ui components and Tailwind CSS
-    Type-Safe: Full TypeScript support throughout the application
+## 🚀 Features
 
-🎨 Design System
+- **Multi-Platform Integration**: Connect and manage AI agents from various automation platforms
+- **Platform Adapter Framework**: Extensible architecture for integrating with n8n, Make.com, Zapier, and more
+- **Circuit Breaker Pattern**: Resilient external API calls with automatic failure recovery
+- **Real-time Monitoring**: Monitor agent status, track progress, and receive instant alerts
+- **Task Scheduling**: Schedule and automate workflows with advanced retry logic
+- **Modern UI**: Built with shadcn/ui components and Tailwind CSS
+- **Type-Safe**: Full TypeScript support throughout the application
+
+## 🎨 Design System
 
 Cubcen uses a custom design system with brand colors:
 
-    Primary: #3F51B5 (Indigo) - Main brand color for buttons, links, and primary actions
-    Secondary: #B19ADA (Light Purple) - Accent color for highlights, badges, and secondary elements
+- **Primary**: `#3F51B5` (Indigo) - Main brand color for buttons, links, and primary actions
+- **Secondary**: `#B19ADA` (Light Purple) - Accent color for highlights, badges, and secondary elements
 
-🛠️ Tech Stack
+## 🛠️ Tech Stack
 
-    Framework: Next.js 15 with App Router
-    Language: TypeScript
-    Styling: Tailwind CSS v4
-    UI Components: shadcn/ui
-    Font: Inter
-    Testing: Jest + React Testing Library
-    Linting: ESLint + Prettier
+- **Framework**: Next.js 15 with App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS v4
+- **UI Components**: shadcn/ui
+- **Font**: Inter
+- **Testing**: Jest + React Testing Library
+- **Linting**: ESLint + Prettier
 
-📦 Installation
+## 📦 Installation
 
+```bash
 # Install dependencies
 npm install
 
@@ -41,9 +43,11 @@ npm run build
 
 # Start production server
 npm start
+```
 
-🧪 Development Scripts
+## 🧪 Development Scripts
 
+```bash
 # Development
 npm run dev              # Start development server
 
@@ -63,9 +67,11 @@ npm run format:check     # Check code formatting
 # Build
 npm run build            # Build for production
 npm start                # Start production server
+```
 
-🏗️ Project Structure
+## 🏗️ Project Structure
 
+```
 src/
 ├── app/                 # Next.js App Router pages
 ├── components/
@@ -90,45 +96,49 @@ src/
 │   └── __tests__/               # Library tests
 └── types/              # TypeScript type definitions
     └── platform.ts              # Platform adapter types
+```
 
-🎯 MVP Scope
+## 🎯 MVP Scope
 
 The current MVP includes:
 
-    ✅ Project setup with modern tooling
-    ✅ Cubcen brand identity and design system
-    ✅ Basic homepage with feature overview
-    ✅ Quality gates and testing infrastructure
-    ✅ Proper folder structure for scalability
-    ✅ Platform Adapter Framework with circuit breaker pattern
-    ✅ Database integration with Prisma and PostgreSQL
-    ✅ Authentication system with JWT and RBAC
-    ✅ Health monitoring and API endpoints
+- ✅ Project setup with modern tooling
+- ✅ Cubcen brand identity and design system
+- ✅ Basic homepage with feature overview
+- ✅ Quality gates and testing infrastructure
+- ✅ Proper folder structure for scalability
+- ✅ **Platform Adapter Framework** with circuit breaker pattern
+- ✅ Database integration with Prisma and PostgreSQL
+- ✅ Authentication system with JWT and RBAC
+- ✅ Health monitoring and API endpoints
 
-🔌 Platform Adapter Framework
+## 🔌 Platform Adapter Framework
 
 Cubcen features a robust platform adapter framework that enables seamless integration with various automation platforms.
-Architecture
+
+### Architecture
 
 The adapter framework follows these design patterns:
 
-    Abstract Base Class: BasePlatformAdapter defines the contract for all platform integrations
-    Factory Pattern: AdapterFactory provides dynamic loading and instance management
-    Circuit Breaker: Resilient external API calls with automatic failure recovery
-    Event System: Real-time event subscription and notification system
+- **Abstract Base Class**: `BasePlatformAdapter` defines the contract for all platform integrations
+- **Factory Pattern**: `AdapterFactory` provides dynamic loading and instance management
+- **Circuit Breaker**: Resilient external API calls with automatic failure recovery
+- **Event System**: Real-time event subscription and notification system
 
-Supported Platforms
+### Supported Platforms
 
-    n8n: Open-source workflow automation
-    Make.com: Visual automation platform
-    Zapier: Popular automation service
-    Extensible: Easy to add new platform adapters
+- **n8n**: Open-source workflow automation
+- **Make.com**: Visual automation platform
+- **Zapier**: Popular automation service
+- **Extensible**: Easy to add new platform adapters
 
-Key Components
-BasePlatformAdapter
+### Key Components
+
+#### BasePlatformAdapter
 
 Abstract class that all platform adapters must implement:
 
+```typescript
 abstract class BasePlatformAdapter {
   abstract authenticate(credentials: PlatformCredentials): Promise<AuthResult>
   abstract discoverAgents(): Promise<Agent[]>
@@ -141,11 +151,13 @@ abstract class BasePlatformAdapter {
   abstract connect(): Promise<ConnectionStatus>
   abstract disconnect(): Promise<void>
 }
+```
 
-AdapterFactory
+#### AdapterFactory
 
 Manages adapter registration and instance creation:
 
+```typescript
 // Register a new adapter type
 AdapterFactory.registerAdapter('n8n', N8nAdapter)
 
@@ -154,20 +166,24 @@ const adapter = AdapterFactory.createAdapter(config)
 
 // Get existing adapter
 const adapter = AdapterFactory.getAdapter('platform-id')
+```
 
-Circuit Breaker
+#### Circuit Breaker
 
 Provides resilient external API calls:
 
+```typescript
 const circuitBreaker = createPlatformCircuitBreaker({
   failureThreshold: 3,
   recoveryTimeout: 30000,
 })
 
 const result = await circuitBreaker.execute(() => apiCall())
+```
 
-Usage Example
+### Usage Example
 
+```typescript
 import { AdapterFactory } from './backend/adapters/adapter-factory'
 
 // Configure platform
@@ -195,43 +211,46 @@ const result = await adapter.executeAgent('agent-id', { param: 'value' })
 await adapter.subscribeToEvents(event => {
   console.log('Platform event:', event)
 })
+```
 
-Testing
+### Testing
 
 The framework includes comprehensive testing utilities:
 
-    MockPlatformAdapter: Full-featured mock for testing and development
-    Circuit Breaker Tests: Failure scenarios and recovery testing
-    Factory Pattern Tests: Registration and instance management
-    Integration Tests: End-to-end adapter functionality
+- **MockPlatformAdapter**: Full-featured mock for testing and development
+- **Circuit Breaker Tests**: Failure scenarios and recovery testing
+- **Factory Pattern Tests**: Registration and instance management
+- **Integration Tests**: End-to-end adapter functionality
 
 Run adapter tests:
 
+```bash
 npm run test -- --testPathPatterns="circuit-breaker|base-adapter|adapter-factory|mock-adapter"
+```
 
-🔄 Next Steps
+## 🔄 Next Steps
 
-    ✅ Platform adapter framework
-    Real-time monitoring dashboard
-    Task scheduling engine
-    Platform-specific adapter implementations
-    Advanced analytics and reporting
+1. ✅ Platform adapter framework
+2. Real-time monitoring dashboard
+3. Task scheduling engine
+4. Platform-specific adapter implementations
+5. Advanced analytics and reporting
 
-📝 Quality Standards
+## 📝 Quality Standards
 
-    TypeScript Strict Mode: No any types, proper type definitions
-    Test Coverage: Minimum 90% code coverage for all modules
-    Code Quality: ESLint + Prettier for consistent code style
-    Performance: Response times <200ms for API calls
-    Security: Input sanitization, authentication, and authorization checks
+- **TypeScript Strict Mode**: No `any` types, proper type definitions
+- **Test Coverage**: Minimum 90% code coverage for all modules
+- **Code Quality**: ESLint + Prettier for consistent code style
+- **Performance**: Response times <200ms for API calls
+- **Security**: Input sanitization, authentication, and authorization checks
 
-🤝 Contributing
+## 🤝 Contributing
 
-    Follow the established code style and quality gates
-    Write tests for all new functionality
-    Update documentation as needed
-    Ensure all quality gates pass before submitting
+1. Follow the established code style and quality gates
+2. Write tests for all new functionality
+3. Update documentation as needed
+4. Ensure all quality gates pass before submitting
 
-📄 License
+## 📄 License
 
 This project is part of the Cubcen AI Agent Management Platform.
