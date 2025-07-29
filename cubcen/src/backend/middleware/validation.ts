@@ -47,16 +47,38 @@ export function validate(schema: ZodSchema, source: 'body' | 'query' | 'params' 
       const validatedData = schema.parse(dataToValidate)
 
       // Replace the original data with validated data
-      switch (source) {
-        case 'body':
-          req.body = validatedData
-          break
-        case 'query':
-          req.query = validatedData
-          break
-        case 'params':
-          req.params = validatedData
-          break
+      try {
+        switch (source) {
+          case 'body':
+            req.body = validatedData
+            break
+          case 'query':
+            // Try to assign, but handle read-only properties gracefully
+            try {
+              req.query = validatedData as Request['query']
+            } catch {
+              // If query is read-only, merge the validated data
+              Object.assign(req.query, validatedData)
+            }
+            break
+          case 'params':
+            // Try to assign, but handle read-only properties gracefully
+            try {
+              req.params = validatedData as Request['params']
+            } catch {
+              // If params is read-only, merge the validated data
+              Object.assign(req.params, validatedData)
+            }
+            break
+        }
+      } catch (assignError) {
+        // If we can't assign the validated data, log and continue
+        logger.debug('Could not assign validated data', {
+          source,
+          path: req.path,
+          method: req.method,
+          error: (assignError as Error).message
+        })
       }
 
       logger.debug('Validation successful', {
@@ -72,10 +94,10 @@ export function validate(schema: ZodSchema, source: 'body' | 'query' | 'params' 
           source,
           path: req.path,
           method: req.method,
-          errors: error.errors
+          errors: error.issues
         })
 
-        const validationErrors = error.errors.map((err: z.ZodIssue) => ({
+        const validationErrors = error.issues.map((err: z.ZodIssue) => ({
           field: err.path.join('.'),
           message: err.message,
           code: err.code
@@ -150,7 +172,7 @@ export function validateRequest(schemas: {
           req.body = schemas.body.parse(req.body)
         } catch (error) {
           if (error instanceof ZodError) {
-            errors.push(...error.errors.map((err: z.ZodIssue) => ({
+            errors.push(...error.issues.map((err: z.ZodIssue) => ({
               source: 'body',
               field: err.path.join('.'),
               message: err.message,
@@ -163,10 +185,10 @@ export function validateRequest(schemas: {
       // Validate query if schema provided
       if (schemas.query) {
         try {
-          req.query = schemas.query.parse(req.query)
+          req.query = schemas.query.parse(req.query) as Request['query']
         } catch (error) {
           if (error instanceof ZodError) {
-            errors.push(...error.errors.map((err: z.ZodIssue) => ({
+            errors.push(...error.issues.map((err: z.ZodIssue) => ({
               source: 'query',
               field: err.path.join('.'),
               message: err.message,
@@ -179,10 +201,10 @@ export function validateRequest(schemas: {
       // Validate params if schema provided
       if (schemas.params) {
         try {
-          req.params = schemas.params.parse(req.params)
+          req.params = schemas.params.parse(req.params) as Request['params']
         } catch (error) {
           if (error instanceof ZodError) {
-            errors.push(...error.errors.map((err: z.ZodIssue) => ({
+            errors.push(...error.issues.map((err: z.ZodIssue) => ({
               source: 'params',
               field: err.path.join('.'),
               message: err.message,
@@ -271,17 +293,54 @@ export function sanitizeInput(req: Request, res: Response, next: NextFunction): 
       return obj
     }
 
-    // Sanitize request body, query, and params
-    if (req.body) {
-      req.body = sanitizeObject(req.body)
+    // Sanitize request body (only if it exists and is modifiable)
+    if (req.body && typeof req.body === 'object') {
+      try {
+        req.body = sanitizeObject(req.body)
+      } catch {
+        // If body is not modifiable, skip sanitization
+        logger.debug('Body sanitization skipped - not modifiable', { path: req.path })
+      }
     }
     
-    if (req.query) {
-      req.query = sanitizeObject(req.query)
+    // Sanitize query parameters (create new object to avoid read-only issues)
+    if (req.query && typeof req.query === 'object') {
+      try {
+        const sanitizedQuery = sanitizeObject(req.query) as Record<string, unknown>
+        // Only replace if we can modify it
+        Object.keys(req.query).forEach(key => {
+          try {
+            if (key in sanitizedQuery) {
+              (req.query as Record<string, unknown>)[key] = sanitizedQuery[key]
+            }
+          } catch {
+            // Skip if property is not writable
+          }
+        })
+      } catch {
+        // If query is not modifiable, skip sanitization
+        logger.debug('Query sanitization skipped - not modifiable', { path: req.path })
+      }
     }
     
-    if (req.params) {
-      req.params = sanitizeObject(req.params)
+    // Sanitize params (create new object to avoid read-only issues)
+    if (req.params && typeof req.params === 'object') {
+      try {
+        const sanitizedParams = sanitizeObject(req.params) as Record<string, unknown>
+        // Only replace if we can modify it
+        Object.keys(req.params).forEach(key => {
+          try {
+            if (key in sanitizedParams) {
+              (req.params as Record<string, unknown>)[key] = sanitizedParams[key]
+            }
+          } catch {
+            // Skip if property is not writable
+          }
+        })
+      } catch {
+        // If params is not modifiable, skip sanitization
+        logger.debug('Params sanitization skipped - not modifiable', { path: req.path })
+      }
     }
 
     next()

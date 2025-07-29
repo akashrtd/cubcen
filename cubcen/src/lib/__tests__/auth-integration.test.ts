@@ -46,7 +46,7 @@ describe('Authentication Integration', () => {
     mockPrisma.user.create = jest.fn().mockResolvedValue(userData)
 
     // Mock bcrypt
-    const bcrypt = require('bcryptjs')
+    const bcrypt = await import('bcryptjs')
     bcrypt.hash = jest.fn().mockResolvedValue('$2a$12$hashedpassword')
     bcrypt.compare = jest.fn().mockResolvedValue(true)
 

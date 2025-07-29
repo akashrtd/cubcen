@@ -76,7 +76,7 @@ export const updateUserRoleSchema = z.object({
     .string()
     .min(1, 'User ID is required'),
   role: z.nativeEnum(UserRole, {
-    invalid_type_error: 'Invalid role. Must be ADMIN, OPERATOR, or VIEWER'
+    message: 'Invalid role. Must be ADMIN, OPERATOR, or VIEWER'
   })
 })
 

@@ -49,7 +49,7 @@ export function createAccessToken(userId: string, email: string, role: UserRole)
     expiresIn: config.accessTokenExpiry,
     issuer: config.issuer,
     subject: userId
-  })
+  } as jwt.SignOptions)
 }
 
 /**
@@ -67,7 +67,7 @@ export function createRefreshToken(userId: string): string {
     expiresIn: config.refreshTokenExpiry,
     issuer: config.issuer,
     subject: userId
-  })
+  } as jwt.SignOptions)
 }
 
 /**
