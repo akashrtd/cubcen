@@ -5,6 +5,7 @@
 
 import { BasePlatformAdapter } from './base-adapter';
 import { MockPlatformAdapter } from './mock-adapter';
+import { N8nPlatformAdapter } from './n8n-adapter';
 import { PlatformConfig, PlatformType, HealthStatus } from '../../types/platform';
 
 export type AdapterConstructor = new (config: PlatformConfig) => BasePlatformAdapter;
@@ -104,8 +105,10 @@ export class AdapterFactory {
    * Initialize default adapters
    */
   static initializeDefaultAdapters(): void {
-    // Register mock adapter for testing
-    this.registerAdapter('n8n', MockPlatformAdapter as AdapterConstructor);
+    // Register real adapters
+    this.registerAdapter('n8n', N8nPlatformAdapter as AdapterConstructor);
+    
+    // Register mock adapters for platforms not yet implemented
     this.registerAdapter('make', MockPlatformAdapter as AdapterConstructor);
     this.registerAdapter('zapier', MockPlatformAdapter as AdapterConstructor);
   }
