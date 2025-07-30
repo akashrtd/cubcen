@@ -3,6 +3,9 @@
 
 import { Router, Request, Response } from 'express'
 import { logger } from '@/lib/logger'
+import { TaskService } from '@/services/task'
+import { AdapterManager } from '@/backend/adapters/adapter-factory'
+import { TaskStatus, TaskPriority } from '@/lib/database'
 import { 
   authenticate, 
   requireAuth,
@@ -20,29 +23,53 @@ import { z } from 'zod'
 
 const router = Router()
 
+// Task service instance (will be injected)
+let taskService: TaskService
+
+// Validation schemas
+// Initialize task service
+export function initializeTaskService(adapterManager: AdapterManager, webSocketService?: unknown): void {
+  taskService = new TaskService(adapterManager, webSocketService as WebSocketService)
+}
+
+interface WebSocketService {
+  notifyTaskStatusChange(taskId: string, status: TaskStatus, metadata?: Record<string, unknown>): void
+  notifyTaskProgress(taskId: string, progress: number, message?: string): void
+  notifyTaskError(taskId: string, error: string, context?: Record<string, unknown>): void
+}
+
 // Validation schemas
 const createTaskSchema = z.object({
   agentId: z.string().min(1, 'Agent ID is required'),
   workflowId: z.string().optional(),
-  priority: z.enum(['low', 'medium', 'high', 'critical']).default('medium'),
+  name: z.string().min(1, 'Task name is required').max(200),
+  description: z.string().optional(),
+  priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']).default('MEDIUM'),
   scheduledAt: z.string().datetime().optional(),
-  parameters: z.record(z.string(), z.unknown()).default({})
+  parameters: z.record(z.string(), z.unknown()).default({}),
+  maxRetries: z.number().min(0).max(10).default(3),
+  timeoutMs: z.number().min(1000).max(300000).default(30000)
 })
 
 const updateTaskSchema = z.object({
-  priority: z.enum(['low', 'medium', 'high', 'critical']).optional(),
+  name: z.string().min(1).max(200).optional(),
+  description: z.string().optional(),
+  priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']).optional(),
   scheduledAt: z.string().datetime().optional(),
   parameters: z.record(z.string(), z.unknown()).optional(),
-  status: z.enum(['pending', 'running', 'completed', 'failed', 'cancelled']).optional()
+  maxRetries: z.number().min(0).max(10).optional(),
+  timeoutMs: z.number().min(1000).max(300000).optional()
 })
 
 const taskQuerySchema = paginationQuerySchema.extend({
   agentId: z.string().optional(),
   workflowId: z.string().optional(),
-  status: z.enum(['pending', 'running', 'completed', 'failed', 'cancelled']).optional(),
-  priority: z.enum(['low', 'medium', 'high', 'critical']).optional(),
+  status: z.enum(['PENDING', 'RUNNING', 'COMPLETED', 'FAILED', 'CANCELLED']).optional(),
+  priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']).optional(),
   dateFrom: z.string().datetime().optional(),
-  dateTo: z.string().datetime().optional()
+  dateTo: z.string().datetime().optional(),
+  search: z.string().optional(),
+  createdBy: z.string().optional()
 })
 
 /**
@@ -51,58 +78,55 @@ const taskQuerySchema = paginationQuerySchema.extend({
  */
 router.get('/', authenticate, requireAuth, validateQuery(taskQuerySchema), async (req: Request, res: Response) => {
   try {
-    const { page, limit, sortBy, sortOrder, agentId, workflowId, status, priority, dateFrom, dateTo } = req.query
+    if (!taskService) {
+      throw new Error('Task service not initialized')
+    }
+
+    const { 
+      page = '1', 
+      limit = '10', 
+      sortBy = 'createdAt', 
+      sortOrder = 'desc',
+      agentId,
+      workflowId,
+      status,
+      priority,
+      dateFrom,
+      dateTo,
+      search,
+      createdBy
+    } = req.query
     
     logger.info('Get tasks request', {
       userId: req.user!.id,
-      filters: { agentId, workflowId, status, priority, dateFrom, dateTo },
+      filters: { agentId, workflowId, status, priority, dateFrom, dateTo, search, createdBy },
       pagination: { page, limit, sortBy, sortOrder }
     })
     
-    // TODO: Implement task service to fetch tasks from database
-    // For now, return mock data
-    const mockTasks = [
-      {
-        id: 'task_1',
-        agentId: 'agent_1',
-        workflowId: 'workflow_1',
-        status: 'completed',
-        priority: 'medium',
-        scheduledAt: new Date(),
-        startedAt: new Date(),
-        completedAt: new Date(),
-        parameters: { email: '[email]' },
-        result: { success: true, message: 'Email sent successfully' },
-        error: null,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        id: 'task_2',
-        agentId: 'agent_1',
-        workflowId: null,
-        status: 'running',
-        priority: 'high',
-        scheduledAt: new Date(),
-        startedAt: new Date(),
-        completedAt: null,
-        parameters: { data: 'processing' },
-        result: null,
-        error: null,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      }
-    ]
+    const result = await taskService.getTasks({
+      page: Number(page),
+      limit: Number(limit),
+      sortBy: sortBy as string,
+      sortOrder: sortOrder as 'asc' | 'desc',
+      agentId: agentId as string,
+      workflowId: workflowId as string,
+      status: status as TaskStatus,
+      priority: priority as TaskPriority,
+      dateFrom: dateFrom ? new Date(dateFrom as string) : undefined,
+      dateTo: dateTo ? new Date(dateTo as string) : undefined,
+      search: search as string,
+      createdBy: createdBy as string
+    })
     
     res.status(200).json({
       success: true,
       data: {
-        tasks: mockTasks,
+        tasks: result.tasks,
         pagination: {
-          page: Number(page),
-          limit: Number(limit),
-          total: mockTasks.length,
-          totalPages: Math.ceil(mockTasks.length / Number(limit))
+          page: result.page,
+          limit: result.limit,
+          total: result.total,
+          totalPages: result.totalPages
         }
       },
       message: 'Tasks retrieved successfully'
@@ -126,6 +150,10 @@ router.get('/', authenticate, requireAuth, validateQuery(taskQuerySchema), async
  */
 router.get('/:id', authenticate, requireAuth, validateParams(idParamSchema), async (req: Request, res: Response) => {
   try {
+    if (!taskService) {
+      throw new Error('Task service not initialized')
+    }
+
     const { id } = req.params
     
     logger.info('Get task by ID request', {
@@ -133,47 +161,21 @@ router.get('/:id', authenticate, requireAuth, validateParams(idParamSchema), asy
       taskId: id
     })
     
-    // TODO: Implement task service to fetch task by ID
-    // For now, return mock data
-    const mockTask = {
-      id,
-      agentId: 'agent_1',
-      workflowId: 'workflow_1',
-      status: 'completed',
-      priority: 'medium',
-      scheduledAt: new Date(),
-      startedAt: new Date(),
-      completedAt: new Date(),
-      parameters: { email: '[email]' },
-      result: { success: true, message: 'Email sent successfully' },
-      error: null,
-      executionLogs: [
-        {
-          timestamp: new Date(),
-          level: 'info',
-          message: 'Task started',
-          context: {}
-        },
-        {
-          timestamp: new Date(),
-          level: 'info',
-          message: 'Processing email',
-          context: { recipient: '[email]' }
-        },
-        {
-          timestamp: new Date(),
-          level: 'info',
-          message: 'Task completed successfully',
-          context: { duration: 1500 }
+    const task = await taskService.getTask(id)
+    
+    if (!task) {
+      return res.status(404).json({
+        success: false,
+        error: {
+          code: 'TASK_NOT_FOUND',
+          message: 'Task not found'
         }
-      ],
-      createdAt: new Date(),
-      updatedAt: new Date()
+      })
     }
     
     res.status(200).json({
       success: true,
-      data: { task: mockTask },
+      data: { task },
       message: 'Task retrieved successfully'
     })
   } catch (error) {
@@ -198,6 +200,10 @@ router.get('/:id', authenticate, requireAuth, validateParams(idParamSchema), asy
  */
 router.post('/', authenticate, requireOperator, validateBody(createTaskSchema), async (req: Request, res: Response) => {
   try {
+    if (!taskService) {
+      throw new Error('Task service not initialized')
+    }
+
     const taskData = req.body
     
     logger.info('Create task request', {
@@ -205,39 +211,33 @@ router.post('/', authenticate, requireOperator, validateBody(createTaskSchema), 
       taskData: { ...taskData, parameters: '[REDACTED]' }
     })
     
-    // TODO: Implement task service to create task
-    // For now, return mock response
-    const mockTask = {
-      id: `task_${Date.now()}`,
+    const task = await taskService.createTask({
       ...taskData,
-      status: 'pending',
-      scheduledAt: taskData.scheduledAt ? new Date(taskData.scheduledAt) : new Date(),
-      startedAt: null,
-      completedAt: null,
-      result: null,
-      error: null,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }
+      scheduledAt: taskData.scheduledAt ? new Date(taskData.scheduledAt) : undefined,
+      createdBy: req.user!.id
+    })
     
     logger.info('Task created successfully', {
       userId: req.user!.id,
-      taskId: mockTask.id
+      taskId: task.id
     })
     
     res.status(201).json({
       success: true,
-      data: { task: mockTask },
+      data: { task },
       message: 'Task created successfully'
     })
   } catch (error) {
     logger.error('Create task failed', error as Error, { userId: req.user?.id })
     
-    res.status(500).json({
+    const statusCode = (error as Error).message.includes('not found') || 
+                      (error as Error).message.includes('not active') ? 400 : 500
+    
+    res.status(statusCode).json({
       success: false,
       error: {
-        code: 'INTERNAL_ERROR',
-        message: 'Failed to create task'
+        code: statusCode === 400 ? 'VALIDATION_ERROR' : 'INTERNAL_ERROR',
+        message: (error as Error).message
       }
     })
   }
@@ -249,6 +249,10 @@ router.post('/', authenticate, requireOperator, validateBody(createTaskSchema), 
  */
 router.put('/:id', authenticate, requireOperator, validateParams(idParamSchema), validateBody(updateTaskSchema), async (req: Request, res: Response) => {
   try {
+    if (!taskService) {
+      throw new Error('Task service not initialized')
+    }
+
     const { id } = req.params
     const updateData = req.body
     
@@ -258,23 +262,10 @@ router.put('/:id', authenticate, requireOperator, validateParams(idParamSchema),
       updateData: { ...updateData, parameters: updateData.parameters ? '[REDACTED]' : undefined }
     })
     
-    // TODO: Implement task service to update task
-    // For now, return mock response
-    const mockTask = {
-      id,
-      agentId: 'agent_1',
-      workflowId: 'workflow_1',
-      status: updateData.status || 'pending',
-      priority: updateData.priority || 'medium',
-      scheduledAt: updateData.scheduledAt ? new Date(updateData.scheduledAt) : new Date(),
-      startedAt: null,
-      completedAt: null,
-      parameters: updateData.parameters || { email: '[email]' },
-      result: null,
-      error: null,
-      createdAt: new Date('2024-01-01'),
-      updatedAt: new Date()
-    }
+    const task = await taskService.updateTask(id, {
+      ...updateData,
+      scheduledAt: updateData.scheduledAt ? new Date(updateData.scheduledAt) : undefined
+    })
     
     logger.info('Task updated successfully', {
       userId: req.user!.id,
@@ -283,7 +274,7 @@ router.put('/:id', authenticate, requireOperator, validateParams(idParamSchema),
     
     res.status(200).json({
       success: true,
-      data: { task: mockTask },
+      data: { task },
       message: 'Task updated successfully'
     })
   } catch (error) {
@@ -292,11 +283,14 @@ router.put('/:id', authenticate, requireOperator, validateParams(idParamSchema),
       taskId: req.params.id
     })
     
-    res.status(500).json({
+    const statusCode = (error as Error).message.includes('not found') || 
+                      (error as Error).message.includes('Cannot update') ? 400 : 500
+    
+    res.status(statusCode).json({
       success: false,
       error: {
-        code: 'INTERNAL_ERROR',
-        message: 'Failed to update task'
+        code: statusCode === 400 ? 'VALIDATION_ERROR' : 'INTERNAL_ERROR',
+        message: (error as Error).message
       }
     })
   }
@@ -308,6 +302,10 @@ router.put('/:id', authenticate, requireOperator, validateParams(idParamSchema),
  */
 router.delete('/:id', authenticate, requireAdmin, validateParams(idParamSchema), async (req: Request, res: Response) => {
   try {
+    if (!taskService) {
+      throw new Error('Task service not initialized')
+    }
+
     const { id } = req.params
     
     logger.info('Delete task request', {
@@ -315,8 +313,7 @@ router.delete('/:id', authenticate, requireAdmin, validateParams(idParamSchema),
       taskId: id
     })
     
-    // TODO: Implement task service to delete task
-    // For now, return success response
+    await taskService.deleteTask(id)
     
     logger.info('Task deleted successfully', {
       userId: req.user!.id,
@@ -349,6 +346,10 @@ router.delete('/:id', authenticate, requireAdmin, validateParams(idParamSchema),
  */
 router.post('/:id/cancel', authenticate, requireOperator, validateParams(idParamSchema), async (req: Request, res: Response) => {
   try {
+    if (!taskService) {
+      throw new Error('Task service not initialized')
+    }
+
     const { id } = req.params
     
     logger.info('Cancel task request', {
@@ -356,8 +357,7 @@ router.post('/:id/cancel', authenticate, requireOperator, validateParams(idParam
       taskId: id
     })
     
-    // TODO: Implement task cancellation service
-    // For now, return success response
+    await taskService.cancelTask(id)
     
     logger.info('Task cancellation initiated', {
       userId: req.user!.id,
@@ -390,6 +390,10 @@ router.post('/:id/cancel', authenticate, requireOperator, validateParams(idParam
  */
 router.post('/:id/retry', authenticate, requireOperator, validateParams(idParamSchema), async (req: Request, res: Response) => {
   try {
+    if (!taskService) {
+      throw new Error('Task service not initialized')
+    }
+
     const { id } = req.params
     
     logger.info('Retry task request', {
@@ -397,8 +401,7 @@ router.post('/:id/retry', authenticate, requireOperator, validateParams(idParamS
       taskId: id
     })
     
-    // TODO: Implement task retry service
-    // For now, return success response
+    await taskService.retryTask(id)
     
     logger.info('Task retry initiated', {
       userId: req.user!.id,
@@ -415,11 +418,91 @@ router.post('/:id/retry', authenticate, requireOperator, validateParams(idParamS
       taskId: req.params.id
     })
     
+    const statusCode = (error as Error).message.includes('not found') || 
+                      (error as Error).message.includes('not in failed state') ? 400 : 500
+    
+    res.status(statusCode).json({
+      success: false,
+      error: {
+        code: statusCode === 400 ? 'VALIDATION_ERROR' : 'INTERNAL_ERROR',
+        message: (error as Error).message
+      }
+    })
+  }
+})
+
+/**
+ * GET /api/cubcen/v1/tasks/queue/status
+ * Get task queue status
+ */
+router.get('/queue/status', authenticate, requireAuth, async (req: Request, res: Response) => {
+  try {
+    if (!taskService) {
+      throw new Error('Task service not initialized')
+    }
+
+    logger.info('Get queue status request', {
+      userId: req.user!.id
+    })
+    
+    const queueStatus = taskService.getQueueStatus()
+    
+    res.status(200).json({
+      success: true,
+      data: { queueStatus },
+      message: 'Queue status retrieved successfully'
+    })
+  } catch (error) {
+    logger.error('Get queue status failed', error as Error, {
+      userId: req.user?.id
+    })
+    
     res.status(500).json({
       success: false,
       error: {
         code: 'INTERNAL_ERROR',
-        message: 'Failed to retry task'
+        message: 'Failed to retrieve queue status'
+      }
+    })
+  }
+})
+
+/**
+ * POST /api/cubcen/v1/tasks/queue/configure
+ * Configure task execution settings
+ */
+router.post('/queue/configure', authenticate, requireAdmin, async (req: Request, res: Response) => {
+  try {
+    if (!taskService) {
+      throw new Error('Task service not initialized')
+    }
+
+    const { maxConcurrentTasks, queueProcessingInterval } = req.body
+    
+    logger.info('Configure task execution request', {
+      userId: req.user!.id,
+      config: { maxConcurrentTasks, queueProcessingInterval }
+    })
+    
+    taskService.configureExecution({
+      maxConcurrentTasks,
+      queueProcessingInterval
+    })
+    
+    res.status(200).json({
+      success: true,
+      message: 'Task execution configuration updated successfully'
+    })
+  } catch (error) {
+    logger.error('Configure task execution failed', error as Error, {
+      userId: req.user?.id
+    })
+    
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: 'Failed to configure task execution'
       }
     })
   }
@@ -438,8 +521,8 @@ router.get('/:id/logs', authenticate, requireAuth, validateParams(idParamSchema)
       taskId: id
     })
     
-    // TODO: Implement task logs service
-    // For now, return mock logs
+    // TODO: Implement task logs service with database integration
+    // For now, return mock logs based on task status
     const mockLogs = [
       {
         timestamp: new Date(),

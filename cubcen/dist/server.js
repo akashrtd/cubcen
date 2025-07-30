@@ -15,6 +15,8 @@ const agents_1 = __importDefault(require("@/backend/routes/agents"));
 const tasks_1 = __importDefault(require("@/backend/routes/tasks"));
 const platforms_1 = __importDefault(require("@/backend/routes/platforms"));
 const users_1 = __importDefault(require("@/backend/routes/users"));
+const health_1 = __importDefault(require("@/backend/routes/health"));
+const websocket_1 = __importDefault(require("@/backend/routes/websocket"));
 function generateRequestId() {
     return `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 }
@@ -111,20 +113,14 @@ const authLimiter = (0, express_rate_limit_1.default)({
         });
     }
 });
-app.get('/health', (req, res) => {
-    res.status(200).json({
-        status: 'healthy',
-        timestamp: new Date().toISOString(),
-        version: process.env.npm_package_version || '1.0.0',
-        environment: process.env.NODE_ENV || 'development'
-    });
-});
+app.use('/health', health_1.default);
 app.use('/api/cubcen/v1/auth', authLimiter, auth_1.default);
 app.use('/api/cubcen/v1/agents', agents_1.default);
 app.use('/api/cubcen/v1/tasks', tasks_1.default);
 app.use('/api/cubcen/v1/platforms', platforms_1.default);
 app.use('/api/cubcen/v1/users', users_1.default);
-app.use((req, res, _next) => {
+app.use('/api/cubcen/v1/websocket', websocket_1.default);
+app.use((req, res, next) => {
     if (req.path.startsWith('/api/')) {
         logger_1.logger.warn('API endpoint not found', {
             path: req.path,
@@ -142,7 +138,7 @@ app.use((req, res, _next) => {
         });
     }
     else {
-        _next();
+        next();
     }
 });
 app.use((error, req, res, next) => {

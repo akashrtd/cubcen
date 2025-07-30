@@ -4,25 +4,37 @@ const express_1 = require("express");
 const logger_1 = require("@/lib/logger");
 const auth_1 = require("@/backend/middleware/auth");
 const validation_1 = require("@/backend/middleware/validation");
+const agent_1 = require("@/services/agent");
+const adapter_factory_1 = require("@/backend/adapters/adapter-factory");
 const zod_1 = require("zod");
+const adapterManager = new adapter_factory_1.AdapterManager();
+const agentService = new agent_1.AgentService(adapterManager);
 const router = (0, express_1.Router)();
 const createAgentSchema = zod_1.z.object({
     name: zod_1.z.string().min(1, 'Agent name is required').max(100),
     platformId: zod_1.z.string().min(1, 'Platform ID is required'),
-    platformType: zod_1.z.enum(['n8n', 'make', 'zapier']),
+    externalId: zod_1.z.string().min(1, 'External ID is required'),
     capabilities: zod_1.z.array(zod_1.z.string()).default([]),
-    configuration: zod_1.z.record(zod_1.z.string(), zod_1.z.unknown()).default({})
+    configuration: zod_1.z.record(zod_1.z.string(), zod_1.z.unknown()).default({}),
+    description: zod_1.z.string().optional()
 });
 const updateAgentSchema = zod_1.z.object({
     name: zod_1.z.string().min(1).max(100).optional(),
     capabilities: zod_1.z.array(zod_1.z.string()).optional(),
     configuration: zod_1.z.record(zod_1.z.string(), zod_1.z.unknown()).optional(),
-    status: zod_1.z.enum(['active', 'inactive', 'maintenance']).optional()
+    description: zod_1.z.string().optional(),
+    status: zod_1.z.enum(['ACTIVE', 'INACTIVE', 'MAINTENANCE']).optional()
 });
 const agentQuerySchema = validation_1.paginationQuerySchema.extend({
-    platformType: zod_1.z.enum(['n8n', 'make', 'zapier']).optional(),
-    status: zod_1.z.enum(['active', 'inactive', 'error', 'maintenance']).optional(),
+    platformType: zod_1.z.enum(['N8N', 'MAKE', 'ZAPIER']).optional(),
+    status: zod_1.z.enum(['ACTIVE', 'INACTIVE', 'ERROR', 'MAINTENANCE']).optional(),
     search: zod_1.z.string().optional()
+});
+const healthConfigSchema = zod_1.z.object({
+    interval: zod_1.z.number().min(1000).max(300000).default(30000),
+    timeout: zod_1.z.number().min(1000).max(60000).default(10000),
+    retries: zod_1.z.number().min(0).max(5).default(3),
+    enabled: zod_1.z.boolean().default(true)
 });
 router.get('/', auth_1.authenticate, auth_1.requireAuth, (0, validation_1.validateQuery)(agentQuerySchema), async (req, res) => {
     try {
@@ -32,33 +44,24 @@ router.get('/', auth_1.authenticate, auth_1.requireAuth, (0, validation_1.valida
             filters: { platformType, status, search },
             pagination: { page, limit, sortBy, sortOrder }
         });
-        const mockAgents = [
-            {
-                id: 'agent_1',
-                name: 'Email Automation Agent',
-                platformId: 'platform_n8n_1',
-                platformType: 'n8n',
-                status: 'active',
-                capabilities: ['email', 'automation'],
-                configuration: { emailProvider: 'smtp' },
-                healthStatus: {
-                    status: 'healthy',
-                    lastCheck: new Date(),
-                    responseTime: 150
-                },
-                createdAt: new Date(),
-                updatedAt: new Date()
-            }
-        ];
+        const result = await agentService.getAgents({
+            platformType: platformType,
+            status: status,
+            search: search,
+            page: Number(page),
+            limit: Number(limit),
+            sortBy: sortBy,
+            sortOrder: sortOrder
+        });
         res.status(200).json({
             success: true,
             data: {
-                agents: mockAgents,
+                agents: result.agents,
                 pagination: {
-                    page: Number(page),
-                    limit: Number(limit),
-                    total: mockAgents.length,
-                    totalPages: Math.ceil(mockAgents.length / Number(limit))
+                    page: result.page,
+                    limit: result.limit,
+                    total: result.total,
+                    totalPages: result.totalPages
                 }
             },
             message: 'Agents retrieved successfully'
@@ -82,25 +85,19 @@ router.get('/:id', auth_1.authenticate, auth_1.requireAuth, (0, validation_1.val
             userId: req.user.id,
             agentId: id
         });
-        const mockAgent = {
-            id,
-            name: 'Email Automation Agent',
-            platformId: 'platform_n8n_1',
-            platformType: 'n8n',
-            status: 'active',
-            capabilities: ['email', 'automation'],
-            configuration: { emailProvider: 'smtp' },
-            healthStatus: {
-                status: 'healthy',
-                lastCheck: new Date(),
-                responseTime: 150
-            },
-            createdAt: new Date(),
-            updatedAt: new Date()
-        };
+        const agent = await agentService.getAgent(id);
+        if (!agent) {
+            return res.status(404).json({
+                success: false,
+                error: {
+                    code: 'AGENT_NOT_FOUND',
+                    message: 'Agent not found'
+                }
+            });
+        }
         res.status(200).json({
             success: true,
-            data: { agent: mockAgent },
+            data: { agent },
             message: 'Agent retrieved successfully'
         });
     }
@@ -125,30 +122,37 @@ router.post('/', auth_1.authenticate, auth_1.requireOperator, (0, validation_1.v
             userId: req.user.id,
             agentData: { ...agentData, configuration: '[REDACTED]' }
         });
-        const mockAgent = {
-            id: `agent_${Date.now()}`,
-            ...agentData,
-            status: 'inactive',
-            healthStatus: {
-                status: 'unknown',
-                lastCheck: null,
-                responseTime: null
-            },
-            createdAt: new Date(),
-            updatedAt: new Date()
-        };
+        const agent = await agentService.registerAgent(agentData);
         logger_1.logger.info('Agent created successfully', {
             userId: req.user.id,
-            agentId: mockAgent.id
+            agentId: agent.id
         });
         res.status(201).json({
             success: true,
-            data: { agent: mockAgent },
+            data: { agent },
             message: 'Agent created successfully'
         });
     }
     catch (error) {
         logger_1.logger.error('Create agent failed', error, { userId: req.user?.id });
+        if (error.message.includes('already exists')) {
+            return res.status(409).json({
+                success: false,
+                error: {
+                    code: 'AGENT_ALREADY_EXISTS',
+                    message: error.message
+                }
+            });
+        }
+        if (error.message.includes('not found')) {
+            return res.status(404).json({
+                success: false,
+                error: {
+                    code: 'PLATFORM_NOT_FOUND',
+                    message: error.message
+                }
+            });
+        }
         res.status(500).json({
             success: false,
             error: {
@@ -167,29 +171,14 @@ router.put('/:id', auth_1.authenticate, auth_1.requireOperator, (0, validation_1
             agentId: id,
             updateData: { ...updateData, configuration: updateData.configuration ? '[REDACTED]' : undefined }
         });
-        const mockAgent = {
-            id,
-            name: updateData.name || 'Email Automation Agent',
-            platformId: 'platform_n8n_1',
-            platformType: 'n8n',
-            status: updateData.status || 'active',
-            capabilities: updateData.capabilities || ['email', 'automation'],
-            configuration: updateData.configuration || { emailProvider: 'smtp' },
-            healthStatus: {
-                status: 'healthy',
-                lastCheck: new Date(),
-                responseTime: 150
-            },
-            createdAt: new Date('2024-01-01'),
-            updatedAt: new Date()
-        };
+        const agent = await agentService.updateAgent(id, updateData);
         logger_1.logger.info('Agent updated successfully', {
             userId: req.user.id,
             agentId: id
         });
         res.status(200).json({
             success: true,
-            data: { agent: mockAgent },
+            data: { agent },
             message: 'Agent updated successfully'
         });
     }
@@ -198,6 +187,15 @@ router.put('/:id', auth_1.authenticate, auth_1.requireOperator, (0, validation_1
             userId: req.user?.id,
             agentId: req.params.id
         });
+        if (error.message.includes('not found')) {
+            return res.status(404).json({
+                success: false,
+                error: {
+                    code: 'AGENT_NOT_FOUND',
+                    message: 'Agent not found'
+                }
+            });
+        }
         res.status(500).json({
             success: false,
             error: {
@@ -214,6 +212,7 @@ router.delete('/:id', auth_1.authenticate, auth_1.requireAdmin, (0, validation_1
             userId: req.user.id,
             agentId: id
         });
+        await agentService.deleteAgent(id);
         logger_1.logger.info('Agent deleted successfully', {
             userId: req.user.id,
             agentId: id
@@ -228,6 +227,15 @@ router.delete('/:id', auth_1.authenticate, auth_1.requireAdmin, (0, validation_1
             userId: req.user?.id,
             agentId: req.params.id
         });
+        if (error.message.includes('not found')) {
+            return res.status(404).json({
+                success: false,
+                error: {
+                    code: 'AGENT_NOT_FOUND',
+                    message: 'Agent not found'
+                }
+            });
+        }
         res.status(500).json({
             success: false,
             error: {
@@ -244,22 +252,10 @@ router.get('/:id/health', auth_1.authenticate, auth_1.requireAuth, (0, validatio
             userId: req.user.id,
             agentId: id
         });
-        const mockHealth = {
-            status: 'healthy',
-            lastCheck: new Date(),
-            responseTime: 150,
-            uptime: 99.9,
-            errors: [],
-            metrics: {
-                cpu: 25.5,
-                memory: 128.5,
-                requests: 1250,
-                successRate: 98.5
-            }
-        };
+        const health = await agentService.getAgentHealthStatus(id);
         res.status(200).json({
             success: true,
-            data: { health: mockHealth },
+            data: { health },
             message: 'Agent health retrieved successfully'
         });
     }
@@ -277,24 +273,69 @@ router.get('/:id/health', auth_1.authenticate, auth_1.requireAuth, (0, validatio
         });
     }
 });
-router.post('/:id/restart', auth_1.authenticate, auth_1.requireOperator, (0, validation_1.validateParams)(validation_1.idParamSchema), async (req, res) => {
+router.post('/:id/health-check', auth_1.authenticate, auth_1.requireOperator, (0, validation_1.validateParams)(validation_1.idParamSchema), async (req, res) => {
     try {
         const { id } = req.params;
-        logger_1.logger.info('Restart agent request', {
+        logger_1.logger.info('Manual health check request', {
             userId: req.user.id,
             agentId: id
         });
-        logger_1.logger.info('Agent restart initiated', {
+        const health = await agentService.performHealthCheck(id);
+        logger_1.logger.info('Manual health check completed', {
+            userId: req.user.id,
+            agentId: id,
+            status: health.status
+        });
+        res.status(200).json({
+            success: true,
+            data: { health },
+            message: 'Health check completed successfully'
+        });
+    }
+    catch (error) {
+        logger_1.logger.error('Manual health check failed', error, {
+            userId: req.user?.id,
+            agentId: req.params.id
+        });
+        if (error.message.includes('not found')) {
+            return res.status(404).json({
+                success: false,
+                error: {
+                    code: 'AGENT_NOT_FOUND',
+                    message: 'Agent not found'
+                }
+            });
+        }
+        res.status(500).json({
+            success: false,
+            error: {
+                code: 'INTERNAL_ERROR',
+                message: 'Failed to perform health check'
+            }
+        });
+    }
+});
+router.post('/:id/health-config', auth_1.authenticate, auth_1.requireOperator, (0, validation_1.validateParams)(validation_1.idParamSchema), (0, validation_1.validateBody)(healthConfigSchema), async (req, res) => {
+    try {
+        const { id } = req.params;
+        const config = req.body;
+        logger_1.logger.info('Configure health monitoring request', {
+            userId: req.user.id,
+            agentId: id,
+            config
+        });
+        await agentService.configureHealthMonitoring(id, config);
+        logger_1.logger.info('Health monitoring configured', {
             userId: req.user.id,
             agentId: id
         });
         res.status(200).json({
             success: true,
-            message: 'Agent restart initiated successfully'
+            message: 'Health monitoring configured successfully'
         });
     }
     catch (error) {
-        logger_1.logger.error('Restart agent failed', error, {
+        logger_1.logger.error('Configure health monitoring failed', error, {
             userId: req.user?.id,
             agentId: req.params.id
         });
@@ -302,7 +343,63 @@ router.post('/:id/restart', auth_1.authenticate, auth_1.requireOperator, (0, val
             success: false,
             error: {
                 code: 'INTERNAL_ERROR',
-                message: 'Failed to restart agent'
+                message: 'Failed to configure health monitoring'
+            }
+        });
+    }
+});
+router.post('/discover', auth_1.authenticate, auth_1.requireOperator, async (req, res) => {
+    try {
+        const { platformId } = req.body;
+        logger_1.logger.info('Agent discovery request', {
+            userId: req.user.id,
+            platformId
+        });
+        const result = await agentService.discoverAgents(platformId);
+        logger_1.logger.info('Agent discovery completed', {
+            userId: req.user.id,
+            result
+        });
+        res.status(200).json({
+            success: true,
+            data: { discovery: result },
+            message: 'Agent discovery completed successfully'
+        });
+    }
+    catch (error) {
+        logger_1.logger.error('Agent discovery failed', error, {
+            userId: req.user?.id
+        });
+        res.status(500).json({
+            success: false,
+            error: {
+                code: 'INTERNAL_ERROR',
+                message: 'Failed to discover agents'
+            }
+        });
+    }
+});
+router.get('/health-monitoring/status', auth_1.authenticate, auth_1.requireAuth, async (req, res) => {
+    try {
+        logger_1.logger.info('Get health monitoring status request', {
+            userId: req.user.id
+        });
+        const status = agentService.getHealthMonitoringStatus();
+        res.status(200).json({
+            success: true,
+            data: { status },
+            message: 'Health monitoring status retrieved successfully'
+        });
+    }
+    catch (error) {
+        logger_1.logger.error('Get health monitoring status failed', error, {
+            userId: req.user?.id
+        });
+        res.status(500).json({
+            success: false,
+            error: {
+                code: 'INTERNAL_ERROR',
+                message: 'Failed to retrieve health monitoring status'
             }
         });
     }

@@ -17,6 +17,8 @@ import taskRoutes from '@/backend/routes/tasks'
 import platformRoutes from '@/backend/routes/platforms'
 import userRoutes from '@/backend/routes/users'
 import healthRoutes from '@/backend/routes/health'
+import websocketRoutes from '@/backend/routes/websocket'
+import { createWorkflowRoutes } from '@/backend/routes/workflows'
 
 // Error types
 interface ErrorResponse {
@@ -168,6 +170,10 @@ app.use('/api/cubcen/v1/agents', agentRoutes)
 app.use('/api/cubcen/v1/tasks', taskRoutes)
 app.use('/api/cubcen/v1/platforms', platformRoutes)
 app.use('/api/cubcen/v1/users', userRoutes)
+app.use('/api/cubcen/v1/websocket', websocketRoutes)
+
+// Workflow routes will be initialized in index.ts with service dependencies
+export { createWorkflowRoutes }
 
 // 404 handler for API routes
 app.use((req: Request, res: Response, next: NextFunction) => {
