@@ -1,6 +1,8 @@
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function Home() {
   return (
@@ -15,9 +17,12 @@ export default function Home() {
               </div>
               <h1 className="text-2xl font-bold text-foreground">Cubcen</h1>
             </div>
-            <Badge variant="secondary" className="bg-cubcen-secondary text-white">
-              MVP
-            </Badge>
+            <div className="flex items-center space-x-4">
+              <Badge variant="secondary" className="bg-cubcen-secondary text-white">
+                MVP
+              </Badge>
+              <ThemeToggle />
+            </div>
           </div>
         </div>
       </header>
@@ -83,12 +88,16 @@ export default function Home() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <Button className="w-full bg-cubcen-primary hover:bg-cubcen-primary-hover">
-                  Launch Dashboard
-                </Button>
-                <Button variant="outline" className="w-full">
-                  View Documentation
-                </Button>
+                <Link href="/dashboard">
+                  <Button className="w-full bg-cubcen-primary hover:bg-cubcen-primary-hover">
+                    Launch Dashboard
+                  </Button>
+                </Link>
+                <Link href="/auth/login">
+                  <Button variant="outline" className="w-full">
+                    Sign In
+                  </Button>
+                </Link>
               </div>
             </CardContent>
           </Card>

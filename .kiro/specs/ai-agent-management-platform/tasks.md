@@ -182,7 +182,7 @@
   - **Error Scenarios**: Test step failures, data validation errors, workflow timeouts, recovery procedures
   - _Requirements: 9_
 
-- [-] 13. Cubcen Frontend Dashboard Foundation
+- [x] 13. Cubcen Frontend Dashboard Foundation
 
   - Create main Cubcen dashboard layout with navigation using shadcn/ui components
   - Implement Cubcen authentication pages (login, register) with brand colors and form validation
@@ -195,7 +195,7 @@
   - **Error Scenarios**: Test form validation errors, navigation failures, theme switching, responsive breakpoints
   - _Requirements: 2, 6, 7_
 
-- [ ] 14. Cubcen Agent Monitoring Dashboard
+- [x] 14. Cubcen Agent Monitoring Dashboard
 
   - Build agent list view with status indicators using Table and Badge components with Cubcen colors
   - Create real-time agent status cards with progress indicators using primary color (#3F51B5)
