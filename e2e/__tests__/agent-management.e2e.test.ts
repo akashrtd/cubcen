@@ -97,24 +97,32 @@ describe('Agent Management E2E Tests', () => {
     })
 
     it('should update agent status', async () => {
-      const response = await api.put(`/api/cubcen/v1/agents/${testAgentId}/status`, {
-        status: 'maintenance',
-      })
+      const response = await api.put(
+        `/api/cubcen/v1/agents/${testAgentId}/status`,
+        {
+          status: 'maintenance',
+        }
+      )
       expect(response.status).toBe(200)
       expect(response.body.status).toBe('maintenance')
       expect(response.body.updatedAt).toBeDefined()
     })
 
     it('should reject invalid status values', async () => {
-      const response = await api.put(`/api/cubcen/v1/agents/${testAgentId}/status`, {
-        status: 'invalid-status',
-      })
+      const response = await api.put(
+        `/api/cubcen/v1/agents/${testAgentId}/status`,
+        {
+          status: 'invalid-status',
+        }
+      )
       expect(response.status).toBe(400)
       expect(response.body.error).toContain('Invalid status')
     })
 
     it('should get agent health status', async () => {
-      const response = await api.get(`/api/cubcen/v1/agents/${testAgentId}/health`)
+      const response = await api.get(
+        `/api/cubcen/v1/agents/${testAgentId}/health`
+      )
       expect(response.status).toBe(200)
       expect(response.body).toHaveProperty('status')
       expect(response.body).toHaveProperty('lastCheck')
@@ -125,7 +133,10 @@ describe('Agent Management E2E Tests', () => {
     })
 
     it('should trigger health check for agent', async () => {
-      const response = await api.post(`/api/cubcen/v1/agents/${testAgentId}/health-check`, {})
+      const response = await api.post(
+        `/api/cubcen/v1/agents/${testAgentId}/health-check`,
+        {}
+      )
       expect(response.status).toBe(200)
       expect(response.body).toHaveProperty('status')
       expect(response.body).toHaveProperty('timestamp')
@@ -152,9 +163,12 @@ describe('Agent Management E2E Tests', () => {
         },
       }
 
-      const response = await api.put(`/api/cubcen/v1/agents/${testAgentId}/configuration`, {
-        configuration: newConfig,
-      })
+      const response = await api.put(
+        `/api/cubcen/v1/agents/${testAgentId}/configuration`,
+        {
+          configuration: newConfig,
+        }
+      )
       expect(response.status).toBe(200)
       expect(response.body.configuration).toEqual(newConfig)
       expect(response.body.updatedAt).toBeDefined()
@@ -166,15 +180,20 @@ describe('Agent Management E2E Tests', () => {
         actions: [],
       }
 
-      const response = await api.put(`/api/cubcen/v1/agents/${testAgentId}/configuration`, {
-        configuration: invalidConfig,
-      })
+      const response = await api.put(
+        `/api/cubcen/v1/agents/${testAgentId}/configuration`,
+        {
+          configuration: invalidConfig,
+        }
+      )
       expect(response.status).toBe(400)
       expect(response.body.error).toContain('Invalid configuration')
     })
 
     it('should get agent configuration history', async () => {
-      const response = await api.get(`/api/cubcen/v1/agents/${testAgentId}/configuration/history`)
+      const response = await api.get(
+        `/api/cubcen/v1/agents/${testAgentId}/configuration/history`
+      )
       expect(response.status).toBe(200)
       expect(Array.isArray(response.body)).toBe(true)
       response.body.forEach((config: any) => {
@@ -236,7 +255,9 @@ describe('Agent Management E2E Tests', () => {
     })
 
     it('should get agent performance metrics', async () => {
-      const response = await api.get(`/api/cubcen/v1/agents/${testAgentId}/metrics`)
+      const response = await api.get(
+        `/api/cubcen/v1/agents/${testAgentId}/metrics`
+      )
       expect(response.status).toBe(200)
       expect(response.body).toHaveProperty('executionCount')
       expect(response.body).toHaveProperty('successRate')
@@ -250,8 +271,8 @@ describe('Agent Management E2E Tests', () => {
       const startDate = new Date(endDate.getTime() - 24 * 60 * 60 * 1000) // 24 hours ago
 
       const response = await api.get(
-          `/api/cubcen/v1/agents/${testAgentId}/metrics?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`
-        )
+        `/api/cubcen/v1/agents/${testAgentId}/metrics?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`
+      )
       expect(response.status).toBe(200)
       expect(response.body).toHaveProperty('executionCount')
       expect(response.body).toHaveProperty('timeRange')
@@ -270,9 +291,12 @@ describe('Agent Management E2E Tests', () => {
       const testAgentId = agents.body[0].id
 
       // Update agent status and verify it triggers real-time update
-      const response = await api.put(`/api/cubcen/v1/agents/${testAgentId}/status`, {
+      const response = await api.put(
+        `/api/cubcen/v1/agents/${testAgentId}/status`,
+        {
           status: 'active',
-        })
+        }
+      )
       expect(response.status).toBe(200)
       expect(response.body.status).toBe('active')
 
@@ -288,9 +312,12 @@ describe('Agent Management E2E Tests', () => {
       const testAgentId = agents.body[0].id
 
       // Simulate agent execution with error
-      const response = await api.post(`/api/cubcen/v1/agents/${testAgentId}/execute`, {
+      const response = await api.post(
+        `/api/cubcen/v1/agents/${testAgentId}/execute`,
+        {
           parameters: { simulateError: true },
-        })
+        }
+      )
       expect(response.status).toBe(500)
       expect(response.body).toHaveProperty('error')
       expect(response.body).toHaveProperty('timestamp')
@@ -303,7 +330,9 @@ describe('Agent Management E2E Tests', () => {
       const testAgentId = agents.body[0].id
 
       // Get agent error logs
-      const response = await api.get(`/api/cubcen/v1/agents/${testAgentId}/errors`)
+      const response = await api.get(
+        `/api/cubcen/v1/agents/${testAgentId}/errors`
+      )
       expect(response.status).toBe(200)
       expect(Array.isArray(response.body)).toBe(true)
       response.body.forEach((error: any) => {

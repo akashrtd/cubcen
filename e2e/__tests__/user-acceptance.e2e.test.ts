@@ -25,27 +25,31 @@ describe('User Acceptance Testing (UAT) Scenarios', () => {
         role: 'operator',
       }
 
-      const registerResponse = await api
-        .post('/api/cubcen/v1/auth/register', userData, 'admin@cubcen.test')
+      const registerResponse = await api.post(
+        '/api/cubcen/v1/auth/register',
+        userData,
+        'admin@cubcen.test'
+      )
       expect(registerResponse.status).toBe(201)
 
       expect(registerResponse.body.user.email).toBe(userData.email)
       expect(registerResponse.body.user.name).toBe(userData.name)
 
       // Step 2: User logs in successfully
-      const loginResponse = await api
-        .post('/api/cubcen/v1/auth/login', {
-          email: userData.email,
-          password: userData.password,
-        })
+      const loginResponse = await api.post('/api/cubcen/v1/auth/login', {
+        email: userData.email,
+        password: userData.password,
+      })
       expect(loginResponse.status).toBe(200)
 
       expect(loginResponse.body.token).toBeDefined()
       const userToken = loginResponse.body.token
 
       // Step 3: User views dashboard and sees initial state
-      const dashboardResponse = await api
-        .get('/api/cubcen/v1/dashboard', userData.email)
+      const dashboardResponse = await api.get(
+        '/api/cubcen/v1/dashboard',
+        userData.email
+      )
       expect(dashboardResponse.status).toBe(200)
 
       expect(dashboardResponse.body).toHaveProperty('agents')
@@ -53,8 +57,10 @@ describe('User Acceptance Testing (UAT) Scenarios', () => {
       expect(dashboardResponse.body).toHaveProperty('platforms')
 
       // Step 4: User explores available agents
-      const agentsResponse = await api
-        .get('/api/cubcen/v1/agents', userData.email)
+      const agentsResponse = await api.get(
+        '/api/cubcen/v1/agents',
+        userData.email
+      )
       expect(agentsResponse.status).toBe(200)
 
       expect(Array.isArray(agentsResponse.body)).toBe(true)
@@ -62,8 +68,10 @@ describe('User Acceptance Testing (UAT) Scenarios', () => {
 
       // Step 5: User views agent details
       const agentId = agentsResponse.body[0].id
-      const agentDetailResponse = await api
-        .get(`/api/cubcen/v1/agents/${agentId}`, userData.email)
+      const agentDetailResponse = await api.get(
+        `/api/cubcen/v1/agents/${agentId}`,
+        userData.email
+      )
       expect(agentDetailResponse.status).toBe(200)
 
       ValidationHelper.validateAgent(agentDetailResponse.body)
@@ -78,23 +86,29 @@ describe('User Acceptance Testing (UAT) Scenarios', () => {
       const operatorEmail = 'operator@cubcen.test'
 
       // Step 1: Operator starts their day by checking system health
-      const healthResponse = await api
-        .get('/api/cubcen/v1/health', operatorEmail)
+      const healthResponse = await api.get(
+        '/api/cubcen/v1/health',
+        operatorEmail
+      )
       expect(healthResponse.status).toBe(200)
 
       expect(healthResponse.body.status).toBe('healthy')
       expect(healthResponse.body.checks).toBeDefined()
 
       // Step 2: Review overnight task executions
-      const tasksResponse = await api
-        .get('/api/cubcen/v1/tasks?status=completed&limit=10', operatorEmail)
+      const tasksResponse = await api.get(
+        '/api/cubcen/v1/tasks?status=completed&limit=10',
+        operatorEmail
+      )
       expect(tasksResponse.status).toBe(200)
 
       expect(Array.isArray(tasksResponse.body)).toBe(true)
 
       // Step 3: Check for any failed tasks
-      const failedTasksResponse = await api
-        .get('/api/cubcen/v1/tasks?status=failed', operatorEmail)
+      const failedTasksResponse = await api.get(
+        '/api/cubcen/v1/tasks?status=failed',
+        operatorEmail
+      )
       expect(failedTasksResponse.status).toBe(200)
 
       expect(Array.isArray(failedTasksResponse.body)).toBe(true)
@@ -102,30 +116,39 @@ describe('User Acceptance Testing (UAT) Scenarios', () => {
       // Step 4: If there are failed tasks, investigate the first one
       if (failedTasksResponse.body.length > 0) {
         const failedTaskId = failedTasksResponse.body[0].id
-        const taskDetailResponse = await api
-          .get(`/api/cubcen/v1/tasks/${failedTaskId}`, operatorEmail)
+        const taskDetailResponse = await api.get(
+          `/api/cubcen/v1/tasks/${failedTaskId}`,
+          operatorEmail
+        )
         expect(taskDetailResponse.status).toBe(200)
 
         expect(taskDetailResponse.body.status).toBe('failed')
         expect(taskDetailResponse.body.error).toBeDefined()
 
         // Step 5: Retry the failed task
-        const retryResponse = await api
-          .post(`/api/cubcen/v1/tasks/${failedTaskId}/retry`, {}, operatorEmail)
+        const retryResponse = await api.post(
+          `/api/cubcen/v1/tasks/${failedTaskId}/retry`,
+          {},
+          operatorEmail
+        )
         expect(retryResponse.status).toBe(200)
 
         expect(retryResponse.body.status).toBe('pending')
       }
 
       // Step 6: Check agent health status
-      const agentsResponse = await api
-        .get('/api/cubcen/v1/agents', operatorEmail)
+      const agentsResponse = await api.get(
+        '/api/cubcen/v1/agents',
+        operatorEmail
+      )
       expect(agentsResponse.status).toBe(200)
 
       for (const agent of agentsResponse.body.slice(0, 3)) {
         // Check first 3 agents
-        const healthResponse = await api
-          .get(`/api/cubcen/v1/agents/${agent.id}/health`, operatorEmail)
+        const healthResponse = await api.get(
+          `/api/cubcen/v1/agents/${agent.id}/health`,
+          operatorEmail
+        )
         expect(healthResponse.status).toBe(200)
 
         expect(healthResponse.body.status).toBeDefined()
@@ -146,8 +169,11 @@ describe('User Acceptance Testing (UAT) Scenarios', () => {
         },
       }
 
-      const createTaskResponse = await api
-        .post('/api/cubcen/v1/tasks', newTaskData, operatorEmail)
+      const createTaskResponse = await api.post(
+        '/api/cubcen/v1/tasks',
+        newTaskData,
+        operatorEmail
+      )
       expect(createTaskResponse.status).toBe(201)
 
       ValidationHelper.validateTask(createTaskResponse.body)
@@ -164,8 +190,10 @@ describe('User Acceptance Testing (UAT) Scenarios', () => {
       const adminEmail = 'admin@cubcen.test'
 
       // Step 1: Admin views current platforms
-      const platformsResponse = await api
-        .get('/api/cubcen/v1/platforms', adminEmail)
+      const platformsResponse = await api.get(
+        '/api/cubcen/v1/platforms',
+        adminEmail
+      )
       expect(platformsResponse.status).toBe(200)
 
       expect(Array.isArray(platformsResponse.body)).toBe(true)
@@ -182,8 +210,11 @@ describe('User Acceptance Testing (UAT) Scenarios', () => {
         },
       }
 
-      const createPlatformResponse = await api
-        .post('/api/cubcen/v1/platforms', newPlatformData, adminEmail)
+      const createPlatformResponse = await api.post(
+        '/api/cubcen/v1/platforms',
+        newPlatformData,
+        adminEmail
+      )
       expect(createPlatformResponse.status).toBe(201)
 
       ValidationHelper.validatePlatform(createPlatformResponse.body)
@@ -193,12 +224,11 @@ describe('User Acceptance Testing (UAT) Scenarios', () => {
       const platformId = createPlatformResponse.body.id
 
       // Step 3: Test the platform connection
-      const connectionTestResponse = await api
-        .post(
-          `/api/cubcen/v1/platforms/${platformId}/test-connection`,
-          {},
-          adminEmail
-        )
+      const connectionTestResponse = await api.post(
+        `/api/cubcen/v1/platforms/${platformId}/test-connection`,
+        {},
+        adminEmail
+      )
       expect(connectionTestResponse.status).toBe(200)
 
       expect(connectionTestResponse.body.status).toBeDefined()
@@ -207,16 +237,22 @@ describe('User Acceptance Testing (UAT) Scenarios', () => {
       )
 
       // Step 4: Discover agents from the platform
-      const discoverResponse = await api
-        .post(`/api/cubcen/v1/platforms/${platformId}/discover`, {}, adminEmail)
+      const discoverResponse = await api.post(
+        `/api/cubcen/v1/platforms/${platformId}/discover`,
+        {},
+        adminEmail
+      )
       expect(discoverResponse.status).toBe(200)
 
       expect(discoverResponse.body.discovered).toBeDefined()
       expect(typeof discoverResponse.body.discovered).toBe('number')
 
       // Step 5: Sync agents from the platform
-      const syncResponse = await api
-        .post(`/api/cubcen/v1/platforms/${platformId}/sync`, {}, adminEmail)
+      const syncResponse = await api.post(
+        `/api/cubcen/v1/platforms/${platformId}/sync`,
+        {},
+        adminEmail
+      )
       expect(syncResponse.status).toBe(200)
 
       expect(syncResponse.body.synced).toBeDefined()
@@ -224,8 +260,10 @@ describe('User Acceptance Testing (UAT) Scenarios', () => {
       expect(typeof syncResponse.body.synced).toBe('number')
 
       // Step 6: Verify agents were created
-      const updatedAgentsResponse = await api
-        .get('/api/cubcen/v1/agents', adminEmail)
+      const updatedAgentsResponse = await api.get(
+        '/api/cubcen/v1/agents',
+        adminEmail
+      )
       expect(updatedAgentsResponse.status).toBe(200)
 
       const platformAgents = updatedAgentsResponse.body.filter(
@@ -240,12 +278,11 @@ describe('User Acceptance Testing (UAT) Scenarios', () => {
         alertOnFailure: true,
       }
 
-      const configResponse = await api
-        .put(
-          `/api/cubcen/v1/platforms/${platformId}/monitoring`,
-          monitoringConfig,
-          adminEmail
-        )
+      const configResponse = await api.put(
+        `/api/cubcen/v1/platforms/${platformId}/monitoring`,
+        monitoringConfig,
+        adminEmail
+      )
       expect(configResponse.status).toBe(200)
 
       expect(configResponse.body.monitoringConfig).toEqual(monitoringConfig)
@@ -261,8 +298,10 @@ describe('User Acceptance Testing (UAT) Scenarios', () => {
       const operatorEmail = 'operator@cubcen.test'
 
       // Step 1: Operator notices error alerts
-      const errorsResponse = await api
-        .get('/api/cubcen/v1/errors?severity=high&limit=10', operatorEmail)
+      const errorsResponse = await api.get(
+        '/api/cubcen/v1/errors?severity=high&limit=10',
+        operatorEmail
+      )
       expect(errorsResponse.status).toBe(200)
 
       expect(Array.isArray(errorsResponse.body)).toBe(true)
@@ -270,8 +309,10 @@ describe('User Acceptance Testing (UAT) Scenarios', () => {
       // Step 2: Investigate the most recent error
       if (errorsResponse.body.length > 0) {
         const errorId = errorsResponse.body[0].id
-        const errorDetailResponse = await api
-          .get(`/api/cubcen/v1/errors/${errorId}`, operatorEmail)
+        const errorDetailResponse = await api.get(
+          `/api/cubcen/v1/errors/${errorId}`,
+          operatorEmail
+        )
         expect(errorDetailResponse.status).toBe(200)
 
         expect(errorDetailResponse.body.id).toBe(errorId)
@@ -281,27 +322,30 @@ describe('User Acceptance Testing (UAT) Scenarios', () => {
         // Step 3: Check related agent status
         const agentId = errorDetailResponse.body.agentId
         if (agentId) {
-          const agentResponse = await api
-            .get(`/api/cubcen/v1/agents/${agentId}`, operatorEmail)
+          const agentResponse = await api.get(
+            `/api/cubcen/v1/agents/${agentId}`,
+            operatorEmail
+          )
           expect(agentResponse.status).toBe(200)
 
           expect(agentResponse.body.id).toBe(agentId)
 
           // Step 4: Check agent health
-          const healthResponse = await api
-            .get(`/api/cubcen/v1/agents/${agentId}/health`, operatorEmail)
+          const healthResponse = await api.get(
+            `/api/cubcen/v1/agents/${agentId}/health`,
+            operatorEmail
+          )
           expect(healthResponse.status).toBe(200)
 
           expect(healthResponse.body.status).toBeDefined()
 
           // Step 5: If agent is unhealthy, trigger health check
           if (healthResponse.body.status === 'unhealthy') {
-            const healthCheckResponse = await api
-              .post(
-                `/api/cubcen/v1/agents/${agentId}/health-check`,
-                {},
-                operatorEmail
-              )
+            const healthCheckResponse = await api.post(
+              `/api/cubcen/v1/agents/${agentId}/health-check`,
+              {},
+              operatorEmail
+            )
             expect(healthCheckResponse.status).toBe(200)
 
             expect(healthCheckResponse.body.status).toBeDefined()
@@ -309,26 +353,24 @@ describe('User Acceptance Testing (UAT) Scenarios', () => {
         }
 
         // Step 6: Check for similar errors (pattern detection)
-        const similarErrorsResponse = await api
-          .get(
-            `/api/cubcen/v1/errors/patterns?errorId=${errorId}`,
-            operatorEmail
-          )
+        const similarErrorsResponse = await api.get(
+          `/api/cubcen/v1/errors/patterns?errorId=${errorId}`,
+          operatorEmail
+        )
         expect(similarErrorsResponse.status).toBe(200)
 
         expect(similarErrorsResponse.body.pattern).toBeDefined()
         expect(similarErrorsResponse.body.occurrences).toBeDefined()
 
         // Step 7: Mark error as investigated
-        const updateErrorResponse = await api
-          .put(
-            `/api/cubcen/v1/errors/${errorId}`,
-            {
-              status: 'investigated',
-              notes: 'Investigated by operator, agent health check performed',
-            },
-            operatorEmail
-          )
+        const updateErrorResponse = await api.put(
+          `/api/cubcen/v1/errors/${errorId}`,
+          {
+            status: 'investigated',
+            notes: 'Investigated by operator, agent health check performed',
+          },
+          operatorEmail
+        )
         expect(updateErrorResponse.status).toBe(200)
 
         expect(updateErrorResponse.body.status).toBe('investigated')
@@ -345,8 +387,10 @@ describe('User Acceptance Testing (UAT) Scenarios', () => {
       const adminEmail = 'admin@cubcen.test'
 
       // Step 1: View system overview analytics
-      const overviewResponse = await api
-        .get('/api/cubcen/v1/analytics/overview', adminEmail)
+      const overviewResponse = await api.get(
+        '/api/cubcen/v1/analytics/overview',
+        adminEmail
+      )
       expect(overviewResponse.status).toBe(200)
 
       expect(overviewResponse.body).toHaveProperty('totalAgents')
@@ -355,8 +399,10 @@ describe('User Acceptance Testing (UAT) Scenarios', () => {
       expect(overviewResponse.body).toHaveProperty('errorRate')
 
       // Step 2: Get agent performance metrics
-      const agentMetricsResponse = await api
-        .get('/api/cubcen/v1/analytics/agents', adminEmail)
+      const agentMetricsResponse = await api.get(
+        '/api/cubcen/v1/analytics/agents',
+        adminEmail
+      )
       expect(agentMetricsResponse.status).toBe(200)
 
       expect(Array.isArray(agentMetricsResponse.body)).toBe(true)
@@ -371,11 +417,10 @@ describe('User Acceptance Testing (UAT) Scenarios', () => {
       const endDate = new Date()
       const startDate = new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000) // 7 days ago
 
-      const trendsResponse = await api
-        .get(
-          `/api/cubcen/v1/analytics/trends?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`,
-          adminEmail
-        )
+      const trendsResponse = await api.get(
+        `/api/cubcen/v1/analytics/trends?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`,
+        adminEmail
+      )
       expect(trendsResponse.status).toBe(200)
 
       expect(trendsResponse.body).toHaveProperty('timeRange')
@@ -391,8 +436,11 @@ describe('User Acceptance Testing (UAT) Scenarios', () => {
         includeCharts: true,
       }
 
-      const reportResponse = await api
-        .post('/api/cubcen/v1/analytics/reports', reportRequest, adminEmail)
+      const reportResponse = await api.post(
+        '/api/cubcen/v1/analytics/reports',
+        reportRequest,
+        adminEmail
+      )
       expect(reportResponse.status).toBe(200)
 
       expect(reportResponse.body).toHaveProperty('reportId')
@@ -401,11 +449,10 @@ describe('User Acceptance Testing (UAT) Scenarios', () => {
 
       // Step 5: Download the generated report
       const reportId = reportResponse.body.reportId
-      const downloadResponse = await api
-        .get(
-          `/api/cubcen/v1/analytics/reports/${reportId}/download`,
-          adminEmail
-        )
+      const downloadResponse = await api.get(
+        `/api/cubcen/v1/analytics/reports/${reportId}/download`,
+        adminEmail
+      )
       expect(downloadResponse.status).toBe(200)
 
       expect(downloadResponse.body).toHaveProperty('summary')
@@ -433,15 +480,20 @@ describe('User Acceptance Testing (UAT) Scenarios', () => {
         assignedTo: operatorEmail,
       }
 
-      const createTaskResponse = await api
-        .post('/api/cubcen/v1/tasks', taskData, adminEmail)
+      const createTaskResponse = await api.post(
+        '/api/cubcen/v1/tasks',
+        taskData,
+        adminEmail
+      )
       expect(createTaskResponse.status).toBe(201)
 
       const taskId = createTaskResponse.body.id
 
       // Step 2: Operator receives and acknowledges the task
-      const operatorTasksResponse = await api
-        .get('/api/cubcen/v1/tasks?assignedTo=me', operatorEmail)
+      const operatorTasksResponse = await api.get(
+        '/api/cubcen/v1/tasks?assignedTo=me',
+        operatorEmail
+      )
       expect(operatorTasksResponse.status).toBe(200)
 
       const assignedTask = operatorTasksResponse.body.find(
@@ -450,57 +502,58 @@ describe('User Acceptance Testing (UAT) Scenarios', () => {
       expect(assignedTask).toBeDefined()
 
       // Step 3: Operator updates task status
-      const updateTaskResponse = await api
-        .put(
-          `/api/cubcen/v1/tasks/${taskId}`,
-          {
-            status: 'in_progress',
-            notes: 'Started working on this task',
-          },
-          operatorEmail
-        )
+      const updateTaskResponse = await api.put(
+        `/api/cubcen/v1/tasks/${taskId}`,
+        {
+          status: 'in_progress',
+          notes: 'Started working on this task',
+        },
+        operatorEmail
+      )
       expect(updateTaskResponse.status).toBe(200)
 
       expect(updateTaskResponse.body.status).toBe('in_progress')
 
       // Step 4: Viewer monitors the task progress (read-only)
-      const viewerTaskResponse = await api
-        .get(`/api/cubcen/v1/tasks/${taskId}`, viewerEmail)
+      const viewerTaskResponse = await api.get(
+        `/api/cubcen/v1/tasks/${taskId}`,
+        viewerEmail
+      )
       expect(viewerTaskResponse.status).toBe(200)
 
       expect(viewerTaskResponse.body.status).toBe('in_progress')
 
       // Step 5: Viewer attempts to modify task (should be denied)
-      const deniedResponse = await api
-        .put(
-          `/api/cubcen/v1/tasks/${taskId}`,
-          {
-            status: 'completed',
-          },
-          viewerEmail
-        )
+      const deniedResponse = await api.put(
+        `/api/cubcen/v1/tasks/${taskId}`,
+        {
+          status: 'completed',
+        },
+        viewerEmail
+      )
       expect(deniedResponse.status).toBe(403)
 
       expect(deniedResponse.body.error).toContain('Insufficient permissions')
 
       // Step 6: Admin monitors overall progress
-      const adminOverviewResponse = await api
-        .get('/api/cubcen/v1/dashboard', adminEmail)
+      const adminOverviewResponse = await api.get(
+        '/api/cubcen/v1/dashboard',
+        adminEmail
+      )
       expect(adminOverviewResponse.status).toBe(200)
 
       expect(adminOverviewResponse.body.tasks.inProgress).toBeGreaterThan(0)
 
       // Step 7: Operator completes the task
-      const completeTaskResponse = await api
-        .put(
-          `/api/cubcen/v1/tasks/${taskId}`,
-          {
-            status: 'completed',
-            notes: 'Task completed successfully',
-            result: { success: true, output: 'Collaboration test passed' },
-          },
-          operatorEmail
-        )
+      const completeTaskResponse = await api.put(
+        `/api/cubcen/v1/tasks/${taskId}`,
+        {
+          status: 'completed',
+          notes: 'Task completed successfully',
+          result: { success: true, output: 'Collaboration test passed' },
+        },
+        operatorEmail
+      )
       expect(completeTaskResponse.status).toBe(200)
 
       expect(completeTaskResponse.body.status).toBe('completed')
@@ -528,8 +581,10 @@ describe('User Acceptance Testing (UAT) Scenarios', () => {
       const adminEmail = 'admin@cubcen.test'
 
       // Step 1: Check initial system health
-      const initialHealthResponse = await api
-        .get('/api/cubcen/v1/health', adminEmail)
+      const initialHealthResponse = await api.get(
+        '/api/cubcen/v1/health',
+        adminEmail
+      )
       expect(initialHealthResponse.status).toBe(200)
 
       expect(initialHealthResponse.body.status).toBe('healthy')
@@ -545,12 +600,11 @@ describe('User Acceptance Testing (UAT) Scenarios', () => {
         authConfig: { type: 'api_key', apiKey: 'invalid-key' },
       }
 
-      await api
-        .put(
-          `/api/cubcen/v1/platforms/${platformId}`,
-          invalidConfig,
-          adminEmail
-        )
+      await api.put(
+        `/api/cubcen/v1/platforms/${platformId}`,
+        invalidConfig,
+        adminEmail
+      )
       expect(200)
 
       // Step 3: Wait for health check to detect the issue
@@ -563,15 +617,16 @@ describe('User Acceptance Testing (UAT) Scenarios', () => {
       }, 10000)
 
       // Step 4: Verify system detects the issue
-      const unhealthyResponse = await api
-        .get(`/api/cubcen/v1/platforms/${platformId}/health`, adminEmail)
+      const unhealthyResponse = await api.get(
+        `/api/cubcen/v1/platforms/${platformId}/health`,
+        adminEmail
+      )
       expect(unhealthyResponse.status).toBe(200)
 
       expect(unhealthyResponse.body.status).toBe('unhealthy')
 
       // Step 5: Check that other parts of the system remain functional
-      const agentsResponse = await api
-        .get('/api/cubcen/v1/agents', adminEmail)
+      const agentsResponse = await api.get('/api/cubcen/v1/agents', adminEmail)
       expect(agentsResponse.status).toBe(200)
 
       expect(Array.isArray(agentsResponse.body)).toBe(true)
@@ -582,17 +637,19 @@ describe('User Acceptance Testing (UAT) Scenarios', () => {
         authConfig: { type: 'api_key', apiKey: 'test-n8n-api-key' },
       }
 
-      await api
-        .put(`/api/cubcen/v1/platforms/${platformId}`, validConfig, adminEmail)
+      await api.put(
+        `/api/cubcen/v1/platforms/${platformId}`,
+        validConfig,
+        adminEmail
+      )
       expect(200)
 
       // Step 7: Verify system recovery
-      const recoveryResponse = await api
-        .post(
-          `/api/cubcen/v1/platforms/${platformId}/test-connection`,
-          {},
-          adminEmail
-        )
+      const recoveryResponse = await api.post(
+        `/api/cubcen/v1/platforms/${platformId}/test-connection`,
+        {},
+        adminEmail
+      )
       expect(recoveryResponse.status).toBe(200)
 
       // Connection should be restored (or at least attempting to connect)
@@ -601,8 +658,10 @@ describe('User Acceptance Testing (UAT) Scenarios', () => {
       )
 
       // Step 8: Check overall system health
-      const finalHealthResponse = await api
-        .get('/api/cubcen/v1/health', adminEmail)
+      const finalHealthResponse = await api.get(
+        '/api/cubcen/v1/health',
+        adminEmail
+      )
       expect(finalHealthResponse.status).toBe(200)
 
       // System should be healthy or degraded (not completely unhealthy)
@@ -655,8 +714,10 @@ describe('User Acceptance Testing (UAT) Scenarios', () => {
       expect(totalTime).toBeLessThan(5000) // All activities should complete within 5 seconds
 
       // Step 4: Check system remains responsive
-      const healthResponse = await api
-        .get('/api/cubcen/v1/health', 'admin@cubcen.test')
+      const healthResponse = await api.get(
+        '/api/cubcen/v1/health',
+        'admin@cubcen.test'
+      )
       expect(healthResponse.status).toBe(200)
 
       expect(healthResponse.body.status).toBe('healthy')

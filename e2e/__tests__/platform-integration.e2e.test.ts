@@ -33,8 +33,7 @@ describe('Platform Integration E2E Tests', () => {
       expect(platforms.status).toBe(200)
       const platformId = platforms.body[0].id
 
-      const response = await api
-        .get(`/api/cubcen/v1/platforms/${platformId}`)
+      const response = await api.get(`/api/cubcen/v1/platforms/${platformId}`)
       expect(response.status).toBe(200)
 
       ValidationHelper.validatePlatform(response.body)
@@ -54,8 +53,7 @@ describe('Platform Integration E2E Tests', () => {
         },
       }
 
-      const response = await api
-        .post('/api/cubcen/v1/platforms', platformData)
+      const response = await api.post('/api/cubcen/v1/platforms', platformData)
       expect(response.status).toBe(201)
 
       ValidationHelper.validatePlatform(response.body)
@@ -69,8 +67,10 @@ describe('Platform Integration E2E Tests', () => {
       expect(platforms.status).toBe(200)
       const platformId = platforms.body[0].id
 
-      const response = await api
-        .post(`/api/cubcen/v1/platforms/${platformId}/test-connection`, {})
+      const response = await api.post(
+        `/api/cubcen/v1/platforms/${platformId}/test-connection`,
+        {}
+      )
       expect(response.status).toBe(200)
 
       expect(response.body).toHaveProperty('status')
@@ -92,8 +92,10 @@ describe('Platform Integration E2E Tests', () => {
         },
       }
 
-      const response = await api
-        .put(`/api/cubcen/v1/platforms/${platformId}`, updateData)
+      const response = await api.put(
+        `/api/cubcen/v1/platforms/${platformId}`,
+        updateData
+      )
       expect(response.status).toBe(200)
 
       expect(response.body.name).toBe(updateData.name)
@@ -112,8 +114,10 @@ describe('Platform Integration E2E Tests', () => {
     })
 
     it('should discover workflows from n8n platform', async () => {
-      const response = await api
-        .post(`/api/cubcen/v1/platforms/${n8nPlatformId}/discover`, {})
+      const response = await api.post(
+        `/api/cubcen/v1/platforms/${n8nPlatformId}/discover`,
+        {}
+      )
       expect(response.status).toBe(200)
 
       expect(response.body).toHaveProperty('discovered')
@@ -129,8 +133,10 @@ describe('Platform Integration E2E Tests', () => {
     })
 
     it('should sync agents from n8n workflows', async () => {
-      const response = await api
-        .post(`/api/cubcen/v1/platforms/${n8nPlatformId}/sync`, {})
+      const response = await api.post(
+        `/api/cubcen/v1/platforms/${n8nPlatformId}/sync`,
+        {}
+      )
       expect(response.status).toBe(200)
 
       expect(response.body).toHaveProperty('synced')
@@ -141,8 +147,9 @@ describe('Platform Integration E2E Tests', () => {
     })
 
     it('should get n8n workflow execution history', async () => {
-      const response = await api
-        .get(`/api/cubcen/v1/platforms/${n8nPlatformId}/executions`)
+      const response = await api.get(
+        `/api/cubcen/v1/platforms/${n8nPlatformId}/executions`
+      )
       expect(response.status).toBe(200)
 
       expect(Array.isArray(response.body)).toBe(true)
@@ -159,8 +166,10 @@ describe('Platform Integration E2E Tests', () => {
 
     it('should handle n8n API errors gracefully', async () => {
       // Simulate API error by using invalid platform ID
-      const response = await api
-        .post('/api/cubcen/v1/platforms/invalid-id/discover', {})
+      const response = await api.post(
+        '/api/cubcen/v1/platforms/invalid-id/discover',
+        {}
+      )
       expect(response.status).toBe(404)
 
       expect(response.body.error).toContain('Platform not found')
@@ -178,8 +187,10 @@ describe('Platform Integration E2E Tests', () => {
     })
 
     it('should discover scenarios from Make.com platform', async () => {
-      const response = await api
-        .post(`/api/cubcen/v1/platforms/${makePlatformId}/discover`, {})
+      const response = await api.post(
+        `/api/cubcen/v1/platforms/${makePlatformId}/discover`,
+        {}
+      )
       expect(response.status).toBe(200)
 
       expect(response.body).toHaveProperty('discovered')
@@ -195,8 +206,10 @@ describe('Platform Integration E2E Tests', () => {
     })
 
     it('should sync agents from Make.com scenarios', async () => {
-      const response = await api
-        .post(`/api/cubcen/v1/platforms/${makePlatformId}/sync`, {})
+      const response = await api.post(
+        `/api/cubcen/v1/platforms/${makePlatformId}/sync`,
+        {}
+      )
       expect(response.status).toBe(200)
 
       expect(response.body).toHaveProperty('synced')
@@ -206,8 +219,9 @@ describe('Platform Integration E2E Tests', () => {
     })
 
     it('should get Make.com scenario execution history', async () => {
-      const response = await api
-        .get(`/api/cubcen/v1/platforms/${makePlatformId}/executions`)
+      const response = await api.get(
+        `/api/cubcen/v1/platforms/${makePlatformId}/executions`
+      )
       expect(response.status).toBe(200)
 
       expect(Array.isArray(response.body)).toBe(true)
@@ -220,8 +234,10 @@ describe('Platform Integration E2E Tests', () => {
     })
 
     it('should handle Make.com OAuth token refresh', async () => {
-      const response = await api
-        .post(`/api/cubcen/v1/platforms/${makePlatformId}/refresh-token`, {})
+      const response = await api.post(
+        `/api/cubcen/v1/platforms/${makePlatformId}/refresh-token`,
+        {}
+      )
       expect(response.status).toBe(200)
 
       expect(response.body).toHaveProperty('tokenRefreshed')
@@ -236,8 +252,9 @@ describe('Platform Integration E2E Tests', () => {
       expect(platforms.status).toBe(200)
 
       for (const platform of platforms.body) {
-        const response = await api
-          .get(`/api/cubcen/v1/platforms/${platform.id}/health`)
+        const response = await api.get(
+          `/api/cubcen/v1/platforms/${platform.id}/health`
+        )
         expect(response.status).toBe(200)
 
         expect(response.body).toHaveProperty('status')
@@ -262,15 +279,19 @@ describe('Platform Integration E2E Tests', () => {
         },
       }
 
-      const createResponse = await api
-        .post('/api/cubcen/v1/platforms', invalidPlatform)
+      const createResponse = await api.post(
+        '/api/cubcen/v1/platforms',
+        invalidPlatform
+      )
       expect(createResponse.status).toBe(201)
 
       const platformId = createResponse.body.id
 
       // Test connection should fail
-      const testResponse = await api
-        .post(`/api/cubcen/v1/platforms/${platformId}/test-connection`, {})
+      const testResponse = await api.post(
+        `/api/cubcen/v1/platforms/${platformId}/test-connection`,
+        {}
+      )
       expect(testResponse.status).toBe(200)
 
       expect(testResponse.body.status).toBe('failed')
@@ -282,8 +303,9 @@ describe('Platform Integration E2E Tests', () => {
       expect(platforms.status).toBe(200)
       const platformId = platforms.body[0].id
 
-      const response = await api
-        .get(`/api/cubcen/v1/platforms/${platformId}/metrics`)
+      const response = await api.get(
+        `/api/cubcen/v1/platforms/${platformId}/metrics`
+      )
       expect(response.status).toBe(200)
 
       expect(response.body).toHaveProperty('requestCount')
@@ -301,8 +323,10 @@ describe('Platform Integration E2E Tests', () => {
       const platformId = platforms.body[0].id
 
       // Simulate a failed operation that should be retried
-      const response = await api
-        .post(`/api/cubcen/v1/platforms/${platformId}/retry-failed-operations`, {})
+      const response = await api.post(
+        `/api/cubcen/v1/platforms/${platformId}/retry-failed-operations`,
+        {}
+      )
       expect(response.status).toBe(200)
 
       expect(response.body).toHaveProperty('retriedOperations')
@@ -317,8 +341,9 @@ describe('Platform Integration E2E Tests', () => {
       const platformId = platforms.body[0].id
 
       // Get circuit breaker status
-      const response = await api
-        .get(`/api/cubcen/v1/platforms/${platformId}/circuit-breaker`)
+      const response = await api.get(
+        `/api/cubcen/v1/platforms/${platformId}/circuit-breaker`
+      )
       expect(response.status).toBe(200)
 
       expect(response.body).toHaveProperty('state')
@@ -334,11 +359,13 @@ describe('Platform Integration E2E Tests', () => {
       expect(platforms.status).toBe(200)
       const platformId = platforms.body[0].id
 
-      const response = await api
-        .post(`/api/cubcen/v1/platforms/${platformId}/sync`, {
+      const response = await api.post(
+        `/api/cubcen/v1/platforms/${platformId}/sync`,
+        {
           incremental: true,
           lastSyncTime: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
-        })
+        }
+      )
       expect(response.status).toBe(200)
 
       expect(response.body).toHaveProperty('synced')
@@ -351,10 +378,12 @@ describe('Platform Integration E2E Tests', () => {
       expect(platforms.status).toBe(200)
       const platformId = platforms.body[0].id
 
-      const response = await api
-        .post(`/api/cubcen/v1/platforms/${platformId}/sync`, {
+      const response = await api.post(
+        `/api/cubcen/v1/platforms/${platformId}/sync`,
+        {
           forceSync: true,
-        })
+        }
+      )
       expect(response.status).toBe(200)
 
       expect(response.body).toHaveProperty('conflicts')
@@ -367,8 +396,10 @@ describe('Platform Integration E2E Tests', () => {
       expect(platforms.status).toBe(200)
       const platformId = platforms.body[0].id
 
-      const response = await api
-        .post(`/api/cubcen/v1/platforms/${platformId}/validate-data`, {})
+      const response = await api.post(
+        `/api/cubcen/v1/platforms/${platformId}/validate-data`,
+        {}
+      )
       expect(response.status).toBe(200)
 
       expect(response.body).toHaveProperty('valid')
