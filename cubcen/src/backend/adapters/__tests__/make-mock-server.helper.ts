@@ -387,7 +387,7 @@ export function createMakeApiMockServer(options: MockServerOptions = {}) {
           if (err) {
             reject(err);
           } else {
-            actualPort = (server.address() as any)?.port || port;
+            actualPort = (server.address() as { port: number } | null)?.port || port;
             if (options.enableLogging) {
               console.log(`Mock Make.com API server started on port ${actualPort}`);
             }
@@ -461,7 +461,7 @@ export function createMakeApiMockServer(options: MockServerOptions = {}) {
     },
 
     // Data manipulation methods
-    addScenario(scenario: any): void {
+    addScenario(scenario: Record<string, unknown>): void {
       mockScenarios.push(scenario);
     },
 
@@ -472,7 +472,7 @@ export function createMakeApiMockServer(options: MockServerOptions = {}) {
       }
     },
 
-    addExecution(execution: any): void {
+    addExecution(execution: Record<string, unknown>): void {
       mockExecutions.push(execution);
     },
 
@@ -480,11 +480,11 @@ export function createMakeApiMockServer(options: MockServerOptions = {}) {
       mockExecutions.length = 0;
     },
 
-    getScenarios(): any[] {
+    getScenarios(): Record<string, unknown>[] {
       return [...mockScenarios];
     },
 
-    getExecutions(): any[] {
+    getExecutions(): Record<string, unknown>[] {
       return [...mockExecutions];
     }
   };

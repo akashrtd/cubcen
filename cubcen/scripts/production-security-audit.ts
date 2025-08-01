@@ -507,8 +507,8 @@ class ProductionSecurityAuditor {
       })
 
       // Should not reveal whether user exists
-      if (loginResponse.data && loginResponse.data.message && 
-          loginResponse.data.message.toLowerCase().includes('user not found')) {
+      if (loginResponse.data && (loginResponse.data as any).message && 
+          (loginResponse.data as any).message.toLowerCase().includes('user not found')) {
         issues.push('Login endpoint reveals user existence')
         recommendations.push('Use generic error messages for login failures')
       }
@@ -521,7 +521,7 @@ class ProductionSecurityAuditor {
       }
     } catch (error) {
       // If endpoints don't exist, that's not necessarily a security issue
-      if (axios.isAxiosError(error) && error.response?.status === 404) {
+      if ((error as any).response?.status === 404) {
         return {
           passed: true,
           message: 'Authentication endpoints not available for testing',

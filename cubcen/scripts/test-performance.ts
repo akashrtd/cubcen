@@ -77,7 +77,7 @@ async function testPerformanceFeatures() {
       async () => {
         // Simulate some work
         await new Promise(resolve => setTimeout(resolve, 1))
-        return Math.random()
+        Math.random() // Do some work but don't return anything
       },
       100
     )

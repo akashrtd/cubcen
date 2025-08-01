@@ -1,7 +1,7 @@
 // Cubcen RBAC System Tests
 // Tests for role-based access control functionality
 
-import { UserRole } from '@/generated/prisma'
+import { UserRole } from '@/types/auth'
 import { AuthorizationError } from '@/types/auth'
 import {
   PERMISSIONS,

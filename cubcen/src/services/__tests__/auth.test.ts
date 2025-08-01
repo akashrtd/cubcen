@@ -2,7 +2,8 @@
 // Comprehensive tests for authentication functionality
 
 import { AuthService } from '../auth'
-import { PrismaClient, UserRole } from '@/generated/prisma'
+import { PrismaClient } from '@/generated/prisma'
+import { UserRole } from '@/types/auth'
 import { AuthenticationError } from '@/types/auth'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'

@@ -2,7 +2,7 @@
 // Tests for JWT token creation, verification, and management
 
 import jwt from 'jsonwebtoken'
-import { UserRole } from '@/generated/prisma'
+import { UserRole } from '@/types/auth'
 import {
   createAccessToken,
   createRefreshToken,

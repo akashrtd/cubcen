@@ -167,7 +167,7 @@ describe('API Documentation', () => {
       const schemas = specs.components.schemas
       
       // Check that referenced schemas exist
-      Object.values(specs.paths).forEach((pathItem: any) => {
+      Object.values(specs.paths).forEach((pathItem: Record<string, unknown>) => {
         Object.values(pathItem).forEach((operation: Record<string, unknown>) => {
           if (operation.responses) {
             Object.values(operation.responses as Record<string, unknown>).forEach((response: Record<string, unknown>) => {

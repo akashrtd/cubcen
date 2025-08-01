@@ -3,7 +3,7 @@
 // Cubcen Security Scanning Script
 // Basic penetration testing and security validation
 
-import axios, { AxiosResponse } from 'axios'
+import axios from 'axios'
 import crypto from 'crypto'
 import { logger } from '../src/lib/logger'
 
@@ -146,7 +146,7 @@ class SecurityScanner {
       }
     } catch (error) {
       // If endpoint doesn't exist, that's okay for this test
-      if (axios.isAxiosError(error) && error.response?.status === 404) {
+      if (error instanceof Error && 'response' in error && (error as any).response?.status === 404) {
         return {
           passed: true,
           message: 'Test endpoint not available, but no XSS vulnerabilities detected',
@@ -208,7 +208,7 @@ class SecurityScanner {
         severity: 'low'
       }
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.status === 404) {
+      if (error instanceof Error && 'response' in error && (error as any).response?.status === 404) {
         return {
           passed: true,
           message: 'Test endpoint not available, but no SQL injection vulnerabilities detected',
@@ -236,7 +236,7 @@ class SecurityScanner {
         }
       }
 
-      if (response.status === 403 && response.data?.error?.code === 'CSRF_TOKEN_INVALID') {
+      if (response.status === 403 && (response.data as any)?.error?.code === 'CSRF_TOKEN_INVALID') {
         return {
           passed: true,
           message: 'CSRF protection is working correctly',
@@ -251,7 +251,7 @@ class SecurityScanner {
         severity: 'low'
       }
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.status === 404) {
+      if (error instanceof Error && 'response' in error && (error as any).response?.status === 404) {
         return {
           passed: true,
           message: 'Test endpoint not available, CSRF protection status unknown',
@@ -349,7 +349,7 @@ class SecurityScanner {
         severity: 'low'
       }
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.status === 404) {
+      if (error instanceof Error && 'response' in error && (error as any).response?.status === 404) {
         return {
           passed: true,
           message: 'Auth endpoint not available, rate limiting status unknown',
@@ -408,7 +408,7 @@ class SecurityScanner {
         severity: 'low'
       }
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.status === 404) {
+      if (error instanceof Error && 'response' in error && (error as any).response?.status === 404) {
         return {
           passed: true,
           message: 'Protected endpoints not available, authentication status unknown',
@@ -486,7 +486,7 @@ class SecurityScanner {
         }, { validateStatus: () => true })
 
         // If we get a 200 response with invalid input, validation might be missing
-        if (response.status === 200 && !response.data?.error) {
+        if (response.status === 200 && !(response.data as any)?.error) {
           return {
             passed: false,
             message: `Input validation may be missing for ${input.field}`,
@@ -502,7 +502,7 @@ class SecurityScanner {
         severity: 'low'
       }
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.status === 404) {
+      if (error instanceof Error && 'response' in error && (error as any).response?.status === 404) {
         return {
           passed: true,
           message: 'Test endpoint not available, input validation status unknown',
@@ -548,7 +548,7 @@ class SecurityScanner {
         severity: 'low'
       }
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.status === 404) {
+      if (error instanceof Error && 'response' in error && (error as any).response?.status === 404) {
         return {
           passed: true,
           message: 'File upload endpoint not available, security status unknown',
@@ -582,9 +582,9 @@ class SecurityScanner {
           const data = response.data
 
           if (typeof data === 'object' && data !== null) {
-            if (data.version || data.dependencies) infoType = 'application metadata'
-            if (data.database || data.secrets) infoType = 'configuration data'
-            if (data.logs || data.errors) infoType = 'debug information'
+            if ((data as any).version || (data as any).dependencies) infoType = 'application metadata'
+            if ((data as any).database || (data as any).secrets) infoType = 'configuration data'
+            if ((data as any).logs || (data as any).errors) infoType = 'debug information'
           }
 
           disclosedInfo.push({

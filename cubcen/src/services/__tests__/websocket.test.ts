@@ -3,7 +3,7 @@
 
 import { createServer } from 'http'
 import { Server as SocketIOServer } from 'socket.io'
-import { io as Client, Socket as ClientSocket } from 'socket.io-client'
+import { io as Client, Socket } from 'socket.io-client'
 import { WebSocketService, initializeWebSocketService } from '../websocket'
 import { generateToken } from '@/lib/jwt'
 import type {
@@ -34,7 +34,7 @@ jest.mock('@/lib/logger', () => ({
 describe('WebSocketService', () => {
   let httpServer: any
   let webSocketService: WebSocketService
-  let clientSocket: ClientSocket<ServerToClientEvents, ClientToServerEvents>
+  let clientSocket: Socket
   let serverAddress: string
 
   const mockUser = {

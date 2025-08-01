@@ -48,7 +48,7 @@ export class CubcenNotificationService implements NotificationService {
       }
 
       if (this.emailConfig.auth.user && this.emailConfig.auth.pass) {
-        this.emailTransporter = nodemailer.createTransporter({
+        this.emailTransporter = nodemailer.createTransport({
           host: this.emailConfig.host,
           port: this.emailConfig.port,
           secure: this.emailConfig.secure,

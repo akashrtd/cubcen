@@ -1,7 +1,12 @@
 // Cubcen Authentication Types
 // Defines TypeScript interfaces and types for authentication system
 
-import { UserRole } from '@/generated/prisma'
+// User roles enum
+export enum UserRole {
+  ADMIN = 'ADMIN',
+  OPERATOR = 'OPERATOR',
+  VIEWER = 'VIEWER'
+}
 
 export interface LoginCredentials {
   email: string

@@ -569,8 +569,8 @@ describe('MakePlatformAdapter', () => {
       mockAxiosInstance.get.mockResolvedValue({ data: [] });
 
       // Manually set token as expired
-      (adapterWithOAuth as any).tokenExpiresAt = new Date(Date.now() - 1000);
-      (adapterWithOAuth as any).refreshToken = 'refresh-token';
+      (adapterWithOAuth as unknown as { tokenExpiresAt: Date; refreshToken: string }).tokenExpiresAt = new Date(Date.now() - 1000);
+      (adapterWithOAuth as unknown as { tokenExpiresAt: Date; refreshToken: string }).refreshToken = 'refresh-token';
 
       await adapterWithOAuth.healthCheck();
 

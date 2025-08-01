@@ -11,7 +11,7 @@ import {
   TokenExpiredError,
   InvalidTokenError
 } from '@/types/auth'
-import { UserRole } from '@/generated/prisma'
+import { UserRole } from '@/types/auth'
 
 // JWT Configuration - should be loaded from environment variables
 function getJWTConfig(): JWTConfig {
@@ -147,6 +147,13 @@ export function extractTokenFromHeader(authHeader: string | undefined): string |
   }
 
   return parts[1]
+}
+
+/**
+ * Generate a token for testing purposes
+ */
+export function generateToken(userId: string, email: string, role: UserRole = UserRole.VIEWER): string {
+  return createAccessToken(userId, email, role)
 }
 
 /**

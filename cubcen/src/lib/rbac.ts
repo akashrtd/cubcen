@@ -1,7 +1,7 @@
 // Cubcen Role-Based Access Control (RBAC) System
 // Defines permissions and role-based access control logic
 
-import { UserRole } from '@/generated/prisma'
+import { UserRole } from '@/types/auth'
 import { Permission, RolePermissions, AuthorizationError } from '@/types/auth'
 
 // Define all available permissions in the system

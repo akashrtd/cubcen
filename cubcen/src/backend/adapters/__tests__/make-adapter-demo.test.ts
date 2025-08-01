@@ -136,9 +136,9 @@ describe('Make.com Platform Adapter Demo', () => {
 
       // 7. Event subscription demo
       console.log('\n📡 Setting up event subscription...');
-      const receivedEvents: any[] = [];
+      const receivedEvents: unknown[] = [];
       
-      const eventCallback = (event: any) => {
+      const eventCallback = (event: unknown) => {
         receivedEvents.push(event);
         console.log(`   📨 Event received: ${event.type} for agent ${event.agentId}`);
       };

@@ -2,7 +2,7 @@
 // Express middleware for protecting routes and validating permissions
 
 import { Request, Response, NextFunction } from 'express'
-import { UserRole } from '@/generated/prisma'
+import { UserRole } from '@/types/auth'
 import { AuthService } from '@/services/auth'
 import { 
   AuthUser, 

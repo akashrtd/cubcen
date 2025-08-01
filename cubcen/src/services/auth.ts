@@ -2,7 +2,8 @@
 // Core authentication logic including login, registration, and token management
 
 import bcrypt from 'bcryptjs'
-import { PrismaClient, UserRole } from '@/generated/prisma'
+import { PrismaClient } from '@/generated/prisma'
+import { UserRole } from '@/types/auth'
 import {
   LoginCredentials,
   RegisterCredentials,

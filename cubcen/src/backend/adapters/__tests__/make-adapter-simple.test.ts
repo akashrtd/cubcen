@@ -141,7 +141,7 @@ describe('MakePlatformAdapter - Core Functionality', () => {
       };
 
       // Access private method for testing
-      const agent = await (adapter as any).convertScenarioToAgent(mockScenario);
+      const agent = await (adapter as unknown as { convertScenarioToAgent: (scenario: unknown) => Promise<unknown> }).convertScenarioToAgent(mockScenario);
 
       expect(agent).toMatchObject({
         id: '1',
@@ -165,7 +165,7 @@ describe('MakePlatformAdapter - Core Functionality', () => {
         last_edit: '2024-01-02T00:00:00Z'
       };
 
-      const agent = await (adapter as any).convertScenarioToAgent(mockScenario);
+      const agent = await (adapter as unknown as { convertScenarioToAgent: (scenario: unknown) => Promise<{ status: string }> }).convertScenarioToAgent(mockScenario);
 
       expect(agent.status).toBe('maintenance'); // locked takes precedence
     });
@@ -183,7 +183,7 @@ describe('MakePlatformAdapter - Core Functionality', () => {
         }
       };
 
-      const errorMessage = (adapter as any).extractErrorMessage(axiosError);
+      const errorMessage = (adapter as unknown as { extractErrorMessage: (error: unknown) => string }).extractErrorMessage(axiosError);
       expect(errorMessage).toBe('Invalid scenario ID');
     });
 
@@ -193,12 +193,12 @@ describe('MakePlatformAdapter - Core Functionality', () => {
         message: 'Connection refused'
       };
 
-      const errorMessage = (adapter as any).extractErrorMessage(networkError);
+      const errorMessage = (adapter as unknown as { extractErrorMessage: (error: unknown) => string }).extractErrorMessage(networkError);
       expect(errorMessage).toBe('Network error: ECONNREFUSED');
     });
 
     it('should handle unknown errors', () => {
-      const errorMessage = (adapter as any).extractErrorMessage('unknown');
+      const errorMessage = (adapter as unknown as { extractErrorMessage: (error: unknown) => string }).extractErrorMessage('unknown');
       expect(errorMessage).toBe('Unknown error occurred');
     });
   });
@@ -236,7 +236,7 @@ describe('MakePlatformAdapter - Core Functionality', () => {
         }
       ];
 
-      const metrics = (adapter as any).calculateAgentMetrics(mockExecutions);
+      const metrics = (adapter as unknown as { calculateAgentMetrics: (executions: unknown[]) => unknown }).calculateAgentMetrics(mockExecutions);
 
       expect(metrics).toEqual({
         tasksCompleted: 2,
@@ -246,7 +246,7 @@ describe('MakePlatformAdapter - Core Functionality', () => {
     });
 
     it('should handle empty executions', () => {
-      const metrics = (adapter as any).calculateAgentMetrics([]);
+      const metrics = (adapter as unknown as { calculateAgentMetrics: (executions: unknown[]) => unknown }).calculateAgentMetrics([]);
 
       expect(metrics).toEqual({
         tasksCompleted: 0,
@@ -273,9 +273,9 @@ describe('MakePlatformAdapter - Core Functionality', () => {
         is_locked: true
       };
 
-      expect((adapter as any).determineAgentStatus(activeScenario, [])).toBe('active');
-      expect((adapter as any).determineAgentStatus(inactiveScenario, [])).toBe('inactive');
-      expect((adapter as any).determineAgentStatus(lockedScenario, [])).toBe('maintenance');
+      expect((adapter as unknown as { determineAgentStatus: (scenario: unknown, executions: unknown[]) => string }).determineAgentStatus(activeScenario, [])).toBe('active');
+      expect((adapter as unknown as { determineAgentStatus: (scenario: unknown, executions: unknown[]) => string }).determineAgentStatus(inactiveScenario, [])).toBe('inactive');
+      expect((adapter as unknown as { determineAgentStatus: (scenario: unknown, executions: unknown[]) => string }).determineAgentStatus(lockedScenario, [])).toBe('maintenance');
     });
 
     it('should detect error status from executions', () => {
@@ -289,7 +289,7 @@ describe('MakePlatformAdapter - Core Functionality', () => {
         status: 'error'
       }));
 
-      expect((adapter as any).determineAgentStatus(activeScenario, errorExecutions)).toBe('error');
+      expect((adapter as unknown as { determineAgentStatus: (scenario: unknown, executions: unknown[]) => string }).determineAgentStatus(activeScenario, errorExecutions)).toBe('error');
     });
   });
 
@@ -310,7 +310,7 @@ describe('MakePlatformAdapter - Core Functionality', () => {
         }
       };
 
-      const capabilities = (adapter as any).extractCapabilities(scenario);
+      const capabilities = (adapter as unknown as { extractCapabilities: (scenario: unknown) => string[] }).extractCapabilities(scenario);
 
       expect(capabilities).toContain('webhook');
       expect(capabilities).toContain('http');

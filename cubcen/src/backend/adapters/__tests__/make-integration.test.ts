@@ -184,8 +184,8 @@ describe('MakePlatformAdapter Integration Tests', () => {
 
   describe('Event subscription integration', () => {
     it('should receive events from polling', async () => {
-      const events: any[] = [];
-      const eventCallback = (event: any) => {
+      const events: unknown[] = [];
+      const eventCallback = (event: unknown) => {
         events.push(event);
       };
 

@@ -883,7 +883,8 @@ class DeploymentReadinessChecker {
     console.log(`\n📋 CATEGORY BREAKDOWN:`)
     for (const [category, stats] of Object.entries(report.categories)) {
       const statusIcon = stats.critical_failures > 0 ? '❌' : stats.failed > 0 ? '⚠️' : '✅'
-      console.log(`   ${statusIcon} ${category}: ${stats.score}/100 (${stats.passed}/${stats.total} passed)`)
+      const total = stats.passed + stats.failed
+      console.log(`   ${statusIcon} ${category}: ${stats.score}/100 (${stats.passed}/${total} passed)`)
       if (stats.critical_failures > 0) {
         console.log(`      🚨 ${stats.critical_failures} critical failures`)
       }

@@ -148,7 +148,7 @@ class ComprehensiveTestRunner {
       // Setup test database
       console.log('🗄️ Setting up test database...')
       process.env.DATABASE_URL = 'file:./e2e/temp/test.db'
-      process.env.NODE_ENV = 'test'
+      ;(process.env as any).NODE_ENV = 'test'
       process.env.JWT_SECRET = 'test-jwt-secret-for-comprehensive-testing'
 
       execSync('npx prisma migrate deploy', { 

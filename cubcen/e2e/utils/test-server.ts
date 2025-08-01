@@ -1,7 +1,7 @@
 import express from 'express'
 import { Server } from 'http'
 import { PrismaClient } from '../../src/generated/prisma'
-import { setupRoutes } from '../../src/server'
+import app from '../../src/server'
 
 /**
  * Test server utility for E2E tests
@@ -15,7 +15,7 @@ export class TestServer {
 
   constructor(port: number = 3001) {
     this.port = port
-    this.app = express()
+    this.app = app // Use the pre-configured app from server.ts
     this.prisma = new PrismaClient({
       datasources: {
         db: {
@@ -23,9 +23,6 @@ export class TestServer {
         }
       }
     })
-    
-    // Setup routes
-    setupRoutes(this.app)
   }
 
   /**
@@ -78,7 +75,6 @@ export class TestServer {
    * Reset test database to initial state
    */
   async resetDatabase(): Promise<void> {
-    await this.prisma.taskExecution.deleteMany()
     await this.prisma.task.deleteMany()
     await this.prisma.agent.deleteMany()
     await this.prisma.platform.deleteMany()

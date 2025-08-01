@@ -74,13 +74,15 @@ export class LoadTester {
           case 'DELETE':
             response = await this.api.delete(endpoint)
             break
+          default:
+            throw new Error(`Unsupported HTTP method: ${method}`)
         }
 
         const requestTime = performance.now() - requestStart
         results.push({
           success: true,
           responseTime: requestTime,
-          statusCode: response.status,
+          statusCode: response?.status || 0,
           timestamp: new Date()
         })
       } catch (error: any) {
@@ -214,11 +216,11 @@ export class LoadTester {
             data: {
               name: `Load Test Agent ${i}`,
               platformId: 'test-platform',
-              platformType: 'n8n',
               externalId: `load-test-${i}`,
               status: 'active',
-              capabilities: ['testing'],
-              configuration: { test: true }
+              capabilities: JSON.stringify(['testing']),
+              configuration: JSON.stringify({ test: true }),
+              healthStatus: 'healthy'
             }
           })
         } else if (i % 4 === 1) {

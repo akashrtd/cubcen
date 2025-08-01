@@ -2,7 +2,7 @@
 // Zod schemas for validating authentication-related inputs
 
 import { z } from 'zod'
-import { UserRole } from '@/generated/prisma'
+import { UserRole } from '@/types/auth'
 
 // Login validation schema
 export const loginSchema = z.object({

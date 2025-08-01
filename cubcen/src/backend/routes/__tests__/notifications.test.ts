@@ -13,6 +13,13 @@ import {
   NotificationStatus
 } from '../../../types/notification'
 
+// Mock services
+jest.mock('../../../services/notification')
+jest.mock('../../../services/notification-preferences')
+
+import { notificationService } from '../../../services/notification'
+import { notificationPreferencesService } from '../../../services/notification-preferences'
+
 // Mock the auth middleware
 jest.mock('../../middleware/auth', () => ({
   authMiddleware: jest.fn((req, res, next) => {
@@ -78,8 +85,8 @@ describe('Notification Routes', () => {
         }
       ]
 
-      const { notificationService } = require('../../../services/notification')
-      notificationService.getNotifications.mockResolvedValue(mockNotifications)
+      // Using imported notificationService
+      ;(notificationService.getNotifications as jest.Mock).mockResolvedValue(mockNotifications)
 
       const response = await request(app)
         .get('/api/notifications')
@@ -102,8 +109,8 @@ describe('Notification Routes', () => {
     })
 
     it('should get notifications with query parameters', async () => {
-      const { notificationService } = require('../../../services/notification')
-      notificationService.getNotifications.mockResolvedValue([])
+      // Using imported notificationService
+      ;(notificationService.getNotifications as jest.Mock).mockResolvedValue([])
 
       await request(app)
         .get('/api/notifications')

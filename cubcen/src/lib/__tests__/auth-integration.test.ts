@@ -2,7 +2,8 @@
 // End-to-end test for authentication system
 
 import { AuthService } from '@/services/auth'
-import { PrismaClient, UserRole } from '@/generated/prisma'
+import { PrismaClient } from '@/generated/prisma'
+import { UserRole } from '@/types/auth'
 import { createTokenPair, verifyAccessToken } from '@/lib/jwt'
 import { hasPermission, PERMISSIONS } from '@/lib/rbac'
 
