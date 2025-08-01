@@ -464,7 +464,7 @@ class PerformanceMonitor {
       await prisma.notification.create({
         data: {
           eventType: 'SYSTEM_ERROR',
-          priority: severity as NotificationPriority,
+          priority: severity as any,
           title: `Performance Alert: ${metric}`,
           message: alert.message,
           data: JSON.stringify({

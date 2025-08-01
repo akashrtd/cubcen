@@ -393,8 +393,8 @@ describe('MakePlatformAdapter', () => {
         data_transfer: 1024,
       }
 
-      mockAxiosInstance.post.mockResolvedValue({ data: mockExecution })
-      mockAxiosInstance.get.mockResolvedValue({ data: mockExecution })
+      mockAxiosInstance.post.mockResolvedValue({ data: mockExecution, status: 200, statusText: 'OK', headers: {}, config: {} })
+      mockAxiosInstance.get.mockResolvedValue({ data: mockExecution, status: 200, statusText: 'OK', headers: {}, config: {} })
 
       const result = await adapter.executeAgent('1', { test: 'data' })
 
@@ -433,8 +433,8 @@ describe('MakePlatformAdapter', () => {
         },
       }
 
-      mockAxiosInstance.post.mockResolvedValue({ data: mockExecution })
-      mockAxiosInstance.get.mockResolvedValue({ data: mockExecution })
+      mockAxiosInstance.post.mockResolvedValue({ data: mockExecution, status: 200, statusText: 'OK', headers: {}, config: {} })
+      mockAxiosInstance.get.mockResolvedValue({ data: mockExecution, status: 200, statusText: 'OK', headers: {}, config: {} })
 
       const result = await adapter.executeAgent('1', {})
 

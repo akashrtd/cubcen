@@ -495,8 +495,8 @@ describe('Notification Routes', () => {
 
       const response = await request(app)
         .get('/api/notifications/channels')
+        .set('Authorization', 'Bearer test-token')
         .expect(200)
-
       expect(response.body).toMatchObject({
         success: true,
         data: mockChannels,

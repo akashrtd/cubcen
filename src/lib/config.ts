@@ -105,10 +105,9 @@ const envSchema = z.object({
     .default('60000'),
   HEALTH_CHECK_TIMEOUT: z
     .string()
+    .default('5000')
     .transform(Number)
-    .pipe(z.number().min(1000))
-    .default('5000'),
-
+    .pipe(z.number().min(1000)),
   // Backup Configuration
   BACKUP_ENABLED: z
     .string()
@@ -137,8 +136,8 @@ export interface FeatureFlags {
 // Configuration class
 class ConfigManager {
   private static instance: ConfigManager
-  private config: Config = {} as Config;
-  private featureFlags: FeatureFlags = {} as FeatureFlags;
+  private config: Config = {} as Config
+  private featureFlags: FeatureFlags = {} as FeatureFlags
 
   private constructor() {
     this.validateAndLoadConfig()

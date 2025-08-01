@@ -235,7 +235,7 @@ export function addVersionInfoToSpec(
         `/api/cubcen/${CURRENT_VERSION}/`
       ),
     })
-  ); as unknown;
+  );
 
   return spec
 }

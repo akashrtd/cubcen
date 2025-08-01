@@ -162,7 +162,7 @@ export class WebSocketService {
     socket: any,
     token: string
   ): Promise<AuthResult> {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
+     
     try {
       const decoded = verifyAccessToken(token)
 
@@ -200,7 +200,7 @@ export class WebSocketService {
   }
 
   private handleAgentSubscription(socket: any, agentIds: string[]): void {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
+     
     const userId = socket.data.userId
 
     if (agentIds.length === 0) {
@@ -247,7 +247,7 @@ export class WebSocketService {
   }
 
   private handleTaskSubscription(socket: any, taskIds: string[]): void {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
+     
     const userId = socket.data.userId
 
     if (taskIds.length === 0) {
@@ -289,7 +289,7 @@ export class WebSocketService {
   }
 
   private handlePlatformSubscription(socket: any, platformIds: string[]): void {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
+     
     const userId = socket.data.userId
 
     if (platformIds.length === 0) {
@@ -331,7 +331,7 @@ export class WebSocketService {
   }
 
   private handleAgentUnsubscription(socket: any, agentIds: string[]): void {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
+     
     if (agentIds.length === 0) {
       // Unsubscribe from all agents
       socket.leave('agents:all')
@@ -359,7 +359,7 @@ export class WebSocketService {
   }
 
   private handleTaskUnsubscription(socket: any, taskIds: string[]): void {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
+     
     if (taskIds.length === 0) {
       // Unsubscribe from all tasks
       socket.leave('tasks:all')
@@ -390,7 +390,7 @@ export class WebSocketService {
     socket: any,
     platformIds: string[]
   ): void {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
+     
     if (platformIds.length === 0) {
       // Unsubscribe from all platforms
       socket.leave('platforms:all')
@@ -418,7 +418,7 @@ export class WebSocketService {
   }
 
   private handleDisconnection(socket: any, reason: string): void {
-    // eslint-disable-line @typescript-eslint/no-explicit-any
+     
     logger.info('Socket disconnected', {
       socketId: socket.id,
       userId: socket.data.userId,

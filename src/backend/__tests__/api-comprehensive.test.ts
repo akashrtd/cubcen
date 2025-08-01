@@ -3,13 +3,14 @@
  * End-to-end tests for all API endpoints with proper error scenarios
  */
 
+import { Prisma } from '@/generated/prisma'
 import request from 'supertest'
 import app from '@/server'
 import { prisma } from '@/lib/database'
-import { authService, type AuthService } from '@/services/auth'
+import { authService } from '@/services/auth'
+import { UserRole } from '@/types/auth'
 
 describe('Comprehensive API Tests', () => {
-  let authService: AuthService
   let adminToken: string
   let operatorToken: string
   let viewerToken: string
@@ -25,7 +26,7 @@ describe('Comprehensive API Tests', () => {
       email: 'admin@test.com',
       password: 'password123',
       name: 'Admin User',
-      role: 'admin',
+      role: UserRole.ADMIN,
     })
     adminToken = adminUser.tokens.accessToken
 
@@ -33,15 +34,15 @@ describe('Comprehensive API Tests', () => {
       email: 'operator@test.com',
       password: 'password123',
       name: 'Operator User',
-      role: 'operator',
+      role: UserRole.OPERATOR,
     })
     operatorToken = operatorUser.tokens.accessToken
 
-    const viewerUser = await authServiceInstance.register({
+    const viewerUser = await authService.register({
       email: 'viewer@test.com',
       password: 'password123',
       name: 'Viewer User',
-      role: 'viewer',
+      role: UserRole.VIEWER,
     })
     viewerToken = viewerUser.tokens.accessToken
   })
@@ -159,7 +160,7 @@ describe('Comprehensive API Tests', () => {
           name: 'Test Platform',
           type: 'N8N',
           baseUrl: 'http://localhost:5678',
-          authConfig: {},
+          authConfig: JSON.stringify({}),
           status: 'CONNECTED',
         },
       })
@@ -174,6 +175,7 @@ describe('Comprehensive API Tests', () => {
           status: 'ACTIVE',
           capabilities: '["test"]',
           configuration: '{}',
+          healthStatus: 'HEALTHY',
         },
       })
       testAgentId = agent.id
@@ -342,11 +344,14 @@ describe('Comprehensive API Tests', () => {
       // Create a test task
       const task = await prisma.task.create({
         data: {
-          id: 'test-task',
+          id: 'test-task-2',
+          name: 'Test Task',
+          scheduledAt: new Date(),
+          createdBy: 'test-user',
           agentId: testAgentId,
           status: 'PENDING',
           priority: 'MEDIUM',
-          parameters: { test: true },
+          parameters: '{ "test": true }',
         },
       })
       testTaskId = task.id

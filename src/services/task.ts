@@ -3,7 +3,13 @@
  * Handles task scheduling, execution, retry logic, and status tracking
  */
 
-import { PrismaClient, TaskStatus, TaskPriority, Task, Agent } from '@/generated/prisma'
+import {
+  PrismaClient,
+  TaskStatus,
+  TaskPriority,
+  Task,
+  Agent,
+} from '@/generated/prisma'
 import { logger } from '@/lib/logger'
 import { AdapterManager } from '@/backend/adapters/adapter-factory'
 import { z } from 'zod'
@@ -177,7 +183,7 @@ export class TaskService extends EventEmitter {
       }
 
       // Create task in database
-      const task = await prisma.task.create({
+      const task = await this.prisma.task.create({
         data: {
           name: validatedData.name,
           description: validatedData.description,
@@ -456,7 +462,7 @@ export class TaskService extends EventEmitter {
       // Get task from database
       const task = await prisma.task.findUnique({
         where: { id: taskId },
-      });
+      })
 
       if (!task) {
         throw new Error(`Task with ID ${taskId} not found`)
@@ -610,7 +616,12 @@ export class TaskService extends EventEmitter {
       .filter(task => task.scheduledAt <= now)
       .sort((a, b) => {
         // Sort by priority first (CRITICAL > HIGH > MEDIUM > LOW)
-        const priorityOrder: Record<TaskPriority, number> = { CRITICAL: 4, HIGH: 3, MEDIUM: 2, LOW: 1 };
+        const priorityOrder: Record<TaskPriority, number> = {
+          CRITICAL: 4,
+          HIGH: 3,
+          MEDIUM: 2,
+          LOW: 1,
+        }
         const priorityDiff =
           priorityOrder[b.priority] - priorityOrder[a.priority]
         if (priorityDiff !== 0) return priorityDiff

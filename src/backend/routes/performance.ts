@@ -141,7 +141,9 @@ router.get(
           : undefined
 
       const metrics = performanceMonitor.getMetrics(metric, timeRange)
-      const limitedMetrics = limit ? metrics.slice(-parseInt(limit)) : metrics
+      const limitedMetrics = limit
+        ? metrics.slice(-parseInt(limit as string))
+        : metrics
 
       res.json({
         success: true,

@@ -77,7 +77,7 @@ export function sanitizeInput(
         string,
         unknown
       >
-      req.query = sanitizedQuery
+      req.query = sanitizedQuery as ParsedQs
     }
 
     // Sanitize URL parameters
@@ -796,7 +796,7 @@ export function requestSignatureValidation(secretKey: string) {
           message: 'Request signature validation failed',
           timestamp: new Date().toISOString(),
         },
-      }) as unknown as void;
+      }) as unknown as void
     }
 
     next()

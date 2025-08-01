@@ -121,7 +121,7 @@ export function SystemHealthIndicators({
 
   // Get status icon
   const getStatusIcon = (status: SystemHealthIndicator['status']) => {
-    const Icon = HEALTH_STATUS_ICONS[status]
+    const Icon = HEALTH_STATUS_ICONS[status as keyof typeof HEALTH_STATUS_ICONS]
     return <Icon className="h-4 w-4" />
   }
 
@@ -388,7 +388,9 @@ export function SystemHealthIndicators({
                   variant="outline"
                   className={`${HEALTH_STATUS_COLORS[overallStatus]} flex items-center gap-1`}
                 >
-                  {getStatusIcon(overallStatus as keyof typeof HEALTH_STATUS_ICONS)}
+                  {getStatusIcon(
+                    overallStatus as keyof typeof HEALTH_STATUS_ICONS
+                  )}
                   {overallStatus.charAt(0).toUpperCase() +
                     overallStatus.slice(1)}
                 </Badge>

@@ -177,7 +177,6 @@ describe('ErrorService', () => {
 
       // Mock by source grouping
       mockPrisma.systemLog.groupBy.mockResolvedValueOnce([
-        (mockPrisma.systemLog.groupBy as jest.Mock).mockResolvedValueOnce([
         { source: 'agent-service', _count: { source: 25 } },
         { source: 'task-service', _count: { source: 15 } },
       ]);

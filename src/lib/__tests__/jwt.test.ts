@@ -361,7 +361,7 @@ describe('JWT Utilities', () => {
       )
 
       // Restore environment variables
-      process.env.NODE_ENV = originalNodeEnv
+      Object.defineProperty(process.env, 'NODE_ENV', { value: originalNodeEnv, configurable: true });
       if (originalAccessSecret)
         process.env.JWT_ACCESS_SECRET = originalAccessSecret
     })
@@ -381,7 +381,7 @@ describe('JWT Utilities', () => {
       )
 
       // Restore environment variables
-      process.env.NODE_ENV = originalNodeEnv
+      Object.defineProperty(process.env, 'NODE_ENV', { value: originalNodeEnv, configurable: true });
       if (originalAccessSecret)
         process.env.JWT_ACCESS_SECRET = originalAccessSecret
       if (originalRefreshSecret)

@@ -76,7 +76,7 @@ describe('N8nPlatformAdapter', () => {
       },
     }
 
-    mockedAxios.create.mockReturnValue(mockAxiosInstance)
+    mockedAxios.create.mockReturnValue(mockAxiosInstance as any)
 
     config = {
       id: 'test-n8n',

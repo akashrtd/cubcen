@@ -245,7 +245,7 @@ export class CubcenNotificationService implements NotificationService {
       type: this.getInAppTypeForPriority(notification.priority),
       read: false,
       createdAt: new Date(),
-    };
+    }
 
     await this.sendInApp(inAppNotification)
   }
@@ -453,7 +453,7 @@ export class CubcenNotificationService implements NotificationService {
       return notifications.map(n => ({
         ...n,
         channels: JSON.parse(n.channels),
-        data: n.data ? JSON.parse(n.data) : undefined,
+        data: n.data ? JSON.parse(n.data as string) : undefined,
       }))
     } catch (error) {
       logger.error('Failed to get notifications', error as Error, { userId })
@@ -615,7 +615,7 @@ export class CubcenNotificationService implements NotificationService {
       ...notification,
       channels: channels as NotificationChannelType[],
       data: data as Record<string, unknown>,
-    };
+    }
   }
 }
 

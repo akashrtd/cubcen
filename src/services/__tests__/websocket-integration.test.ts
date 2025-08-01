@@ -100,7 +100,7 @@ describe('WebSocket Integration', () => {
       transports: ['websocket'],
       forceNew: true,
       timeout: 5000,
-    });
+    })
 
     clientSocket.on('connect', () => {
       // Authenticate the socket
@@ -366,7 +366,7 @@ describe('WebSocket Integration', () => {
       const platformId = 'test-platform'
 
       // Listen for agent errors
-      clientSocket.on('error:agent', data => {
+      clientSocket.on('error:agent', (data: AgentErrorEvent) => {
         expect(data.agentId).toBe(agentId)
         expect(data.platformId).toBe(platformId)
         expect(data.error.code).toBe('CONNECTION_FAILED')

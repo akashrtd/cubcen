@@ -565,7 +565,7 @@ export function AgentMonitoringDashboard({
             loading={loading}
             onViewAgent={handleViewAgent}
             onConfigureAgent={handleConfigureAgent}
-            onRefreshAgent={refreshAgent}
+            onRefreshAgent={refreshAgent as any}
           />
         </TabsContent>
 

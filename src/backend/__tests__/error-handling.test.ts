@@ -224,7 +224,10 @@ describe('Error Handling Tests', () => {
     it('should not expose sensitive information in production', async () => {
       // Set NODE_ENV to production temporarily
       const originalEnv = process.env.NODE_ENV
-      ;(process.env as NodeJS.ProcessEnv).NODE_ENV = 'production'
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: 'production',
+        configurable: true,
+      })
 
       try {
         const response = await request(app)
@@ -234,7 +237,10 @@ describe('Error Handling Tests', () => {
         expect(response.body.error).not.toHaveProperty('stack')
         expect(response.body.error).not.toHaveProperty('details')
       } finally {
-        ;(process.env as NodeJS.ProcessEnv).NODE_ENV = originalEnv
+        Object.defineProperty(process.env, 'NODE_ENV', {
+          value: originalEnv,
+          configurable: true,
+        })
       }
     })
   })

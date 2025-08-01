@@ -68,12 +68,10 @@ describe('Workflow API Routes', () => {
     app.use(express.json())
 
     // Mock authentication middleware
-    mockAuthenticateToken.mockImplementation(
-      (req: any, res: any, next: any) => {
-        req.user = { id: 'user-1', email: 'test@example.com', role: 'ADMIN' }
-        next()
-      }
-    )
+    mockAuthenticate.mockImplementation((req: any, res: any, next: any) => {
+      req.user = { id: 'user-1', email: 'test@example.com', role: 'ADMIN' }
+      next()
+    })
 
     // Setup routes
     app.use(

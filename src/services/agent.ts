@@ -3,13 +3,8 @@
  * Handles agent registration, status tracking, health monitoring, and configuration management
  */
 
-import {
-  prisma,
-  Agent,
-  import { AgentStatus } from '@/generated/prisma'
-  Platform,
-  AgentHealth,
-} from '@/lib/database'
+import { AgentStatus } from '@/generated/prisma'
+import { AgentHealth, Agent, Platform, prisma } from '@/lib/database'
 import { logger } from '@/lib/logger'
 import {
   AdapterFactory,

@@ -9,7 +9,11 @@ import {
 } from '../adapter-factory'
 import { BasePlatformAdapter } from '../base-adapter'
 import { MockPlatformAdapter } from '../mock-adapter'
-import { PlatformConfig, PlatformType } from '../../../types/platform'
+import {
+  PlatformConfig,
+  PlatformType,
+  HealthStatus,
+} from '../../../types/platform'
 
 // Test adapter class
 class TestAdapter extends BasePlatformAdapter {
@@ -37,8 +41,8 @@ class TestAdapter extends BasePlatformAdapter {
   async unsubscribeFromEvents() {}
 
   async healthCheck(): Promise<HealthStatus> {
-          return { status: 'healthy' as const, lastCheck: new Date() };
-        }
+    return { status: 'healthy' as const, lastCheck: new Date() }
+  }
 
   async connect() {
     this.setConnected(true)
@@ -452,7 +456,7 @@ describe('AdapterManager', () => {
 
     it('should handle disconnect errors gracefully', async () => {
       const FailingDisconnectAdapter = class extends TestAdapter {
-        async disconnect() {
+        async disconnect(): Promise<void> {
           throw new Error('Disconnect failed')
         }
       }

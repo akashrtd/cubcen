@@ -53,9 +53,21 @@ describe('Agent Routes', () => {
     testUserId = viewerUser.id
 
     // Generate auth tokens
-    authToken = createTokenPair(viewerUser.id, viewerUser.email, viewerUser.role)
-    operatorToken = createTokenPair(operatorUser.id, operatorUser.email, operatorUser.role)
-    adminToken = createTokenPair(adminUser.id, adminUser.email, adminUser.role).accessToken
+    authToken = createTokenPair(
+      viewerUser.id,
+      viewerUser.email,
+      viewerUser.role
+    )
+    operatorToken = createTokenPair(
+      operatorUser.id,
+      operatorUser.email,
+      operatorUser.role
+    ).accessToken
+    adminToken = createTokenPair(
+      adminUser.id,
+      adminUser.email,
+      adminUser.role
+    ).accessToken
 
     // Create test platform
     const testPlatform = await prisma.platform.create({

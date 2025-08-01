@@ -3,7 +3,7 @@
 
 import request from 'supertest'
 import app from '../../server'
-// import { type AuthService } from '../../services/auth'
+import { authService, AuthService } from '../../services/auth'
 import { prisma } from '../../lib/database'
 
 // Mock the database
@@ -26,14 +26,14 @@ jest.mock('../../services/auth')
 
 describe('Cubcen Server Integration Tests', () => {
   let authToken: string
-  let mockAuthService: jest.Mocked<AuthService>
+  let mockAuthService: jest.Mocked<typeof authService>
 
   beforeAll(async () => {
     // Create a mock auth token for testing
     authToken = 'Bearer mock-jwt-token'
 
     // Mock auth service
-    mockAuthService = authService as jest.Mocked<AuthService>;
+    mockAuthService = authService as jest.Mocked<typeof authService>
     mockAuthService.validateAuthHeader = jest.fn().mockResolvedValue({
       id: 'user_1',
       email: 'test@example.com',
