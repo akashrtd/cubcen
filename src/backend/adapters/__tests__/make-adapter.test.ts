@@ -105,7 +105,7 @@ describe('MakePlatformAdapter', () => {
   describe('authenticate', () => {
     it('should authenticate with API token successfully', async () => {
       const mockScenarios = [{ id: 1, name: 'Test Scenario' }]
-      mockAxiosInstance.get.mockResolvedValue({ data: mockScenarios })
+      mockAxiosInstance.get.mockResolvedValue({ data: mockScenarios, status: 200, statusText: 'OK', headers: {}, config: { url: '/scenarios' } })
 
       const result = await adapter.authenticate({
         apiToken: 'test-token',
@@ -121,7 +121,7 @@ describe('MakePlatformAdapter', () => {
 
     it('should authenticate with OAuth access token successfully', async () => {
       const mockScenarios = [{ id: 1, name: 'Test Scenario' }]
-      mockAxiosInstance.get.mockResolvedValue({ data: mockScenarios })
+      mockAxiosInstance.get.mockResolvedValue({ data: mockScenarios, status: 200, statusText: 'OK', headers: {}, config: { url: '/scenarios' } })
 
       const result = await adapter.authenticate({
         accessToken: 'access-token',
@@ -149,8 +149,8 @@ describe('MakePlatformAdapter', () => {
       const mockScenarios = [{ id: 1, name: 'Test Scenario' }]
 
       // Mock the OAuth token refresh
-      mockedAxios.post.mockResolvedValue({ data: mockTokenResponse })
-      mockAxiosInstance.get.mockResolvedValue({ data: mockScenarios })
+      mockedAxios.post.mockResolvedValue({ data: mockTokenResponse, status: 200, statusText: 'OK', headers: {}, config: { url: '/oauth/token' } })
+      mockAxiosInstance.get.mockResolvedValue({ data: mockScenarios, status: 200, statusText: 'OK', headers: {}, config: { url: '/scenarios' } })
 
       const result = await adapter.authenticate({
         clientId: 'client-id',
@@ -244,7 +244,7 @@ describe('MakePlatformAdapter', () => {
         },
       ]
 
-      mockAxiosInstance.get.mockResolvedValue({ data: mockScenarios })
+      mockAxiosInstance.get.mockResolvedValue({ data: mockScenarios, status: 200, statusText: 'OK', headers: {}, config: { url: '/scenarios' } })
 
       const agents = await adapter.discoverAgents()
 
@@ -279,7 +279,7 @@ describe('MakePlatformAdapter', () => {
         },
       })
 
-      mockAxiosInstance.get.mockResolvedValue({ data: [] })
+      mockAxiosInstance.get.mockResolvedValue({ data: [], status: 200, statusText: 'OK', headers: {}, config: { url: '/scenarios' } })
 
       await adapterWithTeam.discoverAgents()
 
@@ -334,8 +334,8 @@ describe('MakePlatformAdapter', () => {
       ]
 
       mockAxiosInstance.get
-        .mockResolvedValueOnce({ data: mockScenario })
-        .mockResolvedValueOnce({ data: mockExecutions })
+        .mockResolvedValueOnce({ data: mockScenario, status: 200, statusText: 'OK', headers: {}, config: { url: '/scenarios/1' } })
+        .mockResolvedValueOnce({ data: mockExecutions, status: 200, statusText: 'OK', headers: {}, config: { url: '/scenarios/1/executions' } })
 
       const status = await adapter.getAgentStatus('1')
 
@@ -362,7 +362,7 @@ describe('MakePlatformAdapter', () => {
     })
 
     it('should handle agent status error', async () => {
-      mockAxiosInstance.get.mockRejectedValue(new Error('Not found'))
+      mockAxiosInstance.get.mockRejectedValue({ response: { status: 404, statusText: 'Not Found', data: { message: 'Not found' } }, config: { url: '/scenarios/999' } })
 
       const status = await adapter.getAgentStatus('999')
 
@@ -393,8 +393,8 @@ describe('MakePlatformAdapter', () => {
         data_transfer: 1024,
       }
 
-      mockAxiosInstance.post.mockResolvedValue({ data: mockExecution, status: 200, statusText: 'OK', headers: {}, config: {} })
-      mockAxiosInstance.get.mockResolvedValue({ data: mockExecution, status: 200, statusText: 'OK', headers: {}, config: {} })
+      mockAxiosInstance.post.mockResolvedValue({ data: mockExecution, status: 200, statusText: 'OK', headers: {}, config: { url: '/scenarios/1/run' } })
+      mockAxiosInstance.get.mockResolvedValue({ data: mockExecution, status: 200, statusText: 'OK', headers: {}, config: { url: '/scenarios/1/executions' } })
 
       const result = await adapter.executeAgent('1', { test: 'data' })
 
@@ -433,8 +433,8 @@ describe('MakePlatformAdapter', () => {
         },
       }
 
-      mockAxiosInstance.post.mockResolvedValue({ data: mockExecution, status: 200, statusText: 'OK', headers: {}, config: {} })
-      mockAxiosInstance.get.mockResolvedValue({ data: mockExecution, status: 200, statusText: 'OK', headers: {}, config: {} })
+      mockAxiosInstance.post.mockResolvedValue({ data: mockExecution, status: 200, statusText: 'OK', headers: {}, config: { url: '/scenarios/1/run' } })
+      mockAxiosInstance.get.mockResolvedValue({ data: mockExecution, status: 200, statusText: 'OK', headers: {}, config: { url: '/scenarios/1/executions' } })
 
       const result = await adapter.executeAgent('1', {})
 
@@ -446,7 +446,7 @@ describe('MakePlatformAdapter', () => {
 
   describe('healthCheck', () => {
     it('should return healthy status', async () => {
-      mockAxiosInstance.get.mockResolvedValue({ data: [] })
+      mockAxiosInstance.get.mockResolvedValue({ data: [], status: 200, statusText: 'OK', headers: {}, config: { url: '/scenarios' } })
 
       const health = await adapter.healthCheck()
 
@@ -471,7 +471,7 @@ describe('MakePlatformAdapter', () => {
 
   describe('connect', () => {
     it('should connect successfully', async () => {
-      mockAxiosInstance.get.mockResolvedValue({ data: [] })
+      mockAxiosInstance.get.mockResolvedValue({ data: [], status: 200, statusText: 'OK', headers: {}, config: { url: '/scenarios' } })
 
       const result = await adapter.connect()
 
@@ -494,7 +494,7 @@ describe('MakePlatformAdapter', () => {
   describe('disconnect', () => {
     it('should disconnect successfully', async () => {
       // First connect
-      mockAxiosInstance.get.mockResolvedValue({ data: [] })
+      mockAxiosInstance.get.mockResolvedValue({ data: [], status: 200, statusText: 'OK', headers: {}, config: { url: '/scenarios' } })
       await adapter.connect()
 
       // Then disconnect
@@ -592,8 +592,8 @@ describe('MakePlatformAdapter', () => {
       }
 
       // Mock token refresh
-      mockedAxios.post.mockResolvedValue({ data: mockTokenResponse })
-      mockAxiosInstance.get.mockResolvedValue({ data: [] })
+      mockedAxios.post.mockResolvedValue({ data: mockTokenResponse, status: 200, statusText: 'OK', headers: {}, config: { url: '/oauth/token' } })
+      mockAxiosInstance.get.mockResolvedValue({ data: [], status: 200, statusText: 'OK', headers: {}, config: { url: '/scenarios' } })
 
       // Manually set token as expired
       ;(

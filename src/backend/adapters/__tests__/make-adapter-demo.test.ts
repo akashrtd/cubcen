@@ -4,7 +4,7 @@
  */
 
 import { MakePlatformAdapter } from '../make-adapter'
-import { PlatformConfig } from '../../../types/platform'
+import { PlatformConfig, HealthStatus, Agent } from '../../../types/platform'
 import { createMakeApiMockServer } from './make-mock-server.helper'
 
 describe('Make.com Platform Adapter Demo', () => {
@@ -151,9 +151,14 @@ describe('Make.com Platform Adapter Demo', () => {
 
       // 7. Event subscription demo
       console.log('\n📡 Setting up event subscription...')
-      const receivedEvents: unknown[] = []
+      interface AgentEvent {
+        type: string
+        agentId: string
+      }
 
-      const eventCallback = (event: unknown) => {
+      const receivedEvents: AgentEvent[] = []
+
+      const eventCallback = (event: AgentEvent) => {
         receivedEvents.push(event)
         console.log(
           `   Event received: ${event.type} for agent ${event.agentId}`
@@ -315,10 +320,10 @@ describe('Make.com Platform Adapter Demo', () => {
       console.log(`✅ Completed 4 concurrent requests in ${duration}ms`)
       console.log(`   Average: ${(duration / 4).toFixed(1)}ms per request`)
 
-      expect(results[0].status).toBe('healthy')
-      expect(results[1].length).toBeGreaterThan(0)
-      expect(results[2].status).toBe('healthy')
-      expect(results[3].length).toBeGreaterThan(0)
+      expect((results[0] as HealthStatus).status).toBe('healthy')
+      expect((results[1] as Agent[]).length).toBeGreaterThan(0)
+      expect((results[2] as HealthStatus).status).toBe('healthy')
+      expect((results[3] as Agent[]).length).toBeGreaterThan(0)
 
       // Test sequential performance
       console.log('\n📊 Testing sequential performance...')

@@ -109,11 +109,11 @@ describe('N8nPlatformAdapter', () => {
     })
 
     it('should throw error for invalid configuration', () => {
-      const invalidConfig = { ...config, credentials: undefined }
+      const invalidConfig = { ...config, credentials: {} }
 
       expect(
         () => new N8nPlatformAdapter(invalidConfig as PlatformConfig)
-      ).toThrow('n8n adapter requires credentials configuration')
+      ).toThrow('n8n adapter requires either apiKey or email/password credentials')
     })
 
     it('should throw error for missing credentials', () => {

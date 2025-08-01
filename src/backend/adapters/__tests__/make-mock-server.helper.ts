@@ -10,6 +10,51 @@ interface MockServerOptions {
   enableLogging?: boolean
 }
 
+interface Scenario {
+  id: number
+  name: string
+  is_active: boolean
+  is_locked: boolean
+  folder_id: number | null
+  team_id: number
+  created_at: string
+  updated_at: string
+  last_edit: string
+  scheduling?: {
+    type: 'indefinitely'
+    interval: number
+  }
+  blueprint?: {
+    flow: {
+      id: number
+      module: string
+      version: number
+      parameters: Record<string, unknown>
+      mapper: Record<string, unknown>
+      metadata: Record<string, unknown>
+    }[]
+    metadata: Record<string, unknown>
+  }
+}
+
+interface Execution {
+  id: number
+  scenario_id: number
+  status: 'success' | 'error'
+  created_at: string
+  updated_at: string
+  started_at: string
+  finished_at: string
+  execution_time: number
+  operations_count: number
+  data_transfer: number
+  error?: {
+    message: string
+    type: string
+    details?: Record<string, unknown>
+  }
+}
+
 export function createMakeApiMockServer(options: MockServerOptions = {}) {
   const app = express()
   const port = options.port || 0 // Use random port if not specified
@@ -23,7 +68,7 @@ export function createMakeApiMockServer(options: MockServerOptions = {}) {
   let tokenExpired = false
 
   // Mock data
-  const mockScenarios = [
+  const mockScenarios: Scenario[] = [
     {
       id: 1,
       name: 'Test Webhook Scenario',
@@ -86,7 +131,7 @@ export function createMakeApiMockServer(options: MockServerOptions = {}) {
     },
   ]
 
-  const mockExecutions = [
+  const mockExecutions: Execution[] = [
     {
       id: 1001,
       scenario_id: 1,
@@ -470,7 +515,7 @@ export function createMakeApiMockServer(options: MockServerOptions = {}) {
     },
 
     // Data manipulation methods
-    addScenario(scenario: Record<string, unknown>): void {
+    addScenario(scenario: Scenario): void {
       mockScenarios.push(scenario)
     },
 
@@ -481,7 +526,7 @@ export function createMakeApiMockServer(options: MockServerOptions = {}) {
       }
     },
 
-    addExecution(execution: Record<string, unknown>): void {
+    addExecution(execution: Execution): void {
       mockExecutions.push(execution)
     },
 
@@ -489,11 +534,11 @@ export function createMakeApiMockServer(options: MockServerOptions = {}) {
       mockExecutions.length = 0
     },
 
-    getScenarios(): Record<string, unknown>[] {
+    getScenarios(): Scenario[] {
       return [...mockScenarios]
     },
 
-    getExecutions(): Record<string, unknown>[] {
+    getExecutions(): Execution[] {
       return [...mockExecutions]
     },
   }

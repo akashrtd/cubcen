@@ -2,6 +2,7 @@
 // Comprehensive security middleware for input sanitization, CSRF protection, and security headers
 
 import { Request, Response, NextFunction } from 'express'
+import { ParamsDictionary, ParsedQs } from 'express-serve-static-core'
 import crypto from 'crypto'
 import { logger } from '@/lib/logger'
 
@@ -131,7 +132,7 @@ export function csrfProtection(
   req: Request,
   res: Response,
   next: NextFunction
-): void {
+): Response<any, Record<string, any>> | void {
   try {
     // Skip CSRF protection for GET, HEAD, OPTIONS requests
     if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {

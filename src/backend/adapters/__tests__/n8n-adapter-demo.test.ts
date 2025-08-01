@@ -122,14 +122,6 @@ describe('N8nPlatformAdapter Demo', () => {
   })
 
   it('should validate configuration properly', () => {
-    // Test missing credentials
-    expect(() => {
-      new N8nPlatformAdapter({
-        ...config,
-        credentials: undefined,
-      } as PlatformConfig)
-    }).toThrow('n8n adapter requires credentials configuration')
-
     // Test invalid credentials
     expect(() => {
       new N8nPlatformAdapter({

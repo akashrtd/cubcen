@@ -13,6 +13,7 @@ import {
   PlatformConfig,
   PlatformType,
   HealthStatus,
+  ConnectionStatus,
 } from '../../../types/platform'
 
 // Test adapter class
@@ -315,7 +316,7 @@ describe('AdapterManager', () => {
 
     it('should remove adapter if connection fails', async () => {
       const FailingAdapter = class extends TestAdapter {
-        async connect() {
+        async connect(): Promise<ConnectionStatus> {
           throw new Error('Connection failed')
         }
       } as AdapterConstructor
@@ -420,7 +421,7 @@ describe('AdapterManager', () => {
 
     it('should handle health check errors', async () => {
       const FailingHealthAdapter = class extends TestAdapter {
-        async healthCheck() {
+        async healthCheck(): Promise<HealthStatus> {
           throw new Error('Health check failed')
         }
       } as AdapterConstructor

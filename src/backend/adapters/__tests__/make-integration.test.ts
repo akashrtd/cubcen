@@ -4,7 +4,7 @@
  */
 
 import { MakePlatformAdapter } from '../make-adapter'
-import { PlatformConfig } from '../../../types/platform'
+import { PlatformConfig, Agent, HealthStatus } from '../../../types/platform'
 import { createMakeApiMockServer } from './make-mock-server.helper'
 
 describe('MakePlatformAdapter Integration Tests', () => {
@@ -188,8 +188,13 @@ describe('MakePlatformAdapter Integration Tests', () => {
 
   describe('Event subscription integration', () => {
     it('should receive events from polling', async () => {
-      const events: unknown[] = []
-      const eventCallback = (event: any) => {
+      interface AgentEvent {
+        type: string
+        agentId: string
+        timestamp: Date
+      }
+      const events: AgentEvent[] = []
+      const eventCallback = (event: AgentEvent) => {
         events.push(event)
       }
 
@@ -298,10 +303,10 @@ describe('MakePlatformAdapter Integration Tests', () => {
       const results = await Promise.all(promises)
 
       // All requests should succeed
-      expect(results[0].status).toBe('healthy')
-      expect(results[1].length).toBeGreaterThan(0)
-      expect(results[2].status).toBe('healthy')
-      expect(results[3].length).toBeGreaterThan(0)
+      expect((results[0] as HealthStatus).status).toBe('healthy')
+      expect((results[1] as Agent[]).length).toBeGreaterThan(0)
+      expect((results[2] as HealthStatus).status).toBe('healthy')
+      expect((results[3] as Agent[]).length).toBeGreaterThan(0)
     })
 
     it('should maintain performance under load', async () => {
