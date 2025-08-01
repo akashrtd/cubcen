@@ -3,7 +3,7 @@
 
 import { Request, Response, NextFunction } from 'express'
 import { UserRole } from '@/types/auth'
-import { AuthService } from '@/services/auth'
+import { authService } from '@/services/auth'
 import { 
   AuthUser, 
   AuthenticationError, 
@@ -24,8 +24,7 @@ declare module 'express-serve-static-core' {
   }
 }
 
-// Initialize auth service
-const authService = new AuthService(prisma)
+// Auth service is imported as a singleton instance
 
 /**
  * Authentication middleware - validates JWT token and adds user to request
