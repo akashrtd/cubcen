@@ -3,15 +3,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { 
-  Users, 
-  Activity, 
-  CheckCircle, 
-  XCircle, 
-  TrendingUp, 
+import {
+  Users,
+  Activity,
+  CheckCircle,
+  XCircle,
+  TrendingUp,
   Clock,
   Target,
-  Zap
+  Zap,
 } from 'lucide-react'
 import { AnalyticsData } from '@/services/analytics'
 
@@ -29,7 +29,8 @@ export function KPICards({ data, loading }: KPICardsProps) {
       description: `${data.activeAgents} active`,
       color: 'text-blue-600',
       bgColor: 'bg-blue-50',
-      progress: data.totalAgents > 0 ? (data.activeAgents / data.totalAgents) * 100 : 0,
+      progress:
+        data.totalAgents > 0 ? (data.activeAgents / data.totalAgents) * 100 : 0,
     },
     {
       title: 'Total Tasks',
@@ -114,15 +115,20 @@ export function KPICards({ data, loading }: KPICardsProps) {
               <p className="text-xs text-muted-foreground mb-2">
                 {kpi.description}
               </p>
-              
+
               {kpi.progress !== undefined && (
                 <div className="space-y-1">
-                  <Progress 
-                    value={kpi.progress} 
+                  <Progress
+                    value={kpi.progress}
                     className="h-1"
-                    style={{
-                      '--progress-background': kpi.color.replace('text-', 'bg-'),
-                    } as React.CSSProperties}
+                    style={
+                      {
+                        '--progress-background': kpi.color.replace(
+                          'text-',
+                          'bg-'
+                        ),
+                      } as React.CSSProperties
+                    }
                   />
                   <div className="flex justify-between text-xs text-muted-foreground">
                     <span>0%</span>
@@ -133,16 +139,26 @@ export function KPICards({ data, loading }: KPICardsProps) {
 
               {/* Status badges for specific KPIs */}
               {kpi.title === 'Success Rate' && (
-                <Badge 
-                  variant={data.successRate >= 90 ? 'default' : data.successRate >= 70 ? 'secondary' : 'destructive'}
+                <Badge
+                  variant={
+                    data.successRate >= 90
+                      ? 'default'
+                      : data.successRate >= 70
+                        ? 'secondary'
+                        : 'destructive'
+                  }
                   className="mt-2 text-xs"
                 >
-                  {data.successRate >= 90 ? 'Excellent' : data.successRate >= 70 ? 'Good' : 'Needs Improvement'}
+                  {data.successRate >= 90
+                    ? 'Excellent'
+                    : data.successRate >= 70
+                      ? 'Good'
+                      : 'Needs Improvement'}
                 </Badge>
               )}
 
               {kpi.title === 'Active Agents' && (
-                <Badge 
+                <Badge
                   variant={data.activeAgents > 0 ? 'default' : 'secondary'}
                   className="mt-2 text-xs bg-cubcen-secondary text-white"
                 >

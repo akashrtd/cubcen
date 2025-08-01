@@ -27,7 +27,6 @@ class DeploymentIssueFixer {
 
       console.log('✅ Critical deployment issues fixed!')
       console.log('🚀 Ready to run deployment readiness check again')
-
     } catch (error) {
       console.error('❌ Failed to fix deployment issues:', error)
       process.exit(1)
@@ -116,9 +115,9 @@ BACKUP_PATH=./backups
 
       // Run database migrations
       console.log('Running database migrations...')
-      execSync('npx prisma migrate deploy', { 
+      execSync('npx prisma migrate deploy', {
         stdio: 'inherit',
-        env: { ...process.env, DATABASE_URL: 'file:./data/cubcen.db' }
+        env: { ...process.env, DATABASE_URL: 'file:./data/cubcen.db' },
       })
 
       console.log('✅ Database setup completed')
@@ -159,27 +158,22 @@ global.console = {
     try {
       // Create a minimal tsconfig for deployment
       const tsconfig = {
-        "extends": "./tsconfig.json",
-        "compilerOptions": {
-          "skipLibCheck": true,
-          "noUnusedLocals": false,
-          "noUnusedParameters": false,
-          "@typescript-eslint/no-explicit-any": "off",
-          "@typescript-eslint/no-unused-vars": "warn"
+        extends: './tsconfig.json',
+        compilerOptions: {
+          skipLibCheck: true,
+          noUnusedLocals: false,
+          noUnusedParameters: false,
+          '@typescript-eslint/no-explicit-any': 'off',
+          '@typescript-eslint/no-unused-vars': 'warn',
         },
-        "include": [
-          "src/**/*",
-          "scripts/**/*"
-        ],
-        "exclude": [
-          "node_modules",
-          "dist",
-          "**/*.test.ts",
-          "**/*.test.tsx"
-        ]
+        include: ['src/**/*', 'scripts/**/*'],
+        exclude: ['node_modules', 'dist', '**/*.test.ts', '**/*.test.tsx'],
       }
 
-      writeFileSync('tsconfig.deployment.json', JSON.stringify(tsconfig, null, 2))
+      writeFileSync(
+        'tsconfig.deployment.json',
+        JSON.stringify(tsconfig, null, 2)
+      )
       console.log('✅ TypeScript configuration optimized for deployment')
     } catch (error) {
       console.warn('⚠️ TypeScript configuration had issues, but continuing...')

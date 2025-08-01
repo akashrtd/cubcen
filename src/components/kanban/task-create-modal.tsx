@@ -44,7 +44,10 @@ interface TaskCreateModalProps {
 }
 
 const taskSchema = z.object({
-  name: z.string().min(1, 'Task name is required').max(200, 'Task name too long'),
+  name: z
+    .string()
+    .min(1, 'Task name is required')
+    .max(200, 'Task name too long'),
   description: z.string().optional(),
   agentId: z.string().min(1, 'Agent is required'),
   priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']).default('MEDIUM'),
@@ -64,7 +67,8 @@ const PRIORITY_OPTIONS: Array<{
   {
     value: 'LOW',
     label: 'Low',
-    description: 'Non-urgent tasks that can be processed when resources are available',
+    description:
+      'Non-urgent tasks that can be processed when resources are available',
   },
   {
     value: 'MEDIUM',
@@ -109,7 +113,7 @@ export function TaskCreateModal({
   })
 
   const selectedAgentId = watch('agentId')
-  const selectedAgent = agents.find((a) => a.id === selectedAgentId)
+  const selectedAgent = agents.find(a => a.id === selectedAgentId)
 
   const validateParameters = (parametersString: string) => {
     if (!parametersString.trim()) return true
@@ -216,13 +220,15 @@ export function TaskCreateModal({
                   <Label htmlFor="agentId">Agent *</Label>
                   <Select
                     value={selectedAgentId}
-                    onValueChange={(value) => setValue('agentId', value)}
+                    onValueChange={value => setValue('agentId', value)}
                   >
-                    <SelectTrigger className={errors.agentId ? 'border-red-500' : ''}>
+                    <SelectTrigger
+                      className={errors.agentId ? 'border-red-500' : ''}
+                    >
                       <SelectValue placeholder="Select an agent" />
                     </SelectTrigger>
                     <SelectContent>
-                      {agents.map((agent) => (
+                      {agents.map(agent => (
                         <SelectItem key={agent.id} value={agent.id}>
                           <div className="flex items-center gap-2">
                             <User className="h-3 w-3" />
@@ -236,7 +242,9 @@ export function TaskCreateModal({
                     </SelectContent>
                   </Select>
                   {errors.agentId && (
-                    <p className="text-sm text-red-500">{errors.agentId.message}</p>
+                    <p className="text-sm text-red-500">
+                      {errors.agentId.message}
+                    </p>
                   )}
                 </div>
 
@@ -244,13 +252,15 @@ export function TaskCreateModal({
                   <Label htmlFor="priority">Priority</Label>
                   <Select
                     value={watch('priority')}
-                    onValueChange={(value: TaskPriority) => setValue('priority', value)}
+                    onValueChange={(value: TaskPriority) =>
+                      setValue('priority', value)
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {PRIORITY_OPTIONS.map((option) => (
+                      {PRIORITY_OPTIONS.map(option => (
                         <SelectItem key={option.value} value={option.value}>
                           <div>
                             <div className="font-medium">{option.label}</div>
@@ -313,7 +323,7 @@ export function TaskCreateModal({
                     max="300"
                     {...register('timeoutMs', {
                       valueAsNumber: true,
-                      setValueAs: (value) => value * 1000, // Convert to milliseconds
+                      setValueAs: value => value * 1000, // Convert to milliseconds
                     })}
                     defaultValue="30"
                   />
@@ -342,7 +352,7 @@ export function TaskCreateModal({
                   rows={4}
                   {...register('parameters')}
                   className={parametersError ? 'border-red-500' : ''}
-                  onChange={(e) => {
+                  onChange={e => {
                     register('parameters').onChange(e)
                     if (e.target.value.trim()) {
                       validateParameters(e.target.value)

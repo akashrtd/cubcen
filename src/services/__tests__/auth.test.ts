@@ -14,20 +14,20 @@ jest.mock('../../lib/logger', () => ({
     info: jest.fn(),
     warn: jest.fn(),
     error: jest.fn(),
-    debug: jest.fn()
-  }
+    debug: jest.fn(),
+  },
 }))
 
 jest.mock('bcryptjs', () => ({
   compare: jest.fn(),
-  hash: jest.fn()
+  hash: jest.fn(),
 }))
 jest.mock('jsonwebtoken', () => ({
   sign: jest.fn(),
   verify: jest.fn(),
   decode: jest.fn(),
   JsonWebTokenError: class JsonWebTokenError extends Error {},
-  TokenExpiredError: class TokenExpiredError extends Error {}
+  TokenExpiredError: class TokenExpiredError extends Error {},
 }))
 
 // Mock Prisma client
@@ -37,8 +37,8 @@ const mockPrisma = {
     create: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
-    findMany: jest.fn()
-  }
+    findMany: jest.fn(),
+  },
 } as unknown as PrismaClient
 
 const mockBcrypt = bcrypt as jest.Mocked<typeof bcrypt>
@@ -46,7 +46,7 @@ const mockJwt = jwt as jest.Mocked<typeof jwt>
 
 describe('AuthService', () => {
   let authService: AuthService
-  
+
   beforeEach(() => {
     authService = new AuthService(mockPrisma)
     jest.clearAllMocks()
@@ -55,7 +55,7 @@ describe('AuthService', () => {
   describe('login', () => {
     const loginCredentials = {
       email: 'test@cubcen.com',
-      password: 'TestPassword123!'
+      password: 'TestPassword123!',
     }
 
     const mockUser = {
@@ -65,16 +65,16 @@ describe('AuthService', () => {
       name: 'Test User',
       role: UserRole.VIEWER,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     }
 
     it('should successfully login with valid credentials', async () => {
       // Mock database response
       mockPrisma.user.findUnique = jest.fn().mockResolvedValue(mockUser)
-      
+
       // Mock bcrypt comparison
       mockBcrypt.compare = jest.fn().mockResolvedValue(true)
-      
+
       // Mock JWT token creation
       mockJwt.sign.mockReturnValue('mock-token')
 
@@ -88,7 +88,7 @@ describe('AuthService', () => {
       expect(result.tokens.tokenType).toBe('Bearer')
 
       expect(mockPrisma.user.findUnique).toHaveBeenCalledWith({
-        where: { email: loginCredentials.email }
+        where: { email: loginCredentials.email },
       })
       expect(mockBcrypt.compare).toHaveBeenCalledWith(
         loginCredentials.password,
@@ -99,26 +99,34 @@ describe('AuthService', () => {
     it('should throw error for non-existent user', async () => {
       mockPrisma.user.findUnique = jest.fn().mockResolvedValue(null)
 
-      await expect(authService.login(loginCredentials))
-        .rejects
-        .toThrow(new AuthenticationError('Invalid email or password', 'INVALID_CREDENTIALS'))
+      await expect(authService.login(loginCredentials)).rejects.toThrow(
+        new AuthenticationError(
+          'Invalid email or password',
+          'INVALID_CREDENTIALS'
+        )
+      )
     })
 
     it('should throw error for invalid password', async () => {
       mockPrisma.user.findUnique = jest.fn().mockResolvedValue(mockUser)
       mockBcrypt.compare.mockResolvedValue(false)
 
-      await expect(authService.login(loginCredentials))
-        .rejects
-        .toThrow(new AuthenticationError('Invalid email or password', 'INVALID_CREDENTIALS'))
+      await expect(authService.login(loginCredentials)).rejects.toThrow(
+        new AuthenticationError(
+          'Invalid email or password',
+          'INVALID_CREDENTIALS'
+        )
+      )
     })
 
     it('should handle database errors', async () => {
-      mockPrisma.user.findUnique = jest.fn().mockRejectedValue(new Error('Database error'))
+      mockPrisma.user.findUnique = jest
+        .fn()
+        .mockRejectedValue(new Error('Database error'))
 
-      await expect(authService.login(loginCredentials))
-        .rejects
-        .toThrow(new AuthenticationError('Login failed', 'LOGIN_ERROR'))
+      await expect(authService.login(loginCredentials)).rejects.toThrow(
+        new AuthenticationError('Login failed', 'LOGIN_ERROR')
+      )
     })
   })
 
@@ -126,7 +134,7 @@ describe('AuthService', () => {
     const registerCredentials = {
       email: 'newuser@cubcen.com',
       password: 'NewPassword123!',
-      name: 'New User'
+      name: 'New User',
     }
 
     const mockCreatedUser = {
@@ -136,19 +144,19 @@ describe('AuthService', () => {
       name: 'New User',
       role: UserRole.VIEWER,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     }
 
     it('should successfully register new user', async () => {
       // Mock no existing user
       mockPrisma.user.findUnique = jest.fn().mockResolvedValue(null)
-      
+
       // Mock user creation
       mockPrisma.user.create = jest.fn().mockResolvedValue(mockCreatedUser)
-      
+
       // Mock password hashing
       mockBcrypt.hash.mockResolvedValue('hashed-password')
-      
+
       // Mock JWT token creation
       mockJwt.sign.mockReturnValue('mock-token')
 
@@ -160,37 +168,40 @@ describe('AuthService', () => {
       expect(result.tokens.accessToken).toBeDefined()
 
       expect(mockPrisma.user.findUnique).toHaveBeenCalledWith({
-        where: { email: registerCredentials.email }
+        where: { email: registerCredentials.email },
       })
-      expect(mockBcrypt.hash).toHaveBeenCalledWith(registerCredentials.password, 12)
+      expect(mockBcrypt.hash).toHaveBeenCalledWith(
+        registerCredentials.password,
+        12
+      )
       expect(mockPrisma.user.create).toHaveBeenCalledWith({
         data: {
           email: registerCredentials.email,
           password: 'hashed-password',
           name: registerCredentials.name,
-          role: UserRole.VIEWER
-        }
+          role: UserRole.VIEWER,
+        },
       })
     })
 
     it('should throw error for existing email', async () => {
       mockPrisma.user.findUnique = jest.fn().mockResolvedValue(mockCreatedUser)
 
-      await expect(authService.register(registerCredentials))
-        .rejects
-        .toThrow(new AuthenticationError('Email already registered', 'EMAIL_EXISTS'))
+      await expect(authService.register(registerCredentials)).rejects.toThrow(
+        new AuthenticationError('Email already registered', 'EMAIL_EXISTS')
+      )
     })
 
     it('should register with custom role', async () => {
       const adminCredentials = {
         ...registerCredentials,
-        role: UserRole.ADMIN
+        role: UserRole.ADMIN,
       }
 
       mockPrisma.user.findUnique = jest.fn().mockResolvedValue(null)
       mockPrisma.user.create = jest.fn().mockResolvedValue({
         ...mockCreatedUser,
-        role: UserRole.ADMIN
+        role: UserRole.ADMIN,
       })
       mockBcrypt.hash.mockResolvedValue('hashed-password')
       mockJwt.sign.mockReturnValue('mock-token')
@@ -203,19 +214,21 @@ describe('AuthService', () => {
           email: adminCredentials.email,
           password: 'hashed-password',
           name: adminCredentials.name,
-          role: UserRole.ADMIN
-        }
+          role: UserRole.ADMIN,
+        },
       })
     })
 
     it('should handle database errors during registration', async () => {
       mockPrisma.user.findUnique = jest.fn().mockResolvedValue(null)
-      mockPrisma.user.create = jest.fn().mockRejectedValue(new Error('Database error'))
+      mockPrisma.user.create = jest
+        .fn()
+        .mockRejectedValue(new Error('Database error'))
       mockBcrypt.hash.mockResolvedValue('hashed-password')
 
-      await expect(authService.register(registerCredentials))
-        .rejects
-        .toThrow(new AuthenticationError('Registration failed', 'REGISTRATION_ERROR'))
+      await expect(authService.register(registerCredentials)).rejects.toThrow(
+        new AuthenticationError('Registration failed', 'REGISTRATION_ERROR')
+      )
     })
   })
 
@@ -225,7 +238,7 @@ describe('AuthService', () => {
       email: 'test@cubcen.com',
       role: UserRole.VIEWER,
       iat: Math.floor(Date.now() / 1000),
-      exp: Math.floor(Date.now() / 1000) + 3600
+      exp: Math.floor(Date.now() / 1000) + 3600,
     }
 
     const mockUser = {
@@ -235,7 +248,7 @@ describe('AuthService', () => {
       name: 'Test User',
       role: UserRole.VIEWER,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     }
 
     it('should successfully validate valid token', async () => {
@@ -254,7 +267,7 @@ describe('AuthService', () => {
         expect.any(Object)
       )
       expect(mockPrisma.user.findUnique).toHaveBeenCalledWith({
-        where: { id: mockTokenPayload.userId }
+        where: { id: mockTokenPayload.userId },
       })
     })
 
@@ -262,9 +275,9 @@ describe('AuthService', () => {
       mockJwt.verify.mockReturnValue(mockTokenPayload as jwt.JwtPayload)
       mockPrisma.user.findUnique = jest.fn().mockResolvedValue(null)
 
-      await expect(authService.validateToken('valid-token'))
-        .rejects
-        .toThrow(new AuthenticationError('User not found', 'USER_NOT_FOUND'))
+      await expect(authService.validateToken('valid-token')).rejects.toThrow(
+        new AuthenticationError('User not found', 'USER_NOT_FOUND')
+      )
     })
 
     it('should handle JWT verification errors', async () => {
@@ -272,9 +285,9 @@ describe('AuthService', () => {
         throw new jwt.JsonWebTokenError('Invalid token')
       })
 
-      await expect(authService.validateToken('invalid-token'))
-        .rejects
-        .toThrow(new AuthenticationError('Invalid token', 'INVALID_TOKEN'))
+      await expect(authService.validateToken('invalid-token')).rejects.toThrow(
+        new AuthenticationError('Invalid token', 'INVALID_TOKEN')
+      )
     })
 
     it('should handle expired tokens', async () => {
@@ -282,9 +295,9 @@ describe('AuthService', () => {
         throw new jwt.TokenExpiredError('Token expired', new Date())
       })
 
-      await expect(authService.validateToken('expired-token'))
-        .rejects
-        .toThrow(new AuthenticationError('Invalid token', 'INVALID_TOKEN'))
+      await expect(authService.validateToken('expired-token')).rejects.toThrow(
+        new AuthenticationError('Invalid token', 'INVALID_TOKEN')
+      )
     })
   })
 
@@ -300,7 +313,7 @@ describe('AuthService', () => {
       name: 'Test User',
       role: UserRole.VIEWER,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     }
 
     it('should successfully change password', async () => {
@@ -309,34 +322,44 @@ describe('AuthService', () => {
       mockBcrypt.hash.mockResolvedValue('hashed-new-password')
       mockPrisma.user.update = jest.fn().mockResolvedValue({
         ...mockUser,
-        password: 'hashed-new-password'
+        password: 'hashed-new-password',
       })
 
       await authService.changePassword(userId, currentPassword, newPassword)
 
-      expect(mockBcrypt.compare).toHaveBeenCalledWith(currentPassword, mockUser.password)
+      expect(mockBcrypt.compare).toHaveBeenCalledWith(
+        currentPassword,
+        mockUser.password
+      )
       expect(mockBcrypt.hash).toHaveBeenCalledWith(newPassword, 12)
       expect(mockPrisma.user.update).toHaveBeenCalledWith({
         where: { id: userId },
-        data: { password: 'hashed-new-password' }
+        data: { password: 'hashed-new-password' },
       })
     })
 
     it('should throw error for non-existent user', async () => {
       mockPrisma.user.findUnique = jest.fn().mockResolvedValue(null)
 
-      await expect(authService.changePassword(userId, currentPassword, newPassword))
-        .rejects
-        .toThrow(new AuthenticationError('User not found', 'USER_NOT_FOUND'))
+      await expect(
+        authService.changePassword(userId, currentPassword, newPassword)
+      ).rejects.toThrow(
+        new AuthenticationError('User not found', 'USER_NOT_FOUND')
+      )
     })
 
     it('should throw error for invalid current password', async () => {
       mockPrisma.user.findUnique = jest.fn().mockResolvedValue(mockUser)
       mockBcrypt.compare.mockResolvedValue(false)
 
-      await expect(authService.changePassword(userId, currentPassword, newPassword))
-        .rejects
-        .toThrow(new AuthenticationError('Current password is incorrect', 'INVALID_PASSWORD'))
+      await expect(
+        authService.changePassword(userId, currentPassword, newPassword)
+      ).rejects.toThrow(
+        new AuthenticationError(
+          'Current password is incorrect',
+          'INVALID_PASSWORD'
+        )
+      )
     })
   })
 
@@ -351,7 +374,7 @@ describe('AuthService', () => {
       name: 'Test User',
       role: UserRole.ADMIN,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     }
 
     it('should successfully update user role', async () => {
@@ -363,16 +386,18 @@ describe('AuthService', () => {
       expect(result.role).toBe(UserRole.ADMIN)
       expect(mockPrisma.user.update).toHaveBeenCalledWith({
         where: { id: userId },
-        data: { role: newRole }
+        data: { role: newRole },
       })
     })
 
     it('should handle database errors during role update', async () => {
-      mockPrisma.user.update = jest.fn().mockRejectedValue(new Error('Database error'))
+      mockPrisma.user.update = jest
+        .fn()
+        .mockRejectedValue(new Error('Database error'))
 
-      await expect(authService.updateUserRole(userId, newRole))
-        .rejects
-        .toThrow(new AuthenticationError('Role update failed', 'ROLE_UPDATE_ERROR'))
+      await expect(authService.updateUserRole(userId, newRole)).rejects.toThrow(
+        new AuthenticationError('Role update failed', 'ROLE_UPDATE_ERROR')
+      )
     })
   })
 
@@ -385,7 +410,7 @@ describe('AuthService', () => {
       name: 'Test User',
       role: UserRole.VIEWER,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     }
 
     it('should successfully get user by ID', async () => {
@@ -397,7 +422,7 @@ describe('AuthService', () => {
       expect(result!.id).toBe(userId)
       expect(result!.email).toBe(mockUser.email)
       expect(mockPrisma.user.findUnique).toHaveBeenCalledWith({
-        where: { id: userId }
+        where: { id: userId },
       })
     })
 
@@ -419,7 +444,7 @@ describe('AuthService', () => {
         name: 'User 1',
         role: UserRole.ADMIN,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       },
       {
         id: 'user-2',
@@ -428,8 +453,8 @@ describe('AuthService', () => {
         name: 'User 2',
         role: UserRole.VIEWER,
         createdAt: new Date(),
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     ]
 
     it('should successfully get all users', async () => {
@@ -441,7 +466,7 @@ describe('AuthService', () => {
       expect(result[0].id).toBe('user-1')
       expect(result[1].id).toBe('user-2')
       expect(mockPrisma.user.findMany).toHaveBeenCalledWith({
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
       })
     })
   })
@@ -455,16 +480,18 @@ describe('AuthService', () => {
       await authService.deleteUser(userId)
 
       expect(mockPrisma.user.delete).toHaveBeenCalledWith({
-        where: { id: userId }
+        where: { id: userId },
       })
     })
 
     it('should handle database errors during deletion', async () => {
-      mockPrisma.user.delete = jest.fn().mockRejectedValue(new Error('Database error'))
+      mockPrisma.user.delete = jest
+        .fn()
+        .mockRejectedValue(new Error('Database error'))
 
-      await expect(authService.deleteUser(userId))
-        .rejects
-        .toThrow(new AuthenticationError('User deletion failed', 'DELETE_USER_ERROR'))
+      await expect(authService.deleteUser(userId)).rejects.toThrow(
+        new AuthenticationError('User deletion failed', 'DELETE_USER_ERROR')
+      )
     })
   })
 })

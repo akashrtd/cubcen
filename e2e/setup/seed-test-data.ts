@@ -4,9 +4,9 @@ import bcrypt from 'bcryptjs'
 const prisma = new PrismaClient({
   datasources: {
     db: {
-      url: 'file:./e2e/temp/test.db'
-    }
-  }
+      url: 'file:./e2e/temp/test.db',
+    },
+  },
 })
 
 /**
@@ -24,14 +24,14 @@ async function seedTestData() {
 
     // Create test users
     const hashedPassword = await bcrypt.hash('testpassword123', 10)
-    
+
     const adminUser = await prisma.user.create({
       data: {
         email: 'admin@cubcen.test',
         password: hashedPassword,
         name: 'Test Admin',
-        role: 'ADMIN'
-      }
+        role: 'ADMIN',
+      },
     })
 
     const operatorUser = await prisma.user.create({
@@ -39,8 +39,8 @@ async function seedTestData() {
         email: 'operator@cubcen.test',
         password: hashedPassword,
         name: 'Test Operator',
-        role: 'OPERATOR'
-      }
+        role: 'OPERATOR',
+      },
     })
 
     const viewerUser = await prisma.user.create({
@@ -48,8 +48,8 @@ async function seedTestData() {
         email: 'viewer@cubcen.test',
         password: hashedPassword,
         name: 'Test Viewer',
-        role: 'VIEWER'
-      }
+        role: 'VIEWER',
+      },
     })
 
     // Create test platforms
@@ -60,11 +60,11 @@ async function seedTestData() {
         baseUrl: 'http://localhost:5678',
         authConfig: JSON.stringify({
           type: 'api_key',
-          apiKey: 'test-n8n-api-key'
+          apiKey: 'test-n8n-api-key',
         }),
         status: 'CONNECTED',
-        lastSyncAt: new Date()
-      }
+        lastSyncAt: new Date(),
+      },
     })
 
     const makePlatform = await prisma.platform.create({
@@ -75,11 +75,11 @@ async function seedTestData() {
         authConfig: JSON.stringify({
           type: 'oauth',
           clientId: 'test-make-client-id',
-          clientSecret: 'test-make-client-secret'
+          clientSecret: 'test-make-client-secret',
         }),
         status: 'CONNECTED',
-        lastSyncAt: new Date()
-      }
+        lastSyncAt: new Date(),
+      },
     })
 
     // Create test agents
@@ -93,14 +93,14 @@ async function seedTestData() {
           capabilities: JSON.stringify(['email', 'automation']),
           configuration: JSON.stringify({
             triggers: ['webhook'],
-            actions: ['send_email', 'log_data']
+            actions: ['send_email', 'log_data'],
           }),
           healthStatus: JSON.stringify({
             status: 'healthy',
             lastCheck: new Date(),
-            responseTime: 150
-          })
-        }
+            responseTime: 150,
+          }),
+        },
       }),
       prisma.agent.create({
         data: {
@@ -111,14 +111,14 @@ async function seedTestData() {
           capabilities: JSON.stringify(['data_processing', 'api_integration']),
           configuration: JSON.stringify({
             triggers: ['schedule'],
-            actions: ['process_data', 'api_call']
+            actions: ['process_data', 'api_call'],
           }),
           healthStatus: JSON.stringify({
             status: 'healthy',
             lastCheck: new Date(),
-            responseTime: 200
-          })
-        }
+            responseTime: 200,
+          }),
+        },
       }),
       prisma.agent.create({
         data: {
@@ -129,16 +129,16 @@ async function seedTestData() {
           capabilities: JSON.stringify(['testing']),
           configuration: JSON.stringify({
             triggers: ['manual'],
-            actions: ['test_action']
+            actions: ['test_action'],
           }),
           healthStatus: JSON.stringify({
             status: 'unhealthy',
             lastCheck: new Date(),
             responseTime: 5000,
-            error: 'Connection timeout'
-          })
-        }
-      })
+            error: 'Connection timeout',
+          }),
+        },
+      }),
     ])
 
     // Create test tasks
@@ -154,15 +154,15 @@ async function seedTestData() {
           completedAt: new Date(Date.now() - 3600000 + 15000),
           parameters: JSON.stringify({
             recipient: 'user@example.com',
-            template: 'welcome'
+            template: 'welcome',
           }),
           result: JSON.stringify({
             success: true,
             messageId: 'msg-123',
-            deliveredAt: new Date()
+            deliveredAt: new Date(),
           }),
-          createdBy: adminUser.id
-        }
+          createdBy: adminUser.id,
+        },
       }),
       prisma.task.create({
         data: {
@@ -174,10 +174,10 @@ async function seedTestData() {
           startedAt: new Date(Date.now() - 300000 + 2000),
           parameters: JSON.stringify({
             dataSource: 'customers.csv',
-            outputFormat: 'json'
+            outputFormat: 'json',
           }),
-          createdBy: operatorUser.id
-        }
+          createdBy: operatorUser.id,
+        },
       }),
       prisma.task.create({
         data: {
@@ -189,16 +189,16 @@ async function seedTestData() {
           startedAt: new Date(Date.now() - 1800000 + 1000),
           completedAt: new Date(Date.now() - 1800000 + 10000),
           parameters: JSON.stringify({
-            testParam: 'test_value'
+            testParam: 'test_value',
           }),
           error: JSON.stringify({
             code: 'AGENT_UNAVAILABLE',
             message: 'Agent is not responding',
-            stack: 'Error: Agent is not responding\n    at TestAgent.execute'
+            stack: 'Error: Agent is not responding\n    at TestAgent.execute',
           }),
-          createdBy: adminUser.id
-        }
-      })
+          createdBy: adminUser.id,
+        },
+      }),
     ])
 
     // Create some system logs for testing
@@ -208,17 +208,17 @@ async function seedTestData() {
           level: 'INFO',
           message: 'Task completed successfully',
           context: JSON.stringify({ taskId: tasks[0].id }),
-          source: 'TaskService'
-        }
+          source: 'TaskService',
+        },
       }),
       prisma.systemLog.create({
         data: {
           level: 'ERROR',
           message: 'Agent connection failed',
           context: JSON.stringify({ agentId: agents[2].id }),
-          source: 'AgentService'
-        }
-      })
+          source: 'AgentService',
+        },
+      }),
     ])
 
     console.log('✅ Test data seeded successfully')
@@ -226,7 +226,6 @@ async function seedTestData() {
     console.log(`🔌 Created ${2} test platforms`)
     console.log(`🤖 Created ${agents.length} test agents`)
     console.log(`📋 Created ${tasks.length} test tasks`)
-
   } catch (error) {
     console.error('❌ Failed to seed test data:', error)
     throw error

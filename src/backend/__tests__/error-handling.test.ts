@@ -14,9 +14,9 @@ jest.mock('../../lib/database', () => ({
       create: jest.fn(),
       findMany: jest.fn(),
       update: jest.fn(),
-      delete: jest.fn()
-    }
-  }
+      delete: jest.fn(),
+    },
+  },
 }))
 
 // Mock the auth service
@@ -41,11 +41,11 @@ describe('Error Handling Tests', () => {
             expect.objectContaining({
               field: expect.any(String),
               message: expect.any(String),
-              code: expect.any(String)
-            })
+              code: expect.any(String),
+            }),
           ]),
-          timestamp: expect.any(String)
-        }
+          timestamp: expect.any(String),
+        },
       })
     })
 
@@ -56,7 +56,7 @@ describe('Error Handling Tests', () => {
         .send({
           name: 'Test Agent',
           platformType: 'invalid_platform',
-          platformId: 'platform_1'
+          platformId: 'platform_1',
         })
         .expect(400)
 
@@ -64,8 +64,8 @@ describe('Error Handling Tests', () => {
         expect.arrayContaining([
           expect.objectContaining({
             field: 'platformType',
-            message: expect.stringContaining('Invalid enum value')
-          })
+            message: expect.stringContaining('Invalid enum value'),
+          }),
         ])
       )
     })
@@ -77,7 +77,7 @@ describe('Error Handling Tests', () => {
         .send({
           name: '', // Empty string
           platformType: 'n8n',
-          platformId: 'platform_1'
+          platformId: 'platform_1',
         })
         .expect(400)
 
@@ -85,8 +85,8 @@ describe('Error Handling Tests', () => {
         expect.arrayContaining([
           expect.objectContaining({
             field: 'name',
-            message: expect.stringContaining('required')
-          })
+            message: expect.stringContaining('required'),
+          }),
         ])
       )
     })
@@ -101,8 +101,8 @@ describe('Error Handling Tests', () => {
           baseUrl: 'not-a-valid-url',
           authConfig: {
             type: 'api_key',
-            credentials: { apiKey: 'test' }
-          }
+            credentials: { apiKey: 'test' },
+          },
         })
         .expect(400)
 
@@ -110,8 +110,8 @@ describe('Error Handling Tests', () => {
         expect.arrayContaining([
           expect.objectContaining({
             field: 'baseUrl',
-            message: expect.stringContaining('Valid URL is required')
-          })
+            message: expect.stringContaining('Valid URL is required'),
+          }),
         ])
       )
     })
@@ -122,7 +122,7 @@ describe('Error Handling Tests', () => {
         .set('Authorization', validAuthToken)
         .send({
           agentId: 'agent_1',
-          scheduledAt: 'not-a-date'
+          scheduledAt: 'not-a-date',
         })
         .expect(400)
 
@@ -130,8 +130,8 @@ describe('Error Handling Tests', () => {
         expect.arrayContaining([
           expect.objectContaining({
             field: 'scheduledAt',
-            message: expect.stringContaining('datetime')
-          })
+            message: expect.stringContaining('datetime'),
+          }),
         ])
       )
     })
@@ -147,8 +147,8 @@ describe('Error Handling Tests', () => {
         error: {
           code: expect.any(String),
           message: expect.stringContaining('Authentication'),
-          timestamp: expect.any(String)
-        }
+          timestamp: expect.any(String),
+        },
       })
     })
 
@@ -162,8 +162,8 @@ describe('Error Handling Tests', () => {
         error: {
           code: expect.any(String),
           message: expect.any(String),
-          timestamp: expect.any(String)
-        }
+          timestamp: expect.any(String),
+        },
       })
     })
 
@@ -177,8 +177,8 @@ describe('Error Handling Tests', () => {
         error: {
           code: expect.any(String),
           message: expect.any(String),
-          timestamp: expect.any(String)
-        }
+          timestamp: expect.any(String),
+        },
       })
     })
   })
@@ -216,7 +216,9 @@ describe('Error Handling Tests', () => {
 
       expect(response.body.error).toHaveProperty('requestId')
       expect(response.headers).toHaveProperty('x-request-id')
-      expect(response.body.error.requestId).toBe(response.headers['x-request-id'])
+      expect(response.body.error.requestId).toBe(
+        response.headers['x-request-id']
+      )
     })
 
     it('should not expose sensitive information in production', async () => {
@@ -255,8 +257,8 @@ describe('Error Handling Tests', () => {
         platformType: 'n8n',
         platformId: 'platform_1',
         configuration: {
-          largeField: 'x'.repeat(15 * 1024 * 1024) // 15MB
-        }
+          largeField: 'x'.repeat(15 * 1024 * 1024), // 15MB
+        },
       }
 
       const response = await request(app)
@@ -300,8 +302,8 @@ describe('Error Handling Tests', () => {
         error: {
           code: 'ENDPOINT_NOT_FOUND',
           message: expect.stringContaining('not found'),
-          timestamp: expect.any(String)
-        }
+          timestamp: expect.any(String),
+        },
       })
     })
   })
@@ -315,8 +317,8 @@ describe('Error Handling Tests', () => {
         capabilities: ['<img src=x onerror=alert("xss")>'],
         configuration: {
           description: 'javascript:alert("xss")',
-          onclick: 'alert("xss")'
-        }
+          onclick: 'alert("xss")',
+        },
       }
 
       const response = await request(app)
@@ -326,7 +328,7 @@ describe('Error Handling Tests', () => {
 
       // Should not crash the server
       expect([200, 201, 400, 401, 403]).toContain(response.status)
-      
+
       if (response.status === 201) {
         // If created successfully, check that malicious content was sanitized
         expect(response.body.data.agent.name).not.toContain('<script>')
@@ -338,7 +340,7 @@ describe('Error Handling Tests', () => {
       const maliciousData = {
         name: "'; DROP TABLE users; --",
         platformType: 'n8n',
-        platformId: 'platform_1'
+        platformId: 'platform_1',
       }
 
       const response = await request(app)
@@ -361,8 +363,8 @@ describe('Error Handling Tests', () => {
         error: {
           code: expect.any(String),
           message: expect.any(String),
-          timestamp: expect.any(String)
-        }
+          timestamp: expect.any(String),
+        },
       })
 
       // Should not have success field in error responses

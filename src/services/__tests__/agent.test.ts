@@ -3,13 +3,22 @@
  * Comprehensive tests for agent registration, status tracking, health monitoring, and configuration management
  */
 
-import { AgentService, AgentRegistrationData, AgentUpdateData, HealthCheckConfig } from '../agent'
+import {
+  AgentService,
+  AgentRegistrationData,
+  AgentUpdateData,
+  HealthCheckConfig,
+} from '../agent'
 import { AdapterManager } from '@/backend/adapters/adapter-factory'
 import { MockPlatformAdapter } from '@/backend/adapters/mock-adapter'
 import { prisma } from '@/lib/database'
 import { resetDatabase } from '@/lib/database-utils'
 import { logger } from '@/lib/logger'
-import { PlatformConfig, Agent as PlatformAgent, HealthStatus } from '@/types/platform'
+import {
+  PlatformConfig,
+  Agent as PlatformAgent,
+  HealthStatus,
+} from '@/types/platform'
 
 // Mock logger to avoid console output during tests
 jest.mock('@/lib/logger', () => ({
@@ -17,8 +26,8 @@ jest.mock('@/lib/logger', () => ({
     info: jest.fn(),
     error: jest.fn(),
     warn: jest.fn(),
-    debug: jest.fn()
-  }
+    debug: jest.fn(),
+  },
 }))
 
 describe('AgentService', () => {
@@ -31,15 +40,15 @@ describe('AgentService', () => {
   beforeAll(async () => {
     // Reset database before all tests
     await resetDatabase()
-    
+
     // Create test user
     const testUser = await prisma.user.create({
       data: {
         email: 'test@cubcen.com',
         password: 'test123',
         role: 'ADMIN',
-        name: 'Test User'
-      }
+        name: 'Test User',
+      },
     })
     testUserId = testUser.id
 
@@ -50,8 +59,8 @@ describe('AgentService', () => {
         type: 'N8N',
         baseUrl: 'http://localhost:5678',
         status: 'CONNECTED',
-        authConfig: JSON.stringify({ apiKey: 'test-key' })
-      }
+        authConfig: JSON.stringify({ apiKey: 'test-key' }),
+      },
     })
     testPlatformId = testPlatform.id
   })
@@ -60,20 +69,20 @@ describe('AgentService', () => {
     // Clean up agents before each test
     await prisma.agentHealth.deleteMany()
     await prisma.agent.deleteMany()
-    
+
     // Initialize adapter manager and service
     adapterManager = new AdapterManager()
     agentService = new AgentService(adapterManager)
-    
+
     // Create mock adapter
     const mockConfig: PlatformConfig = {
       id: testPlatformId,
       name: 'Test Platform',
       type: 'n8n',
       baseUrl: 'http://localhost:5678',
-      credentials: { apiKey: 'test-key' }
+      credentials: { apiKey: 'test-key' },
     }
-    
+
     mockAdapter = new MockPlatformAdapter(mockConfig)
     await adapterManager.addPlatform(mockConfig)
   })
@@ -96,7 +105,7 @@ describe('AgentService', () => {
         externalId: 'test-agent-001',
         capabilities: ['test', 'automation'],
         configuration: { testMode: true },
-        description: 'Test agent for unit tests'
+        description: 'Test agent for unit tests',
       }
 
       const agent = await agentService.registerAgent(agentData)
@@ -115,34 +124,40 @@ describe('AgentService', () => {
       const agentData: AgentRegistrationData = {
         name: 'Test Agent',
         platformId: 'invalid-platform-id',
-        externalId: 'test-agent-001'
+        externalId: 'test-agent-001',
       }
 
-      await expect(agentService.registerAgent(agentData)).rejects.toThrow('Platform with ID invalid-platform-id not found')
+      await expect(agentService.registerAgent(agentData)).rejects.toThrow(
+        'Platform with ID invalid-platform-id not found'
+      )
     })
 
     it('should throw error when registering duplicate agent', async () => {
       const agentData: AgentRegistrationData = {
         name: 'Test Agent',
         platformId: testPlatformId,
-        externalId: 'test-agent-001'
+        externalId: 'test-agent-001',
       }
 
       // Register first agent
       await agentService.registerAgent(agentData)
 
       // Try to register duplicate
-      await expect(agentService.registerAgent(agentData)).rejects.toThrow('Agent with external ID test-agent-001 already exists')
+      await expect(agentService.registerAgent(agentData)).rejects.toThrow(
+        'Agent with external ID test-agent-001 already exists'
+      )
     })
 
     it('should validate agent registration data', async () => {
       const invalidData = {
         name: '', // Invalid: empty name
         platformId: testPlatformId,
-        externalId: 'test-agent-001'
+        externalId: 'test-agent-001',
       }
 
-      await expect(agentService.registerAgent(invalidData as AgentRegistrationData)).rejects.toThrow()
+      await expect(
+        agentService.registerAgent(invalidData as AgentRegistrationData)
+      ).rejects.toThrow()
     })
   })
 
@@ -155,7 +170,7 @@ describe('AgentService', () => {
         platformId: testPlatformId,
         externalId: 'test-agent-001',
         capabilities: ['test'],
-        configuration: { testMode: true }
+        configuration: { testMode: true },
       })
       testAgentId = agent.id
     })
@@ -166,33 +181,44 @@ describe('AgentService', () => {
         capabilities: ['test', 'automation', 'updated'],
         configuration: { testMode: false, newFeature: true },
         description: 'Updated description',
-        status: 'ACTIVE'
+        status: 'ACTIVE',
       }
 
-      const updatedAgent = await agentService.updateAgent(testAgentId, updateData)
+      const updatedAgent = await agentService.updateAgent(
+        testAgentId,
+        updateData
+      )
 
       expect(updatedAgent.name).toBe(updateData.name)
-      expect(JSON.parse(updatedAgent.capabilities)).toEqual(updateData.capabilities)
-      expect(JSON.parse(updatedAgent.configuration)).toEqual(updateData.configuration)
+      expect(JSON.parse(updatedAgent.capabilities)).toEqual(
+        updateData.capabilities
+      )
+      expect(JSON.parse(updatedAgent.configuration)).toEqual(
+        updateData.configuration
+      )
       expect(updatedAgent.description).toBe(updateData.description)
       expect(updatedAgent.status).toBe(updateData.status)
     })
 
     it('should throw error when updating non-existent agent', async () => {
       const updateData: AgentUpdateData = {
-        name: 'Updated Name'
+        name: 'Updated Name',
       }
 
-      await expect(agentService.updateAgent('invalid-agent-id', updateData)).rejects.toThrow('Agent with ID invalid-agent-id not found')
+      await expect(
+        agentService.updateAgent('invalid-agent-id', updateData)
+      ).rejects.toThrow('Agent with ID invalid-agent-id not found')
     })
 
     it('should validate agent update data', async () => {
       const invalidData = {
         name: '', // Invalid: empty name
-        status: 'INVALID_STATUS' // Invalid status
+        status: 'INVALID_STATUS', // Invalid status
       }
 
-      await expect(agentService.updateAgent(testAgentId, invalidData as AgentUpdateData)).rejects.toThrow()
+      await expect(
+        agentService.updateAgent(testAgentId, invalidData as AgentUpdateData)
+      ).rejects.toThrow()
     })
   })
 
@@ -205,7 +231,7 @@ describe('AgentService', () => {
         platformId: testPlatformId,
         externalId: 'test-agent-001',
         capabilities: ['test'],
-        configuration: { testMode: true }
+        configuration: { testMode: true },
       })
       testAgentId = agent.id
     })
@@ -229,13 +255,13 @@ describe('AgentService', () => {
       await agentService.registerAgent({
         name: 'Second Agent',
         platformId: testPlatformId,
-        externalId: 'test-agent-002'
+        externalId: 'test-agent-002',
       })
 
       const result = await agentService.getAgents({
         page: 1,
         limit: 10,
-        search: 'Test'
+        search: 'Test',
       })
 
       expect(result.agents).toHaveLength(2)
@@ -250,7 +276,7 @@ describe('AgentService', () => {
       await agentService.updateAgent(testAgentId, { status: 'ACTIVE' })
 
       const result = await agentService.getAgents({
-        status: 'ACTIVE'
+        status: 'ACTIVE',
       })
 
       expect(result.agents).toHaveLength(1)
@@ -259,7 +285,7 @@ describe('AgentService', () => {
 
     it('should search agents by name', async () => {
       const result = await agentService.getAgents({
-        search: 'Test Agent'
+        search: 'Test Agent',
       })
 
       expect(result.agents).toHaveLength(1)
@@ -274,7 +300,7 @@ describe('AgentService', () => {
       const agent = await agentService.registerAgent({
         name: 'Test Agent',
         platformId: testPlatformId,
-        externalId: 'test-agent-001'
+        externalId: 'test-agent-001',
       })
       testAgentId = agent.id
     })
@@ -287,7 +313,9 @@ describe('AgentService', () => {
     })
 
     it('should handle deletion of non-existent agent', async () => {
-      await expect(agentService.deleteAgent('invalid-agent-id')).rejects.toThrow()
+      await expect(
+        agentService.deleteAgent('invalid-agent-id')
+      ).rejects.toThrow()
     })
   })
 
@@ -305,7 +333,7 @@ describe('AgentService', () => {
           configuration: { emailProvider: 'smtp' },
           healthStatus: { status: 'healthy', lastCheck: new Date() },
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
         },
         {
           id: 'discovered-agent-002',
@@ -317,8 +345,8 @@ describe('AgentService', () => {
           configuration: { webhookUrl: 'https://example.com/webhook' },
           healthStatus: { status: 'unhealthy', lastCheck: new Date() },
           createdAt: new Date(),
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       ]
 
       jest.spyOn(mockAdapter, 'discoverAgents').mockResolvedValue(mockAgents)
@@ -343,20 +371,22 @@ describe('AgentService', () => {
         name: 'Old Name',
         platformId: testPlatformId,
         externalId: 'discovered-agent-001',
-        capabilities: ['old-capability']
+        capabilities: ['old-capability'],
       })
 
       const result = await agentService.discoverAgents(testPlatformId)
 
       expect(result.discovered).toBe(2)
       expect(result.registered).toBe(1) // Only one new agent
-      expect(result.updated).toBe(1)    // One existing agent updated
+      expect(result.updated).toBe(1) // One existing agent updated
       expect(result.errors).toHaveLength(0)
     })
 
     it('should handle discovery errors gracefully', async () => {
       // Mock adapter to throw error
-      jest.spyOn(mockAdapter, 'discoverAgents').mockRejectedValue(new Error('Platform connection failed'))
+      jest
+        .spyOn(mockAdapter, 'discoverAgents')
+        .mockRejectedValue(new Error('Platform connection failed'))
 
       const result = await agentService.discoverAgents(testPlatformId)
 
@@ -375,7 +405,7 @@ describe('AgentService', () => {
       const agent = await agentService.registerAgent({
         name: 'Test Agent',
         platformId: testPlatformId,
-        externalId: 'test-agent-001'
+        externalId: 'test-agent-001',
       })
       testAgentId = agent.id
 
@@ -384,7 +414,7 @@ describe('AgentService', () => {
         status: 'healthy',
         lastCheck: new Date(),
         responseTime: 150,
-        details: { cpu: 25.5, memory: 128.5 }
+        details: { cpu: 25.5, memory: 128.5 },
       }
       jest.spyOn(mockAdapter, 'healthCheck').mockResolvedValue(mockHealthStatus)
     })
@@ -398,14 +428,16 @@ describe('AgentService', () => {
 
       // Verify health record was stored
       const healthRecord = await prisma.agentHealth.findFirst({
-        where: { agentId: testAgentId }
+        where: { agentId: testAgentId },
       })
       expect(healthRecord).toBeDefined()
     })
 
     it('should handle health check failures', async () => {
       // Mock health check failure
-      jest.spyOn(mockAdapter, 'healthCheck').mockRejectedValue(new Error('Health check timeout'))
+      jest
+        .spyOn(mockAdapter, 'healthCheck')
+        .mockRejectedValue(new Error('Health check timeout'))
 
       const health = await agentService.performHealthCheck(testAgentId)
 
@@ -418,14 +450,14 @@ describe('AgentService', () => {
         interval: 60000,
         timeout: 15000,
         retries: 5,
-        enabled: true
+        enabled: true,
       }
 
       await agentService.configureHealthMonitoring(testAgentId, config)
 
       const status = agentService.getHealthMonitoringStatus()
       const agentStatus = status.find(s => s.agentId === testAgentId)
-      
+
       expect(agentStatus).toBeDefined()
       expect(agentStatus!.enabled).toBe(true)
       expect(agentStatus!.interval).toBe(60000)
@@ -435,24 +467,29 @@ describe('AgentService', () => {
       const invalidConfig = {
         interval: 500, // Too low
         timeout: 70000, // Too high
-        retries: 10,    // Too high
-        enabled: true
+        retries: 10, // Too high
+        enabled: true,
       }
 
-      await expect(agentService.configureHealthMonitoring(testAgentId, invalidConfig as HealthCheckConfig)).rejects.toThrow()
+      await expect(
+        agentService.configureHealthMonitoring(
+          testAgentId,
+          invalidConfig as HealthCheckConfig
+        )
+      ).rejects.toThrow()
     })
 
     it('should start and stop health monitoring', async () => {
       // Start monitoring
       await agentService.startHealthMonitoring(testAgentId)
-      
+
       let status = agentService.getHealthMonitoringStatus()
       let agentStatus = status.find(s => s.agentId === testAgentId)
       expect(agentStatus?.enabled).toBe(true)
 
       // Stop monitoring
       await agentService.stopHealthMonitoring(testAgentId)
-      
+
       status = agentService.getHealthMonitoringStatus()
       agentStatus = status.find(s => s.agentId === testAgentId)
       expect(agentStatus?.enabled).toBe(false)
@@ -466,7 +503,7 @@ describe('AgentService', () => {
       const agent = await agentService.registerAgent({
         name: 'Test Agent',
         platformId: testPlatformId,
-        externalId: 'test-agent-001'
+        externalId: 'test-agent-001',
       })
       testAgentId = agent.id
     })
@@ -479,22 +516,28 @@ describe('AgentService', () => {
     })
 
     it('should handle invalid agent status update', async () => {
-      await expect(agentService.updateAgentStatus('invalid-agent-id', 'ACTIVE')).rejects.toThrow()
+      await expect(
+        agentService.updateAgentStatus('invalid-agent-id', 'ACTIVE')
+      ).rejects.toThrow()
     })
   })
 
   describe('Error Scenarios', () => {
     it('should handle database connection failures', async () => {
       // Mock database error
-      jest.spyOn(prisma.agent, 'create').mockRejectedValue(new Error('Database connection failed'))
+      jest
+        .spyOn(prisma.agent, 'create')
+        .mockRejectedValue(new Error('Database connection failed'))
 
       const agentData: AgentRegistrationData = {
         name: 'Test Agent',
         platformId: testPlatformId,
-        externalId: 'test-agent-001'
+        externalId: 'test-agent-001',
       }
 
-      await expect(agentService.registerAgent(agentData)).rejects.toThrow('Database connection failed')
+      await expect(agentService.registerAgent(agentData)).rejects.toThrow(
+        'Database connection failed'
+      )
     })
 
     it('should handle adapter not found errors', async () => {
@@ -502,19 +545,23 @@ describe('AgentService', () => {
       await adapterManager.removePlatform(testPlatformId)
 
       const testAgentId = 'test-agent-id'
-      
-      await expect(agentService.performHealthCheck(testAgentId)).rejects.toThrow('Agent with ID test-agent-id not found')
+
+      await expect(
+        agentService.performHealthCheck(testAgentId)
+      ).rejects.toThrow('Agent with ID test-agent-id not found')
     })
 
     it('should handle health check timeouts', async () => {
       const agent = await agentService.registerAgent({
         name: 'Test Agent',
         platformId: testPlatformId,
-        externalId: 'test-agent-001'
+        externalId: 'test-agent-001',
       })
 
       // Mock timeout error
-      jest.spyOn(mockAdapter, 'healthCheck').mockRejectedValue(new Error('Request timeout'))
+      jest
+        .spyOn(mockAdapter, 'healthCheck')
+        .mockRejectedValue(new Error('Request timeout'))
 
       const health = await agentService.performHealthCheck(agent.id)
       expect(health.status).toBe('unhealthy')
@@ -527,10 +574,12 @@ describe('AgentService', () => {
         platformId: testPlatformId,
         externalId: 'test-agent-001',
         capabilities: 'invalid-capabilities', // Should be array
-        configuration: 'invalid-config' // Should be object
+        configuration: 'invalid-config', // Should be object
       }
 
-      await expect(agentService.registerAgent(invalidData as AgentRegistrationData)).rejects.toThrow()
+      await expect(
+        agentService.registerAgent(invalidData as AgentRegistrationData)
+      ).rejects.toThrow()
     })
   })
 
@@ -539,7 +588,7 @@ describe('AgentService', () => {
       const agent = await agentService.registerAgent({
         name: 'Test Agent',
         platformId: testPlatformId,
-        externalId: 'test-agent-001'
+        externalId: 'test-agent-001',
       })
 
       // Start health monitoring

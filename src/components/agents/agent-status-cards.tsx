@@ -6,18 +6,18 @@ import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { 
-  Bot, 
-  Activity, 
-  Clock, 
-  Zap, 
+import {
+  Bot,
+  Activity,
+  Clock,
+  Zap,
   AlertTriangle,
   CheckCircle,
   XCircle,
   Pause,
   Settings,
   Eye,
-  RefreshCw
+  RefreshCw,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { Agent } from './agent-list'
@@ -38,7 +38,7 @@ const statusConfig = {
     color: 'text-green-600',
     bgColor: 'bg-green-50',
     borderColor: 'border-green-200',
-    progressColor: 'bg-green-500'
+    progressColor: 'bg-green-500',
   },
   INACTIVE: {
     label: 'Inactive',
@@ -46,7 +46,7 @@ const statusConfig = {
     color: 'text-gray-600',
     bgColor: 'bg-gray-50',
     borderColor: 'border-gray-200',
-    progressColor: 'bg-gray-400'
+    progressColor: 'bg-gray-400',
   },
   ERROR: {
     label: 'Error',
@@ -54,7 +54,7 @@ const statusConfig = {
     color: 'text-red-600',
     bgColor: 'bg-red-50',
     borderColor: 'border-red-200',
-    progressColor: 'bg-red-500'
+    progressColor: 'bg-red-500',
   },
   MAINTENANCE: {
     label: 'Maintenance',
@@ -62,8 +62,8 @@ const statusConfig = {
     color: 'text-yellow-600',
     bgColor: 'bg-yellow-50',
     borderColor: 'border-yellow-200',
-    progressColor: 'bg-yellow-500'
-  }
+    progressColor: 'bg-yellow-500',
+  },
 }
 
 const healthConfig = {
@@ -71,28 +71,28 @@ const healthConfig = {
     label: 'Healthy',
     color: 'text-green-600',
     progress: 100,
-    pulseColor: 'bg-green-400'
+    pulseColor: 'bg-green-400',
   },
   degraded: {
     label: 'Degraded',
     color: 'text-yellow-600',
     progress: 60,
-    pulseColor: 'bg-yellow-400'
+    pulseColor: 'bg-yellow-400',
   },
   unhealthy: {
     label: 'Unhealthy',
     color: 'text-red-600',
     progress: 20,
-    pulseColor: 'bg-red-400'
-  }
+    pulseColor: 'bg-red-400',
+  },
 }
 
-function AgentStatusCard({ 
-  agent, 
-  onViewAgent, 
-  onConfigureAgent, 
-  onRefreshAgent 
-}: { 
+function AgentStatusCard({
+  agent,
+  onViewAgent,
+  onConfigureAgent,
+  onRefreshAgent,
+}: {
   agent: Agent
   onViewAgent?: (agent: Agent) => void
   onConfigureAgent?: (agent: Agent) => void
@@ -118,13 +118,13 @@ function AgentStatusCard({
     const now = new Date()
     const diff = now.getTime() - new Date(date).getTime()
     const minutes = Math.floor(diff / 60000)
-    
+
     if (minutes < 1) return 'Just now'
     if (minutes < 60) return `${minutes}m ago`
-    
+
     const hours = Math.floor(minutes / 60)
     if (hours < 24) return `${hours}h ago`
-    
+
     const days = Math.floor(hours / 24)
     return `${days}d ago`
   }
@@ -138,50 +138,48 @@ function AgentStatusCard({
   }
 
   return (
-    <Card className={cn(
-      "relative overflow-hidden transition-all duration-200 hover:shadow-md",
-      statusInfo.bgColor,
-      statusInfo.borderColor,
-      "border-l-4"
-    )}>
+    <Card
+      className={cn(
+        'relative overflow-hidden transition-all duration-200 hover:shadow-md',
+        statusInfo.bgColor,
+        statusInfo.borderColor,
+        'border-l-4'
+      )}
+    >
       {/* Real-time pulse indicator */}
       {agent.status === 'ACTIVE' && agent.healthStatus.status === 'healthy' && (
         <div className="absolute top-2 right-2">
-          <div className={cn(
-            "w-3 h-3 rounded-full animate-pulse",
-            healthInfo.pulseColor
-          )} />
+          <div
+            className={cn(
+              'w-3 h-3 rounded-full animate-pulse',
+              healthInfo.pulseColor
+            )}
+          />
         </div>
       )}
 
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center space-x-2">
-            <StatusIcon className={cn("h-5 w-5", statusInfo.color)} />
+            <StatusIcon className={cn('h-5 w-5', statusInfo.color)} />
             <div>
               <CardTitle className="text-lg font-semibold text-foreground">
                 {agent.name}
               </CardTitle>
               <div className="flex items-center space-x-2 mt-1">
-                <Badge 
-                  variant="outline" 
-                  className={cn(
-                    "text-xs",
-                    statusInfo.color,
-                    "border-current"
-                  )}
+                <Badge
+                  variant="outline"
+                  className={cn('text-xs', statusInfo.color, 'border-current')}
                 >
                   {statusInfo.label}
                 </Badge>
-                <Badge 
-                  className="text-xs bg-cubcen-primary text-white"
-                >
+                <Badge className="text-xs bg-cubcen-primary text-white">
                   {agent.platform.name}
                 </Badge>
               </div>
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-1">
             <Button
               variant="ghost"
@@ -190,10 +188,9 @@ function AgentStatusCard({
               disabled={isRefreshing}
               className="h-8 w-8 p-0 hover:bg-white/50"
             >
-              <RefreshCw className={cn(
-                "h-4 w-4",
-                isRefreshing && "animate-spin"
-              )} />
+              <RefreshCw
+                className={cn('h-4 w-4', isRefreshing && 'animate-spin')}
+              />
             </Button>
           </div>
         </div>
@@ -207,25 +204,26 @@ function AgentStatusCard({
               <Activity className="h-4 w-4 text-cubcen-primary" />
               <span className="text-sm font-medium">Health Status</span>
             </div>
-            <Badge 
+            <Badge
               className={cn(
-                "text-xs text-white",
-                agent.healthStatus.status === 'healthy' ? 'bg-cubcen-primary' :
-                agent.healthStatus.status === 'degraded' ? 'bg-cubcen-secondary' :
-                'bg-red-500'
+                'text-xs text-white',
+                agent.healthStatus.status === 'healthy'
+                  ? 'bg-cubcen-primary'
+                  : agent.healthStatus.status === 'degraded'
+                    ? 'bg-cubcen-secondary'
+                    : 'bg-red-500'
               )}
             >
               {healthInfo.label}
             </Badge>
           </div>
-          
+
           <div className="space-y-1">
-            <Progress 
-              value={healthInfo.progress} 
-              className="h-2"
-            />
+            <Progress value={healthInfo.progress} className="h-2" />
             <div className="flex justify-between text-xs text-muted-foreground">
-              <span>Response Time: {agent.healthStatus.responseTime || 'N/A'}ms</span>
+              <span>
+                Response Time: {agent.healthStatus.responseTime || 'N/A'}ms
+              </span>
               <span>Uptime: {getUptimePercentage()}%</span>
             </div>
           </div>
@@ -249,10 +247,10 @@ function AgentStatusCard({
             <span className="text-sm font-medium">Capabilities</span>
           </div>
           <div className="flex flex-wrap gap-1">
-            {agent.capabilities.slice(0, 3).map((capability) => (
-              <Badge 
-                key={capability} 
-                variant="outline" 
+            {agent.capabilities.slice(0, 3).map(capability => (
+              <Badge
+                key={capability}
+                variant="outline"
                 className="text-xs bg-cubcen-secondary-light text-cubcen-secondary-hover border-cubcen-secondary"
               >
                 {capability}
@@ -271,7 +269,9 @@ function AgentStatusCard({
           <div className="space-y-2">
             <div className="flex items-center space-x-2">
               <AlertTriangle className="h-4 w-4 text-red-500" />
-              <span className="text-sm font-medium text-red-700">Error Details</span>
+              <span className="text-sm font-medium text-red-700">
+                Error Details
+              </span>
             </div>
             <div className="text-xs text-red-600 bg-red-50 p-2 rounded border border-red-200">
               {agent.healthStatus.error}
@@ -356,17 +356,22 @@ function LoadingCard() {
   )
 }
 
-export function AgentStatusCards({ 
-  agents, 
-  loading = false, 
-  onViewAgent, 
-  onConfigureAgent, 
+export function AgentStatusCards({
+  agents,
+  loading = false,
+  onViewAgent,
+  onConfigureAgent,
   onRefreshAgent,
-  className 
+  className,
 }: AgentStatusCardsProps) {
   if (loading) {
     return (
-      <div className={cn("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6", className)}>
+      <div
+        className={cn(
+          'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6',
+          className
+        )}
+      >
         {Array.from({ length: 6 }).map((_, i) => (
           <LoadingCard key={i} />
         ))}
@@ -389,8 +394,13 @@ export function AgentStatusCards({
   }
 
   return (
-    <div className={cn("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6", className)}>
-      {agents.map((agent) => (
+    <div
+      className={cn(
+        'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6',
+        className
+      )}
+    >
+      {agents.map(agent => (
         <AgentStatusCard
           key={agent.id}
           agent={agent}

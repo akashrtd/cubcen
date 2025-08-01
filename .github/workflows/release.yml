@@ -12,116 +12,116 @@ jobs:
   create-release:
     name: Create Release
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        cache-dependency-path: 'cubcen/package-lock.json'
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'cubcen/package-lock.json'
 
-    - name: Install dependencies
-      working-directory: ./cubcen
-      run: npm ci
+      - name: Install dependencies
+        working-directory: ./cubcen
+        run: npm ci
 
-    - name: Generate Prisma client
-      working-directory: ./cubcen
-      run: npx prisma generate
+      - name: Generate Prisma client
+        working-directory: ./cubcen
+        run: npx prisma generate
 
-    - name: Run quality gates
-      working-directory: ./cubcen
-      run: npm run quality-gates
+      - name: Run quality gates
+        working-directory: ./cubcen
+        run: npm run quality-gates
 
-    - name: Build release artifacts
-      working-directory: ./cubcen
-      run: |
-        npm run build
-        npm run build:server
-        
-        # Create release archive
-        tar -czf cubcen-${{ github.ref_name }}.tar.gz \
-          dist/ \
-          .next/ \
-          public/ \
-          prisma/ \
-          src/generated/ \
-          package.json \
-          package-lock.json
+      - name: Build release artifacts
+        working-directory: ./cubcen
+        run: |
+          npm run build
+          npm run build:server
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+          # Create release archive
+          tar -czf cubcen-${{ github.ref_name }}.tar.gz \
+            dist/ \
+            .next/ \
+            public/ \
+            prisma/ \
+            src/generated/ \
+            package.json \
+            package-lock.json
 
-    - name: Login to Docker Hub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-    - name: Build and push Docker image
-      working-directory: ./cubcen
-      run: |
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/cubcen:${{ github.ref_name }} .
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/cubcen:stable .
-        docker push ${{ secrets.DOCKER_USERNAME }}/cubcen:${{ github.ref_name }}
-        docker push ${{ secrets.DOCKER_USERNAME }}/cubcen:stable
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Generate changelog
-      id: changelog
-      run: |
-        # Generate changelog from git commits
-        PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD~1 2>/dev/null || echo "")
-        if [ -n "$PREVIOUS_TAG" ]; then
-          CHANGELOG=$(git log --pretty=format:"- %s" $PREVIOUS_TAG..HEAD)
-        else
-          CHANGELOG=$(git log --pretty=format:"- %s")
-        fi
-        echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
-        echo "$CHANGELOG" >> $GITHUB_OUTPUT
-        echo "EOF" >> $GITHUB_OUTPUT
+      - name: Build and push Docker image
+        working-directory: ./cubcen
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/cubcen:${{ github.ref_name }} .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/cubcen:stable .
+          docker push ${{ secrets.DOCKER_USERNAME }}/cubcen:${{ github.ref_name }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/cubcen:stable
 
-    - name: Create GitHub Release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref_name }}
-        release_name: Cubcen ${{ github.ref_name }}
-        body: |
-          ## Changes in this Release
-          
-          ${{ steps.changelog.outputs.CHANGELOG }}
-          
-          ## Docker Images
-          
-          - `${{ secrets.DOCKER_USERNAME }}/cubcen:${{ github.ref_name }}`
-          - `${{ secrets.DOCKER_USERNAME }}/cubcen:stable`
-          
-          ## Installation
-          
-          ### Docker
-          ```bash
-          docker pull ${{ secrets.DOCKER_USERNAME }}/cubcen:${{ github.ref_name }}
-          docker run -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/cubcen:${{ github.ref_name }}
-          ```
-          
-          ### Docker Compose
-          ```bash
-          wget https://raw.githubusercontent.com/your-org/cubcen/${{ github.ref_name }}/cubcen/docker-compose.yml
-          docker-compose up -d
-          ```
-        draft: false
-        prerelease: false
+      - name: Generate changelog
+        id: changelog
+        run: |
+          # Generate changelog from git commits
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD~1 2>/dev/null || echo "")
+          if [ -n "$PREVIOUS_TAG" ]; then
+            CHANGELOG=$(git log --pretty=format:"- %s" $PREVIOUS_TAG..HEAD)
+          else
+            CHANGELOG=$(git log --pretty=format:"- %s")
+          fi
+          echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
-    - name: Upload release artifact
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./cubcen/cubcen-${{ github.ref_name }}.tar.gz
-        asset_name: cubcen-${{ github.ref_name }}.tar.gz
-        asset_content_type: application/gzip
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Cubcen ${{ github.ref_name }}
+          body: |
+            ## Changes in this Release
+
+            ${{ steps.changelog.outputs.CHANGELOG }}
+
+            ## Docker Images
+
+            - `${{ secrets.DOCKER_USERNAME }}/cubcen:${{ github.ref_name }}`
+            - `${{ secrets.DOCKER_USERNAME }}/cubcen:stable`
+
+            ## Installation
+
+            ### Docker
+            ```bash
+            docker pull ${{ secrets.DOCKER_USERNAME }}/cubcen:${{ github.ref_name }}
+            docker run -p 3000:3000 ${{ secrets.DOCKER_USERNAME }}/cubcen:${{ github.ref_name }}
+            ```
+
+            ### Docker Compose
+            ```bash
+            wget https://raw.githubusercontent.com/your-org/cubcen/${{ github.ref_name }}/cubcen/docker-compose.yml
+            docker-compose up -d
+            ```
+          draft: false
+          prerelease: false
+
+      - name: Upload release artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./cubcen/cubcen-${{ github.ref_name }}.tar.gz
+          asset_name: cubcen-${{ github.ref_name }}.tar.gz
+          asset_content_type: application/gzip

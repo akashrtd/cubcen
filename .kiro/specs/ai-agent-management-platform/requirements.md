@@ -7,10 +7,11 @@ Cubcen is a centralized AI agent management platform designed to manage, monitor
 ### Cubcen Brand Identity
 
 **Platform Name**: Cubcen - A modern, professional brand for AI agent management
-**Brand Colors**: 
+**Brand Colors**:
+
 - Primary: #3F51B5 (Indigo) - Main brand color for buttons, links, and primary actions
 - Secondary: #B19ADA (Light Purple) - Accent color for highlights, badges, and secondary elements
-**Design Philosophy**: Clean, accessible, and consistent user interface using shadcn/ui components
+  **Design Philosophy**: Clean, accessible, and consistent user interface using shadcn/ui components
 
 ## MVP Scope and Priorities
 

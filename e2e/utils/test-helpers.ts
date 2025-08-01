@@ -15,7 +15,10 @@ export class AuthHelper {
   /**
    * Login and get JWT token for a test user
    */
-  async loginAs(email: string, password: string = 'testpassword123'): Promise<string> {
+  async loginAs(
+    email: string,
+    password: string = 'testpassword123'
+  ): Promise<string> {
     if (this.tokens.has(email)) {
       return this.tokens.get(email)!
     }
@@ -63,9 +66,7 @@ export class ApiHelper {
    */
   async get(path: string, userEmail: string = 'admin@cubcen.test') {
     const headers = await this.auth.getAuthHeader(userEmail)
-    return request(this.server.getUrl())
-      .get(path)
-      .set(headers)
+    return request(this.server.getUrl()).get(path).set(headers)
   }
 
   /**
@@ -73,10 +74,7 @@ export class ApiHelper {
    */
   async post(path: string, data: any, userEmail: string = 'admin@cubcen.test') {
     const headers = await this.auth.getAuthHeader(userEmail)
-    return request(this.server.getUrl())
-      .post(path)
-      .set(headers)
-      .send(data)
+    return request(this.server.getUrl()).post(path).set(headers).send(data)
   }
 
   /**
@@ -84,10 +82,7 @@ export class ApiHelper {
    */
   async put(path: string, data: any, userEmail: string = 'admin@cubcen.test') {
     const headers = await this.auth.getAuthHeader(userEmail)
-    return request(this.server.getUrl())
-      .put(path)
-      .set(headers)
-      .send(data)
+    return request(this.server.getUrl()).put(path).set(headers).send(data)
   }
 
   /**
@@ -95,9 +90,7 @@ export class ApiHelper {
    */
   async delete(path: string, userEmail: string = 'admin@cubcen.test') {
     const headers = await this.auth.getAuthHeader(userEmail)
-    return request(this.server.getUrl())
-      .delete(path)
-      .set(headers)
+    return request(this.server.getUrl()).delete(path).set(headers)
   }
 
   /**
@@ -181,14 +174,14 @@ export async function waitFor(
   interval: number = 100
 ): Promise<void> {
   const start = Date.now()
-  
+
   while (Date.now() - start < timeout) {
     if (await condition()) {
       return
     }
     await new Promise(resolve => setTimeout(resolve, interval))
   }
-  
+
   throw new Error(`Condition not met within ${timeout}ms`)
 }
 

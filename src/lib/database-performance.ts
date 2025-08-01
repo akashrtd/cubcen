@@ -72,7 +72,7 @@ class DatabasePerformanceMonitor {
 
   private recordQueryMetric(metric: QueryPerformanceMetrics) {
     this.queryMetrics.push(metric)
-    
+
     // Keep only recent metrics to prevent memory leaks
     if (this.queryMetrics.length > this.MAX_METRICS_HISTORY) {
       this.queryMetrics = this.queryMetrics.slice(-this.MAX_METRICS_HISTORY)
@@ -86,9 +86,10 @@ class DatabasePerformanceMonitor {
     )
 
     const totalQueries = recentMetrics.length
-    const averageQueryTime = totalQueries > 0 
-      ? recentMetrics.reduce((sum, m) => sum + m.duration, 0) / totalQueries
-      : 0
+    const averageQueryTime =
+      totalQueries > 0
+        ? recentMetrics.reduce((sum, m) => sum + m.duration, 0) / totalQueries
+        : 0
 
     const slowQueries = recentMetrics
       .filter(m => m.duration > this.SLOW_QUERY_THRESHOLD)
@@ -112,11 +113,13 @@ class DatabasePerformanceMonitor {
   private async getIndexUsageStats() {
     try {
       // SQLite-specific query to get index usage statistics
-      const indexStats = await prisma.$queryRaw<Array<{
-        name: string
-        tbl_name: string
-        sql: string
-      }>>`
+      const indexStats = await prisma.$queryRaw<
+        Array<{
+          name: string
+          tbl_name: string
+          sql: string
+        }>
+      >`
         SELECT name, tbl_name, sql 
         FROM sqlite_master 
         WHERE type = 'index' AND name NOT LIKE 'sqlite_%'
@@ -178,7 +181,10 @@ export class OptimizedQueries {
   /**
    * Get task statistics efficiently using aggregation
    */
-  static async getTaskStatistics(agentId?: string, dateRange?: { start: Date; end: Date }) {
+  static async getTaskStatistics(
+    agentId?: string,
+    dateRange?: { start: Date; end: Date }
+  ) {
     const where = {
       ...(agentId && { agentId }),
       ...(dateRange && {
@@ -331,10 +337,12 @@ export class DatabaseOptimizer {
   private static async getTableStats() {
     try {
       // Get table sizes and row counts
-      const tables = await prisma.$queryRaw<Array<{
-        name: string
-        count: number
-      }>>`
+      const tables = await prisma.$queryRaw<
+        Array<{
+          name: string
+          count: number
+        }>
+      >`
         SELECT 
           name,
           (SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=m.name) as count
@@ -405,19 +413,19 @@ export class DatabaseOptimizer {
       // Task performance indexes
       `CREATE INDEX IF NOT EXISTS idx_tasks_agent_status_date 
        ON cubcen_tasks(agentId, status, createdAt)`,
-      
+
       // Health monitoring indexes
       `CREATE INDEX IF NOT EXISTS idx_agent_health_agent_date 
        ON cubcen_agent_health(agentId, lastCheckAt)`,
-      
+
       // System logs indexes
       `CREATE INDEX IF NOT EXISTS idx_system_logs_level_source_time 
        ON cubcen_system_logs(level, source, timestamp)`,
-      
+
       // Notification indexes
       `CREATE INDEX IF NOT EXISTS idx_notifications_user_status_date 
        ON cubcen_notifications(userId, status, createdAt)`,
-      
+
       // Workflow performance indexes
       `CREATE INDEX IF NOT EXISTS idx_workflow_steps_workflow_order 
        ON cubcen_workflow_steps(workflowId, stepOrder)`,

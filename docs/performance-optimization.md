@@ -51,12 +51,14 @@ CREATE INDEX idx_notifications_user_status_date ON cubcen_notifications(userId, 
 
 ```typescript
 // ✅ Good: Use optimized queries with proper includes
-const agents = await OptimizedQueries.getAgentsWithPlatforms(50, 0);
+const agents = await OptimizedQueries.getAgentsWithPlatforms(50, 0)
 
 // ❌ Bad: N+1 query problem
-const agents = await prisma.agent.findMany();
+const agents = await prisma.agent.findMany()
 for (const agent of agents) {
-  const platform = await prisma.platform.findUnique({ where: { id: agent.platformId } });
+  const platform = await prisma.platform.findUnique({
+    where: { id: agent.platformId },
+  })
 }
 ```
 
@@ -64,11 +66,13 @@ for (const agent of agents) {
 
 ```typescript
 // ✅ Good: Use database aggregation
-const stats = await OptimizedQueries.getTaskStatistics(agentId, dateRange);
+const stats = await OptimizedQueries.getTaskStatistics(agentId, dateRange)
 
 // ❌ Bad: Fetch all data and aggregate in application
-const tasks = await prisma.task.findMany({ where: { agentId } });
-const stats = tasks.reduce((acc, task) => { /* aggregation logic */ }, {});
+const tasks = await prisma.task.findMany({ where: { agentId } })
+const stats = tasks.reduce((acc, task) => {
+  /* aggregation logic */
+}, {})
 ```
 
 ### Connection Management
@@ -91,11 +95,11 @@ const stats = tasks.reduce((acc, task) => { /* aggregation logic */ }, {});
 ```typescript
 // Cache TTL settings
 const CACHE_TTL = {
-  ANALYTICS: 10 * 60 * 1000,    // 10 minutes
-  AGENT_DATA: 2 * 60 * 1000,    // 2 minutes
-  TASK_DATA: 1 * 60 * 1000,     // 1 minute
-  HEALTH_DATA: 30 * 1000,       // 30 seconds
-};
+  ANALYTICS: 10 * 60 * 1000, // 10 minutes
+  AGENT_DATA: 2 * 60 * 1000, // 2 minutes
+  TASK_DATA: 1 * 60 * 1000, // 1 minute
+  HEALTH_DATA: 30 * 1000, // 30 seconds
+}
 ```
 
 ### Cache Usage Patterns
@@ -117,10 +121,10 @@ const data = await AnalyticsCache.getOrSet(
   cacheKey,
   async () => await fetchDataFromDatabase(),
   ttl
-);
+)
 
 // Cache invalidation
-AnalyticsCache.invalidatePattern('analytics:');
+AnalyticsCache.invalidatePattern('analytics:')
 ```
 
 ### Cache Warming
@@ -129,7 +133,7 @@ Automatic cache warming on application startup:
 
 ```typescript
 // Warm frequently accessed data
-await CacheWarmer.warmCache();
+await CacheWarmer.warmCache()
 ```
 
 ## Performance Monitoring
@@ -154,7 +158,7 @@ const thresholds = [
   { metric: 'database_query_time', warning: 1000, critical: 5000, unit: 'ms' },
   { metric: 'api_response_time', warning: 2000, critical: 5000, unit: 'ms' },
   { metric: 'cache_hit_rate', warning: 70, critical: 50, unit: '%' },
-];
+]
 ```
 
 ### Alerting System
@@ -185,19 +189,19 @@ The platform includes comprehensive load testing capabilities:
 #### Database Load Test
 
 ```typescript
-const result = await LoadTester.testDatabase(30000, 10); // 30s, 10 concurrent
+const result = await LoadTester.testDatabase(30000, 10) // 30s, 10 concurrent
 ```
 
 #### Cache Load Test
 
 ```typescript
-const result = await LoadTester.testCache(30000, 50); // 30s, 50 concurrent
+const result = await LoadTester.testCache(30000, 50) // 30s, 50 concurrent
 ```
 
 #### Memory Stress Test
 
 ```typescript
-const result = await LoadTester.testMemory(60000, 5); // 60s, 5 concurrent
+const result = await LoadTester.testMemory(60000, 5) // 60s, 5 concurrent
 ```
 
 ### Performance Benchmarks
@@ -206,13 +210,13 @@ Regular benchmarking of critical operations:
 
 ```typescript
 // Database benchmarks
-const dbResults = await Benchmark.benchmarkDatabase();
+const dbResults = await Benchmark.benchmarkDatabase()
 
 // Cache benchmarks
-const cacheResults = await Benchmark.benchmarkCache();
+const cacheResults = await Benchmark.benchmarkCache()
 
 // API benchmarks
-const apiResults = await Benchmark.benchmarkAPI();
+const apiResults = await Benchmark.benchmarkAPI()
 ```
 
 ### Test Suite Execution
@@ -233,10 +237,10 @@ const lazyLoader = new LazyLoader(
   async (page, limit) => await fetchAgents(page, limit),
   20, // items per page
   { threshold: 200, debounceMs: 100 }
-);
+)
 
 // Load more data
-await lazyLoader.loadMore();
+await lazyLoader.loadMore()
 ```
 
 ### Virtual Scrolling
@@ -247,13 +251,13 @@ For very large datasets:
 const virtualScroller = new VirtualScroller({
   itemHeight: 60,
   containerHeight: 400,
-  overscan: 5
-});
+  overscan: 5,
+})
 
 const { items, totalHeight, offsetY } = virtualScroller.getItemsToRender(
   allItems,
   scrollTop
-);
+)
 ```
 
 ### Pagination
@@ -267,7 +271,7 @@ const result = await analyticsService.getAgentPerformancePaginated(
   dateRange,
   sortBy,
   sortOrder
-);
+)
 ```
 
 ## API Performance
@@ -286,13 +290,13 @@ const result = await analyticsService.getAgentPerformancePaginated(
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // requests per window
-});
+})
 
 // Stricter limits for auth endpoints
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 5, // auth attempts per window
-});
+})
 ```
 
 ### Request Optimization
@@ -308,8 +312,12 @@ const authLimiter = rateLimit({
 Continuous monitoring of memory usage:
 
 ```typescript
-const memoryUsage = process.memoryUsage();
-performanceMonitor.recordMetric('heap_used', memoryUsage.heapUsed / 1024 / 1024, 'MB');
+const memoryUsage = process.memoryUsage()
+performanceMonitor.recordMetric(
+  'heap_used',
+  memoryUsage.heapUsed / 1024 / 1024,
+  'MB'
+)
 ```
 
 ### Memory Leak Prevention
@@ -331,11 +339,13 @@ performanceMonitor.recordMetric('heap_used', memoryUsage.heapUsed / 1024 / 1024,
 #### Slow Database Queries
 
 **Symptoms:**
+
 - High database query times
 - Slow API responses
 - Database timeout errors
 
 **Solutions:**
+
 1. Check query execution plans
 2. Add missing indexes
 3. Optimize query structure
@@ -343,17 +353,19 @@ performanceMonitor.recordMetric('heap_used', memoryUsage.heapUsed / 1024 / 1024,
 
 ```typescript
 // Check slow queries
-const slowQueries = dbPerformanceMonitor.getSlowQueries(10);
+const slowQueries = dbPerformanceMonitor.getSlowQueries(10)
 ```
 
 #### Cache Misses
 
 **Symptoms:**
+
 - Low cache hit rates
 - Repeated database queries
 - High response times
 
 **Solutions:**
+
 1. Adjust cache TTL settings
 2. Implement cache warming
 3. Review cache invalidation logic
@@ -361,7 +373,7 @@ const slowQueries = dbPerformanceMonitor.getSlowQueries(10);
 
 ```typescript
 // Check cache statistics
-const cacheStats = cache.getStats();
+const cacheStats = cache.getStats()
 if (cacheStats.hitRate < 70) {
   // Investigate cache configuration
 }
@@ -370,11 +382,13 @@ if (cacheStats.hitRate < 70) {
 #### Memory Leaks
 
 **Symptoms:**
+
 - Continuously increasing memory usage
 - Out of memory errors
 - Performance degradation over time
 
 **Solutions:**
+
 1. Monitor memory growth patterns
 2. Check for unclosed connections
 3. Review event listener cleanup
@@ -382,9 +396,10 @@ if (cacheStats.hitRate < 70) {
 
 ```typescript
 // Monitor memory growth
-const memoryGrowth = currentMemory.heapUsed - initialMemory.heapUsed;
-if (memoryGrowth > 100 * 1024 * 1024) { // 100MB
-  logger.warn('Potential memory leak detected');
+const memoryGrowth = currentMemory.heapUsed - initialMemory.heapUsed
+if (memoryGrowth > 100 * 1024 * 1024) {
+  // 100MB
+  logger.warn('Potential memory leak detected')
 }
 ```
 
@@ -400,16 +415,20 @@ DEBUG=cubcen:performance npm start
 
 ```typescript
 // Profile specific operations
-const result = await Benchmark.run('operation-name', async () => {
-  // Operation to profile
-}, 1000);
+const result = await Benchmark.run(
+  'operation-name',
+  async () => {
+    // Operation to profile
+  },
+  1000
+)
 ```
 
 #### Database Query Analysis
 
 ```typescript
 // Analyze database performance
-const analysis = await DatabaseOptimizer.analyzePerformance();
+const analysis = await DatabaseOptimizer.analyzePerformance()
 ```
 
 ## Best Practices

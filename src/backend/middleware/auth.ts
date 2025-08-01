@@ -4,15 +4,15 @@
 import { Request, Response, NextFunction } from 'express'
 import { UserRole } from '@/types/auth'
 import { authService } from '@/services/auth'
-import { 
-  AuthUser, 
-  AuthenticationError, 
+import {
+  AuthUser,
+  AuthenticationError,
   AuthorizationError,
-  Permission 
+  Permission,
 } from '@/types/auth'
-import { 
+import {
   requirePermission as rbacRequirePermission,
-  requireResourcePermission as rbacRequireResourcePermission 
+  requireResourcePermission as rbacRequireResourcePermission,
 } from '@/lib/rbac'
 import { logger } from '@/lib/logger'
 import { prisma } from '@/lib/database'
@@ -30,32 +30,32 @@ declare module 'express-serve-static-core' {
  * Authentication middleware - validates JWT token and adds user to request
  */
 export async function authenticate(
-  req: Request, 
-  res: Response, 
+  req: Request,
+  res: Response,
   next: NextFunction
 ): Promise<void> {
   try {
     const authHeader = req.headers.authorization
     const user = await authService.validateAuthHeader(authHeader)
-    
+
     // Add user to request object
     req.user = user
-    
-    logger.debug('User authenticated', { 
-      userId: user.id, 
-      email: user.email, 
+
+    logger.debug('User authenticated', {
+      userId: user.id,
+      email: user.email,
       role: user.role,
       path: req.path,
-      method: req.method
+      method: req.method,
     })
-    
+
     next()
   } catch (error) {
-    logger.warn('Authentication failed', { 
+    logger.warn('Authentication failed', {
       error: error instanceof Error ? error.message : 'Unknown error',
       path: req.path,
       method: req.method,
-      authHeader: req.headers.authorization ? 'present' : 'missing'
+      authHeader: req.headers.authorization ? 'present' : 'missing',
     })
 
     if (error instanceof AuthenticationError) {
@@ -63,8 +63,8 @@ export async function authenticate(
         error: {
           code: error.code,
           message: error.message,
-          timestamp: new Date().toISOString()
-        }
+          timestamp: new Date().toISOString(),
+        },
       })
       return
     }
@@ -73,8 +73,8 @@ export async function authenticate(
       error: {
         code: 'AUTHENTICATION_FAILED',
         message: 'Authentication required',
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      },
     })
   }
 }
@@ -83,8 +83,8 @@ export async function authenticate(
  * Optional authentication middleware - adds user to request if token is valid, but doesn't require it
  */
 export async function optionalAuthenticate(
-  req: Request, 
-  res: Response, 
+  req: Request,
+  res: Response,
   next: NextFunction
 ): Promise<void> {
   try {
@@ -92,19 +92,19 @@ export async function optionalAuthenticate(
     if (authHeader) {
       const user = await authService.validateAuthHeader(authHeader)
       req.user = user
-      
-      logger.debug('Optional authentication successful', { 
-        userId: user.id, 
-        email: user.email, 
-        role: user.role 
+
+      logger.debug('Optional authentication successful', {
+        userId: user.id,
+        email: user.email,
+        role: user.role,
       })
     }
-    
+
     next()
   } catch (error) {
     // For optional auth, we don't fail on invalid tokens, just continue without user
-    logger.debug('Optional authentication failed, continuing without user', { 
-      error: error instanceof Error ? error.message : 'Unknown error'
+    logger.debug('Optional authentication failed, continuing without user', {
+      error: error instanceof Error ? error.message : 'Unknown error',
     })
     next()
   }
@@ -117,7 +117,10 @@ export function requireRole(...allowedRoles: UserRole[]) {
   return (req: Request, res: Response, next: NextFunction): void => {
     try {
       if (!req.user) {
-        throw new AuthorizationError('Authentication required', 'NOT_AUTHENTICATED')
+        throw new AuthorizationError(
+          'Authentication required',
+          'NOT_AUTHENTICATED'
+        )
       }
 
       if (!allowedRoles.includes(req.user.role)) {
@@ -126,7 +129,7 @@ export function requireRole(...allowedRoles: UserRole[]) {
           userRole: req.user.role,
           requiredRoles: allowedRoles,
           path: req.path,
-          method: req.method
+          method: req.method,
         })
 
         throw new AuthorizationError(
@@ -138,7 +141,7 @@ export function requireRole(...allowedRoles: UserRole[]) {
       logger.debug('Role authorization successful', {
         userId: req.user.id,
         userRole: req.user.role,
-        requiredRoles: allowedRoles
+        requiredRoles: allowedRoles,
       })
 
       next()
@@ -148,8 +151,8 @@ export function requireRole(...allowedRoles: UserRole[]) {
           error: {
             code: error.code,
             message: error.message,
-            timestamp: new Date().toISOString()
-          }
+            timestamp: new Date().toISOString(),
+          },
         })
         return
       }
@@ -158,8 +161,8 @@ export function requireRole(...allowedRoles: UserRole[]) {
         error: {
           code: 'AUTHORIZATION_FAILED',
           message: 'Access denied',
-          timestamp: new Date().toISOString()
-        }
+          timestamp: new Date().toISOString(),
+        },
       })
     }
   }
@@ -172,7 +175,10 @@ export function requirePermission(permission: Permission) {
   return (req: Request, res: Response, next: NextFunction): void => {
     try {
       if (!req.user) {
-        throw new AuthorizationError('Authentication required', 'NOT_AUTHENTICATED')
+        throw new AuthorizationError(
+          'Authentication required',
+          'NOT_AUTHENTICATED'
+        )
       }
 
       rbacRequirePermission(req.user.role, permission)
@@ -180,7 +186,7 @@ export function requirePermission(permission: Permission) {
       logger.debug('Permission authorization successful', {
         userId: req.user.id,
         userRole: req.user.role,
-        permission: permission
+        permission: permission,
       })
 
       next()
@@ -191,7 +197,7 @@ export function requirePermission(permission: Permission) {
         permission: permission,
         error: error instanceof Error ? error.message : 'Unknown error',
         path: req.path,
-        method: req.method
+        method: req.method,
       })
 
       if (error instanceof AuthorizationError) {
@@ -199,8 +205,8 @@ export function requirePermission(permission: Permission) {
           error: {
             code: error.code,
             message: error.message,
-            timestamp: new Date().toISOString()
-          }
+            timestamp: new Date().toISOString(),
+          },
         })
         return
       }
@@ -209,8 +215,8 @@ export function requirePermission(permission: Permission) {
         error: {
           code: 'AUTHORIZATION_FAILED',
           message: 'Access denied',
-          timestamp: new Date().toISOString()
-        }
+          timestamp: new Date().toISOString(),
+        },
       })
     }
   }
@@ -223,7 +229,10 @@ export function requireResourcePermission(resource: string, action: string) {
   return (req: Request, res: Response, next: NextFunction): void => {
     try {
       if (!req.user) {
-        throw new AuthorizationError('Authentication required', 'NOT_AUTHENTICATED')
+        throw new AuthorizationError(
+          'Authentication required',
+          'NOT_AUTHENTICATED'
+        )
       }
 
       rbacRequireResourcePermission(req.user.role, resource, action)
@@ -232,7 +241,7 @@ export function requireResourcePermission(resource: string, action: string) {
         userId: req.user.id,
         userRole: req.user.role,
         resource,
-        action
+        action,
       })
 
       next()
@@ -244,7 +253,7 @@ export function requireResourcePermission(resource: string, action: string) {
         action,
         error: error instanceof Error ? error.message : 'Unknown error',
         path: req.path,
-        method: req.method
+        method: req.method,
       })
 
       if (error instanceof AuthorizationError) {
@@ -252,8 +261,8 @@ export function requireResourcePermission(resource: string, action: string) {
           error: {
             code: error.code,
             message: error.message,
-            timestamp: new Date().toISOString()
-          }
+            timestamp: new Date().toISOString(),
+          },
         })
         return
       }
@@ -262,8 +271,8 @@ export function requireResourcePermission(resource: string, action: string) {
         error: {
           code: 'AUTHORIZATION_FAILED',
           message: 'Access denied',
-          timestamp: new Date().toISOString()
-        }
+          timestamp: new Date().toISOString(),
+        },
       })
     }
   }
@@ -282,7 +291,11 @@ export const requireOperator = requireRole(UserRole.ADMIN, UserRole.OPERATOR)
 /**
  * Any authenticated user middleware (all roles)
  */
-export const requireAuth = requireRole(UserRole.ADMIN, UserRole.OPERATOR, UserRole.VIEWER)
+export const requireAuth = requireRole(
+  UserRole.ADMIN,
+  UserRole.OPERATOR,
+  UserRole.VIEWER
+)
 
 /**
  * Self or admin access middleware - allows users to access their own resources or admins to access any
@@ -291,7 +304,10 @@ export function requireSelfOrAdmin(userIdParam: string = 'userId') {
   return (req: Request, res: Response, next: NextFunction): void => {
     try {
       if (!req.user) {
-        throw new AuthorizationError('Authentication required', 'NOT_AUTHENTICATED')
+        throw new AuthorizationError(
+          'Authentication required',
+          'NOT_AUTHENTICATED'
+        )
       }
 
       const targetUserId = req.params[userIdParam]
@@ -304,7 +320,7 @@ export function requireSelfOrAdmin(userIdParam: string = 'userId') {
           userRole: req.user.role,
           targetUserId,
           path: req.path,
-          method: req.method
+          method: req.method,
         })
 
         throw new AuthorizationError(
@@ -318,7 +334,7 @@ export function requireSelfOrAdmin(userIdParam: string = 'userId') {
         userRole: req.user.role,
         targetUserId,
         isAdmin,
-        isSelf
+        isSelf,
       })
 
       next()
@@ -328,8 +344,8 @@ export function requireSelfOrAdmin(userIdParam: string = 'userId') {
           error: {
             code: error.code,
             message: error.message,
-            timestamp: new Date().toISOString()
-          }
+            timestamp: new Date().toISOString(),
+          },
         })
         return
       }
@@ -338,8 +354,8 @@ export function requireSelfOrAdmin(userIdParam: string = 'userId') {
         error: {
           code: 'AUTHORIZATION_FAILED',
           message: 'Access denied',
-          timestamp: new Date().toISOString()
-        }
+          timestamp: new Date().toISOString(),
+        },
       })
     }
   }

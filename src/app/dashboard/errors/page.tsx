@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import React from 'react'
 import { ErrorLogViewer } from '@/components/errors/error-log-viewer'
@@ -12,9 +12,12 @@ export default function ErrorsPage() {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Error Handling & Recovery</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Error Handling & Recovery
+          </h1>
           <p className="text-gray-600 mt-2">
-            Monitor system errors, detect patterns, and manage recovery operations
+            Monitor system errors, detect patterns, and manage recovery
+            operations
           </p>
         </div>
       </div>

@@ -35,83 +35,83 @@ class ComprehensiveTestRunner {
       command: 'npm run format:check',
       description: 'Verify code formatting with Prettier',
       required: true,
-      timeout: 30000
+      timeout: 30000,
     },
     {
       name: 'Linting',
       command: 'npm run lint',
       description: 'ESLint code quality checks',
       required: true,
-      timeout: 60000
+      timeout: 60000,
     },
     {
       name: 'Type Checking',
       command: 'npm run type-check',
       description: 'TypeScript strict type validation',
       required: true,
-      timeout: 120000
+      timeout: 120000,
     },
     {
       name: 'Security Audit',
       command: 'npm audit --audit-level moderate',
       description: 'Dependency vulnerability scanning',
       required: true,
-      timeout: 60000
+      timeout: 60000,
     },
     {
       name: 'Unit Tests',
       command: 'npm run test:coverage',
       description: 'Unit tests with coverage reporting',
       required: true,
-      timeout: 300000
+      timeout: 300000,
     },
     {
       name: 'Backend Integration Tests',
       command: 'npm run test:backend',
       description: 'API and database integration tests',
       required: true,
-      timeout: 300000
+      timeout: 300000,
     },
     {
       name: 'Build Validation',
       command: 'npm run build',
       description: 'Production build verification',
       required: true,
-      timeout: 180000
+      timeout: 180000,
     },
     {
       name: 'Server Build',
       command: 'npm run build:server',
       description: 'Server-side build verification',
       required: true,
-      timeout: 120000
+      timeout: 120000,
     },
     {
       name: 'API Documentation',
       command: 'npm run test:api-docs',
       description: 'API documentation validation',
       required: false,
-      timeout: 60000
+      timeout: 60000,
     },
     {
       name: 'End-to-End Tests',
       command: 'npm run test:e2e',
       description: 'Complete user journey testing',
       required: true,
-      timeout: 600000
+      timeout: 600000,
     },
     {
       name: 'Performance Tests',
       command: 'npm run test:performance',
       description: 'Load and performance testing',
       required: false,
-      timeout: 300000
-    }
+      timeout: 300000,
+    },
   ]
 
   async run(): Promise<void> {
     console.log('🚀 Starting Comprehensive Test Suite for Cubcen')
-    console.log('=' .repeat(60))
+    console.log('='.repeat(60))
 
     // Setup test environment
     await this.setupEnvironment()
@@ -125,7 +125,9 @@ class ComprehensiveTestRunner {
     await this.generateReport()
 
     // Exit with appropriate code
-    const hasFailures = this.results.some(r => !r.success && this.testSuites.find(s => s.name === r.name)?.required)
+    const hasFailures = this.results.some(
+      r => !r.success && this.testSuites.find(s => s.name === r.name)?.required
+    )
     process.exit(hasFailures ? 1 : 0)
   }
 
@@ -151,9 +153,9 @@ class ComprehensiveTestRunner {
       ;(process.env as any).NODE_ENV = 'test'
       process.env.JWT_SECRET = 'test-jwt-secret-for-comprehensive-testing'
 
-      execSync('npx prisma migrate deploy', { 
+      execSync('npx prisma migrate deploy', {
         stdio: 'inherit',
-        env: { ...process.env, DATABASE_URL: 'file:./e2e/temp/test.db' }
+        env: { ...process.env, DATABASE_URL: 'file:./e2e/temp/test.db' },
       })
 
       console.log('✅ Test environment setup complete\n')
@@ -176,7 +178,7 @@ class ComprehensiveTestRunner {
       output = execSync(suite.command, {
         encoding: 'utf8',
         timeout: suite.timeout,
-        env: { ...process.env }
+        env: { ...process.env },
       })
       success = true
       console.log(`✅ ${suite.name} passed`)
@@ -202,7 +204,7 @@ class ComprehensiveTestRunner {
       success,
       duration,
       output,
-      error
+      error,
     })
 
     console.log(`   Duration: ${(duration / 1000).toFixed(2)}s\n`)
@@ -212,12 +214,12 @@ class ComprehensiveTestRunner {
     const totalDuration = Date.now() - this.startTime
     const passedTests = this.results.filter(r => r.success)
     const failedTests = this.results.filter(r => !r.success)
-    const requiredFailures = failedTests.filter(r => 
-      this.testSuites.find(s => s.name === r.name)?.required
+    const requiredFailures = failedTests.filter(
+      r => this.testSuites.find(s => s.name === r.name)?.required
     )
 
     console.log('📊 Test Results Summary')
-    console.log('=' .repeat(60))
+    console.log('='.repeat(60))
     console.log(`Total Tests: ${this.results.length}`)
     console.log(`Passed: ${passedTests.length}`)
     console.log(`Failed: ${failedTests.length}`)
@@ -229,7 +231,7 @@ class ComprehensiveTestRunner {
     console.log('📋 Detailed Results:')
     this.results.forEach(result => {
       const suite = this.testSuites.find(s => s.name === result.name)
-      const status = result.success ? '✅' : (suite?.required ? '❌' : '⚠️')
+      const status = result.success ? '✅' : suite?.required ? '❌' : '⚠️'
       const duration = (result.duration / 1000).toFixed(2)
       console.log(`${status} ${result.name} (${duration}s)`)
     })
@@ -242,18 +244,22 @@ class ComprehensiveTestRunner {
         total: this.results.length,
         passed: passedTests.length,
         failed: failedTests.length,
-        requiredFailures: requiredFailures.length
+        requiredFailures: requiredFailures.length,
       },
       results: this.results.map(r => ({
         name: r.name,
         success: r.success,
         duration: r.duration,
-        required: this.testSuites.find(s => s.name === r.name)?.required || false,
-        error: r.error || null
-      }))
+        required:
+          this.testSuites.find(s => s.name === r.name)?.required || false,
+        error: r.error || null,
+      })),
     }
 
-    writeFileSync('test-results/comprehensive-test-report.json', JSON.stringify(report, null, 2))
+    writeFileSync(
+      'test-results/comprehensive-test-report.json',
+      JSON.stringify(report, null, 2)
+    )
 
     // Generate markdown report
     const markdownReport = this.generateMarkdownReport(report)
@@ -265,9 +271,13 @@ class ComprehensiveTestRunner {
 
     // Final status
     if (requiredFailures.length === 0) {
-      console.log('\n🎉 All required tests passed! Cubcen is ready for deployment.')
+      console.log(
+        '\n🎉 All required tests passed! Cubcen is ready for deployment.'
+      )
     } else {
-      console.log('\n💥 Required tests failed! Please fix issues before deployment.')
+      console.log(
+        '\n💥 Required tests failed! Please fix issues before deployment.'
+      )
       console.log('\nFailed required tests:')
       requiredFailures.forEach(failure => {
         console.log(`   - ${failure.name}: ${failure.error}`)
@@ -277,7 +287,7 @@ class ComprehensiveTestRunner {
 
   private generateMarkdownReport(report: any): string {
     const timestamp = new Date(report.timestamp).toLocaleString()
-    
+
     let markdown = `# Cubcen Comprehensive Test Report
 
 Generated: ${timestamp}

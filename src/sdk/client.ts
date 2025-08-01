@@ -26,13 +26,13 @@ import {
   AnalyticsFilters,
   Notification,
   NotificationPreferences,
-  PaginationResult
+  PaginationResult,
 } from './types'
 import {
   CubcenError,
   CubcenNetworkError,
   CubcenTimeoutError,
-  createCubcenError
+  createCubcenError,
 } from './errors'
 
 export class CubcenClient {
@@ -46,12 +46,12 @@ export class CubcenClient {
       timeout: config.timeout || 30000,
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'Cubcen-SDK/1.0.0'
-      }
+        'User-Agent': 'Cubcen-SDK/1.0.0',
+      },
     })
 
     // Request interceptor for authentication
-    this.http.interceptors.request.use((config) => {
+    this.http.interceptors.request.use(config => {
       if (this.accessToken) {
         config.headers.Authorization = `Bearer ${this.accessToken}`
       }
@@ -60,8 +60,8 @@ export class CubcenClient {
 
     // Response interceptor for error handling
     this.http.interceptors.response.use(
-      (response) => response,
-      async (error) => {
+      response => response,
+      async error => {
         if (error.code === 'ECONNABORTED') {
           throw new CubcenTimeoutError('Request timeout')
         }
@@ -72,7 +72,7 @@ export class CubcenClient {
 
         const { status, data } = error.response
         const errorData = data?.error || {}
-        
+
         throw createCubcenError(
           status,
           errorData.message || 'Unknown error',
@@ -105,8 +105,9 @@ export class CubcenClient {
    */
   private async request<T>(config: AxiosRequestConfig): Promise<T> {
     try {
-      const response: AxiosResponse<ApiResponse<T>> = await this.http.request(config)
-      
+      const response: AxiosResponse<ApiResponse<T>> =
+        await this.http.request(config)
+
       if (!response.data.success) {
         throw new CubcenError(
           response.data.error?.message || 'API request failed',
@@ -135,7 +136,7 @@ export class CubcenClient {
     const result = await this.request<AuthResult>({
       method: 'POST',
       url: '/api/cubcen/v1/auth/login',
-      data: credentials
+      data: credentials,
     })
 
     this.setTokens(result.tokens.accessToken, result.tokens.refreshToken)
@@ -149,7 +150,7 @@ export class CubcenClient {
     const result = await this.request<AuthResult>({
       method: 'POST',
       url: '/api/cubcen/v1/auth/register',
-      data
+      data,
     })
 
     this.setTokens(result.tokens.accessToken, result.tokens.refreshToken)
@@ -162,7 +163,7 @@ export class CubcenClient {
   async getCurrentUser(): Promise<User> {
     const result = await this.request<{ user: User }>({
       method: 'GET',
-      url: '/api/cubcen/v1/auth/me'
+      url: '/api/cubcen/v1/auth/me',
     })
     return result.user
   }
@@ -178,7 +179,7 @@ export class CubcenClient {
     const result = await this.request<AuthResult>({
       method: 'POST',
       url: '/api/cubcen/v1/auth/refresh',
-      data: { refreshToken: this.refreshToken }
+      data: { refreshToken: this.refreshToken },
     })
 
     this.setTokens(result.tokens.accessToken, result.tokens.refreshToken)
@@ -191,7 +192,7 @@ export class CubcenClient {
   async logout(): Promise<void> {
     await this.request<void>({
       method: 'POST',
-      url: '/api/cubcen/v1/auth/logout'
+      url: '/api/cubcen/v1/auth/logout',
     })
     this.clearTokens()
   }
@@ -208,7 +209,7 @@ export class CubcenClient {
     return this.request({
       method: 'GET',
       url: '/api/cubcen/v1/agents',
-      params: filters
+      params: filters,
     })
   }
 
@@ -218,7 +219,7 @@ export class CubcenClient {
   async getAgent(id: string): Promise<Agent> {
     const result = await this.request<{ agent: Agent }>({
       method: 'GET',
-      url: `/api/cubcen/v1/agents/${id}`
+      url: `/api/cubcen/v1/agents/${id}`,
     })
     return result.agent
   }
@@ -230,7 +231,7 @@ export class CubcenClient {
     const result = await this.request<{ agent: Agent }>({
       method: 'POST',
       url: '/api/cubcen/v1/agents',
-      data
+      data,
     })
     return result.agent
   }
@@ -242,7 +243,7 @@ export class CubcenClient {
     const result = await this.request<{ agent: Agent }>({
       method: 'PUT',
       url: `/api/cubcen/v1/agents/${id}`,
-      data
+      data,
     })
     return result.agent
   }
@@ -253,7 +254,7 @@ export class CubcenClient {
   async deleteAgent(id: string): Promise<void> {
     await this.request<void>({
       method: 'DELETE',
-      url: `/api/cubcen/v1/agents/${id}`
+      url: `/api/cubcen/v1/agents/${id}`,
     })
   }
 
@@ -263,7 +264,7 @@ export class CubcenClient {
   async getAgentHealth(id: string): Promise<SystemHealth> {
     return this.request({
       method: 'GET',
-      url: `/api/cubcen/v1/agents/${id}/health`
+      url: `/api/cubcen/v1/agents/${id}/health`,
     })
   }
 
@@ -279,7 +280,7 @@ export class CubcenClient {
     return this.request({
       method: 'GET',
       url: '/api/cubcen/v1/tasks',
-      params: filters
+      params: filters,
     })
   }
 
@@ -289,7 +290,7 @@ export class CubcenClient {
   async getTask(id: string): Promise<Task> {
     const result = await this.request<{ task: Task }>({
       method: 'GET',
-      url: `/api/cubcen/v1/tasks/${id}`
+      url: `/api/cubcen/v1/tasks/${id}`,
     })
     return result.task
   }
@@ -301,7 +302,7 @@ export class CubcenClient {
     const result = await this.request<{ task: Task }>({
       method: 'POST',
       url: '/api/cubcen/v1/tasks',
-      data
+      data,
     })
     return result.task
   }
@@ -312,7 +313,7 @@ export class CubcenClient {
   async cancelTask(id: string): Promise<Task> {
     const result = await this.request<{ task: Task }>({
       method: 'POST',
-      url: `/api/cubcen/v1/tasks/${id}/cancel`
+      url: `/api/cubcen/v1/tasks/${id}/cancel`,
     })
     return result.task
   }
@@ -323,7 +324,7 @@ export class CubcenClient {
   async retryTask(id: string): Promise<Task> {
     const result = await this.request<{ task: Task }>({
       method: 'POST',
-      url: `/api/cubcen/v1/tasks/${id}/retry`
+      url: `/api/cubcen/v1/tasks/${id}/retry`,
     })
     return result.task
   }
@@ -336,7 +337,7 @@ export class CubcenClient {
   async getPlatforms(): Promise<Platform[]> {
     const result = await this.request<{ platforms: Platform[] }>({
       method: 'GET',
-      url: '/api/cubcen/v1/platforms'
+      url: '/api/cubcen/v1/platforms',
     })
     return result.platforms
   }
@@ -347,7 +348,7 @@ export class CubcenClient {
   async getPlatform(id: string): Promise<Platform> {
     const result = await this.request<{ platform: Platform }>({
       method: 'GET',
-      url: `/api/cubcen/v1/platforms/${id}`
+      url: `/api/cubcen/v1/platforms/${id}`,
     })
     return result.platform
   }
@@ -359,7 +360,7 @@ export class CubcenClient {
     const result = await this.request<{ platform: Platform }>({
       method: 'POST',
       url: '/api/cubcen/v1/platforms',
-      data
+      data,
     })
     return result.platform
   }
@@ -367,11 +368,14 @@ export class CubcenClient {
   /**
    * Update platform
    */
-  async updatePlatform(id: string, data: UpdatePlatformData): Promise<Platform> {
+  async updatePlatform(
+    id: string,
+    data: UpdatePlatformData
+  ): Promise<Platform> {
     const result = await this.request<{ platform: Platform }>({
       method: 'PUT',
       url: `/api/cubcen/v1/platforms/${id}`,
-      data
+      data,
     })
     return result.platform
   }
@@ -382,7 +386,7 @@ export class CubcenClient {
   async deletePlatform(id: string): Promise<void> {
     await this.request<void>({
       method: 'DELETE',
-      url: `/api/cubcen/v1/platforms/${id}`
+      url: `/api/cubcen/v1/platforms/${id}`,
     })
   }
 
@@ -392,7 +396,7 @@ export class CubcenClient {
   async testPlatformConnection(id: string): Promise<SystemHealth> {
     return this.request({
       method: 'POST',
-      url: `/api/cubcen/v1/platforms/${id}/test`
+      url: `/api/cubcen/v1/platforms/${id}/test`,
     })
   }
 
@@ -404,7 +408,7 @@ export class CubcenClient {
   async getSystemHealth(): Promise<SystemHealth> {
     return this.request({
       method: 'GET',
-      url: '/health'
+      url: '/health',
     })
   }
 
@@ -417,7 +421,7 @@ export class CubcenClient {
     return this.request({
       method: 'GET',
       url: '/api/cubcen/v1/analytics',
-      params: filters
+      params: filters,
     })
   }
 
@@ -429,7 +433,7 @@ export class CubcenClient {
   async getNotifications(): Promise<Notification[]> {
     const result = await this.request<{ notifications: Notification[] }>({
       method: 'GET',
-      url: '/api/cubcen/v1/notifications'
+      url: '/api/cubcen/v1/notifications',
     })
     return result.notifications
   }
@@ -440,7 +444,7 @@ export class CubcenClient {
   async markNotificationRead(id: string): Promise<void> {
     await this.request<void>({
       method: 'PUT',
-      url: `/api/cubcen/v1/notifications/${id}/read`
+      url: `/api/cubcen/v1/notifications/${id}/read`,
     })
   }
 
@@ -448,10 +452,12 @@ export class CubcenClient {
    * Get notification preferences
    */
   async getNotificationPreferences(): Promise<NotificationPreferences> {
-    const result = await this.request<{ preferences: NotificationPreferences }>({
-      method: 'GET',
-      url: '/api/cubcen/v1/notifications/preferences'
-    })
+    const result = await this.request<{ preferences: NotificationPreferences }>(
+      {
+        method: 'GET',
+        url: '/api/cubcen/v1/notifications/preferences',
+      }
+    )
     return result.preferences
   }
 
@@ -461,11 +467,13 @@ export class CubcenClient {
   async updateNotificationPreferences(
     preferences: Partial<NotificationPreferences>
   ): Promise<NotificationPreferences> {
-    const result = await this.request<{ preferences: NotificationPreferences }>({
-      method: 'PUT',
-      url: '/api/cubcen/v1/notifications/preferences',
-      data: preferences
-    })
+    const result = await this.request<{ preferences: NotificationPreferences }>(
+      {
+        method: 'PUT',
+        url: '/api/cubcen/v1/notifications/preferences',
+        data: preferences,
+      }
+    )
     return result.preferences
   }
 }

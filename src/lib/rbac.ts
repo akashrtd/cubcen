@@ -53,7 +53,7 @@ export const PERMISSIONS = {
   ANALYTICS_READ: { resource: 'analytics', action: 'read' },
   ANALYTICS_EXPORT: { resource: 'analytics', action: 'export' },
   REPORTS_CREATE: { resource: 'reports', action: 'create' },
-  REPORTS_READ: { resource: 'reports', action: 'read' }
+  REPORTS_READ: { resource: 'reports', action: 'read' },
 } as const
 
 // Define role-based permissions
@@ -65,81 +65,81 @@ export const ROLE_PERMISSIONS: RolePermissions = {
     PERMISSIONS.USER_UPDATE,
     PERMISSIONS.USER_DELETE,
     PERMISSIONS.USER_MANAGE_ROLES,
-    
+
     PERMISSIONS.AGENT_CREATE,
     PERMISSIONS.AGENT_READ,
     PERMISSIONS.AGENT_UPDATE,
     PERMISSIONS.AGENT_DELETE,
     PERMISSIONS.AGENT_EXECUTE,
-    
+
     PERMISSIONS.PLATFORM_CREATE,
     PERMISSIONS.PLATFORM_READ,
     PERMISSIONS.PLATFORM_UPDATE,
     PERMISSIONS.PLATFORM_DELETE,
     PERMISSIONS.PLATFORM_CONNECT,
-    
+
     PERMISSIONS.TASK_CREATE,
     PERMISSIONS.TASK_READ,
     PERMISSIONS.TASK_UPDATE,
     PERMISSIONS.TASK_DELETE,
     PERMISSIONS.TASK_EXECUTE,
     PERMISSIONS.TASK_CANCEL,
-    
+
     PERMISSIONS.WORKFLOW_CREATE,
     PERMISSIONS.WORKFLOW_READ,
     PERMISSIONS.WORKFLOW_UPDATE,
     PERMISSIONS.WORKFLOW_DELETE,
     PERMISSIONS.WORKFLOW_EXECUTE,
-    
+
     PERMISSIONS.SYSTEM_READ,
     PERMISSIONS.SYSTEM_CONFIGURE,
     PERMISSIONS.SYSTEM_LOGS,
     PERMISSIONS.SYSTEM_METRICS,
     PERMISSIONS.SYSTEM_HEALTH,
-    
+
     PERMISSIONS.ANALYTICS_READ,
     PERMISSIONS.ANALYTICS_EXPORT,
     PERMISSIONS.REPORTS_CREATE,
-    PERMISSIONS.REPORTS_READ
+    PERMISSIONS.REPORTS_READ,
   ],
 
   [UserRole.OPERATOR]: [
     // Read-only user access
     PERMISSIONS.USER_READ,
-    
+
     // Full agent and task management
     PERMISSIONS.AGENT_CREATE,
     PERMISSIONS.AGENT_READ,
     PERMISSIONS.AGENT_UPDATE,
     PERMISSIONS.AGENT_EXECUTE,
-    
+
     // Platform read and connect
     PERMISSIONS.PLATFORM_READ,
     PERMISSIONS.PLATFORM_CONNECT,
-    
+
     // Full task management
     PERMISSIONS.TASK_CREATE,
     PERMISSIONS.TASK_READ,
     PERMISSIONS.TASK_UPDATE,
     PERMISSIONS.TASK_EXECUTE,
     PERMISSIONS.TASK_CANCEL,
-    
+
     // Full workflow management
     PERMISSIONS.WORKFLOW_CREATE,
     PERMISSIONS.WORKFLOW_READ,
     PERMISSIONS.WORKFLOW_UPDATE,
     PERMISSIONS.WORKFLOW_EXECUTE,
-    
+
     // System monitoring
     PERMISSIONS.SYSTEM_READ,
     PERMISSIONS.SYSTEM_LOGS,
     PERMISSIONS.SYSTEM_METRICS,
     PERMISSIONS.SYSTEM_HEALTH,
-    
+
     // Analytics access
     PERMISSIONS.ANALYTICS_READ,
     PERMISSIONS.ANALYTICS_EXPORT,
-    PERMISSIONS.REPORTS_READ
+    PERMISSIONS.REPORTS_READ,
   ],
 
   [UserRole.VIEWER]: [
@@ -152,14 +152,17 @@ export const ROLE_PERMISSIONS: RolePermissions = {
     PERMISSIONS.SYSTEM_READ,
     PERMISSIONS.SYSTEM_HEALTH,
     PERMISSIONS.ANALYTICS_READ,
-    PERMISSIONS.REPORTS_READ
-  ]
+    PERMISSIONS.REPORTS_READ,
+  ],
 }
 
 /**
  * Check if a user role has a specific permission
  */
-export function hasPermission(userRole: UserRole, permission: Permission): boolean {
+export function hasPermission(
+  userRole: UserRole,
+  permission: Permission
+): boolean {
   const rolePermissions = ROLE_PERMISSIONS[userRole]
   return rolePermissions.some(
     p => p.resource === permission.resource && p.action === permission.action
@@ -170,8 +173,8 @@ export function hasPermission(userRole: UserRole, permission: Permission): boole
  * Check if a user role has permission for a resource and action
  */
 export function hasResourcePermission(
-  userRole: UserRole, 
-  resource: string, 
+  userRole: UserRole,
+  resource: string,
   action: string
 ): boolean {
   return hasPermission(userRole, { resource, action })
@@ -188,13 +191,14 @@ export function getRolePermissions(userRole: UserRole): Permission[] {
  * Validate that a user has the required permission, throw error if not
  */
 export function requirePermission(
-  userRole: UserRole, 
+  userRole: UserRole,
   permission: Permission,
   errorMessage?: string
 ): void {
   if (!hasPermission(userRole, permission)) {
     throw new AuthorizationError(
-      errorMessage || `Access denied. Required permission: ${permission.action} on ${permission.resource}`,
+      errorMessage ||
+        `Access denied. Required permission: ${permission.action} on ${permission.resource}`,
       'INSUFFICIENT_PERMISSIONS'
     )
   }
@@ -215,7 +219,10 @@ export function requireResourcePermission(
 /**
  * Check if a role can perform any action on a resource
  */
-export function canAccessResource(userRole: UserRole, resource: string): boolean {
+export function canAccessResource(
+  userRole: UserRole,
+  resource: string
+): boolean {
   const rolePermissions = ROLE_PERMISSIONS[userRole]
   return rolePermissions.some(p => p.resource === resource)
 }
@@ -232,9 +239,10 @@ export function getAccessibleResources(userRole: UserRole): string[] {
 /**
  * Get all actions a role can perform on a specific resource
  */
-export function getResourceActions(userRole: UserRole, resource: string): string[] {
+export function getResourceActions(
+  userRole: UserRole,
+  resource: string
+): string[] {
   const rolePermissions = ROLE_PERMISSIONS[userRole]
-  return rolePermissions
-    .filter(p => p.resource === resource)
-    .map(p => p.action)
+  return rolePermissions.filter(p => p.resource === resource).map(p => p.action)
 }

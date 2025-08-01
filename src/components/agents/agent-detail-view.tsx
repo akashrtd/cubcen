@@ -7,12 +7,12 @@ import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
-import { 
-  Bot, 
-  Activity, 
-  Settings, 
-  Clock, 
-  Zap, 
+import {
+  Bot,
+  Activity,
+  Settings,
+  Clock,
+  Zap,
   AlertTriangle,
   CheckCircle,
   XCircle,
@@ -26,7 +26,7 @@ import {
   Trash2,
   Play,
   Square,
-  RotateCcw
+  RotateCcw,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { Agent } from './agent-list'
@@ -49,29 +49,29 @@ const statusConfig = {
     icon: CheckCircle,
     color: 'text-green-600',
     bgColor: 'bg-green-50',
-    borderColor: 'border-green-200'
+    borderColor: 'border-green-200',
   },
   INACTIVE: {
     label: 'Inactive',
     icon: Pause,
     color: 'text-gray-600',
     bgColor: 'bg-gray-50',
-    borderColor: 'border-gray-200'
+    borderColor: 'border-gray-200',
   },
   ERROR: {
     label: 'Error',
     icon: XCircle,
     color: 'text-red-600',
     bgColor: 'bg-red-50',
-    borderColor: 'border-red-200'
+    borderColor: 'border-red-200',
   },
   MAINTENANCE: {
     label: 'Maintenance',
     icon: Wrench,
     color: 'text-yellow-600',
     bgColor: 'bg-yellow-50',
-    borderColor: 'border-yellow-200'
-  }
+    borderColor: 'border-yellow-200',
+  },
 }
 
 const healthConfig = {
@@ -79,20 +79,20 @@ const healthConfig = {
     label: 'Healthy',
     color: 'text-green-600',
     progress: 100,
-    description: 'Agent is operating normally'
+    description: 'Agent is operating normally',
   },
   degraded: {
     label: 'Degraded',
     color: 'text-yellow-600',
     progress: 60,
-    description: 'Agent has some performance issues'
+    description: 'Agent has some performance issues',
   },
   unhealthy: {
     label: 'Unhealthy',
     color: 'text-red-600',
     progress: 20,
-    description: 'Agent is experiencing critical issues'
-  }
+    description: 'Agent is experiencing critical issues',
+  },
 }
 
 function LoadingSkeleton() {
@@ -151,16 +151,16 @@ function LoadingSkeleton() {
   )
 }
 
-export function AgentDetailView({ 
-  agent, 
-  loading = false, 
-  onEdit, 
-  onDelete, 
-  onStart, 
-  onStop, 
-  onRestart, 
+export function AgentDetailView({
+  agent,
+  loading = false,
+  onEdit,
+  onDelete,
+  onStart,
+  onStop,
+  onRestart,
   onRefresh,
-  className 
+  className,
 }: AgentDetailViewProps) {
   const [isRefreshing, setIsRefreshing] = useState(false)
 
@@ -181,7 +181,7 @@ export function AgentDetailView({
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     }).format(new Date(date))
   }
 
@@ -189,13 +189,13 @@ export function AgentDetailView({
     const now = new Date()
     const diff = now.getTime() - new Date(date).getTime()
     const minutes = Math.floor(diff / 60000)
-    
+
     if (minutes < 1) return 'Just now'
     if (minutes < 60) return `${minutes} minutes ago`
-    
+
     const hours = Math.floor(minutes / 60)
     if (hours < 24) return `${hours} hours ago`
-    
+
     const days = Math.floor(hours / 24)
     return `${days} days ago`
   }
@@ -204,7 +204,7 @@ export function AgentDetailView({
     // This would be calculated from actual uptime data
     // For now, we'll simulate based on health status
     if (!agent) return { uptime: 0, downtime: 0, availability: 0 }
-    
+
     if (agent.healthStatus.status === 'healthy') {
       return { uptime: 99.9, downtime: 0.1, availability: 99.9 }
     } else if (agent.healthStatus.status === 'degraded') {
@@ -242,14 +242,14 @@ export function AgentDetailView({
   const uptimeStats = getUptimeStats()
 
   return (
-    <div className={cn("space-y-6", className)}>
+    <div className={cn('space-y-6', className)}>
       {/* Agent Header */}
       <Card>
         <CardHeader>
           <div className="flex items-start justify-between">
             <div className="space-y-2">
               <div className="flex items-center space-x-3">
-                <StatusIcon className={cn("h-8 w-8", statusInfo.color)} />
+                <StatusIcon className={cn('h-8 w-8', statusInfo.color)} />
                 <div>
                   <CardTitle className="text-2xl font-bold text-foreground">
                     {agent.name}
@@ -261,33 +261,35 @@ export function AgentDetailView({
                   )}
                 </div>
               </div>
-              
+
               <div className="flex items-center space-x-3">
-                <Badge 
-                  variant="outline" 
+                <Badge
+                  variant="outline"
                   className={cn(
-                    "text-sm",
+                    'text-sm',
                     statusInfo.color,
                     statusInfo.bgColor,
                     statusInfo.borderColor,
-                    "border-2"
+                    'border-2'
                   )}
                 >
                   <StatusIcon className="h-4 w-4 mr-2" />
                   {statusInfo.label}
                 </Badge>
-                
+
                 <Badge className="text-sm bg-cubcen-primary text-white">
                   <Server className="h-4 w-4 mr-2" />
                   {agent.platform.name}
                 </Badge>
-                
-                <Badge 
+
+                <Badge
                   className={cn(
-                    "text-sm text-white",
-                    agent.healthStatus.status === 'healthy' ? 'bg-cubcen-primary' :
-                    agent.healthStatus.status === 'degraded' ? 'bg-cubcen-secondary' :
-                    'bg-red-500'
+                    'text-sm text-white',
+                    agent.healthStatus.status === 'healthy'
+                      ? 'bg-cubcen-primary'
+                      : agent.healthStatus.status === 'degraded'
+                        ? 'bg-cubcen-secondary'
+                        : 'bg-red-500'
                   )}
                 >
                   <Activity className="h-4 w-4 mr-2" />
@@ -295,7 +297,7 @@ export function AgentDetailView({
                 </Badge>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-2">
               <Button
                 variant="outline"
@@ -304,13 +306,12 @@ export function AgentDetailView({
                 disabled={isRefreshing}
                 className="hover:bg-cubcen-primary hover:text-white"
               >
-                <RefreshCw className={cn(
-                  "h-4 w-4 mr-2",
-                  isRefreshing && "animate-spin"
-                )} />
+                <RefreshCw
+                  className={cn('h-4 w-4 mr-2', isRefreshing && 'animate-spin')}
+                />
                 Refresh
               </Button>
-              
+
               {agent.status === 'INACTIVE' && (
                 <Button
                   variant="outline"
@@ -322,7 +323,7 @@ export function AgentDetailView({
                   Start
                 </Button>
               )}
-              
+
               {agent.status === 'ACTIVE' && (
                 <Button
                   variant="outline"
@@ -334,7 +335,7 @@ export function AgentDetailView({
                   Stop
                 </Button>
               )}
-              
+
               <Button
                 variant="outline"
                 size="sm"
@@ -344,7 +345,7 @@ export function AgentDetailView({
                 <RotateCcw className="h-4 w-4 mr-2" />
                 Restart
               </Button>
-              
+
               <Button
                 variant="outline"
                 size="sm"
@@ -354,7 +355,7 @@ export function AgentDetailView({
                 <Edit className="h-4 w-4 mr-2" />
                 Edit
               </Button>
-              
+
               <Button
                 variant="outline"
                 size="sm"
@@ -382,43 +383,50 @@ export function AgentDetailView({
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium text-muted-foreground">Agent ID</label>
+                <label className="text-sm font-medium text-muted-foreground">
+                  Agent ID
+                </label>
                 <p className="text-sm font-mono bg-muted p-2 rounded mt-1">
                   {agent.id}
                 </p>
               </div>
               <div>
-                <label className="text-sm font-medium text-muted-foreground">Platform ID</label>
+                <label className="text-sm font-medium text-muted-foreground">
+                  Platform ID
+                </label>
                 <p className="text-sm font-mono bg-muted p-2 rounded mt-1">
                   {agent.platformId}
                 </p>
               </div>
             </div>
-            
+
             <Separator />
-            
+
             <div className="space-y-3">
               <div className="flex justify-between">
                 <span className="text-sm font-medium">Platform Type</span>
-                <Badge variant="outline" className="bg-cubcen-primary-light text-cubcen-primary">
+                <Badge
+                  variant="outline"
+                  className="bg-cubcen-primary-light text-cubcen-primary"
+                >
                   {agent.platform.type}
                 </Badge>
               </div>
-              
+
               <div className="flex justify-between">
                 <span className="text-sm font-medium">Created</span>
                 <span className="text-sm text-muted-foreground">
                   {formatDate(agent.createdAt)}
                 </span>
               </div>
-              
+
               <div className="flex justify-between">
                 <span className="text-sm font-medium">Last Updated</span>
                 <span className="text-sm text-muted-foreground">
                   {formatDate(agent.updatedAt)}
                 </span>
               </div>
-              
+
               <div className="flex justify-between">
                 <span className="text-sm font-medium">Last Health Check</span>
                 <span className="text-sm text-muted-foreground">
@@ -441,27 +449,29 @@ export function AgentDetailView({
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Health Status</span>
-                <Badge 
+                <Badge
                   className={cn(
-                    "text-white",
-                    agent.healthStatus.status === 'healthy' ? 'bg-cubcen-primary' :
-                    agent.healthStatus.status === 'degraded' ? 'bg-cubcen-secondary' :
-                    'bg-red-500'
+                    'text-white',
+                    agent.healthStatus.status === 'healthy'
+                      ? 'bg-cubcen-primary'
+                      : agent.healthStatus.status === 'degraded'
+                        ? 'bg-cubcen-secondary'
+                        : 'bg-red-500'
                   )}
                 >
                   {healthInfo.label}
                 </Badge>
               </div>
-              
+
               <Progress value={healthInfo.progress} className="h-3" />
-              
+
               <p className="text-xs text-muted-foreground">
                 {healthInfo.description}
               </p>
             </div>
-            
+
             <Separator />
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center">
                 <div className="text-2xl font-bold text-cubcen-primary">
@@ -473,12 +483,14 @@ export function AgentDetailView({
                 <div className="text-2xl font-bold text-cubcen-secondary">
                   {agent.healthStatus.responseTime || 'N/A'}ms
                 </div>
-                <div className="text-xs text-muted-foreground">Response Time</div>
+                <div className="text-xs text-muted-foreground">
+                  Response Time
+                </div>
               </div>
             </div>
-            
+
             <Separator />
-            
+
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span className="text-sm font-medium">Availability</span>
@@ -486,7 +498,7 @@ export function AgentDetailView({
                   {uptimeStats.availability}%
                 </span>
               </div>
-              
+
               <div className="flex justify-between">
                 <span className="text-sm font-medium">Downtime</span>
                 <span className="text-sm text-red-600">
@@ -508,10 +520,10 @@ export function AgentDetailView({
           <CardContent>
             {agent.capabilities.length > 0 ? (
               <div className="flex flex-wrap gap-2">
-                {agent.capabilities.map((capability) => (
-                  <Badge 
-                    key={capability} 
-                    variant="outline" 
+                {agent.capabilities.map(capability => (
+                  <Badge
+                    key={capability}
+                    variant="outline"
                     className="bg-cubcen-secondary-light text-cubcen-secondary-hover border-cubcen-secondary"
                   >
                     {capability}
@@ -543,7 +555,9 @@ export function AgentDetailView({
                       {key}
                     </span>
                     <span className="text-sm font-mono bg-muted px-2 py-1 rounded max-w-xs truncate">
-                      {typeof value === 'object' ? JSON.stringify(value) : String(value)}
+                      {typeof value === 'object'
+                        ? JSON.stringify(value)
+                        : String(value)}
                     </span>
                   </div>
                 ))}
@@ -571,10 +585,12 @@ export function AgentDetailView({
               <p className="text-sm text-red-800 font-mono">
                 {agent.healthStatus.error}
               </p>
-              
+
               {agent.healthStatus.details && (
                 <div className="mt-3 pt-3 border-t border-red-200">
-                  <p className="text-xs text-red-600 mb-2">Additional Details:</p>
+                  <p className="text-xs text-red-600 mb-2">
+                    Additional Details:
+                  </p>
                   <pre className="text-xs text-red-700 bg-red-50 p-2 rounded overflow-x-auto">
                     {JSON.stringify(agent.healthStatus.details, null, 2)}
                   </pre>

@@ -1,10 +1,22 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { DatePickerWithRange } from '@/components/analytics/date-range-picker'
 import { KPICards } from '@/components/analytics/kpi-cards'
 import { PerformanceCharts } from '@/components/analytics/performance-charts'
@@ -42,20 +54,25 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
       }
 
       const response = await fetch(`/api/cubcen/v1/analytics?${params}`)
-      
+
       if (!response.ok) {
-        throw new Error(`Failed to fetch analytics data: ${response.statusText}`)
+        throw new Error(
+          `Failed to fetch analytics data: ${response.statusText}`
+        )
       }
 
       const result = await response.json()
-      
+
       if (!result.success) {
-        throw new Error(result.error?.message || 'Failed to fetch analytics data')
+        throw new Error(
+          result.error?.message || 'Failed to fetch analytics data'
+        )
       }
 
       setData(result.data)
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred'
+      const errorMessage =
+        err instanceof Error ? err.message : 'Unknown error occurred'
       setError(errorMessage)
       toast.error('Failed to load analytics data', {
         description: errorMessage,
@@ -76,7 +93,7 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
 
   const handleRefreshIntervalChange = (interval: string) => {
     setRefreshInterval(interval)
-    
+
     // Clear existing interval
     if (typeof window !== 'undefined') {
       const existingInterval = (window as any).analyticsInterval
@@ -87,7 +104,8 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
 
     // Set new interval
     if (interval !== 'manual' && typeof window !== 'undefined') {
-      const intervalMs = interval === '30s' ? 30000 : interval === '1m' ? 60000 : 300000 // 5m
+      const intervalMs =
+        interval === '30s' ? 30000 : interval === '1m' ? 60000 : 300000 // 5m
       const newInterval = setInterval(() => {
         fetchAnalyticsData(dateRange)
       }, intervalMs)
@@ -116,7 +134,8 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
             <p className="text-muted-foreground">
-              View comprehensive analytics and performance metrics for your AI agents.
+              View comprehensive analytics and performance metrics for your AI
+              agents.
             </p>
           </div>
         </div>
@@ -159,7 +178,8 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
           <p className="text-muted-foreground">
-            View comprehensive analytics and performance metrics for your AI agents.
+            View comprehensive analytics and performance metrics for your AI
+            agents.
           </p>
         </div>
 
@@ -194,11 +214,15 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
           <p className="text-muted-foreground">
-            View comprehensive analytics and performance metrics for your AI agents.
+            View comprehensive analytics and performance metrics for your AI
+            agents.
           </p>
         </div>
         <div className="flex items-center space-x-2">
-          <Select value={refreshInterval} onValueChange={handleRefreshIntervalChange}>
+          <Select
+            value={refreshInterval}
+            onValueChange={handleRefreshIntervalChange}
+          >
             <SelectTrigger className="w-32">
               <SelectValue />
             </SelectTrigger>
@@ -209,11 +233,22 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
               <SelectItem value="5m">5 minutes</SelectItem>
             </SelectContent>
           </Select>
-          <Button onClick={handleRefresh} variant="outline" size="sm" disabled={loading}>
-            <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+          <Button
+            onClick={handleRefresh}
+            variant="outline"
+            size="sm"
+            disabled={loading}
+          >
+            <RefreshCw
+              className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`}
+            />
             Refresh
           </Button>
-          <Button onClick={() => setExportDialogOpen(true)} variant="outline" size="sm">
+          <Button
+            onClick={() => setExportDialogOpen(true)}
+            variant="outline"
+            size="sm"
+          >
             <Download className="mr-2 h-4 w-4" />
             Export
           </Button>
@@ -254,10 +289,14 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
       {data && <PerformanceCharts data={data} loading={loading} />}
 
       {/* Agent Performance Table */}
-      {data && <AgentPerformanceTable data={data.agentPerformance} loading={loading} />}
+      {data && (
+        <AgentPerformanceTable data={data.agentPerformance} loading={loading} />
+      )}
 
       {/* Error Patterns */}
-      {data && <ErrorPatternsChart data={data.errorPatterns} loading={loading} />}
+      {data && (
+        <ErrorPatternsChart data={data.errorPatterns} loading={loading} />
+      )}
 
       {/* Export Dialog */}
       <ExportDialog

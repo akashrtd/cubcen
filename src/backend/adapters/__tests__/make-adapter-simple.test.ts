@@ -3,16 +3,16 @@
  * Tests core functionality without complex mocking
  */
 
-import { MakePlatformAdapter } from '../make-adapter';
-import { PlatformConfig } from '../../../types/platform';
+import { MakePlatformAdapter } from '../make-adapter'
+import { PlatformConfig } from '../../../types/platform'
 
 // Mock circuit breaker to always execute
 jest.mock('../../../lib/circuit-breaker', () => ({
   createPlatformCircuitBreaker: jest.fn(() => ({
-    execute: jest.fn((fn) => fn()),
-    getStats: jest.fn(() => ({ state: 'closed' }))
-  }))
-}));
+    execute: jest.fn(fn => fn()),
+    getStats: jest.fn(() => ({ state: 'closed' })),
+  })),
+}))
 
 // Mock axios
 jest.mock('axios', () => ({
@@ -21,24 +21,24 @@ jest.mock('axios', () => ({
     post: jest.fn(),
     defaults: {
       headers: {
-        common: {}
-      }
+        common: {},
+      },
     },
     interceptors: {
       request: {
-        use: jest.fn()
+        use: jest.fn(),
       },
       response: {
-        use: jest.fn()
-      }
-    }
+        use: jest.fn(),
+      },
+    },
   })),
-  post: jest.fn()
-}));
+  post: jest.fn(),
+}))
 
 describe('MakePlatformAdapter - Core Functionality', () => {
-  let adapter: MakePlatformAdapter;
-  let mockConfig: PlatformConfig;
+  let adapter: MakePlatformAdapter
+  let mockConfig: PlatformConfig
 
   beforeEach(() => {
     mockConfig = {
@@ -47,42 +47,44 @@ describe('MakePlatformAdapter - Core Functionality', () => {
       type: 'make',
       baseUrl: 'https://eu1.make.com/api/v2',
       credentials: {
-        apiToken: 'test-api-token'
-      }
-    };
+        apiToken: 'test-api-token',
+      },
+    }
 
-    adapter = new MakePlatformAdapter(mockConfig);
-  });
+    adapter = new MakePlatformAdapter(mockConfig)
+  })
 
   describe('Basic initialization', () => {
     it('should initialize correctly', () => {
-      expect(adapter.getPlatformType()).toBe('make');
-      expect(adapter.getConfig()).toEqual(mockConfig);
-      expect(adapter.isAdapterConnected()).toBe(false);
-    });
+      expect(adapter.getPlatformType()).toBe('make')
+      expect(adapter.getConfig()).toEqual(mockConfig)
+      expect(adapter.isAdapterConnected()).toBe(false)
+    })
 
     it('should validate configuration on creation', () => {
       expect(() => {
         new MakePlatformAdapter({
           ...mockConfig,
-          credentials: {}
-        });
-      }).toThrow('Make.com adapter requires either apiToken, accessToken, or OAuth client credentials');
-    });
-  });
+          credentials: {},
+        })
+      }).toThrow(
+        'Make.com adapter requires either apiToken, accessToken, or OAuth client credentials'
+      )
+    })
+  })
 
   describe('Configuration management', () => {
     it('should handle API token credentials', () => {
       const config = {
         ...mockConfig,
         credentials: {
-          apiToken: 'test-token'
-        }
-      };
+          apiToken: 'test-token',
+        },
+      }
 
-      const testAdapter = new MakePlatformAdapter(config);
-      expect(testAdapter.getConfig().credentials.apiToken).toBe('test-token');
-    });
+      const testAdapter = new MakePlatformAdapter(config)
+      expect(testAdapter.getConfig().credentials.apiToken).toBe('test-token')
+    })
 
     it('should handle OAuth credentials', () => {
       const config = {
@@ -91,27 +93,27 @@ describe('MakePlatformAdapter - Core Functionality', () => {
           clientId: 'client-id',
           clientSecret: 'client-secret',
           accessToken: 'access-token',
-          refreshToken: 'refresh-token'
-        }
-      };
+          refreshToken: 'refresh-token',
+        },
+      }
 
-      const testAdapter = new MakePlatformAdapter(config);
-      expect(testAdapter.getConfig().credentials.clientId).toBe('client-id');
-    });
+      const testAdapter = new MakePlatformAdapter(config)
+      expect(testAdapter.getConfig().credentials.clientId).toBe('client-id')
+    })
 
     it('should handle team configuration', () => {
       const config = {
         ...mockConfig,
         credentials: {
           apiToken: 'test-token',
-          teamId: 123
-        }
-      };
+          teamId: 123,
+        },
+      }
 
-      const testAdapter = new MakePlatformAdapter(config);
-      expect(testAdapter.getConfig().credentials.teamId).toBe(123);
-    });
-  });
+      const testAdapter = new MakePlatformAdapter(config)
+      expect(testAdapter.getConfig().credentials.teamId).toBe(123)
+    })
+  })
 
   describe('Agent conversion', () => {
     it('should convert Make.com scenario to agent format', async () => {
@@ -133,15 +135,19 @@ describe('MakePlatformAdapter - Core Functionality', () => {
               version: 1,
               parameters: {},
               mapper: {},
-              metadata: { designer: { x: 0, y: 0 } }
-            }
+              metadata: { designer: { x: 0, y: 0 } },
+            },
           ],
-          metadata: {}
-        }
-      };
+          metadata: {},
+        },
+      }
 
       // Access private method for testing
-      const agent = await (adapter as unknown as { convertScenarioToAgent: (scenario: unknown) => Promise<unknown> }).convertScenarioToAgent(mockScenario);
+      const agent = await (
+        adapter as unknown as {
+          convertScenarioToAgent: (scenario: unknown) => Promise<unknown>
+        }
+      ).convertScenarioToAgent(mockScenario)
 
       expect(agent).toMatchObject({
         id: '1',
@@ -149,9 +155,9 @@ describe('MakePlatformAdapter - Core Functionality', () => {
         platformId: 'test-make',
         platformType: 'make',
         status: 'active',
-        capabilities: ['webhook', 'active']
-      });
-    });
+        capabilities: ['webhook', 'active'],
+      })
+    })
 
     it('should handle inactive and locked scenarios', async () => {
       const mockScenario = {
@@ -162,14 +168,20 @@ describe('MakePlatformAdapter - Core Functionality', () => {
         team_id: 123,
         created_at: '2024-01-01T00:00:00Z',
         updated_at: '2024-01-02T00:00:00Z',
-        last_edit: '2024-01-02T00:00:00Z'
-      };
+        last_edit: '2024-01-02T00:00:00Z',
+      }
 
-      const agent = await (adapter as unknown as { convertScenarioToAgent: (scenario: unknown) => Promise<{ status: string }> }).convertScenarioToAgent(mockScenario);
+      const agent = await (
+        adapter as unknown as {
+          convertScenarioToAgent: (
+            scenario: unknown
+          ) => Promise<{ status: string }>
+        }
+      ).convertScenarioToAgent(mockScenario)
 
-      expect(agent.status).toBe('maintenance'); // locked takes precedence
-    });
-  });
+      expect(agent.status).toBe('maintenance') // locked takes precedence
+    })
+  })
 
   describe('Error handling', () => {
     it('should extract error messages correctly', () => {
@@ -178,30 +190,42 @@ describe('MakePlatformAdapter - Core Functionality', () => {
           status: 400,
           statusText: 'Bad Request',
           data: {
-            message: 'Invalid scenario ID'
-          }
-        }
-      };
+            message: 'Invalid scenario ID',
+          },
+        },
+      }
 
-      const errorMessage = (adapter as unknown as { extractErrorMessage: (error: unknown) => string }).extractErrorMessage(axiosError);
-      expect(errorMessage).toBe('Invalid scenario ID');
-    });
+      const errorMessage = (
+        adapter as unknown as {
+          extractErrorMessage: (error: unknown) => string
+        }
+      ).extractErrorMessage(axiosError)
+      expect(errorMessage).toBe('Invalid scenario ID')
+    })
 
     it('should handle network errors', () => {
       const networkError = {
         code: 'ECONNREFUSED',
-        message: 'Connection refused'
-      };
+        message: 'Connection refused',
+      }
 
-      const errorMessage = (adapter as unknown as { extractErrorMessage: (error: unknown) => string }).extractErrorMessage(networkError);
-      expect(errorMessage).toBe('Network error: ECONNREFUSED');
-    });
+      const errorMessage = (
+        adapter as unknown as {
+          extractErrorMessage: (error: unknown) => string
+        }
+      ).extractErrorMessage(networkError)
+      expect(errorMessage).toBe('Network error: ECONNREFUSED')
+    })
 
     it('should handle unknown errors', () => {
-      const errorMessage = (adapter as unknown as { extractErrorMessage: (error: unknown) => string }).extractErrorMessage('unknown');
-      expect(errorMessage).toBe('Unknown error occurred');
-    });
-  });
+      const errorMessage = (
+        adapter as unknown as {
+          extractErrorMessage: (error: unknown) => string
+        }
+      ).extractErrorMessage('unknown')
+      expect(errorMessage).toBe('Unknown error occurred')
+    })
+  })
 
   describe('Metrics calculation', () => {
     it('should calculate agent metrics correctly', () => {
@@ -216,7 +240,7 @@ describe('MakePlatformAdapter - Core Functionality', () => {
           finished_at: '2024-01-01T10:01:00Z',
           execution_time: 60000,
           operations_count: 5,
-          data_transfer: 1024
+          data_transfer: 1024,
         },
         {
           id: 2,
@@ -231,67 +255,113 @@ describe('MakePlatformAdapter - Core Functionality', () => {
           data_transfer: 512,
           error: {
             message: 'Test error',
-            type: 'RuntimeError'
-          }
-        }
-      ];
+            type: 'RuntimeError',
+          },
+        },
+      ]
 
-      const metrics = (adapter as unknown as { calculateAgentMetrics: (executions: unknown[]) => unknown }).calculateAgentMetrics(mockExecutions);
+      const metrics = (
+        adapter as unknown as {
+          calculateAgentMetrics: (executions: unknown[]) => unknown
+        }
+      ).calculateAgentMetrics(mockExecutions)
 
       expect(metrics).toEqual({
         tasksCompleted: 2,
         averageExecutionTime: 45000,
-        errorRate: 0.5
-      });
-    });
+        errorRate: 0.5,
+      })
+    })
 
     it('should handle empty executions', () => {
-      const metrics = (adapter as unknown as { calculateAgentMetrics: (executions: unknown[]) => unknown }).calculateAgentMetrics([]);
+      const metrics = (
+        adapter as unknown as {
+          calculateAgentMetrics: (executions: unknown[]) => unknown
+        }
+      ).calculateAgentMetrics([])
 
       expect(metrics).toEqual({
         tasksCompleted: 0,
         averageExecutionTime: 0,
-        errorRate: 0
-      });
-    });
-  });
+        errorRate: 0,
+      })
+    })
+  })
 
   describe('Status determination', () => {
     it('should determine agent status correctly', () => {
       const activeScenario = {
         is_active: true,
-        is_locked: false
-      };
+        is_locked: false,
+      }
 
       const inactiveScenario = {
         is_active: false,
-        is_locked: false
-      };
+        is_locked: false,
+      }
 
       const lockedScenario = {
         is_active: true,
-        is_locked: true
-      };
+        is_locked: true,
+      }
 
-      expect((adapter as unknown as { determineAgentStatus: (scenario: unknown, executions: unknown[]) => string }).determineAgentStatus(activeScenario, [])).toBe('active');
-      expect((adapter as unknown as { determineAgentStatus: (scenario: unknown, executions: unknown[]) => string }).determineAgentStatus(inactiveScenario, [])).toBe('inactive');
-      expect((adapter as unknown as { determineAgentStatus: (scenario: unknown, executions: unknown[]) => string }).determineAgentStatus(lockedScenario, [])).toBe('maintenance');
-    });
+      expect(
+        (
+          adapter as unknown as {
+            determineAgentStatus: (
+              scenario: unknown,
+              executions: unknown[]
+            ) => string
+          }
+        ).determineAgentStatus(activeScenario, [])
+      ).toBe('active')
+      expect(
+        (
+          adapter as unknown as {
+            determineAgentStatus: (
+              scenario: unknown,
+              executions: unknown[]
+            ) => string
+          }
+        ).determineAgentStatus(inactiveScenario, [])
+      ).toBe('inactive')
+      expect(
+        (
+          adapter as unknown as {
+            determineAgentStatus: (
+              scenario: unknown,
+              executions: unknown[]
+            ) => string
+          }
+        ).determineAgentStatus(lockedScenario, [])
+      ).toBe('maintenance')
+    })
 
     it('should detect error status from executions', () => {
       const activeScenario = {
         is_active: true,
-        is_locked: false
-      };
+        is_locked: false,
+      }
 
-      const errorExecutions = Array(5).fill(null).map((_, i) => ({
-        id: i,
-        status: 'error'
-      }));
+      const errorExecutions = Array(5)
+        .fill(null)
+        .map((_, i) => ({
+          id: i,
+          status: 'error',
+        }))
 
-      expect((adapter as unknown as { determineAgentStatus: (scenario: unknown, executions: unknown[]) => string }).determineAgentStatus(activeScenario, errorExecutions)).toBe('error');
-    });
-  });
+      expect(
+        (
+          adapter as unknown as {
+            determineAgentStatus: (
+              scenario: unknown,
+              executions: unknown[]
+            ) => string
+          }
+        ).determineAgentStatus(activeScenario, errorExecutions)
+      ).toBe('error')
+    })
+  })
 
   describe('Capability extraction', () => {
     it('should extract capabilities from scenario', () => {
@@ -299,24 +369,28 @@ describe('MakePlatformAdapter - Core Functionality', () => {
         is_active: true,
         scheduling: {
           type: 'indefinitely' as const,
-          interval: 900
+          interval: 900,
         },
         blueprint: {
           flow: [
             { module: 'webhook' },
             { module: 'http' },
-            { module: 'email' }
-          ]
+            { module: 'email' },
+          ],
+        },
+      }
+
+      const capabilities = (
+        adapter as unknown as {
+          extractCapabilities: (scenario: unknown) => string[]
         }
-      };
+      ).extractCapabilities(scenario)
 
-      const capabilities = (adapter as unknown as { extractCapabilities: (scenario: unknown) => string[] }).extractCapabilities(scenario);
-
-      expect(capabilities).toContain('webhook');
-      expect(capabilities).toContain('http');
-      expect(capabilities).toContain('email');
-      expect(capabilities).toContain('scheduling:indefinitely');
-      expect(capabilities).toContain('active');
-    });
-  });
-});
+      expect(capabilities).toContain('webhook')
+      expect(capabilities).toContain('http')
+      expect(capabilities).toContain('email')
+      expect(capabilities).toContain('scheduling:indefinitely')
+      expect(capabilities).toContain('active')
+    })
+  })
+})

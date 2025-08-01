@@ -12,13 +12,13 @@ import {
   AuthToken,
   AuthenticationError,
   TokenPayload,
-  RefreshTokenPayload
+  RefreshTokenPayload,
 } from '@/types/auth'
 import {
   createTokenPair,
   verifyAccessToken,
   verifyRefreshToken,
-  extractTokenFromHeader
+  extractTokenFromHeader,
 } from '@/lib/jwt'
 import { logger } from '@/lib/logger'
 import { prisma } from '@/lib/database'
@@ -39,19 +39,33 @@ class AuthService {
 
       // Find user by email
       const user = await this.prisma.user.findUnique({
-        where: { email: credentials.email }
+        where: { email: credentials.email },
       })
 
       if (!user) {
-        logger.warn('Login failed: User not found', { email: credentials.email })
-        throw new AuthenticationError('Invalid email or password', 'INVALID_CREDENTIALS')
+        logger.warn('Login failed: User not found', {
+          email: credentials.email,
+        })
+        throw new AuthenticationError(
+          'Invalid email or password',
+          'INVALID_CREDENTIALS'
+        )
       }
 
       // Verify password
-      const isPasswordValid = await bcrypt.compare(credentials.password, user.password)
+      const isPasswordValid = await bcrypt.compare(
+        credentials.password,
+        user.password
+      )
       if (!isPasswordValid) {
-        logger.warn('Login failed: Invalid password', { email: credentials.email, userId: user.id })
-        throw new AuthenticationError('Invalid email or password', 'INVALID_CREDENTIALS')
+        logger.warn('Login failed: Invalid password', {
+          email: credentials.email,
+          userId: user.id,
+        })
+        throw new AuthenticationError(
+          'Invalid email or password',
+          'INVALID_CREDENTIALS'
+        )
       }
 
       // Create tokens
@@ -64,24 +78,24 @@ class AuthService {
         name: user.name,
         role: user.role,
         createdAt: user.createdAt,
-        updatedAt: user.updatedAt
+        updatedAt: user.updatedAt,
       }
 
-      logger.info('User login successful', { 
-        email: credentials.email, 
+      logger.info('User login successful', {
+        email: credentials.email,
         userId: user.id,
-        role: user.role 
+        role: user.role,
       })
 
       return {
         user: authUser,
-        tokens
+        tokens,
       }
     } catch (error) {
       if (error instanceof AuthenticationError) {
         throw error
       }
-      
+
       logger.error('Login error', error as Error, { email: credentials.email })
       throw new AuthenticationError('Login failed', 'LOGIN_ERROR')
     }
@@ -96,12 +110,17 @@ class AuthService {
 
       // Check if user already exists
       const existingUser = await this.prisma.user.findUnique({
-        where: { email: credentials.email }
+        where: { email: credentials.email },
       })
 
       if (existingUser) {
-        logger.warn('Registration failed: Email already exists', { email: credentials.email })
-        throw new AuthenticationError('Email already registered', 'EMAIL_EXISTS')
+        logger.warn('Registration failed: Email already exists', {
+          email: credentials.email,
+        })
+        throw new AuthenticationError(
+          'Email already registered',
+          'EMAIL_EXISTS'
+        )
       }
 
       // Hash password
@@ -110,14 +129,14 @@ class AuthService {
 
       // Create user with default role if not specified
       const userRole = credentials.role || UserRole.VIEWER
-      
+
       const user = await this.prisma.user.create({
         data: {
           email: credentials.email,
           password: hashedPassword,
           name: credentials.name || null,
-          role: userRole
-        }
+          role: userRole,
+        },
       })
 
       // Create tokens
@@ -130,25 +149,27 @@ class AuthService {
         name: user.name,
         role: user.role,
         createdAt: user.createdAt,
-        updatedAt: user.updatedAt
+        updatedAt: user.updatedAt,
       }
 
-      logger.info('User registration successful', { 
-        email: credentials.email, 
+      logger.info('User registration successful', {
+        email: credentials.email,
         userId: user.id,
-        role: user.role 
+        role: user.role,
       })
 
       return {
         user: authUser,
-        tokens
+        tokens,
       }
     } catch (error) {
       if (error instanceof AuthenticationError) {
         throw error
       }
-      
-      logger.error('Registration error', error as Error, { email: credentials.email })
+
+      logger.error('Registration error', error as Error, {
+        email: credentials.email,
+      })
       throw new AuthenticationError('Registration failed', 'REGISTRATION_ERROR')
     }
   }
@@ -165,20 +186,22 @@ class AuthService {
 
       // Find user
       const user = await this.prisma.user.findUnique({
-        where: { id: payload.userId }
+        where: { id: payload.userId },
       })
 
       if (!user) {
-        logger.warn('Token refresh failed: User not found', { userId: payload.userId })
+        logger.warn('Token refresh failed: User not found', {
+          userId: payload.userId,
+        })
         throw new AuthenticationError('Invalid refresh token', 'INVALID_TOKEN')
       }
 
       // Create new token pair
       const tokens = createTokenPair(user.id, user.email, user.role)
 
-      logger.info('Token refresh successful', { 
+      logger.info('Token refresh successful', {
         userId: user.id,
-        email: user.email 
+        email: user.email,
       })
 
       return tokens
@@ -186,7 +209,7 @@ class AuthService {
       if (error instanceof AuthenticationError) {
         throw error
       }
-      
+
       logger.error('Token refresh error', error as Error)
       throw new AuthenticationError('Token refresh failed', 'REFRESH_ERROR')
     }
@@ -202,7 +225,7 @@ class AuthService {
 
       // Find user to ensure they still exist and get latest data
       const user = await this.prisma.user.findUnique({
-        where: { id: payload.userId }
+        where: { id: payload.userId },
       })
 
       if (!user) {
@@ -216,7 +239,7 @@ class AuthService {
         name: user.name,
         role: user.role,
         createdAt: user.createdAt,
-        updatedAt: user.updatedAt
+        updatedAt: user.updatedAt,
       }
 
       return authUser
@@ -224,7 +247,7 @@ class AuthService {
       if (error instanceof AuthenticationError) {
         throw error
       }
-      
+
       logger.error('Token validation error', error as Error)
       throw new AuthenticationError('Invalid token', 'INVALID_TOKEN')
     }
@@ -235,9 +258,12 @@ class AuthService {
    */
   async validateAuthHeader(authHeader: string | undefined): Promise<AuthUser> {
     const token = extractTokenFromHeader(authHeader)
-    
+
     if (!token) {
-      throw new AuthenticationError('Missing or invalid authorization header', 'MISSING_TOKEN')
+      throw new AuthenticationError(
+        'Missing or invalid authorization header',
+        'MISSING_TOKEN'
+      )
     }
 
     return this.validateToken(token)
@@ -246,13 +272,17 @@ class AuthService {
   /**
    * Change user password
    */
-  async changePassword(userId: string, currentPassword: string, newPassword: string): Promise<void> {
+  async changePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string
+  ): Promise<void> {
     try {
       logger.info('Password change attempt', { userId })
 
       // Find user
       const user = await this.prisma.user.findUnique({
-        where: { id: userId }
+        where: { id: userId },
       })
 
       if (!user) {
@@ -260,10 +290,18 @@ class AuthService {
       }
 
       // Verify current password
-      const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password)
+      const isCurrentPasswordValid = await bcrypt.compare(
+        currentPassword,
+        user.password
+      )
       if (!isCurrentPasswordValid) {
-        logger.warn('Password change failed: Invalid current password', { userId })
-        throw new AuthenticationError('Current password is incorrect', 'INVALID_PASSWORD')
+        logger.warn('Password change failed: Invalid current password', {
+          userId,
+        })
+        throw new AuthenticationError(
+          'Current password is incorrect',
+          'INVALID_PASSWORD'
+        )
       }
 
       // Hash new password
@@ -273,7 +311,7 @@ class AuthService {
       // Update password
       await this.prisma.user.update({
         where: { id: userId },
-        data: { password: hashedNewPassword }
+        data: { password: hashedNewPassword },
       })
 
       logger.info('Password change successful', { userId })
@@ -281,9 +319,12 @@ class AuthService {
       if (error instanceof AuthenticationError) {
         throw error
       }
-      
+
       logger.error('Password change error', error as Error, { userId })
-      throw new AuthenticationError('Password change failed', 'PASSWORD_CHANGE_ERROR')
+      throw new AuthenticationError(
+        'Password change failed',
+        'PASSWORD_CHANGE_ERROR'
+      )
     }
   }
 
@@ -296,7 +337,7 @@ class AuthService {
 
       const user = await this.prisma.user.update({
         where: { id: userId },
-        data: { role: newRole }
+        data: { role: newRole },
       })
 
       logger.info('User role update successful', { userId, newRole })
@@ -307,10 +348,13 @@ class AuthService {
         name: user.name,
         role: user.role,
         createdAt: user.createdAt,
-        updatedAt: user.updatedAt
+        updatedAt: user.updatedAt,
       }
     } catch (error) {
-      logger.error('User role update error', error as Error, { userId, newRole })
+      logger.error('User role update error', error as Error, {
+        userId,
+        newRole,
+      })
       throw new AuthenticationError('Role update failed', 'ROLE_UPDATE_ERROR')
     }
   }
@@ -321,7 +365,7 @@ class AuthService {
   async getUserById(userId: string): Promise<AuthUser | null> {
     try {
       const user = await this.prisma.user.findUnique({
-        where: { id: userId }
+        where: { id: userId },
       })
 
       if (!user) {
@@ -334,7 +378,7 @@ class AuthService {
         name: user.name,
         role: user.role,
         createdAt: user.createdAt,
-        updatedAt: user.updatedAt
+        updatedAt: user.updatedAt,
       }
     } catch (error) {
       logger.error('Get user by ID error', error as Error, { userId })
@@ -348,7 +392,7 @@ class AuthService {
   async getAllUsers(): Promise<AuthUser[]> {
     try {
       const users = await this.prisma.user.findMany({
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
       })
 
       return users.map(user => ({
@@ -357,7 +401,7 @@ class AuthService {
         name: user.name,
         role: user.role,
         createdAt: user.createdAt,
-        updatedAt: user.updatedAt
+        updatedAt: user.updatedAt,
       }))
     } catch (error) {
       logger.error('Get all users error', error as Error)
@@ -373,7 +417,7 @@ class AuthService {
       logger.info('User deletion attempt', { userId })
 
       await this.prisma.user.delete({
-        where: { id: userId }
+        where: { id: userId },
       })
 
       logger.info('User deletion successful', { userId })
@@ -384,6 +428,6 @@ class AuthService {
   }
 }
 
-const authService = new AuthService(prisma);
+const authService = new AuthService(prisma)
 
-export { authService };
+export { authService }

@@ -2,9 +2,9 @@ name: Cubcen CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
 
 env:
   NODE_VERSION: '20'
@@ -16,60 +16,60 @@ jobs:
   quality-gates:
     name: Quality Gates
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        cache-dependency-path: 'package-lock.json'
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
 
-    - name: Install dependencies
-      run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-    - name: Generate Prisma client
-      run: npx prisma generate
+      - name: Generate Prisma client
+        run: npx prisma generate
 
-    - name: Run linting
-      run: npm run lint
+      - name: Run linting
+        run: npm run lint
 
-    - name: Check code formatting
-      run: npm run format:check
+      - name: Check code formatting
+        run: npm run format:check
 
-    - name: Run type checking
-      run: npm run type-check
+      - name: Run type checking
+        run: npm run type-check
 
-    - name: Run tests with coverage
-      run: npm run test:coverage
-      env:
-        NODE_ENV: test
+      - name: Run tests with coverage
+        run: npm run test:coverage
+        env:
+          NODE_ENV: test
 
-    - name: Upload coverage reports
-      uses: codecov/codecov-action@v4
-      with:
-        file: ./coverage/lcov.info
-        flags: unittests
-        name: cubcen-coverage
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage/lcov.info
+          flags: unittests
+          name: cubcen-coverage
 
-    - name: Build application
-      run: npm run build
+      - name: Build application
+        run: npm run build
 
-    - name: Build server
-      run: npm run build:server
+      - name: Build server
+        run: npm run build:server
 
-    - name: Run security audit
-      run: npm audit --audit-level=high
+      - name: Run security audit
+        run: npm audit --audit-level=high
 
   # Integration Tests Job
   integration-tests:
     name: Integration Tests
     runs-on: ubuntu-latest
     needs: quality-gates
-    
+
     services:
       postgres:
         image: postgres:15
@@ -85,293 +85,293 @@ jobs:
           - 5432:5432
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        cache-dependency-path: 'package-lock.json'
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
 
-    - name: Install dependencies
-      run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-    - name: Generate Prisma client
-      run: npx prisma generate
+      - name: Generate Prisma client
+        run: npx prisma generate
 
-    - name: Run database migrations
-      run: npx prisma migrate deploy
-      env:
-        DATABASE_URL: 'postgresql://postgres:postgres@localhost:5432/cubcen_test'
+      - name: Run database migrations
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: 'postgresql://postgres:postgres@localhost:5432/cubcen_test'
 
-    - name: Run backend integration tests
-      run: npm run test:backend
-      env:
-        NODE_ENV: test
-        DATABASE_URL: 'postgresql://postgres:postgres@localhost:5432/cubcen_test'
+      - name: Run backend integration tests
+        run: npm run test:backend
+        env:
+          NODE_ENV: test
+          DATABASE_URL: 'postgresql://postgres:postgres@localhost:5432/cubcen_test'
 
-    - name: Test platform adapters
-      run: npx tsx scripts/test-n8n-adapter.ts
-      env:
-        NODE_ENV: test
+      - name: Test platform adapters
+        run: npx tsx scripts/test-n8n-adapter.ts
+        env:
+          NODE_ENV: test
 
-    - name: Verify health endpoints
-      run: npx tsx scripts/test-health-endpoints.ts
-      env:
-        NODE_ENV: test
+      - name: Verify health endpoints
+        run: npx tsx scripts/test-health-endpoints.ts
+        env:
+          NODE_ENV: test
 
   # End-to-End Tests Job
   e2e-tests:
     name: End-to-End Tests
     runs-on: ubuntu-latest
     needs: integration-tests
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        cache-dependency-path: 'package-lock.json'
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
 
-    - name: Install dependencies
-      run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-    - name: Generate Prisma client
-      run: npx prisma generate
+      - name: Generate Prisma client
+        run: npx prisma generate
 
-    - name: Setup E2E test environment
-      run: |
-        mkdir -p e2e/temp
-        npx prisma migrate deploy
-        npx tsx e2e/setup/seed-test-data.ts
-      env:
-        NODE_ENV: test
-        DATABASE_URL: 'file:./e2e/temp/test.db'
+      - name: Setup E2E test environment
+        run: |
+          mkdir -p e2e/temp
+          npx prisma migrate deploy
+          npx tsx e2e/setup/seed-test-data.ts
+        env:
+          NODE_ENV: test
+          DATABASE_URL: 'file:./e2e/temp/test.db'
 
-    - name: Run E2E tests
-      run: npm run test:e2e
-      env:
-        NODE_ENV: test
-        DATABASE_URL: 'file:./e2e/temp/test.db'
-        JWT_SECRET: 'test-jwt-secret-key-for-e2e-testing'
-        PORT: '3001'
+      - name: Run E2E tests
+        run: npm run test:e2e
+        env:
+          NODE_ENV: test
+          DATABASE_URL: 'file:./e2e/temp/test.db'
+          JWT_SECRET: 'test-jwt-secret-key-for-e2e-testing'
+          PORT: '3001'
 
-    - name: Upload E2E test results
-      uses: actions/upload-artifact@v4
-      if: failure()
-      with:
-        name: e2e-test-results
-        path: |
-          e2e/temp/
-          coverage/e2e/
-        retention-days: 7
+      - name: Upload E2E test results
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: e2e-test-results
+          path: |
+            e2e/temp/
+            coverage/e2e/
+          retention-days: 7
 
   # Performance Tests Job
   performance-tests:
     name: Performance Tests
     runs-on: ubuntu-latest
     needs: integration-tests
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        cache-dependency-path: 'package-lock.json'
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
 
-    - name: Install dependencies
-      run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-    - name: Generate Prisma client
-      run: npx prisma generate
+      - name: Generate Prisma client
+        run: npx prisma generate
 
-    - name: Setup performance test environment
-      run: |
-        mkdir -p e2e/temp
-        npx prisma migrate deploy
-        npx tsx e2e/setup/seed-test-data.ts
-      env:
-        NODE_ENV: test
-        DATABASE_URL: 'file:./e2e/temp/test.db'
+      - name: Setup performance test environment
+        run: |
+          mkdir -p e2e/temp
+          npx prisma migrate deploy
+          npx tsx e2e/setup/seed-test-data.ts
+        env:
+          NODE_ENV: test
+          DATABASE_URL: 'file:./e2e/temp/test.db'
 
-    - name: Run performance tests
-      run: npm run test:performance
-      env:
-        NODE_ENV: test
-        DATABASE_URL: 'file:./e2e/temp/test.db'
-        JWT_SECRET: 'test-jwt-secret-key-for-performance-testing'
-        PORT: '3001'
+      - name: Run performance tests
+        run: npm run test:performance
+        env:
+          NODE_ENV: test
+          DATABASE_URL: 'file:./e2e/temp/test.db'
+          JWT_SECRET: 'test-jwt-secret-key-for-performance-testing'
+          PORT: '3001'
 
-    - name: Run load tests
-      run: npx tsx scripts/test-performance.ts
-      env:
-        NODE_ENV: test
+      - name: Run load tests
+        run: npx tsx scripts/test-performance.ts
+        env:
+          NODE_ENV: test
 
-    - name: Generate performance report
-      run: |
-        echo "# Performance Test Results" > performance-report.md
-        echo "Generated on: $(date)" >> performance-report.md
-        echo "" >> performance-report.md
-        echo "## Test Summary" >> performance-report.md
-        echo "- All performance tests completed" >> performance-report.md
-        echo "- Load tests executed successfully" >> performance-report.md
-        echo "- Memory usage within acceptable limits" >> performance-report.md
+      - name: Generate performance report
+        run: |
+          echo "# Performance Test Results" > performance-report.md
+          echo "Generated on: $(date)" >> performance-report.md
+          echo "" >> performance-report.md
+          echo "## Test Summary" >> performance-report.md
+          echo "- All performance tests completed" >> performance-report.md
+          echo "- Load tests executed successfully" >> performance-report.md
+          echo "- Memory usage within acceptable limits" >> performance-report.md
 
-    - name: Upload performance results
-      uses: actions/upload-artifact@v4
-      with:
-        name: performance-results
-        path: |
-          performance-report.md
-          performance-results.json
-          load-test-results.json
-        retention-days: 30
+      - name: Upload performance results
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-results
+          path: |
+            performance-report.md
+            performance-results.json
+            load-test-results.json
+          retention-days: 30
 
   # Security Scan Job
   security-scan:
     name: Security Scan
     runs-on: ubuntu-latest
     needs: quality-gates
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Run Trivy vulnerability scanner
-      uses: aquasecurity/trivy-action@master
-      with:
-        scan-type: 'fs'
-        scan-ref: '.'
-        format: 'sarif'
-        output: 'trivy-results.sarif'
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
 
-    - name: Upload Trivy scan results to GitHub Security tab
-      uses: github/codeql-action/upload-sarif@v3
-      if: always()
-      with:
-        sarif_file: 'trivy-results.sarif'
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
 
   # Comprehensive Testing Job
   comprehensive-tests:
     name: Comprehensive Test Suite
     runs-on: ubuntu-latest
     needs: [e2e-tests, performance-tests]
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        cache-dependency-path: 'package-lock.json'
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
 
-    - name: Install dependencies
-      run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-    - name: Generate Prisma client
-      run: npx prisma generate
+      - name: Generate Prisma client
+        run: npx prisma generate
 
-    - name: Run comprehensive test suite
-      run: npx tsx scripts/run-comprehensive-tests.ts
-      env:
-        NODE_ENV: test
-        DATABASE_URL: 'file:./e2e/temp/test.db'
-        JWT_SECRET: 'test-jwt-secret-key-for-comprehensive-testing'
+      - name: Run comprehensive test suite
+        run: npx tsx scripts/run-comprehensive-tests.ts
+        env:
+          NODE_ENV: test
+          DATABASE_URL: 'file:./e2e/temp/test.db'
+          JWT_SECRET: 'test-jwt-secret-key-for-comprehensive-testing'
 
-    - name: Upload comprehensive test results
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: comprehensive-test-results
-        path: |
-          test-results/
-          coverage/
-        retention-days: 30
+      - name: Upload comprehensive test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: comprehensive-test-results
+          path: |
+            test-results/
+            coverage/
+          retention-days: 30
 
-    - name: Comment test results on PR
-      if: github.event_name == 'pull_request'
-      uses: actions/github-script@v7
-      with:
-        script: |
-          const fs = require('fs');
-          const path = './test-results/comprehensive-test-report.md';
-          
-          if (fs.existsSync(path)) {
-            const report = fs.readFileSync(path, 'utf8');
-            
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `## 🧪 Comprehensive Test Results\n\n${report}`
-            });
-          }
+      - name: Comment test results on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = './test-results/comprehensive-test-report.md';
+
+            if (fs.existsSync(path)) {
+              const report = fs.readFileSync(path, 'utf8');
+              
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `## 🧪 Comprehensive Test Results\n\n${report}`
+              });
+            }
 
   # Docker Build Job
   docker-build:
     name: Docker Build
     runs-on: ubuntu-latest
     needs: [comprehensive-tests]
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-    - name: Build Docker image
-      run: |
-        docker build -t cubcen:${{ github.sha }} .
-        docker build -t cubcen:latest .
+      - name: Build Docker image
+        run: |
+          docker build -t cubcen:${{ github.sha }} .
+          docker build -t cubcen:latest .
 
-    - name: Test Docker image
-      run: |
-        # Start container in background
-        docker run -d --name cubcen-test \
-          -p 3000:3000 \
-          -e NODE_ENV=production \
-          -e DATABASE_URL=file:/app/data/test.db \
-          -e JWT_SECRET=test-jwt-secret-for-docker-testing \
-          cubcen:${{ github.sha }}
-        
-        # Wait for container to start
-        sleep 30
-        
-        # Test health endpoint
-        curl -f http://localhost:3000/api/cubcen/v1/health || exit 1
-        
-        # Stop and remove container
-        docker stop cubcen-test
-        docker rm cubcen-test
+      - name: Test Docker image
+        run: |
+          # Start container in background
+          docker run -d --name cubcen-test \
+            -p 3000:3000 \
+            -e NODE_ENV=production \
+            -e DATABASE_URL=file:/app/data/test.db \
+            -e JWT_SECRET=test-jwt-secret-for-docker-testing \
+            cubcen:${{ github.sha }}
 
-    - name: Login to Docker Hub
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+          # Wait for container to start
+          sleep 30
 
-    - name: Push to Docker Hub
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-      run: |
-        docker tag cubcen:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/cubcen:${{ github.sha }}
-        docker tag cubcen:latest ${{ secrets.DOCKER_USERNAME }}/cubcen:latest
-        docker push ${{ secrets.DOCKER_USERNAME }}/cubcen:${{ github.sha }}
-        docker push ${{ secrets.DOCKER_USERNAME }}/cubcen:latest
+          # Test health endpoint
+          curl -f http://localhost:3000/api/cubcen/v1/health || exit 1
+
+          # Stop and remove container
+          docker stop cubcen-test
+          docker rm cubcen-test
+
+      - name: Login to Docker Hub
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Push to Docker Hub
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          docker tag cubcen:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/cubcen:${{ github.sha }}
+          docker tag cubcen:latest ${{ secrets.DOCKER_USERNAME }}/cubcen:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/cubcen:${{ github.sha }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/cubcen:latest
 
   # Deployment Job (only on main branch)
   deploy:
@@ -380,41 +380,41 @@ jobs:
     needs: [quality-gates, integration-tests, security-scan, docker-build]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     environment: production
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
 
-    - name: Deploy to production server
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.PRODUCTION_HOST }}
-        username: ${{ secrets.PRODUCTION_USER }}
-        key: ${{ secrets.PRODUCTION_SSH_KEY }}
-        script: |
-          # Navigate to application directory
-          cd /opt/cubcen
-          
-          # Create backup before deployment
-          docker-compose exec cubcen npm run backup:create || true
-          
-          # Pull latest changes
-          git pull origin main
-          
-          # Pull latest Docker image
-          docker pull ${{ secrets.DOCKER_USERNAME }}/cubcen:latest
-          
-          # Update containers with zero-downtime deployment
-          docker-compose up -d --no-deps cubcen
-          
-          # Wait for health check
-          sleep 30
-          
-          # Verify deployment
-          curl -f http://localhost:3000/api/cubcen/v1/health || exit 1
-          
-          # Clean up old images
-          docker image prune -f
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to production server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USER }}
+          key: ${{ secrets.PRODUCTION_SSH_KEY }}
+          script: |
+            # Navigate to application directory
+            cd /opt/cubcen
+
+            # Create backup before deployment
+            docker-compose exec cubcen npm run backup:create || true
+
+            # Pull latest changes
+            git pull origin main
+
+            # Pull latest Docker image
+            docker pull ${{ secrets.DOCKER_USERNAME }}/cubcen:latest
+
+            # Update containers with zero-downtime deployment
+            docker-compose up -d --no-deps cubcen
+
+            # Wait for health check
+            sleep 30
+
+            # Verify deployment
+            curl -f http://localhost:3000/api/cubcen/v1/health || exit 1
+
+            # Clean up old images
+            docker image prune -f
 
   # Notification Job
   notify:
@@ -422,20 +422,20 @@ jobs:
     runs-on: ubuntu-latest
     needs: [deploy]
     if: always() && github.event_name == 'push' && github.ref == 'refs/heads/main'
-    
-    steps:
-    - name: Notify Slack on Success
-      if: needs.deploy.result == 'success'
-      uses: 8398a7/action-slack@v3
-      with:
-        status: success
-        text: '🚀 Cubcen deployment successful!'
-        webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
 
-    - name: Notify Slack on Failure
-      if: needs.deploy.result == 'failure'
-      uses: 8398a7/action-slack@v3
-      with:
-        status: failure
-        text: '❌ Cubcen deployment failed!'
-        webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+    steps:
+      - name: Notify Slack on Success
+        if: needs.deploy.result == 'success'
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          text: '🚀 Cubcen deployment successful!'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Notify Slack on Failure
+        if: needs.deploy.result == 'failure'
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          text: '❌ Cubcen deployment failed!'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}

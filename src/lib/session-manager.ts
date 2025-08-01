@@ -53,7 +53,7 @@ export class SessionManager {
       secureOnly: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       httpOnly: true,
-      ...config
+      ...config,
     }
 
     this.startCleanupTimer()
@@ -94,8 +94,8 @@ export class SessionManager {
         csrfToken,
         metadata: {
           loginMethod: 'password', // Could be extended for OAuth, etc.
-          deviceFingerprint: this.generateDeviceFingerprint(req)
-        }
+          deviceFingerprint: this.generateDeviceFingerprint(req),
+        },
       }
 
       // Enforce max sessions per user
@@ -122,13 +122,13 @@ export class SessionManager {
           sessionId,
           ipAddress: sessionData.ipAddress,
           userAgent: sessionData.userAgent,
-          deviceFingerprint: sessionData.metadata?.deviceFingerprint
+          deviceFingerprint: sessionData.metadata?.deviceFingerprint,
         },
         ipAddress: sessionData.ipAddress,
         userAgent: sessionData.userAgent,
         sessionId,
         timestamp: now,
-        success: true
+        success: true,
       })
 
       logger.info('Session created', {
@@ -136,13 +136,15 @@ export class SessionManager {
         userId,
         userEmail,
         ipAddress: sessionData.ipAddress,
-        expiresAt: expiresAt.toISOString()
+        expiresAt: expiresAt.toISOString(),
       })
 
       return sessionData
-
     } catch (error) {
-      logger.error('Failed to create session', error as Error, { userId, userEmail })
+      logger.error('Failed to create session', error as Error, {
+        userId,
+        userEmail,
+      })
       throw new Error('Failed to create session')
     }
   }
@@ -153,7 +155,7 @@ export class SessionManager {
   public async getSession(sessionId: string): Promise<SessionData | null> {
     try {
       const session = this.sessions.get(sessionId)
-      
+
       if (!session) {
         return null
       }
@@ -169,7 +171,6 @@ export class SessionManager {
       this.sessions.set(sessionId, session)
 
       return session
-
     } catch (error) {
       logger.error('Failed to get session', error as Error, { sessionId })
       return null
@@ -180,12 +181,12 @@ export class SessionManager {
    * Update session data
    */
   public async updateSession(
-    sessionId: string, 
+    sessionId: string,
     updates: Partial<Pick<SessionData, 'metadata' | 'csrfToken'>>
   ): Promise<boolean> {
     try {
       const session = this.sessions.get(sessionId)
-      
+
       if (!session || session.expiresAt < new Date()) {
         return false
       }
@@ -194,16 +195,18 @@ export class SessionManager {
       const updatedSession = {
         ...session,
         ...updates,
-        lastAccessedAt: new Date()
+        lastAccessedAt: new Date(),
       }
 
       this.sessions.set(sessionId, updatedSession)
 
       logger.debug('Session updated', { sessionId, updates })
       return true
-
     } catch (error) {
-      logger.error('Failed to update session', error as Error, { sessionId, updates })
+      logger.error('Failed to update session', error as Error, {
+        sessionId,
+        updates,
+      })
       return false
     }
   }
@@ -214,7 +217,7 @@ export class SessionManager {
   public async destroySession(sessionId: string): Promise<boolean> {
     try {
       const session = this.sessions.get(sessionId)
-      
+
       if (!session) {
         return false
       }
@@ -241,23 +244,22 @@ export class SessionManager {
         description: `Session destroyed for user ${session.userEmail}`,
         metadata: {
           sessionId,
-          sessionDuration: new Date().getTime() - session.createdAt.getTime()
+          sessionDuration: new Date().getTime() - session.createdAt.getTime(),
         },
         ipAddress: session.ipAddress,
         userAgent: session.userAgent,
         sessionId,
         timestamp: new Date(),
-        success: true
+        success: true,
       })
 
       logger.info('Session destroyed', {
         sessionId,
         userId: session.userId,
-        userEmail: session.userEmail
+        userEmail: session.userEmail,
       })
 
       return true
-
     } catch (error) {
       logger.error('Failed to destroy session', error as Error, { sessionId })
       return false
@@ -270,7 +272,7 @@ export class SessionManager {
   public async destroyUserSessions(userId: string): Promise<number> {
     try {
       const userSessions = this.userSessions.get(userId)
-      
+
       if (!userSessions) {
         return 0
       }
@@ -285,9 +287,10 @@ export class SessionManager {
 
       logger.info('All user sessions destroyed', { userId, destroyedCount })
       return destroyedCount
-
     } catch (error) {
-      logger.error('Failed to destroy user sessions', error as Error, { userId })
+      logger.error('Failed to destroy user sessions', error as Error, {
+        userId,
+      })
       return 0
     }
   }
@@ -296,25 +299,28 @@ export class SessionManager {
    * Validate session and check for suspicious activity
    */
   public async validateSession(
-    sessionId: string, 
+    sessionId: string,
     req: Request
   ): Promise<{ valid: boolean; session?: SessionData; reason?: string }> {
     try {
       const session = await this.getSession(sessionId)
-      
+
       if (!session) {
         return { valid: false, reason: 'Session not found or expired' }
       }
 
       // Check IP address consistency (optional - can be disabled for mobile users)
       const currentIP = req.ip || 'unknown'
-      if (process.env.ENFORCE_IP_CONSISTENCY === 'true' && session.ipAddress !== currentIP) {
+      if (
+        process.env.ENFORCE_IP_CONSISTENCY === 'true' &&
+        session.ipAddress !== currentIP
+      ) {
         logger.warn('Session IP address mismatch detected', {
           sessionId,
           userId: session.userId,
           originalIP: session.ipAddress,
           currentIP,
-          userAgent: req.get('User-Agent')
+          userAgent: req.get('User-Agent'),
         })
 
         // Log security event
@@ -328,7 +334,7 @@ export class SessionManager {
             originalIP: session.ipAddress,
             currentIP,
             originalUserAgent: session.userAgent,
-            currentUserAgent: req.get('User-Agent')
+            currentUserAgent: req.get('User-Agent'),
           }
         )
 
@@ -342,12 +348,11 @@ export class SessionManager {
           sessionId,
           userId: session.userId,
           originalUserAgent: session.userAgent,
-          currentUserAgent
+          currentUserAgent,
         })
       }
 
       return { valid: true, session }
-
     } catch (error) {
       logger.error('Failed to validate session', error as Error, { sessionId })
       return { valid: false, reason: 'Validation error' }
@@ -360,7 +365,7 @@ export class SessionManager {
   public async getUserSessions(userId: string): Promise<SessionData[]> {
     try {
       const userSessions = this.userSessions.get(userId)
-      
+
       if (!userSessions) {
         return []
       }
@@ -374,7 +379,6 @@ export class SessionManager {
       }
 
       return sessions
-
     } catch (error) {
       logger.error('Failed to get user sessions', error as Error, { userId })
       return []
@@ -401,7 +405,6 @@ export class SessionManager {
       }
 
       return cleanedCount
-
     } catch (error) {
       logger.error('Failed to cleanup expired sessions', error as Error)
       return 0
@@ -420,7 +423,8 @@ export class SessionManager {
   } {
     const totalSessions = this.sessions.size
     const totalUsers = this.userSessions.size
-    const averageSessionsPerUser = totalUsers > 0 ? totalSessions / totalUsers : 0
+    const averageSessionsPerUser =
+      totalUsers > 0 ? totalSessions / totalUsers : 0
 
     let oldestSession: Date | undefined
     let newestSession: Date | undefined
@@ -439,7 +443,7 @@ export class SessionManager {
       totalUsers,
       averageSessionsPerUser,
       oldestSession,
-      newestSession
+      newestSession,
     }
   }
 
@@ -458,7 +462,7 @@ export class SessionManager {
       req.get('User-Agent') || '',
       req.get('Accept-Language') || '',
       req.get('Accept-Encoding') || '',
-      req.ip || ''
+      req.ip || '',
     ]
 
     return crypto
@@ -473,7 +477,7 @@ export class SessionManager {
    */
   private async enforceMaxSessionsPerUser(userId: string): Promise<void> {
     const userSessions = this.userSessions.get(userId)
-    
+
     if (!userSessions || userSessions.size < this.config.maxSessionsPerUser) {
       return
     }
@@ -494,7 +498,7 @@ export class SessionManager {
       logger.info('Removing oldest session due to max sessions limit', {
         userId,
         removedSessionId: oldestSessionId,
-        maxSessions: this.config.maxSessionsPerUser
+        maxSessions: this.config.maxSessionsPerUser,
       })
 
       await this.destroySession(oldestSessionId)
@@ -510,7 +514,7 @@ export class SessionManager {
     }, this.config.cleanupInterval)
 
     logger.info('Session cleanup timer started', {
-      cleanupInterval: this.config.cleanupInterval
+      cleanupInterval: this.config.cleanupInterval,
     })
   }
 
@@ -530,7 +534,7 @@ export class SessionManager {
    */
   public async shutdown(): Promise<void> {
     this.stopCleanupTimer()
-    
+
     // Log all active sessions before shutdown
     const stats = this.getSessionStats()
     logger.info('Session manager shutting down', stats)

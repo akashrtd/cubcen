@@ -1,11 +1,23 @@
 'use client'
 
 import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import {
   Table,
   TableBody,
@@ -22,10 +34,17 @@ interface AgentPerformanceTableProps {
   loading?: boolean
 }
 
-type SortField = 'agentName' | 'totalTasks' | 'successRate' | 'averageResponseTime'
+type SortField =
+  | 'agentName'
+  | 'totalTasks'
+  | 'successRate'
+  | 'averageResponseTime'
 type SortDirection = 'asc' | 'desc'
 
-export function AgentPerformanceTable({ data, loading }: AgentPerformanceTableProps) {
+export function AgentPerformanceTable({
+  data,
+  loading,
+}: AgentPerformanceTableProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [sortField, setSortField] = useState<SortField>('successRate')
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
@@ -59,9 +78,11 @@ export function AgentPerformanceTable({ data, loading }: AgentPerformanceTablePr
   }
 
   const filteredAndSortedData = data
-    .filter((agent) => {
-      const matchesSearch = agent.agentName.toLowerCase().includes(searchTerm.toLowerCase())
-      
+    .filter(agent => {
+      const matchesSearch = agent.agentName
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
+
       if (!matchesSearch) return false
 
       switch (filterPerformance) {
@@ -101,11 +122,11 @@ export function AgentPerformanceTable({ data, loading }: AgentPerformanceTablePr
       }
 
       if (typeof aValue === 'string' && typeof bValue === 'string') {
-        return sortDirection === 'asc' 
+        return sortDirection === 'asc'
           ? aValue.localeCompare(bValue)
           : bValue.localeCompare(aValue)
       } else {
-        return sortDirection === 'asc' 
+        return sortDirection === 'asc'
           ? (aValue as number) - (bValue as number)
           : (bValue as number) - (aValue as number)
       }
@@ -113,9 +134,17 @@ export function AgentPerformanceTable({ data, loading }: AgentPerformanceTablePr
 
   const getPerformanceBadge = (successRate: number) => {
     if (successRate >= 90) {
-      return <Badge className="bg-green-100 text-green-800 border-green-200">Excellent</Badge>
+      return (
+        <Badge className="bg-green-100 text-green-800 border-green-200">
+          Excellent
+        </Badge>
+      )
     } else if (successRate >= 70) {
-      return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">Good</Badge>
+      return (
+        <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">
+          Good
+        </Badge>
+      )
     } else {
       return <Badge variant="destructive">Needs Improvement</Badge>
     }
@@ -123,9 +152,17 @@ export function AgentPerformanceTable({ data, loading }: AgentPerformanceTablePr
 
   const getResponseTimeBadge = (responseTime: number) => {
     if (responseTime <= 100) {
-      return <Badge className="bg-green-100 text-green-800 border-green-200">Fast</Badge>
+      return (
+        <Badge className="bg-green-100 text-green-800 border-green-200">
+          Fast
+        </Badge>
+      )
     } else if (responseTime <= 500) {
-      return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">Average</Badge>
+      return (
+        <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">
+          Average
+        </Badge>
+      )
     } else {
       return <Badge variant="destructive">Slow</Badge>
     }
@@ -150,11 +187,14 @@ export function AgentPerformanceTable({ data, loading }: AgentPerformanceTablePr
             <Input
               placeholder="Search agents..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
               className="pl-10"
             />
           </div>
-          <Select value={filterPerformance} onValueChange={setFilterPerformance}>
+          <Select
+            value={filterPerformance}
+            onValueChange={setFilterPerformance}
+          >
             <SelectTrigger className="w-full sm:w-48">
               <SelectValue placeholder="Filter by performance" />
             </SelectTrigger>
@@ -219,15 +259,17 @@ export function AgentPerformanceTable({ data, loading }: AgentPerformanceTablePr
             <TableBody>
               {filteredAndSortedData.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                    {data.length === 0 
+                  <TableCell
+                    colSpan={6}
+                    className="text-center py-8 text-muted-foreground"
+                  >
+                    {data.length === 0
                       ? 'No agent performance data available'
-                      : 'No agents match the current filters'
-                    }
+                      : 'No agents match the current filters'}
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredAndSortedData.map((agent) => (
+                filteredAndSortedData.map(agent => (
                   <TableRow key={agent.agentId}>
                     <TableCell className="font-medium">
                       <div>
@@ -240,19 +282,29 @@ export function AgentPerformanceTable({ data, loading }: AgentPerformanceTablePr
                     <TableCell>
                       <div className="text-center">
                         <div className="font-semibold">{agent.totalTasks}</div>
-                        <div className="text-xs text-muted-foreground">tasks</div>
+                        <div className="text-xs text-muted-foreground">
+                          tasks
+                        </div>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="text-center">
-                        <div className="font-semibold">{agent.successRate.toFixed(1)}%</div>
-                        <div className="text-xs text-muted-foreground">success</div>
+                        <div className="font-semibold">
+                          {agent.successRate.toFixed(1)}%
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          success
+                        </div>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="text-center">
-                        <div className="font-semibold">{agent.averageResponseTime}ms</div>
-                        <div className="text-xs text-muted-foreground">average</div>
+                        <div className="font-semibold">
+                          {agent.averageResponseTime}ms
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          average
+                        </div>
                       </div>
                     </TableCell>
                     <TableCell>

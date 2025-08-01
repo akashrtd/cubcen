@@ -39,7 +39,10 @@ export function TaskFilters({
   agents,
   onClose,
 }: TaskFiltersProps) {
-  const updateFilter = (key: keyof TaskFilter, value: string | TaskPriority | Date | undefined) => {
+  const updateFilter = (
+    key: keyof TaskFilter,
+    value: string | TaskPriority | Date | undefined
+  ) => {
     onFiltersChange({
       ...filters,
       [key]: value || undefined,
@@ -50,8 +53,8 @@ export function TaskFilters({
     onFiltersChange({})
   }
 
-  const hasActiveFilters = Object.values(filters).some(value => 
-    value !== undefined && value !== null && value !== ''
+  const hasActiveFilters = Object.values(filters).some(
+    value => value !== undefined && value !== null && value !== ''
   )
 
   const formatDateForInput = (date: Date | undefined) => {
@@ -94,7 +97,7 @@ export function TaskFilters({
                 id="search"
                 placeholder="Search by name or description"
                 value={filters.search || ''}
-                onChange={(e) => updateFilter('search', e.target.value)}
+                onChange={e => updateFilter('search', e.target.value)}
                 className="pl-8"
               />
             </div>
@@ -105,14 +108,14 @@ export function TaskFilters({
             <Label className="text-xs font-medium">Agent</Label>
             <Select
               value={filters.agentId || ''}
-              onValueChange={(value) => updateFilter('agentId', value)}
+              onValueChange={value => updateFilter('agentId', value)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="All agents" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="">All agents</SelectItem>
-                {agents.map((agent) => (
+                {agents.map(agent => (
                   <SelectItem key={agent.id} value={agent.id}>
                     <div className="flex items-center gap-2">
                       <User className="h-3 w-3" />
@@ -132,14 +135,16 @@ export function TaskFilters({
             <Label className="text-xs font-medium">Priority</Label>
             <Select
               value={filters.priority || ''}
-              onValueChange={(value: TaskPriority) => updateFilter('priority', value)}
+              onValueChange={(value: TaskPriority) =>
+                updateFilter('priority', value)
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="All priorities" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="">All priorities</SelectItem>
-                {PRIORITY_OPTIONS.map((option) => (
+                {PRIORITY_OPTIONS.map(option => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
                   </SelectItem>
@@ -157,7 +162,7 @@ export function TaskFilters({
                   type="date"
                   placeholder="From"
                   value={formatDateForInput(filters.dateFrom)}
-                  onChange={(e) => handleDateChange('dateFrom', e.target.value)}
+                  onChange={e => handleDateChange('dateFrom', e.target.value)}
                   className="text-xs"
                 />
               </div>
@@ -166,7 +171,7 @@ export function TaskFilters({
                   type="date"
                   placeholder="To"
                   value={formatDateForInput(filters.dateTo)}
-                  onChange={(e) => handleDateChange('dateTo', e.target.value)}
+                  onChange={e => handleDateChange('dateTo', e.target.value)}
                   className="text-xs"
                 />
               </div>

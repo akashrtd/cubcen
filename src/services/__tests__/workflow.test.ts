@@ -14,7 +14,7 @@ import {
   WorkflowCreationData,
   WorkflowUpdateData,
   WorkflowExecutionOptions,
-  WorkflowValidationResult
+  WorkflowValidationResult,
 } from '@/types/workflow'
 
 // Mock dependencies
@@ -26,18 +26,18 @@ jest.mock('@/lib/database', () => ({
       findUnique: jest.fn(),
       findMany: jest.fn(),
       delete: jest.fn(),
-      count: jest.fn()
+      count: jest.fn(),
     },
     workflowStep: {
       deleteMany: jest.fn(),
-      createMany: jest.fn()
+      createMany: jest.fn(),
     },
     agent: {
       findMany: jest.fn(),
-      findUnique: jest.fn()
+      findUnique: jest.fn(),
     },
-    $transaction: jest.fn()
-  }
+    $transaction: jest.fn(),
+  },
 }))
 
 jest.mock('@/lib/logger', () => ({
@@ -45,15 +45,15 @@ jest.mock('@/lib/logger', () => ({
     info: jest.fn(),
     error: jest.fn(),
     warn: jest.fn(),
-    debug: jest.fn()
-  }
+    debug: jest.fn(),
+  },
 }))
 
 // Mock WebSocket service
 const mockWebSocketService = {
   notifyWorkflowStatusChange: jest.fn(),
   notifyWorkflowProgress: jest.fn(),
-  notifyWorkflowError: jest.fn()
+  notifyWorkflowError: jest.fn(),
 }
 
 describe('WorkflowService', () => {
@@ -71,14 +71,18 @@ describe('WorkflowService', () => {
       name: 'Mock Platform',
       type: 'n8n',
       baseUrl: 'http://localhost:3000',
-      credentials: { apiKey: 'test-key' }
+      credentials: { apiKey: 'test-key' },
     })
 
     adapterManager = new AdapterManager()
     adapterManager.registerAdapter('mock-platform', mockAdapter)
 
     taskService = new TaskService(adapterManager)
-    workflowService = new WorkflowService(adapterManager, taskService, mockWebSocketService)
+    workflowService = new WorkflowService(
+      adapterManager,
+      taskService,
+      mockWebSocketService
+    )
   })
 
   afterEach(async () => {
@@ -96,17 +100,17 @@ describe('WorkflowService', () => {
             stepOrder: 0,
             name: 'First Step',
             parameters: { input: 'test' },
-            conditions: [{ type: 'always' }]
+            conditions: [{ type: 'always' }],
           },
           {
             agentId: 'agent-2',
             stepOrder: 1,
             name: 'Second Step',
             parameters: { input: '${steps.step-1.output.result}' },
-            conditions: [{ type: 'on_success', dependsOn: ['step-1'] }]
-          }
+            conditions: [{ type: 'on_success', dependsOn: ['step-1'] }],
+          },
         ],
-        createdBy: 'user-1'
+        createdBy: 'user-1',
       }
 
       const mockWorkflow = {
@@ -126,7 +130,7 @@ describe('WorkflowService', () => {
             name: 'First Step',
             parameters: JSON.stringify({ input: 'test' }),
             conditions: JSON.stringify([{ type: 'always' }]),
-            agent: { id: 'agent-1', name: 'Agent 1' }
+            agent: { id: 'agent-1', name: 'Agent 1' },
           },
           {
             id: 'step-2',
@@ -134,20 +138,23 @@ describe('WorkflowService', () => {
             agentId: 'agent-2',
             stepOrder: 1,
             name: 'Second Step',
-            parameters: JSON.stringify({ input: '${steps.step-1.output.result}' }),
-            conditions: JSON.stringify([{ type: 'on_success', dependsOn: ['step-1'] }]),
-            agent: { id: 'agent-2', name: 'Agent 2' }
-          }
+            parameters: JSON.stringify({
+              input: '${steps.step-1.output.result}',
+            }),
+            conditions: JSON.stringify([
+              { type: 'on_success', dependsOn: ['step-1'] },
+            ]),
+            agent: { id: 'agent-2', name: 'Agent 2' },
+          },
         ],
-        creator: { id: 'user-1', email: 'test@example.com', name: 'Test User' }
+        creator: { id: 'user-1', email: 'test@example.com', name: 'Test User' },
       }
 
       // Mock agent validation
       ;(prisma.agent.findMany as jest.Mock).mockResolvedValue([
         { id: 'agent-1', status: 'ACTIVE' },
-        { id: 'agent-2', status: 'ACTIVE' }
+        { id: 'agent-2', status: 'ACTIVE' },
       ])
-
       ;(prisma.workflow.create as jest.Mock).mockResolvedValue(mockWorkflow)
 
       const result = await workflowService.createWorkflow(workflowData)
@@ -160,13 +167,13 @@ describe('WorkflowService', () => {
         steps: expect.arrayContaining([
           expect.objectContaining({
             name: 'First Step',
-            stepOrder: 0
+            stepOrder: 0,
           }),
           expect.objectContaining({
             name: 'Second Step',
-            stepOrder: 1
-          })
-        ])
+            stepOrder: 1,
+          }),
+        ]),
       })
 
       expect(prisma.workflow.create).toHaveBeenCalledWith({
@@ -174,16 +181,16 @@ describe('WorkflowService', () => {
           name: 'Test Workflow',
           description: 'A test workflow',
           status: 'DRAFT',
-          createdBy: 'user-1'
+          createdBy: 'user-1',
         }),
-        include: expect.any(Object)
+        include: expect.any(Object),
       })
 
       expect(logger.info).toHaveBeenCalledWith(
         'Workflow created successfully',
         expect.objectContaining({
           workflowId: 'workflow-1',
-          name: 'Test Workflow'
+          name: 'Test Workflow',
         })
       )
     })
@@ -196,24 +203,24 @@ describe('WorkflowService', () => {
             agentId: 'non-existent-agent',
             stepOrder: 0,
             name: 'Invalid Step',
-            parameters: {}
-          }
+            parameters: {},
+          },
         ],
-        createdBy: 'user-1'
+        createdBy: 'user-1',
       }
 
       // Mock no agents found
       ;(prisma.agent.findMany as jest.Mock).mockResolvedValue([])
 
-      await expect(workflowService.createWorkflow(workflowData)).rejects.toThrow(
-        'Workflow validation failed'
-      )
+      await expect(
+        workflowService.createWorkflow(workflowData)
+      ).rejects.toThrow('Workflow validation failed')
 
       expect(logger.error).toHaveBeenCalledWith(
         'Failed to create workflow',
         expect.any(Error),
         expect.objectContaining({
-          name: 'Invalid Workflow'
+          name: 'Invalid Workflow',
         })
       )
     })
@@ -222,10 +229,12 @@ describe('WorkflowService', () => {
       const invalidData = {
         name: '', // Empty name should fail validation
         steps: [],
-        createdBy: 'user-1'
+        createdBy: 'user-1',
       } as WorkflowCreationData
 
-      await expect(workflowService.createWorkflow(invalidData)).rejects.toThrow()
+      await expect(
+        workflowService.createWorkflow(invalidData)
+      ).rejects.toThrow()
     })
   })
 
@@ -234,14 +243,14 @@ describe('WorkflowService', () => {
       const updateData: WorkflowUpdateData = {
         name: 'Updated Workflow',
         description: 'Updated description',
-        status: 'ACTIVE'
+        status: 'ACTIVE',
       }
 
       const existingWorkflow = {
         id: 'workflow-1',
         name: 'Test Workflow',
         status: 'DRAFT',
-        steps: []
+        steps: [],
       }
 
       const updatedWorkflow = {
@@ -253,24 +262,29 @@ describe('WorkflowService', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
         steps: [],
-        creator: { id: 'user-1', email: 'test@example.com', name: 'Test User' }
+        creator: { id: 'user-1', email: 'test@example.com', name: 'Test User' },
       }
 
-      ;(prisma.workflow.findUnique as jest.Mock).mockResolvedValue(existingWorkflow)
-      ;(prisma.$transaction as jest.Mock).mockImplementation(async (callback) => {
+      ;(prisma.workflow.findUnique as jest.Mock).mockResolvedValue(
+        existingWorkflow
+      )
+      ;(prisma.$transaction as jest.Mock).mockImplementation(async callback => {
         return await callback({
           workflow: {
             update: jest.fn().mockResolvedValue(updatedWorkflow),
-            findUnique: jest.fn().mockResolvedValue(updatedWorkflow)
+            findUnique: jest.fn().mockResolvedValue(updatedWorkflow),
           },
           workflowStep: {
             deleteMany: jest.fn(),
-            createMany: jest.fn()
-          }
+            createMany: jest.fn(),
+          },
         })
       })
 
-      const result = await workflowService.updateWorkflow('workflow-1', updateData)
+      const result = await workflowService.updateWorkflow(
+        'workflow-1',
+        updateData
+      )
 
       expect(result.name).toBe('Updated Workflow')
       expect(result.description).toBe('Updated description')
@@ -279,7 +293,7 @@ describe('WorkflowService', () => {
       expect(logger.info).toHaveBeenCalledWith(
         'Workflow updated successfully',
         expect.objectContaining({
-          workflowId: 'workflow-1'
+          workflowId: 'workflow-1',
         })
       )
     })
@@ -307,23 +321,23 @@ describe('WorkflowService', () => {
             stepOrder: 0,
             name: 'Test Step',
             parameters: {},
-            conditions: [{ type: 'always' }]
-          }
+            conditions: [{ type: 'always' }],
+          },
         ],
         createdBy: 'user-1',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       }
 
       // Mock agents
       ;(prisma.agent.findMany as jest.Mock).mockResolvedValue([
-        { id: 'agent-1', status: 'ACTIVE' }
+        { id: 'agent-1', status: 'ACTIVE' },
       ])
       ;(prisma.agent.findUnique as jest.Mock).mockResolvedValue({
         id: 'agent-1',
         externalId: 'ext-1',
         platformId: 'mock-platform',
-        platform: { id: 'mock-platform' }
+        platform: { id: 'mock-platform' },
       })
 
       // Start execution
@@ -333,7 +347,7 @@ describe('WorkflowService', () => {
       // Try to update
       ;(prisma.workflow.findUnique as jest.Mock).mockResolvedValue({
         id: 'workflow-1',
-        status: 'ACTIVE'
+        status: 'ACTIVE',
       })
 
       await expect(
@@ -361,10 +375,10 @@ describe('WorkflowService', () => {
             name: 'Test Step',
             parameters: JSON.stringify({ input: 'test' }),
             conditions: JSON.stringify([{ type: 'always' }]),
-            agent: { id: 'agent-1', name: 'Agent 1' }
-          }
+            agent: { id: 'agent-1', name: 'Agent 1' },
+          },
         ],
-        creator: { id: 'user-1', email: 'test@example.com', name: 'Test User' }
+        creator: { id: 'user-1', email: 'test@example.com', name: 'Test User' },
       }
 
       ;(prisma.workflow.findUnique as jest.Mock).mockResolvedValue(mockWorkflow)
@@ -379,9 +393,9 @@ describe('WorkflowService', () => {
         steps: expect.arrayContaining([
           expect.objectContaining({
             name: 'Test Step',
-            parameters: { input: 'test' }
-          })
-        ])
+            parameters: { input: 'test' },
+          }),
+        ]),
       })
     })
 
@@ -406,7 +420,11 @@ describe('WorkflowService', () => {
           createdAt: new Date(),
           updatedAt: new Date(),
           steps: [],
-          creator: { id: 'user-1', email: 'test@example.com', name: 'Test User' }
+          creator: {
+            id: 'user-1',
+            email: 'test@example.com',
+            name: 'Test User',
+          },
         },
         {
           id: 'workflow-2',
@@ -417,8 +435,12 @@ describe('WorkflowService', () => {
           createdAt: new Date(),
           updatedAt: new Date(),
           steps: [],
-          creator: { id: 'user-1', email: 'test@example.com', name: 'Test User' }
-        }
+          creator: {
+            id: 'user-1',
+            email: 'test@example.com',
+            name: 'Test User',
+          },
+        },
       ]
 
       ;(prisma.workflow.count as jest.Mock).mockResolvedValue(2)
@@ -427,18 +449,18 @@ describe('WorkflowService', () => {
       const result = await workflowService.getWorkflows({
         page: 1,
         limit: 10,
-        status: 'ACTIVE'
+        status: 'ACTIVE',
       })
 
       expect(result).toMatchObject({
         workflows: expect.arrayContaining([
           expect.objectContaining({ name: 'Workflow 1' }),
-          expect.objectContaining({ name: 'Workflow 2' })
+          expect.objectContaining({ name: 'Workflow 2' }),
         ]),
         total: 2,
         page: 1,
         limit: 10,
-        totalPages: 1
+        totalPages: 1,
       })
     })
 
@@ -447,7 +469,7 @@ describe('WorkflowService', () => {
       ;(prisma.workflow.findMany as jest.Mock).mockResolvedValue([])
 
       await workflowService.getWorkflows({
-        search: 'test workflow'
+        search: 'test workflow',
       })
 
       expect(prisma.workflow.findMany).toHaveBeenCalledWith(
@@ -455,9 +477,11 @@ describe('WorkflowService', () => {
           where: expect.objectContaining({
             OR: expect.arrayContaining([
               { name: { contains: 'test workflow', mode: 'insensitive' } },
-              { description: { contains: 'test workflow', mode: 'insensitive' } }
-            ])
-          })
+              {
+                description: { contains: 'test workflow', mode: 'insensitive' },
+              },
+            ]),
+          }),
         })
       )
     })
@@ -470,7 +494,7 @@ describe('WorkflowService', () => {
       await workflowService.deleteWorkflow('workflow-1')
 
       expect(prisma.workflow.delete).toHaveBeenCalledWith({
-        where: { id: 'workflow-1' }
+        where: { id: 'workflow-1' },
       })
 
       expect(logger.info).toHaveBeenCalledWith(
@@ -494,25 +518,25 @@ describe('WorkflowService', () => {
             stepOrder: 0,
             name: 'Test Step',
             parameters: {},
-            conditions: [{ type: 'always' }]
-          }
+            conditions: [{ type: 'always' }],
+          },
         ],
         createdBy: 'user-1',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       }
 
       // Mock agents
       ;(prisma.agent.findMany as jest.Mock).mockResolvedValue([
-        { id: 'agent-1', status: 'ACTIVE' }
+        { id: 'agent-1', status: 'ACTIVE' },
       ])
 
       jest.spyOn(workflowService, 'getWorkflow').mockResolvedValue(workflow)
       await workflowService.executeWorkflow('workflow-1', {}, 'user-1')
 
-      await expect(workflowService.deleteWorkflow('workflow-1')).rejects.toThrow(
-        'Cannot delete a workflow that is currently executing'
-      )
+      await expect(
+        workflowService.deleteWorkflow('workflow-1')
+      ).rejects.toThrow('Cannot delete a workflow that is currently executing')
     })
   })
 
@@ -531,7 +555,7 @@ describe('WorkflowService', () => {
             stepOrder: 0,
             name: 'First Step',
             parameters: {},
-            conditions: [{ type: 'always' }]
+            conditions: [{ type: 'always' }],
           },
           {
             id: 'step-2',
@@ -540,17 +564,17 @@ describe('WorkflowService', () => {
             stepOrder: 1,
             name: 'Second Step',
             parameters: {},
-            conditions: [{ type: 'on_success', dependsOn: ['step-1'] }]
-          }
+            conditions: [{ type: 'on_success', dependsOn: ['step-1'] }],
+          },
         ],
         createdBy: 'user-1',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       }
 
       ;(prisma.agent.findMany as jest.Mock).mockResolvedValue([
         { id: 'agent-1', status: 'ACTIVE' },
-        { id: 'agent-2', status: 'ACTIVE' }
+        { id: 'agent-2', status: 'ACTIVE' },
       ])
 
       const result = await workflowService.validateWorkflowDefinition(workflow)
@@ -573,12 +597,12 @@ describe('WorkflowService', () => {
             stepOrder: 0,
             name: 'Invalid Step',
             parameters: {},
-            conditions: [{ type: 'always' }]
-          }
+            conditions: [{ type: 'always' }],
+          },
         ],
         createdBy: 'user-1',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       }
 
       ;(prisma.agent.findMany as jest.Mock).mockResolvedValue([])
@@ -589,7 +613,9 @@ describe('WorkflowService', () => {
       expect(result.errors).toContainEqual(
         expect.objectContaining({
           type: 'missing_agent',
-          message: expect.stringContaining('Agent non-existent-agent not found')
+          message: expect.stringContaining(
+            'Agent non-existent-agent not found'
+          ),
         })
       )
     })
@@ -608,7 +634,7 @@ describe('WorkflowService', () => {
             stepOrder: 0,
             name: 'Step 1',
             parameters: {},
-            conditions: [{ type: 'on_success', dependsOn: ['step-2'] }]
+            conditions: [{ type: 'on_success', dependsOn: ['step-2'] }],
           },
           {
             id: 'step-2',
@@ -617,17 +643,17 @@ describe('WorkflowService', () => {
             stepOrder: 1,
             name: 'Step 2',
             parameters: {},
-            conditions: [{ type: 'on_success', dependsOn: ['step-1'] }]
-          }
+            conditions: [{ type: 'on_success', dependsOn: ['step-1'] }],
+          },
         ],
         createdBy: 'user-1',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       }
 
       ;(prisma.agent.findMany as jest.Mock).mockResolvedValue([
         { id: 'agent-1', status: 'ACTIVE' },
-        { id: 'agent-2', status: 'ACTIVE' }
+        { id: 'agent-2', status: 'ACTIVE' },
       ])
 
       const result = await workflowService.validateWorkflowDefinition(workflow)
@@ -636,7 +662,7 @@ describe('WorkflowService', () => {
       expect(result.errors).toContainEqual(
         expect.objectContaining({
           type: 'circular_dependency',
-          message: expect.stringContaining('Circular dependency detected')
+          message: expect.stringContaining('Circular dependency detected'),
         })
       )
     })
@@ -655,16 +681,16 @@ describe('WorkflowService', () => {
             stepOrder: 0,
             name: 'Step 1',
             parameters: {},
-            conditions: [{ type: 'expression' }] // Missing expression
-          }
+            conditions: [{ type: 'expression' }], // Missing expression
+          },
         ],
         createdBy: 'user-1',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       }
 
       ;(prisma.agent.findMany as jest.Mock).mockResolvedValue([
-        { id: 'agent-1', status: 'ACTIVE' }
+        { id: 'agent-1', status: 'ACTIVE' },
       ])
 
       const result = await workflowService.validateWorkflowDefinition(workflow)
@@ -673,7 +699,9 @@ describe('WorkflowService', () => {
       expect(result.errors).toContainEqual(
         expect.objectContaining({
           type: 'invalid_condition',
-          message: expect.stringContaining('Expression condition missing expression')
+          message: expect.stringContaining(
+            'Expression condition missing expression'
+          ),
         })
       )
     })
@@ -694,17 +722,17 @@ describe('WorkflowService', () => {
             stepOrder: 0,
             name: 'Test Step',
             parameters: { input: 'test' },
-            conditions: [{ type: 'always' }]
-          }
+            conditions: [{ type: 'always' }],
+          },
         ],
         createdBy: 'user-1',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       }
 
       // Mock validation
       ;(prisma.agent.findMany as jest.Mock).mockResolvedValue([
-        { id: 'agent-1', status: 'ACTIVE' }
+        { id: 'agent-1', status: 'ACTIVE' },
       ])
 
       // Mock agent execution
@@ -712,29 +740,35 @@ describe('WorkflowService', () => {
         id: 'agent-1',
         externalId: 'ext-1',
         platformId: 'mock-platform',
-        platform: { id: 'mock-platform' }
+        platform: { id: 'mock-platform' },
       })
 
       mockAdapter.executeAgent = jest.fn().mockResolvedValue({
         success: true,
         data: { result: 'success' },
         executionTime: 1000,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
 
       jest.spyOn(workflowService, 'getWorkflow').mockResolvedValue(workflow)
 
-      const executionId = await workflowService.executeWorkflow('workflow-1', {
-        variables: { testVar: 'testValue' }
-      }, 'user-1')
+      const executionId = await workflowService.executeWorkflow(
+        'workflow-1',
+        {
+          variables: { testVar: 'testValue' },
+        },
+        'user-1'
+      )
 
       expect(executionId).toMatch(/^exec_/)
-      expect(mockWebSocketService.notifyWorkflowStatusChange).toHaveBeenCalledWith(
+      expect(
+        mockWebSocketService.notifyWorkflowStatusChange
+      ).toHaveBeenCalledWith(
         executionId,
         'PENDING',
         expect.objectContaining({
           workflowId: 'workflow-1',
-          workflowName: 'Test Workflow'
+          workflowName: 'Test Workflow',
         })
       )
 
@@ -742,7 +776,7 @@ describe('WorkflowService', () => {
       await new Promise(resolve => setTimeout(resolve, 100))
 
       expect(mockAdapter.executeAgent).toHaveBeenCalledWith('ext-1', {
-        input: 'test'
+        input: 'test',
       })
     })
 
@@ -760,30 +794,36 @@ describe('WorkflowService', () => {
             stepOrder: 0,
             name: 'Test Step',
             parameters: {},
-            conditions: [{ type: 'always' }]
-          }
+            conditions: [{ type: 'always' }],
+          },
         ],
         createdBy: 'user-1',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       }
 
       ;(prisma.agent.findMany as jest.Mock).mockResolvedValue([
-        { id: 'agent-1', status: 'ACTIVE' }
+        { id: 'agent-1', status: 'ACTIVE' },
       ])
 
       jest.spyOn(workflowService, 'getWorkflow').mockResolvedValue(workflow)
 
-      const executionId = await workflowService.executeWorkflow('workflow-1', {
-        dryRun: true
-      }, 'user-1')
+      const executionId = await workflowService.executeWorkflow(
+        'workflow-1',
+        {
+          dryRun: true,
+        },
+        'user-1'
+      )
 
       expect(executionId).toMatch(/^exec_/)
-      expect(mockWebSocketService.notifyWorkflowStatusChange).toHaveBeenCalledWith(
+      expect(
+        mockWebSocketService.notifyWorkflowStatusChange
+      ).toHaveBeenCalledWith(
         executionId,
         'COMPLETED',
         expect.objectContaining({
-          dryRun: true
+          dryRun: true,
         })
       )
     })
@@ -805,7 +845,7 @@ describe('WorkflowService', () => {
         steps: [],
         createdBy: 'user-1',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       }
 
       jest.spyOn(workflowService, 'getWorkflow').mockResolvedValue(workflow)
@@ -829,12 +869,12 @@ describe('WorkflowService', () => {
             stepOrder: 0,
             name: 'Invalid Step',
             parameters: {},
-            conditions: [{ type: 'always' }]
-          }
+            conditions: [{ type: 'always' }],
+          },
         ],
         createdBy: 'user-1',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       }
 
       ;(prisma.agent.findMany as jest.Mock).mockResolvedValue([])
@@ -861,28 +901,32 @@ describe('WorkflowService', () => {
             stepOrder: 0,
             name: 'Test Step',
             parameters: {},
-            conditions: [{ type: 'always' }]
-          }
+            conditions: [{ type: 'always' }],
+          },
         ],
         createdBy: 'user-1',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       }
 
       ;(prisma.agent.findMany as jest.Mock).mockResolvedValue([
-        { id: 'agent-1', status: 'ACTIVE' }
+        { id: 'agent-1', status: 'ACTIVE' },
       ])
 
       jest.spyOn(workflowService, 'getWorkflow').mockResolvedValue(workflow)
 
-      const executionId = await workflowService.executeWorkflow('workflow-1', {}, 'user-1')
+      const executionId = await workflowService.executeWorkflow(
+        'workflow-1',
+        {},
+        'user-1'
+      )
       const execution = workflowService.getWorkflowExecution(executionId)
 
       expect(execution).toMatchObject({
         id: executionId,
         workflowId: 'workflow-1',
         status: 'PENDING',
-        createdBy: 'user-1'
+        createdBy: 'user-1',
       })
     })
 
@@ -907,31 +951,37 @@ describe('WorkflowService', () => {
             stepOrder: 0,
             name: 'Test Step',
             parameters: {},
-            conditions: [{ type: 'always' }]
-          }
+            conditions: [{ type: 'always' }],
+          },
         ],
         createdBy: 'user-1',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       }
 
       ;(prisma.agent.findMany as jest.Mock).mockResolvedValue([
-        { id: 'agent-1', status: 'ACTIVE' }
+        { id: 'agent-1', status: 'ACTIVE' },
       ])
 
       jest.spyOn(workflowService, 'getWorkflow').mockResolvedValue(workflow)
 
-      const executionId = await workflowService.executeWorkflow('workflow-1', {}, 'user-1')
+      const executionId = await workflowService.executeWorkflow(
+        'workflow-1',
+        {},
+        'user-1'
+      )
       await workflowService.cancelWorkflowExecution(executionId)
 
       const execution = workflowService.getWorkflowExecution(executionId)
       expect(execution).toBeNull() // Should be removed from running executions
 
-      expect(mockWebSocketService.notifyWorkflowStatusChange).toHaveBeenCalledWith(
+      expect(
+        mockWebSocketService.notifyWorkflowStatusChange
+      ).toHaveBeenCalledWith(
         executionId,
         'CANCELLED',
         expect.objectContaining({
-          cancelled: true
+          cancelled: true,
         })
       )
     })
@@ -958,7 +1008,7 @@ describe('WorkflowService', () => {
             stepOrder: 0,
             name: 'Test Step 1',
             parameters: {},
-            conditions: [{ type: 'always' }]
+            conditions: [{ type: 'always' }],
           },
           {
             id: 'step-2',
@@ -967,22 +1017,26 @@ describe('WorkflowService', () => {
             stepOrder: 1,
             name: 'Test Step 2',
             parameters: {},
-            conditions: [{ type: 'always' }]
-          }
+            conditions: [{ type: 'always' }],
+          },
         ],
         createdBy: 'user-1',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       }
 
       ;(prisma.agent.findMany as jest.Mock).mockResolvedValue([
         { id: 'agent-1', status: 'ACTIVE' },
-        { id: 'agent-2', status: 'ACTIVE' }
+        { id: 'agent-2', status: 'ACTIVE' },
       ])
 
       jest.spyOn(workflowService, 'getWorkflow').mockResolvedValue(workflow)
 
-      const executionId = await workflowService.executeWorkflow('workflow-1', {}, 'user-1')
+      const executionId = await workflowService.executeWorkflow(
+        'workflow-1',
+        {},
+        'user-1'
+      )
       const progress = workflowService.getWorkflowProgress(executionId)
 
       expect(progress).toMatchObject({
@@ -990,7 +1044,7 @@ describe('WorkflowService', () => {
         totalSteps: 2,
         completedSteps: 0,
         failedSteps: 0,
-        progress: 0
+        progress: 0,
       })
     })
 
@@ -1020,24 +1074,23 @@ describe('WorkflowService', () => {
               maxRetries: 2,
               backoffMs: 100,
               backoffMultiplier: 2,
-              maxBackoffMs: 1000
-            }
-          }
+              maxBackoffMs: 1000,
+            },
+          },
         ],
         createdBy: 'user-1',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       }
 
       ;(prisma.agent.findMany as jest.Mock).mockResolvedValue([
-        { id: 'agent-1', status: 'ACTIVE' }
+        { id: 'agent-1', status: 'ACTIVE' },
       ])
-
       ;(prisma.agent.findUnique as jest.Mock).mockResolvedValue({
         id: 'agent-1',
         externalId: 'ext-1',
         platformId: 'mock-platform',
-        platform: { id: 'mock-platform' }
+        platform: { id: 'mock-platform' },
       })
 
       // Mock adapter to fail first two times, then succeed
@@ -1049,20 +1102,24 @@ describe('WorkflowService', () => {
             success: false,
             error: 'Temporary failure',
             executionTime: 100,
-            timestamp: new Date()
+            timestamp: new Date(),
           })
         }
         return Promise.resolve({
           success: true,
           data: { result: 'success after retry' },
           executionTime: 100,
-          timestamp: new Date()
+          timestamp: new Date(),
         })
       })
 
       jest.spyOn(workflowService, 'getWorkflow').mockResolvedValue(workflow)
 
-      const executionId = await workflowService.executeWorkflow('workflow-1', {}, 'user-1')
+      const executionId = await workflowService.executeWorkflow(
+        'workflow-1',
+        {},
+        'user-1'
+      )
 
       // Wait for execution to complete
       await new Promise(resolve => setTimeout(resolve, 500))
@@ -1085,23 +1142,22 @@ describe('WorkflowService', () => {
             name: 'Slow Step',
             parameters: {},
             conditions: [{ type: 'always' }],
-            timeoutMs: 100 // Very short timeout
-          }
+            timeoutMs: 100, // Very short timeout
+          },
         ],
         createdBy: 'user-1',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       }
 
       ;(prisma.agent.findMany as jest.Mock).mockResolvedValue([
-        { id: 'agent-1', status: 'ACTIVE' }
+        { id: 'agent-1', status: 'ACTIVE' },
       ])
-
       ;(prisma.agent.findUnique as jest.Mock).mockResolvedValue({
         id: 'agent-1',
         externalId: 'ext-1',
         platformId: 'mock-platform',
-        platform: { id: 'mock-platform' }
+        platform: { id: 'mock-platform' },
       })
 
       // Mock adapter to take longer than timeout
@@ -1112,7 +1168,7 @@ describe('WorkflowService', () => {
               success: true,
               data: { result: 'too slow' },
               executionTime: 200,
-              timestamp: new Date()
+              timestamp: new Date(),
             })
           }, 200)
         })
@@ -1120,7 +1176,11 @@ describe('WorkflowService', () => {
 
       jest.spyOn(workflowService, 'getWorkflow').mockResolvedValue(workflow)
 
-      const executionId = await workflowService.executeWorkflow('workflow-1', {}, 'user-1')
+      const executionId = await workflowService.executeWorkflow(
+        'workflow-1',
+        {},
+        'user-1'
+      )
 
       // Wait for timeout to occur
       await new Promise(resolve => setTimeout(resolve, 300))
@@ -1144,7 +1204,7 @@ describe('WorkflowService', () => {
             stepOrder: 0,
             name: 'First Step',
             parameters: { input: 'initial' },
-            conditions: [{ type: 'always' }]
+            conditions: [{ type: 'always' }],
           },
           {
             id: 'step-2',
@@ -1152,57 +1212,61 @@ describe('WorkflowService', () => {
             agentId: 'agent-2',
             stepOrder: 1,
             name: 'Second Step',
-            parameters: { 
+            parameters: {
               input: '${stepOutputs.step-1.result}',
-              context: '${variables.testVar}'
+              context: '${variables.testVar}',
             },
-            conditions: [{ type: 'on_success', dependsOn: ['step-1'] }]
-          }
+            conditions: [{ type: 'on_success', dependsOn: ['step-1'] }],
+          },
         ],
         createdBy: 'user-1',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       }
 
       ;(prisma.agent.findMany as jest.Mock).mockResolvedValue([
         { id: 'agent-1', status: 'ACTIVE' },
-        { id: 'agent-2', status: 'ACTIVE' }
+        { id: 'agent-2', status: 'ACTIVE' },
       ])
-
       ;(prisma.agent.findUnique as jest.Mock)
         .mockResolvedValueOnce({
           id: 'agent-1',
           externalId: 'ext-1',
           platformId: 'mock-platform',
-          platform: { id: 'mock-platform' }
+          platform: { id: 'mock-platform' },
         })
         .mockResolvedValueOnce({
           id: 'agent-2',
           externalId: 'ext-2',
           platformId: 'mock-platform',
-          platform: { id: 'mock-platform' }
+          platform: { id: 'mock-platform' },
         })
 
       // Mock first step to return data
-      mockAdapter.executeAgent = jest.fn()
+      mockAdapter.executeAgent = jest
+        .fn()
         .mockResolvedValueOnce({
           success: true,
           data: { result: 'first-step-output' },
           executionTime: 100,
-          timestamp: new Date()
+          timestamp: new Date(),
         })
         .mockResolvedValueOnce({
           success: true,
           data: { result: 'second-step-output' },
           executionTime: 100,
-          timestamp: new Date()
+          timestamp: new Date(),
         })
 
       jest.spyOn(workflowService, 'getWorkflow').mockResolvedValue(workflow)
 
-      const executionId = await workflowService.executeWorkflow('workflow-1', {
-        variables: { testVar: 'context-value' }
-      }, 'user-1')
+      const executionId = await workflowService.executeWorkflow(
+        'workflow-1',
+        {
+          variables: { testVar: 'context-value' },
+        },
+        'user-1'
+      )
 
       // Wait for execution to complete
       await new Promise(resolve => setTimeout(resolve, 200))
@@ -1210,7 +1274,7 @@ describe('WorkflowService', () => {
       // Verify second step received data from first step
       expect(mockAdapter.executeAgent).toHaveBeenNthCalledWith(2, 'ext-2', {
         input: 'first-step-output',
-        context: 'context-value'
+        context: 'context-value',
       })
     })
   })

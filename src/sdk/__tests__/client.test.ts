@@ -9,7 +9,7 @@ import {
   CubcenAuthenticationError,
   CubcenValidationError,
   CubcenNotFoundError,
-  CubcenRateLimitError
+  CubcenRateLimitError,
 } from '../errors'
 import axios from 'axios'
 
@@ -32,15 +32,15 @@ describe('CubcenClient', () => {
       request: jest.fn(),
       interceptors: {
         request: { use: jest.fn() },
-        response: { use: jest.fn() }
-      }
+        response: { use: jest.fn() },
+      },
     }
-    
+
     mockedAxios.create.mockReturnValue(mockAxiosInstance)
-    
+
     client = new CubcenClient({
       baseUrl: 'http://localhost:3000',
-      timeout: 5000
+      timeout: 5000,
     })
   })
 
@@ -55,8 +55,8 @@ describe('CubcenClient', () => {
         timeout: 5000,
         headers: {
           'Content-Type': 'application/json',
-          'User-Agent': 'Cubcen-SDK/1.0.0'
-        }
+          'User-Agent': 'Cubcen-SDK/1.0.0',
+        },
       })
     })
 
@@ -67,7 +67,7 @@ describe('CubcenClient', () => {
 
     it('should use default timeout if not provided', () => {
       new CubcenClient({ baseUrl: 'http://localhost:3000' })
-      
+
       expect(mockedAxios.create).toHaveBeenCalledWith(
         expect.objectContaining({ timeout: 30000 })
       )
@@ -100,23 +100,23 @@ describe('CubcenClient', () => {
               tokens: {
                 accessToken: 'access-token',
                 refreshToken: 'refresh-token',
-                expiresIn: 3600
-              }
-            }
-          }
+                expiresIn: 3600,
+              },
+            },
+          },
         }
 
         mockAxiosInstance.request.mockResolvedValue(mockResponse)
 
         const result = await client.login({
           email: 'test@example.com',
-          password: 'password'
+          password: 'password',
         })
 
         expect(mockAxiosInstance.request).toHaveBeenCalledWith({
           method: 'POST',
           url: '/api/cubcen/v1/auth/login',
-          data: { email: 'test@example.com', password: 'password' }
+          data: { email: 'test@example.com', password: 'password' },
         })
 
         expect(result.user.email).toBe('test@example.com')
@@ -134,18 +134,20 @@ describe('CubcenClient', () => {
               error: {
                 code: 'INVALID_CREDENTIALS',
                 message: 'Invalid email or password',
-                requestId: 'req_123'
-              }
-            }
-          }
+                requestId: 'req_123',
+              },
+            },
+          },
         }
 
         mockAxiosInstance.request.mockRejectedValue(mockError)
 
-        await expect(client.login({
-          email: 'test@example.com',
-          password: 'wrong-password'
-        })).rejects.toThrow(CubcenAuthenticationError)
+        await expect(
+          client.login({
+            email: 'test@example.com',
+            password: 'wrong-password',
+          })
+        ).rejects.toThrow(CubcenAuthenticationError)
       })
     })
 
@@ -159,10 +161,10 @@ describe('CubcenClient', () => {
               tokens: {
                 accessToken: 'access-token',
                 refreshToken: 'refresh-token',
-                expiresIn: 3600
-              }
-            }
-          }
+                expiresIn: 3600,
+              },
+            },
+          },
         }
 
         mockAxiosInstance.request.mockResolvedValue(mockResponse)
@@ -170,7 +172,7 @@ describe('CubcenClient', () => {
         const result = await client.register({
           email: 'new@example.com',
           password: 'password123',
-          name: 'New User'
+          name: 'New User',
         })
 
         expect(result.user.email).toBe('new@example.com')
@@ -184,9 +186,9 @@ describe('CubcenClient', () => {
           data: {
             success: true,
             data: {
-              user: { id: '1', email: 'test@example.com', role: 'admin' }
-            }
-          }
+              user: { id: '1', email: 'test@example.com', role: 'admin' },
+            },
+          },
         }
 
         mockAxiosInstance.request.mockResolvedValue(mockResponse)
@@ -195,7 +197,7 @@ describe('CubcenClient', () => {
 
         expect(mockAxiosInstance.request).toHaveBeenCalledWith({
           method: 'GET',
-          url: '/api/cubcen/v1/auth/me'
+          url: '/api/cubcen/v1/auth/me',
         })
 
         expect(user.email).toBe('test@example.com')
@@ -212,16 +214,16 @@ describe('CubcenClient', () => {
             data: {
               agents: [
                 { id: '1', name: 'Agent 1', status: 'ACTIVE' },
-                { id: '2', name: 'Agent 2', status: 'INACTIVE' }
+                { id: '2', name: 'Agent 2', status: 'INACTIVE' },
               ],
               pagination: {
                 page: 1,
                 limit: 20,
                 total: 2,
-                totalPages: 1
-              }
-            }
-          }
+                totalPages: 1,
+              },
+            },
+          },
         }
 
         mockAxiosInstance.request.mockResolvedValue(mockResponse)
@@ -229,13 +231,13 @@ describe('CubcenClient', () => {
         const result = await client.getAgents({
           page: 1,
           limit: 20,
-          status: 'ACTIVE'
+          status: 'ACTIVE',
         })
 
         expect(mockAxiosInstance.request).toHaveBeenCalledWith({
           method: 'GET',
           url: '/api/cubcen/v1/agents',
-          params: { page: 1, limit: 20, status: 'ACTIVE' }
+          params: { page: 1, limit: 20, status: 'ACTIVE' },
         })
 
         expect(result.agents).toHaveLength(2)
@@ -249,9 +251,9 @@ describe('CubcenClient', () => {
           data: {
             success: true,
             data: {
-              agent: { id: '1', name: 'Test Agent', status: 'ACTIVE' }
-            }
-          }
+              agent: { id: '1', name: 'Test Agent', status: 'ACTIVE' },
+            },
+          },
         }
 
         mockAxiosInstance.request.mockResolvedValue(mockResponse)
@@ -260,7 +262,7 @@ describe('CubcenClient', () => {
 
         expect(mockAxiosInstance.request).toHaveBeenCalledWith({
           method: 'GET',
-          url: '/api/cubcen/v1/agents/1'
+          url: '/api/cubcen/v1/agents/1',
         })
 
         expect(agent.id).toBe('1')
@@ -276,15 +278,17 @@ describe('CubcenClient', () => {
               error: {
                 code: 'AGENT_NOT_FOUND',
                 message: 'Agent not found',
-                requestId: 'req_123'
-              }
-            }
-          }
+                requestId: 'req_123',
+              },
+            },
+          },
         }
 
         mockAxiosInstance.request.mockRejectedValue(mockError)
 
-        await expect(client.getAgent('non-existent')).rejects.toThrow(CubcenNotFoundError)
+        await expect(client.getAgent('non-existent')).rejects.toThrow(
+          CubcenNotFoundError
+        )
       })
     })
 
@@ -298,10 +302,10 @@ describe('CubcenClient', () => {
                 id: '1',
                 name: 'New Agent',
                 platformId: 'platform-1',
-                externalId: 'ext-123'
-              }
-            }
-          }
+                externalId: 'ext-123',
+              },
+            },
+          },
         }
 
         mockAxiosInstance.request.mockResolvedValue(mockResponse)
@@ -310,7 +314,7 @@ describe('CubcenClient', () => {
           name: 'New Agent',
           platformId: 'platform-1',
           externalId: 'ext-123',
-          capabilities: ['email']
+          capabilities: ['email'],
         }
 
         const agent = await client.createAgent(agentData)
@@ -318,7 +322,7 @@ describe('CubcenClient', () => {
         expect(mockAxiosInstance.request).toHaveBeenCalledWith({
           method: 'POST',
           url: '/api/cubcen/v1/agents',
-          data: agentData
+          data: agentData,
         })
 
         expect(agent.name).toBe('New Agent')
@@ -335,23 +339,23 @@ describe('CubcenClient', () => {
             data: {
               tasks: [
                 { id: '1', agentId: 'agent-1', status: 'PENDING' },
-                { id: '2', agentId: 'agent-1', status: 'COMPLETED' }
+                { id: '2', agentId: 'agent-1', status: 'COMPLETED' },
               ],
               pagination: {
                 page: 1,
                 limit: 20,
                 total: 2,
-                totalPages: 1
-              }
-            }
-          }
+                totalPages: 1,
+              },
+            },
+          },
         }
 
         mockAxiosInstance.request.mockResolvedValue(mockResponse)
 
         const result = await client.getTasks({
           agentId: 'agent-1',
-          status: 'PENDING'
+          status: 'PENDING',
         })
 
         expect(result.tasks).toHaveLength(2)
@@ -368,10 +372,10 @@ describe('CubcenClient', () => {
                 id: '1',
                 agentId: 'agent-1',
                 status: 'PENDING',
-                priority: 'MEDIUM'
-              }
-            }
-          }
+                priority: 'MEDIUM',
+              },
+            },
+          },
         }
 
         mockAxiosInstance.request.mockResolvedValue(mockResponse)
@@ -379,7 +383,7 @@ describe('CubcenClient', () => {
         const taskData = {
           agentId: 'agent-1',
           priority: 'MEDIUM' as const,
-          parameters: { test: true }
+          parameters: { test: true },
         }
 
         const task = await client.createTask(taskData)
@@ -394,7 +398,7 @@ describe('CubcenClient', () => {
     it('should handle network errors', async () => {
       const networkError = new Error('Network Error')
       networkError.name = 'NetworkError'
-      
+
       mockAxiosInstance.request.mockRejectedValue(networkError)
 
       await expect(client.getCurrentUser()).rejects.toThrow(CubcenError)
@@ -404,7 +408,7 @@ describe('CubcenClient', () => {
       const timeoutError = new Error('Timeout')
       timeoutError.name = 'ECONNABORTED'
       Object.assign(timeoutError, { code: 'ECONNABORTED' })
-      
+
       mockAxiosInstance.request.mockRejectedValue(timeoutError)
 
       await expect(client.getCurrentUser()).rejects.toThrow('Request timeout')
@@ -419,15 +423,17 @@ describe('CubcenClient', () => {
             error: {
               code: 'VALIDATION_ERROR',
               message: 'Invalid input data',
-              requestId: 'req_123'
-            }
-          }
-        }
+              requestId: 'req_123',
+            },
+          },
+        },
       }
 
       mockAxiosInstance.request.mockRejectedValue(mockError)
 
-      await expect(client.getCurrentUser()).rejects.toThrow(CubcenValidationError)
+      await expect(client.getCurrentUser()).rejects.toThrow(
+        CubcenValidationError
+      )
     })
 
     it('should handle rate limit errors', async () => {
@@ -439,15 +445,17 @@ describe('CubcenClient', () => {
             error: {
               code: 'RATE_LIMIT_EXCEEDED',
               message: 'Too many requests',
-              requestId: 'req_123'
-            }
-          }
-        }
+              requestId: 'req_123',
+            },
+          },
+        },
       }
 
       mockAxiosInstance.request.mockRejectedValue(mockError)
 
-      await expect(client.getCurrentUser()).rejects.toThrow(CubcenRateLimitError)
+      await expect(client.getCurrentUser()).rejects.toThrow(
+        CubcenRateLimitError
+      )
     })
 
     it('should handle API response errors', async () => {
@@ -457,9 +465,9 @@ describe('CubcenClient', () => {
           error: {
             code: 'API_ERROR',
             message: 'Something went wrong',
-            requestId: 'req_123'
-          }
-        }
+            requestId: 'req_123',
+          },
+        },
       }
 
       mockAxiosInstance.request.mockResolvedValue(mockResponse)
@@ -476,10 +484,10 @@ describe('CubcenClient', () => {
           data: {
             platforms: [
               { id: '1', name: 'n8n Platform', type: 'N8N' },
-              { id: '2', name: 'Make Platform', type: 'MAKE' }
-            ]
-          }
-        }
+              { id: '2', name: 'Make Platform', type: 'MAKE' },
+            ],
+          },
+        },
       }
 
       mockAxiosInstance.request.mockResolvedValue(mockResponse)
@@ -498,10 +506,10 @@ describe('CubcenClient', () => {
           status: 'healthy',
           checks: [
             { name: 'database', status: 'healthy' },
-            { name: 'external-apis', status: 'healthy' }
+            { name: 'external-apis', status: 'healthy' },
           ],
-          timestamp: '2024-01-01T00:00:00Z'
-        }
+          timestamp: '2024-01-01T00:00:00Z',
+        },
       }
 
       mockAxiosInstance.request.mockResolvedValue(mockResponse)
@@ -522,15 +530,15 @@ describe('CubcenClient', () => {
           totalTasks: 100,
           completedTasks: 85,
           failedTasks: 5,
-          successRate: 0.85
-        }
+          successRate: 0.85,
+        },
       }
 
       mockAxiosInstance.request.mockResolvedValue(mockResponse)
 
       const analytics = await client.getAnalytics({
         dateFrom: '2024-01-01',
-        dateTo: '2024-01-31'
+        dateTo: '2024-01-31',
       })
 
       expect(analytics.totalAgents).toBe(10)
@@ -546,10 +554,10 @@ describe('CubcenClient', () => {
           data: {
             notifications: [
               { id: '1', title: 'Test Notification', read: false },
-              { id: '2', title: 'Another Notification', read: true }
-            ]
-          }
-        }
+              { id: '2', title: 'Another Notification', read: true },
+            ],
+          },
+        },
       }
 
       mockAxiosInstance.request.mockResolvedValue(mockResponse)
@@ -562,7 +570,7 @@ describe('CubcenClient', () => {
 
     it('should mark notification as read', async () => {
       const mockResponse = {
-        data: { success: true }
+        data: { success: true },
       }
 
       mockAxiosInstance.request.mockResolvedValue(mockResponse)
@@ -571,7 +579,7 @@ describe('CubcenClient', () => {
 
       expect(mockAxiosInstance.request).toHaveBeenCalledWith({
         method: 'PUT',
-        url: '/api/cubcen/v1/notifications/1/read'
+        url: '/api/cubcen/v1/notifications/1/read',
       })
     })
   })

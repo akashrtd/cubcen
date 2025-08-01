@@ -10,14 +10,14 @@ import { prisma as database } from '../database'
 jest.mock('../database', () => ({
   prisma: {
     user: {
-      findFirst: jest.fn()
-    }
-  }
+      findFirst: jest.fn(),
+    },
+  },
 }))
 
 // Mock fs/promises for disk space checks
 jest.mock('fs/promises', () => ({
-  statfs: jest.fn()
+  statfs: jest.fn(),
 }))
 
 // Mock os module
@@ -25,7 +25,7 @@ jest.mock('os', () => ({
   freemem: jest.fn(() => 1024 * 1024 * 1024), // 1GB
   totalmem: jest.fn(() => 4 * 1024 * 1024 * 1024), // 4GB
   loadavg: jest.fn(() => [0.5, 0.7, 0.9]),
-  cpus: jest.fn(() => Array(4).fill({})) // 4 CPUs
+  cpus: jest.fn(() => Array(4).fill({})), // 4 CPUs
 }))
 
 const mockDatabase = database as jest.Mocked<typeof database>
@@ -41,16 +41,16 @@ describe('Health Monitoring Service', () => {
       heapTotal: 50 * 1024 * 1024,
       heapUsed: 25 * 1024 * 1024,
       external: 5 * 1024 * 1024,
-      arrayBuffers: 2 * 1024 * 1024
+      arrayBuffers: 2 * 1024 * 1024,
     })
-    
+
     // Reset mocks to default values
     mockFs.statfs.mockResolvedValue({
       bavail: 1000000,
       bsize: 4096,
-      blocks: 2000000
+      blocks: 2000000,
     })
-    
+
     mockOs.loadavg.mockReturnValue([0.5, 0.7, 0.9])
     mockOs.cpus.mockReturnValue(Array(4).fill({}))
   })
@@ -73,8 +73,11 @@ describe('Health Monitoring Service', () => {
     })
 
     it('should return degraded status when database is slow', async () => {
-      mockDatabase.user.findFirst.mockImplementation(() => 
-        new Promise(resolve => setTimeout(() => resolve({ id: 'test-id' }), 1500))
+      mockDatabase.user.findFirst.mockImplementation(
+        () =>
+          new Promise(resolve =>
+            setTimeout(() => resolve({ id: 'test-id' }), 1500)
+          )
       )
 
       const result = await healthMonitoring.checkDatabase()
@@ -112,7 +115,7 @@ describe('Health Monitoring Service', () => {
         heapTotal: 50 * 1024 * 1024,
         heapUsed: 40 * 1024 * 1024, // 80% usage
         external: 5 * 1024 * 1024,
-        arrayBuffers: 2 * 1024 * 1024
+        arrayBuffers: 2 * 1024 * 1024,
       })
 
       const result = await healthMonitoring.checkMemory()
@@ -128,7 +131,7 @@ describe('Health Monitoring Service', () => {
         heapTotal: 50 * 1024 * 1024,
         heapUsed: 47.5 * 1024 * 1024, // 95% usage
         external: 5 * 1024 * 1024,
-        arrayBuffers: 2 * 1024 * 1024
+        arrayBuffers: 2 * 1024 * 1024,
       })
 
       const result = await healthMonitoring.checkMemory()
@@ -142,8 +145,8 @@ describe('Health Monitoring Service', () => {
     it('should return healthy status with sufficient disk space', async () => {
       mockFs.statfs.mockResolvedValue({
         bavail: 1000000, // Available blocks
-        bsize: 4096,     // Block size
-        blocks: 2000000  // Total blocks
+        bsize: 4096, // Block size
+        blocks: 2000000, // Total blocks
       })
 
       const result = await healthMonitoring.checkDiskSpace()
@@ -156,9 +159,9 @@ describe('Health Monitoring Service', () => {
 
     it('should return degraded status with low disk space', async () => {
       mockFs.statfs.mockResolvedValue({
-        bavail: 200000,  // 10% free (90% used)
+        bavail: 200000, // 10% free (90% used)
         bsize: 4096,
-        blocks: 2000000
+        blocks: 2000000,
       })
 
       const result = await healthMonitoring.checkDiskSpace()
@@ -169,9 +172,9 @@ describe('Health Monitoring Service', () => {
 
     it('should return unhealthy status with critical disk space', async () => {
       mockFs.statfs.mockResolvedValue({
-        bavail: 50000,   // 2.5% free (97.5% used)
+        bavail: 50000, // 2.5% free (97.5% used)
         bsize: 4096,
-        blocks: 2000000
+        blocks: 2000000,
       })
 
       const result = await healthMonitoring.checkDiskSpace()
@@ -232,7 +235,7 @@ describe('Health Monitoring Service', () => {
         timestamp: expect.any(Date),
         cpu: {
           usage: expect.any(Number),
-          loadAverage: expect.any(Array)
+          loadAverage: expect.any(Array),
         },
         memory: {
           used: expect.any(Number),
@@ -240,13 +243,13 @@ describe('Health Monitoring Service', () => {
           total: expect.any(Number),
           heapUsed: expect.any(Number),
           heapTotal: expect.any(Number),
-          external: expect.any(Number)
+          external: expect.any(Number),
         },
         disk: {
           free: expect.any(Number),
-          total: expect.any(Number)
+          total: expect.any(Number),
         },
-        uptime: 7200
+        uptime: 7200,
       })
     })
 
@@ -269,7 +272,7 @@ describe('Health Monitoring Service', () => {
       mockFs.statfs.mockResolvedValue({
         bavail: 1000000,
         bsize: 4096,
-        blocks: 2000000
+        blocks: 2000000,
       })
 
       const healthStatus = await healthMonitoring.runAllHealthChecks()
@@ -285,13 +288,15 @@ describe('Health Monitoring Service', () => {
       mockFs.statfs.mockResolvedValue({
         bavail: 200000, // Low disk space
         bsize: 4096,
-        blocks: 2000000
+        blocks: 2000000,
       })
 
       const healthStatus = await healthMonitoring.runAllHealthChecks()
 
       expect(healthStatus.status).toBe('degraded')
-      expect(healthStatus.checks.some(check => check.status === 'degraded')).toBe(true)
+      expect(
+        healthStatus.checks.some(check => check.status === 'degraded')
+      ).toBe(true)
     })
 
     it('should return unhealthy status when any check fails', async () => {
@@ -300,7 +305,9 @@ describe('Health Monitoring Service', () => {
       const healthStatus = await healthMonitoring.runAllHealthChecks()
 
       expect(healthStatus.status).toBe('unhealthy')
-      expect(healthStatus.checks.some(check => check.status === 'unhealthy')).toBe(true)
+      expect(
+        healthStatus.checks.some(check => check.status === 'unhealthy')
+      ).toBe(true)
     })
   })
 
@@ -308,7 +315,7 @@ describe('Health Monitoring Service', () => {
     it('should store and retrieve metrics history', async () => {
       // Clear any existing history first
       healthMonitoring.clearMetricsHistory()
-      
+
       // Collect some metrics
       await healthMonitoring.collectSystemMetrics()
       await healthMonitoring.collectSystemMetrics()
@@ -319,14 +326,14 @@ describe('Health Monitoring Service', () => {
       expect(history[0]).toMatchObject({
         timestamp: expect.any(Date),
         cpu: expect.any(Object),
-        memory: expect.any(Object)
+        memory: expect.any(Object),
       })
     })
 
     it('should limit metrics history size', async () => {
       // Clear existing history
       healthMonitoring.clearMetricsHistory()
-      
+
       // Collect more than max history size (100)
       for (let i = 0; i < 105; i++) {
         await healthMonitoring.collectSystemMetrics()
@@ -340,7 +347,7 @@ describe('Health Monitoring Service', () => {
     it('should return limited history when requested', async () => {
       // Clear existing history
       healthMonitoring.clearMetricsHistory()
-      
+
       // Collect some metrics
       for (let i = 0; i < 10; i++) {
         await healthMonitoring.collectSystemMetrics()

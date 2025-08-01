@@ -15,12 +15,12 @@ const mockWebSocketService = {
   getSubscriptionStats: jest.fn(),
   broadcastInfoAlert: jest.fn(),
   broadcastWarningAlert: jest.fn(),
-  broadcastCriticalAlert: jest.fn()
+  broadcastCriticalAlert: jest.fn(),
 }
 
 jest.mock('@/services/websocket', () => ({
   getWebSocketService: () => mockWebSocketService,
-  initializeWebSocketService: jest.fn()
+  initializeWebSocketService: jest.fn(),
 }))
 
 // Mock authentication middleware
@@ -29,9 +29,11 @@ jest.mock('@/backend/middleware/auth', () => ({
     // Mock user based on token
     const authHeader = req.headers.authorization
     if (!authHeader) {
-      return res.status(401).json({ error: { code: 'UNAUTHORIZED', message: 'Authentication required' } })
+      return res.status(401).json({
+        error: { code: 'UNAUTHORIZED', message: 'Authentication required' },
+      })
     }
-    
+
     const token = authHeader.replace('Bearer ', '')
     if (token.includes('admin')) {
       req.user = { id: 'admin123', role: 'admin', email: 'admin@cubcen.com' }
@@ -40,26 +42,28 @@ jest.mock('@/backend/middleware/auth', () => ({
     } else if (token.includes('viewer')) {
       req.user = { id: 'viewer123', role: 'viewer', email: 'viewer@cubcen.com' }
     } else {
-      return res.status(401).json({ error: { code: 'UNAUTHORIZED', message: 'Invalid token' } })
+      return res
+        .status(401)
+        .json({ error: { code: 'UNAUTHORIZED', message: 'Invalid token' } })
     }
-    
+
     next()
-  })
+  }),
 }))
 
 // Mock JWT functions
 jest.mock('@/lib/jwt', () => ({
   generateToken: jest.fn(),
-  verifyToken: jest.fn()
+  verifyToken: jest.fn(),
 }))
 
 // Mock database
 jest.mock('@/lib/database', () => ({
   prisma: {
     user: {
-      findUnique: jest.fn()
-    }
-  }
+      findUnique: jest.fn(),
+    },
+  },
 }))
 
 // Mock logger
@@ -68,8 +72,8 @@ jest.mock('@/lib/logger', () => ({
     info: jest.fn(),
     debug: jest.fn(),
     warn: jest.fn(),
-    error: jest.fn()
-  }
+    error: jest.fn(),
+  },
 }))
 
 describe('WebSocket Routes', () => {
@@ -82,21 +86,21 @@ describe('WebSocket Routes', () => {
     id: 'admin123',
     email: 'admin@cubcen.com',
     role: 'admin',
-    name: 'Admin User'
+    name: 'Admin User',
   }
 
   const mockRegularUser = {
     id: 'user123',
     email: 'user@cubcen.com',
     role: 'operator',
-    name: 'Regular User'
+    name: 'Regular User',
   }
 
   const mockViewerUser = {
     id: 'viewer123',
     email: 'viewer@cubcen.com',
     role: 'viewer',
-    name: 'Viewer User'
+    name: 'Viewer User',
   }
 
   beforeAll(() => {
@@ -110,12 +114,23 @@ describe('WebSocket Routes', () => {
 
     // Mock token generation
     const { generateToken } = require('@/lib/jwt')
-    generateToken.mockImplementation((payload: any) => `mock-token-${payload.userId}`)
+    generateToken.mockImplementation(
+      (payload: any) => `mock-token-${payload.userId}`
+    )
 
     // Generate test tokens
-    adminToken = generateToken({ userId: mockAdminUser.id, role: mockAdminUser.role })
-    userToken = generateToken({ userId: mockRegularUser.id, role: mockRegularUser.role })
-    viewerToken = generateToken({ userId: mockViewerUser.id, role: mockViewerUser.role })
+    adminToken = generateToken({
+      userId: mockAdminUser.id,
+      role: mockAdminUser.role,
+    })
+    userToken = generateToken({
+      userId: mockRegularUser.id,
+      role: mockRegularUser.role,
+    })
+    viewerToken = generateToken({
+      userId: mockViewerUser.id,
+      role: mockViewerUser.role,
+    })
 
     // Mock database responses
     const { prisma } = require('@/lib/database')
@@ -132,7 +147,7 @@ describe('WebSocket Routes', () => {
     mockWebSocketService.getSubscriptionStats.mockReturnValue({
       agents: 10,
       tasks: 15,
-      platforms: 3
+      platforms: 3,
     })
     mockWebSocketService.getConnections.mockReturnValue([
       {
@@ -144,8 +159,8 @@ describe('WebSocket Routes', () => {
         subscriptions: {
           agents: ['agent1', 'agent2'],
           tasks: ['task1'],
-          platforms: ['platform1']
-        }
+          platforms: ['platform1'],
+        },
       },
       {
         socketId: 'socket2',
@@ -156,9 +171,9 @@ describe('WebSocket Routes', () => {
         subscriptions: {
           agents: ['agent1'],
           tasks: [],
-          platforms: []
-        }
-      }
+          platforms: [],
+        },
+      },
     ])
   })
 
@@ -177,7 +192,7 @@ describe('WebSocket Routes', () => {
       expect(response.body.subscriptions).toEqual({
         agents: 10,
         tasks: 15,
-        platforms: 3
+        platforms: 3,
       })
 
       // Admin should see all connection details
@@ -201,9 +216,7 @@ describe('WebSocket Routes', () => {
     })
 
     it('should require authentication', async () => {
-      await request(app)
-        .get('/api/cubcen/v1/websocket/status')
-        .expect(401)
+      await request(app).get('/api/cubcen/v1/websocket/status').expect(401)
     })
 
     it('should handle WebSocket service errors', async () => {
@@ -216,7 +229,10 @@ describe('WebSocket Routes', () => {
         .set('Authorization', `Bearer ${adminToken}`)
         .expect(500)
 
-      expect(response.body.error).toHaveProperty('code', 'WEBSOCKET_STATUS_ERROR')
+      expect(response.body.error).toHaveProperty(
+        'code',
+        'WEBSOCKET_STATUS_ERROR'
+      )
     })
   })
 
@@ -252,9 +268,7 @@ describe('WebSocket Routes', () => {
     })
 
     it('should require authentication', async () => {
-      await request(app)
-        .get('/api/cubcen/v1/websocket/connections')
-        .expect(401)
+      await request(app).get('/api/cubcen/v1/websocket/connections').expect(401)
     })
 
     it('should handle service errors', async () => {
@@ -267,7 +281,10 @@ describe('WebSocket Routes', () => {
         .set('Authorization', `Bearer ${userToken}`)
         .expect(500)
 
-      expect(response.body.error).toHaveProperty('code', 'WEBSOCKET_CONNECTIONS_ERROR')
+      expect(response.body.error).toHaveProperty(
+        'code',
+        'WEBSOCKET_CONNECTIONS_ERROR'
+      )
     })
   })
 
@@ -301,9 +318,7 @@ describe('WebSocket Routes', () => {
     })
 
     it('should not require authentication for health checks', async () => {
-      await request(app)
-        .get('/api/cubcen/v1/websocket/health')
-        .expect(200)
+      await request(app).get('/api/cubcen/v1/websocket/health').expect(200)
     })
   })
 
@@ -313,8 +328,8 @@ describe('WebSocket Routes', () => {
         type: 'info',
         data: {
           title: 'Test Info Alert',
-          message: 'This is a test information message'
-        }
+          message: 'This is a test information message',
+        },
       }
 
       const response = await request(app)
@@ -324,14 +339,17 @@ describe('WebSocket Routes', () => {
         .expect(200)
 
       expect(response.body).toHaveProperty('success', true)
-      expect(response.body).toHaveProperty('message', 'Test info alert broadcasted successfully')
+      expect(response.body).toHaveProperty(
+        'message',
+        'Test info alert broadcasted successfully'
+      )
       expect(response.body).toHaveProperty('alertId')
       expect(mockWebSocketService.broadcastInfoAlert).toHaveBeenCalledWith(
         expect.objectContaining({
           title: 'Test Info Alert',
           message: 'This is a test information message',
           source: 'system',
-          sourceId: 'websocket-test'
+          sourceId: 'websocket-test',
         })
       )
     })
@@ -341,8 +359,8 @@ describe('WebSocket Routes', () => {
         type: 'warning',
         data: {
           title: 'Test Warning',
-          message: 'This is a test warning'
-        }
+          message: 'This is a test warning',
+        },
       }
 
       const response = await request(app)
@@ -360,8 +378,8 @@ describe('WebSocket Routes', () => {
         type: 'critical',
         data: {
           title: 'Test Critical Alert',
-          message: 'This is a test critical alert'
-        }
+          message: 'This is a test critical alert',
+        },
       }
 
       const response = await request(app)
@@ -375,7 +393,7 @@ describe('WebSocket Routes', () => {
         expect.objectContaining({
           title: 'Test Critical Alert',
           message: 'This is a test critical alert',
-          requiresAction: false
+          requiresAction: false,
         })
       )
     })
@@ -392,7 +410,7 @@ describe('WebSocket Routes', () => {
       expect(mockWebSocketService.broadcastInfoAlert).toHaveBeenCalledWith(
         expect.objectContaining({
           title: 'Test Alert',
-          message: 'This is a test message from the WebSocket service'
+          message: 'This is a test message from the WebSocket service',
         })
       )
     })
@@ -400,7 +418,7 @@ describe('WebSocket Routes', () => {
     it('should reject invalid message types', async () => {
       const testData = {
         type: 'invalid',
-        data: { title: 'Test', message: 'Test message' }
+        data: { title: 'Test', message: 'Test message' },
       }
 
       const response = await request(app)
@@ -410,13 +428,15 @@ describe('WebSocket Routes', () => {
         .expect(400)
 
       expect(response.body.error).toHaveProperty('code', 'INVALID_MESSAGE_TYPE')
-      expect(response.body.error.message).toContain('Message type must be one of: info, warning, critical')
+      expect(response.body.error.message).toContain(
+        'Message type must be one of: info, warning, critical'
+      )
     })
 
     it('should require admin role', async () => {
       const testData = {
         type: 'info',
-        data: { title: 'Test', message: 'Test message' }
+        data: { title: 'Test', message: 'Test message' },
       }
 
       const response = await request(app)
@@ -432,7 +452,7 @@ describe('WebSocket Routes', () => {
     it('should require authentication', async () => {
       const testData = {
         type: 'info',
-        data: { title: 'Test', message: 'Test message' }
+        data: { title: 'Test', message: 'Test message' },
       }
 
       await request(app)
@@ -448,7 +468,7 @@ describe('WebSocket Routes', () => {
 
       const testData = {
         type: 'info',
-        data: { title: 'Test', message: 'Test message' }
+        data: { title: 'Test', message: 'Test message' },
       }
 
       const response = await request(app)
@@ -474,7 +494,10 @@ describe('WebSocket Routes', () => {
         .set('Authorization', `Bearer ${adminToken}`)
         .expect(500)
 
-      expect(response.body.error).toHaveProperty('code', 'WEBSOCKET_STATUS_ERROR')
+      expect(response.body.error).toHaveProperty(
+        'code',
+        'WEBSOCKET_STATUS_ERROR'
+      )
     })
 
     it('should include request IDs in error responses', async () => {
@@ -488,26 +511,30 @@ describe('WebSocket Routes', () => {
         .expect(500)
 
       expect(response.body.error).toHaveProperty('timestamp')
-      expect(response.body.error.timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/)
+      expect(response.body.error.timestamp).toMatch(
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/
+      )
     })
   })
 
   describe('Rate Limiting', () => {
     it('should apply rate limiting to WebSocket endpoints', async () => {
       // Make multiple rapid requests to test rate limiting
-      const requests = Array(10).fill(null).map(() =>
-        request(app)
-          .get('/api/cubcen/v1/websocket/status')
-          .set('Authorization', `Bearer ${adminToken}`)
-      )
+      const requests = Array(10)
+        .fill(null)
+        .map(() =>
+          request(app)
+            .get('/api/cubcen/v1/websocket/status')
+            .set('Authorization', `Bearer ${adminToken}`)
+        )
 
       const responses = await Promise.all(requests)
-      
+
       // Some requests should succeed, but if rate limiting is working,
       // we might get some 429 responses for rapid requests
       const successfulResponses = responses.filter(r => r.status === 200)
       const rateLimitedResponses = responses.filter(r => r.status === 429)
-      
+
       expect(successfulResponses.length).toBeGreaterThan(0)
       // Note: Rate limiting behavior depends on the specific configuration
       // This test mainly ensures the endpoint is accessible and doesn't crash

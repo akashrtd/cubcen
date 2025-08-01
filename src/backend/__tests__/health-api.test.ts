@@ -11,7 +11,9 @@ import healthMonitoring from '../../lib/health'
 // Mock the health monitoring service
 jest.mock('../../lib/health')
 
-const mockHealthMonitoring = healthMonitoring as jest.Mocked<typeof healthMonitoring>
+const mockHealthMonitoring = healthMonitoring as jest.Mocked<
+  typeof healthMonitoring
+>
 
 // Create test app
 const app = express()
@@ -33,13 +35,13 @@ describe('Health API Routes', () => {
             name: 'database',
             status: 'healthy' as const,
             lastCheck: new Date(),
-            responseTime: 50
+            responseTime: 50,
           },
           {
             name: 'memory',
             status: 'healthy' as const,
-            lastCheck: new Date()
-          }
+            lastCheck: new Date(),
+          },
         ],
         metrics: {
           timestamp: new Date(),
@@ -50,19 +52,22 @@ describe('Health API Routes', () => {
             total: 4 * 1024 * 1024 * 1024,
             heapUsed: 25 * 1024 * 1024,
             heapTotal: 50 * 1024 * 1024,
-            external: 5 * 1024 * 1024
+            external: 5 * 1024 * 1024,
           },
-          disk: { free: 100 * 1024 * 1024 * 1024, total: 500 * 1024 * 1024 * 1024 },
-          uptime: 3600
+          disk: {
+            free: 100 * 1024 * 1024 * 1024,
+            total: 500 * 1024 * 1024 * 1024,
+          },
+          uptime: 3600,
         },
-        version: '0.1.0'
+        version: '0.1.0',
       }
 
-      mockHealthMonitoring.runAllHealthChecks.mockResolvedValue(mockHealthStatus)
+      mockHealthMonitoring.runAllHealthChecks.mockResolvedValue(
+        mockHealthStatus
+      )
 
-      const response = await request(app)
-        .get('/health')
-        .expect(200)
+      const response = await request(app).get('/health').expect(200)
 
       expect(response.body).toMatchObject({
         success: true,
@@ -70,8 +75,8 @@ describe('Health API Routes', () => {
           status: 'healthy',
           checks: expect.any(Array),
           metrics: expect.any(Object),
-          version: '0.1.0'
-        }
+          version: '0.1.0',
+        },
       })
     })
 
@@ -83,30 +88,37 @@ describe('Health API Routes', () => {
           {
             name: 'database',
             status: 'healthy' as const,
-            lastCheck: new Date()
+            lastCheck: new Date(),
           },
           {
             name: 'memory',
             status: 'degraded' as const,
             lastCheck: new Date(),
-            details: { warning: 'Memory usage is high' }
-          }
+            details: { warning: 'Memory usage is high' },
+          },
         ],
         metrics: {
           timestamp: new Date(),
           cpu: { usage: 25, loadAverage: [0.5, 0.7, 0.9] },
-          memory: { used: 1024, free: 2048, total: 3072, heapUsed: 512, heapTotal: 1024, external: 256 },
+          memory: {
+            used: 1024,
+            free: 2048,
+            total: 3072,
+            heapUsed: 512,
+            heapTotal: 1024,
+            external: 256,
+          },
           disk: { free: 1000, total: 2000 },
-          uptime: 3600
+          uptime: 3600,
         },
-        version: '0.1.0'
+        version: '0.1.0',
       }
 
-      mockHealthMonitoring.runAllHealthChecks.mockResolvedValue(mockHealthStatus)
+      mockHealthMonitoring.runAllHealthChecks.mockResolvedValue(
+        mockHealthStatus
+      )
 
-      const response = await request(app)
-        .get('/health')
-        .expect(200)
+      const response = await request(app).get('/health').expect(200)
 
       expect(response.body.data.status).toBe('degraded')
     })
@@ -120,50 +132,55 @@ describe('Health API Routes', () => {
             name: 'database',
             status: 'unhealthy' as const,
             lastCheck: new Date(),
-            error: 'Database connection failed'
-          }
+            error: 'Database connection failed',
+          },
         ],
         metrics: {
           timestamp: new Date(),
           cpu: { usage: 25, loadAverage: [0.5, 0.7, 0.9] },
-          memory: { used: 1024, free: 2048, total: 3072, heapUsed: 512, heapTotal: 1024, external: 256 },
+          memory: {
+            used: 1024,
+            free: 2048,
+            total: 3072,
+            heapUsed: 512,
+            heapTotal: 1024,
+            external: 256,
+          },
           disk: { free: 1000, total: 2000 },
-          uptime: 3600
+          uptime: 3600,
         },
-        version: '0.1.0'
+        version: '0.1.0',
       }
 
-      mockHealthMonitoring.runAllHealthChecks.mockResolvedValue(mockHealthStatus)
+      mockHealthMonitoring.runAllHealthChecks.mockResolvedValue(
+        mockHealthStatus
+      )
 
-      const response = await request(app)
-        .get('/health')
-        .expect(503)
+      const response = await request(app).get('/health').expect(503)
 
       expect(response.body.data.status).toBe('unhealthy')
     })
 
     it('should handle health check errors', async () => {
-      mockHealthMonitoring.runAllHealthChecks.mockRejectedValue(new Error('Health check failed'))
+      mockHealthMonitoring.runAllHealthChecks.mockRejectedValue(
+        new Error('Health check failed')
+      )
 
-      const response = await request(app)
-        .get('/health')
-        .expect(500)
+      const response = await request(app).get('/health').expect(500)
 
       expect(response.body).toMatchObject({
         success: false,
         error: {
           code: 'HEALTH_CHECK_FAILED',
-          message: 'Failed to perform health check'
-        }
+          message: 'Failed to perform health check',
+        },
       })
     })
   })
 
   describe('GET /health/live', () => {
     it('should return liveness status', async () => {
-      const response = await request(app)
-        .get('/health/live')
-        .expect(200)
+      const response = await request(app).get('/health/live').expect(200)
 
       expect(response.body).toMatchObject({
         success: true,
@@ -171,8 +188,8 @@ describe('Health API Routes', () => {
           status: 'alive',
           timestamp: expect.any(String),
           uptime: expect.any(Number),
-          version: expect.any(String)
-        }
+          version: expect.any(String),
+        },
       })
     })
   })
@@ -182,20 +199,18 @@ describe('Health API Routes', () => {
       const mockDatabaseCheck = {
         name: 'database',
         status: 'healthy' as const,
-        lastCheck: new Date()
+        lastCheck: new Date(),
       }
       const mockMemoryCheck = {
         name: 'memory',
         status: 'healthy' as const,
-        lastCheck: new Date()
+        lastCheck: new Date(),
       }
 
       mockHealthMonitoring.checkDatabase.mockResolvedValue(mockDatabaseCheck)
       mockHealthMonitoring.checkMemory.mockResolvedValue(mockMemoryCheck)
 
-      const response = await request(app)
-        .get('/health/ready')
-        .expect(200)
+      const response = await request(app).get('/health/ready').expect(200)
 
       expect(response.body).toMatchObject({
         success: true,
@@ -203,9 +218,9 @@ describe('Health API Routes', () => {
           status: 'ready',
           checks: {
             database: 'healthy',
-            memory: 'healthy'
-          }
-        }
+            memory: 'healthy',
+          },
+        },
       })
     })
 
@@ -214,37 +229,35 @@ describe('Health API Routes', () => {
         name: 'database',
         status: 'unhealthy' as const,
         lastCheck: new Date(),
-        error: 'Database connection failed'
+        error: 'Database connection failed',
       }
       const mockMemoryCheck = {
         name: 'memory',
         status: 'healthy' as const,
-        lastCheck: new Date()
+        lastCheck: new Date(),
       }
 
       mockHealthMonitoring.checkDatabase.mockResolvedValue(mockDatabaseCheck)
       mockHealthMonitoring.checkMemory.mockResolvedValue(mockMemoryCheck)
 
-      const response = await request(app)
-        .get('/health/ready')
-        .expect(503)
+      const response = await request(app).get('/health/ready').expect(503)
 
       expect(response.body.data.status).toBe('not_ready')
     })
 
     it('should handle readiness check errors', async () => {
-      mockHealthMonitoring.checkDatabase.mockRejectedValue(new Error('Database check failed'))
+      mockHealthMonitoring.checkDatabase.mockRejectedValue(
+        new Error('Database check failed')
+      )
 
-      const response = await request(app)
-        .get('/health/ready')
-        .expect(503)
+      const response = await request(app).get('/health/ready').expect(503)
 
       expect(response.body).toMatchObject({
         success: false,
         error: {
           code: 'READINESS_CHECK_FAILED',
-          message: 'Application is not ready'
-        }
+          message: 'Application is not ready',
+        },
       })
     })
   })
@@ -256,7 +269,7 @@ describe('Health API Routes', () => {
         status: 'healthy' as const,
         lastCheck: new Date(),
         responseTime: 45,
-        details: { connectionStatus: 'connected' }
+        details: { connectionStatus: 'connected' },
       }
 
       mockHealthMonitoring.checkDatabase.mockResolvedValue(mockCheck)
@@ -270,8 +283,8 @@ describe('Health API Routes', () => {
         data: {
           name: 'database',
           status: 'healthy',
-          responseTime: 45
-        }
+          responseTime: 45,
+        },
       })
     })
 
@@ -280,7 +293,7 @@ describe('Health API Routes', () => {
         name: 'memory',
         status: 'degraded' as const,
         lastCheck: new Date(),
-        details: { warning: 'Memory usage is high' }
+        details: { warning: 'Memory usage is high' },
       }
 
       mockHealthMonitoring.checkMemory.mockResolvedValue(mockCheck)
@@ -302,13 +315,15 @@ describe('Health API Routes', () => {
         error: {
           code: 'HEALTH_CHECK_NOT_FOUND',
           message: "Health check 'unknown' not found",
-          availableChecks: ['database', 'memory', 'disk', 'application']
-        }
+          availableChecks: ['database', 'memory', 'disk', 'application'],
+        },
       })
     })
 
     it('should handle health check errors', async () => {
-      mockHealthMonitoring.checkDatabase.mockRejectedValue(new Error('Database check failed'))
+      mockHealthMonitoring.checkDatabase.mockRejectedValue(
+        new Error('Database check failed')
+      )
 
       const response = await request(app)
         .get('/health/checks/database')
@@ -318,8 +333,8 @@ describe('Health API Routes', () => {
         success: false,
         error: {
           code: 'HEALTH_CHECK_FAILED',
-          message: "Failed to perform health check 'database'"
-        }
+          message: "Failed to perform health check 'database'",
+        },
       })
     })
   })
@@ -335,17 +350,18 @@ describe('Health API Routes', () => {
           total: 4 * 1024 * 1024 * 1024,
           heapUsed: 25 * 1024 * 1024,
           heapTotal: 50 * 1024 * 1024,
-          external: 5 * 1024 * 1024
+          external: 5 * 1024 * 1024,
         },
-        disk: { free: 100 * 1024 * 1024 * 1024, total: 500 * 1024 * 1024 * 1024 },
-        uptime: 3600
+        disk: {
+          free: 100 * 1024 * 1024 * 1024,
+          total: 500 * 1024 * 1024 * 1024,
+        },
+        uptime: 3600,
       }
 
       mockHealthMonitoring.collectSystemMetrics.mockResolvedValue(mockMetrics)
 
-      const response = await request(app)
-        .get('/health/metrics')
-        .expect(200)
+      const response = await request(app).get('/health/metrics').expect(200)
 
       expect(response.body).toMatchObject({
         success: true,
@@ -354,24 +370,24 @@ describe('Health API Routes', () => {
           cpu: expect.any(Object),
           memory: expect.any(Object),
           disk: expect.any(Object),
-          uptime: 3600
-        }
+          uptime: 3600,
+        },
       })
     })
 
     it('should handle metrics collection errors', async () => {
-      mockHealthMonitoring.collectSystemMetrics.mockRejectedValue(new Error('Metrics collection failed'))
+      mockHealthMonitoring.collectSystemMetrics.mockRejectedValue(
+        new Error('Metrics collection failed')
+      )
 
-      const response = await request(app)
-        .get('/health/metrics')
-        .expect(500)
+      const response = await request(app).get('/health/metrics').expect(500)
 
       expect(response.body).toMatchObject({
         success: false,
         error: {
           code: 'METRICS_COLLECTION_FAILED',
-          message: 'Failed to collect system metrics'
-        }
+          message: 'Failed to collect system metrics',
+        },
       })
     })
   })
@@ -382,17 +398,31 @@ describe('Health API Routes', () => {
         {
           timestamp: new Date(),
           cpu: { usage: 25, loadAverage: [0.5, 0.7, 0.9] },
-          memory: { used: 1024, free: 2048, total: 3072, heapUsed: 512, heapTotal: 1024, external: 256 },
+          memory: {
+            used: 1024,
+            free: 2048,
+            total: 3072,
+            heapUsed: 512,
+            heapTotal: 1024,
+            external: 256,
+          },
           disk: { free: 1000, total: 2000 },
-          uptime: 3600
+          uptime: 3600,
         },
         {
           timestamp: new Date(),
           cpu: { usage: 30, loadAverage: [0.6, 0.8, 1.0] },
-          memory: { used: 1200, free: 1872, total: 3072, heapUsed: 600, heapTotal: 1024, external: 300 },
+          memory: {
+            used: 1200,
+            free: 1872,
+            total: 3072,
+            heapUsed: 600,
+            heapTotal: 1024,
+            external: 300,
+          },
           disk: { free: 950, total: 2000 },
-          uptime: 3660
-        }
+          uptime: 3660,
+        },
       ]
 
       mockHealthMonitoring.getMetricsHistory.mockReturnValue(mockHistory)
@@ -406,8 +436,8 @@ describe('Health API Routes', () => {
         data: {
           metrics: expect.any(Array),
           count: 2,
-          limit: 'none'
-        }
+          limit: 'none',
+        },
       })
 
       expect(response.body.data.metrics).toHaveLength(2)
@@ -418,10 +448,17 @@ describe('Health API Routes', () => {
         {
           timestamp: new Date(),
           cpu: { usage: 25, loadAverage: [0.5, 0.7, 0.9] },
-          memory: { used: 1024, free: 2048, total: 3072, heapUsed: 512, heapTotal: 1024, external: 256 },
+          memory: {
+            used: 1024,
+            free: 2048,
+            total: 3072,
+            heapUsed: 512,
+            heapTotal: 1024,
+            external: 256,
+          },
           disk: { free: 1000, total: 2000 },
-          uptime: 3600
-        }
+          uptime: 3600,
+        },
       ]
 
       mockHealthMonitoring.getMetricsHistory.mockReturnValue(mockHistory)
@@ -447,8 +484,8 @@ describe('Health API Routes', () => {
         success: false,
         error: {
           code: 'METRICS_HISTORY_FAILED',
-          message: 'Failed to retrieve metrics history'
-        }
+          message: 'Failed to retrieve metrics history',
+        },
       })
     })
   })

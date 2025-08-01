@@ -62,7 +62,10 @@ export class PaginationHelper {
   /**
    * Validate and normalize pagination parameters
    */
-  static validateParams(params: PaginationParams): Required<Pick<PaginationParams, 'page' | 'limit'>> & Omit<PaginationParams, 'page' | 'limit'> {
+  static validateParams(
+    params: PaginationParams
+  ): Required<Pick<PaginationParams, 'page' | 'limit'>> &
+    Omit<PaginationParams, 'page' | 'limit'> {
     const page = Math.max(1, params.page || 1)
     const limit = Math.min(Math.max(1, params.limit || 20), 100) // Max 100 items per page
 
@@ -89,7 +92,8 @@ export class PaginationHelper {
   static createResult<T>(
     data: T[],
     total: number,
-    params: Required<Pick<PaginationParams, 'page' | 'limit'>> & Omit<PaginationParams, 'page' | 'limit'>
+    params: Required<Pick<PaginationParams, 'page' | 'limit'>> &
+      Omit<PaginationParams, 'page' | 'limit'>
   ): PaginatedResult<T> {
     const totalPages = Math.ceil(total / params.limit)
     const hasNext = params.page < totalPages
@@ -168,7 +172,10 @@ export class LazyLoader<T> {
   private hasMore = true
   private page = 1
   private readonly limit: number
-  private readonly fetcher: (page: number, limit: number) => Promise<PaginatedResult<T>>
+  private readonly fetcher: (
+    page: number,
+    limit: number
+  ) => Promise<PaginatedResult<T>>
   private readonly options: Required<LazyLoadOptions>
 
   constructor(
@@ -201,7 +208,7 @@ export class LazyLoader<T> {
 
     try {
       const result = await this.fetcher(this.page, this.limit)
-      
+
       this.data = [...this.data, ...result.data]
       this.hasMore = result.pagination.hasNext
       this.page++
@@ -228,7 +235,7 @@ export class LazyLoader<T> {
     this.page = 1
     this.hasMore = true
     this.loading = false
-    
+
     if (this.options.initialLoad) {
       await this.loadMore()
     }
@@ -281,7 +288,11 @@ export class LazyLoader<T> {
 
         const distanceFromBottom = scrollHeight - scrollTop - clientHeight
 
-        if (distanceFromBottom <= this.options.threshold && !this.loading && this.hasMore) {
+        if (
+          distanceFromBottom <= this.options.threshold &&
+          !this.loading &&
+          this.hasMore
+        ) {
           this.loadMore().catch(error => {
             logger.error('Lazy loader: scroll handler error', error)
           })
@@ -313,9 +324,16 @@ export class VirtualScroller<T> {
   /**
    * Calculate visible range of items
    */
-  getVisibleRange(totalItems: number): { start: number; end: number; visibleItems: number } {
+  getVisibleRange(totalItems: number): {
+    start: number
+    end: number
+    visibleItems: number
+  } {
     const visibleItems = Math.ceil(this.containerHeight / this.itemHeight)
-    const start = Math.max(0, Math.floor(this.scrollTop / this.itemHeight) - this.overscan)
+    const start = Math.max(
+      0,
+      Math.floor(this.scrollTop / this.itemHeight) - this.overscan
+    )
     const end = Math.min(totalItems, start + visibleItems + this.overscan * 2)
 
     return { start, end, visibleItems }
@@ -324,7 +342,10 @@ export class VirtualScroller<T> {
   /**
    * Get items to render based on scroll position
    */
-  getItemsToRender<T>(items: T[], scrollTop: number): {
+  getItemsToRender<T>(
+    items: T[],
+    scrollTop: number
+  ): {
     items: Array<{ item: T; index: number }>
     totalHeight: number
     offsetY: number
@@ -380,11 +401,11 @@ export class SearchFilter {
         const value = this.getNestedValue(item, field)
         if (value == null) return false
 
-        const stringValue = options.caseSensitive 
-          ? String(value) 
+        const stringValue = options.caseSensitive
+          ? String(value)
           : String(value).toLowerCase()
 
-        return options.exactMatch 
+        return options.exactMatch
           ? stringValue === term
           : stringValue.includes(term)
       })
@@ -401,31 +422,28 @@ export class SearchFilter {
   /**
    * Apply multiple filters to items
    */
-  static applyFilters<T>(
-    items: T[],
-    filters: Record<string, unknown>
-  ): T[] {
+  static applyFilters<T>(items: T[], filters: Record<string, unknown>): T[] {
     return items.filter(item => {
       return Object.entries(filters).every(([key, value]) => {
         if (value == null || value === '') return true
 
         const itemValue = this.getNestedValue(item, key)
-        
+
         if (Array.isArray(value)) {
           return value.includes(itemValue)
         }
-        
+
         if (typeof value === 'object' && value !== null) {
           // Handle range filters
           const range = value as { min?: number; max?: number }
           const numValue = Number(itemValue)
-          
+
           if (range.min != null && numValue < range.min) return false
           if (range.max != null && numValue > range.max) return false
-          
+
           return true
         }
-        
+
         return itemValue === value
       })
     })

@@ -9,7 +9,7 @@ jest.mock('../../lib/database', () => ({
   prisma: {
     $connect: jest.fn(),
     $disconnect: jest.fn(),
-  }
+  },
 }))
 
 jest.mock('../../services/auth', () => ({
@@ -18,9 +18,9 @@ jest.mock('../../services/auth', () => ({
       id: 'user_1',
       email: 'test@example.com',
       name: 'Test User',
-      role: 'ADMIN'
-    })
-  }))
+      role: 'ADMIN',
+    }),
+  })),
 }))
 
 describe('Core API Structure and Error Handling', () => {
@@ -28,22 +28,18 @@ describe('Core API Structure and Error Handling', () => {
 
   describe('Express Server Setup', () => {
     it('should start Express server with TypeScript', async () => {
-      const response = await request(app)
-        .get('/health')
-        .expect(200)
+      const response = await request(app).get('/health').expect(200)
 
       expect(response.body).toMatchObject({
         status: 'healthy',
         timestamp: expect.any(String),
         version: expect.any(String),
-        environment: expect.any(String)
+        environment: expect.any(String),
       })
     })
 
     it('should include security headers', async () => {
-      const response = await request(app)
-        .get('/health')
-        .expect(200)
+      const response = await request(app).get('/health').expect(200)
 
       expect(response.headers).toHaveProperty('x-content-type-options')
       expect(response.headers).toHaveProperty('x-frame-options')
@@ -51,9 +47,7 @@ describe('Core API Structure and Error Handling', () => {
     })
 
     it('should include request ID middleware', async () => {
-      const response = await request(app)
-        .get('/health')
-        .expect(200)
+      const response = await request(app).get('/health').expect(200)
 
       expect(response.headers).toHaveProperty('x-request-id')
       expect(response.headers['x-request-id']).toMatch(/^req_\d+_[a-z0-9]+$/)
@@ -84,8 +78,8 @@ describe('Core API Structure and Error Handling', () => {
           code: 'ENDPOINT_NOT_FOUND',
           message: expect.stringContaining('not found'),
           timestamp: expect.any(String),
-          requestId: expect.any(String)
-        }
+          requestId: expect.any(String),
+        },
       })
 
       // Should not have success field in error responses
@@ -101,7 +95,9 @@ describe('Core API Structure and Error Handling', () => {
 
       expect(response.body.error).toHaveProperty('requestId')
       expect(response.headers).toHaveProperty('x-request-id')
-      expect(response.body.error.requestId).toBe(response.headers['x-request-id'])
+      expect(response.body.error.requestId).toBe(
+        response.headers['x-request-id']
+      )
     })
   })
 
@@ -159,7 +155,7 @@ describe('Core API Structure and Error Handling', () => {
         .send({
           // Missing required fields
           name: '',
-          platformType: 'invalid'
+          platformType: 'invalid',
         })
         .expect(400)
 
@@ -167,8 +163,8 @@ describe('Core API Structure and Error Handling', () => {
         error: {
           code: 'VALIDATION_ERROR',
           message: 'Request validation failed',
-          details: expect.any(Array)
-        }
+          details: expect.any(Array),
+        },
       })
 
       // Should have validation details
@@ -186,8 +182,8 @@ describe('Core API Structure and Error Handling', () => {
       expect(response.body).toMatchObject({
         error: {
           code: 'VALIDATION_ERROR',
-          message: 'Request validation failed'
-        }
+          message: 'Request validation failed',
+        },
       })
     })
 
@@ -199,8 +195,8 @@ describe('Core API Structure and Error Handling', () => {
         capabilities: ['<script>alert("xss")</script>'],
         configuration: {
           key: 'javascript:alert("xss")',
-          onclick: 'alert("xss")'
-        }
+          onclick: 'alert("xss")',
+        },
       }
 
       const response = await request(app)
@@ -229,7 +225,7 @@ describe('Core API Structure and Error Handling', () => {
         .post('/api/cubcen/v1/auth/login')
         .send({
           email: 'test@example.com',
-          password: 'password'
+          password: 'password',
         })
 
       // Should get validation error, auth error, or server error (due to mocking), not rate limit error
@@ -239,9 +235,7 @@ describe('Core API Structure and Error Handling', () => {
 
   describe('Security Headers', () => {
     it('should include basic security headers', async () => {
-      const response = await request(app)
-        .get('/health')
-        .expect(200)
+      const response = await request(app).get('/health').expect(200)
 
       expect(response.headers).toHaveProperty('x-content-type-options')
       expect(response.headers).toHaveProperty('x-frame-options')
@@ -264,8 +258,7 @@ describe('Core API Structure and Error Handling', () => {
     it('should handle missing authentication', async () => {
       // Note: In test environment, auth is mocked to always succeed
       // In real environment, this would return 401
-      const response = await request(app)
-        .get('/api/cubcen/v1/agents')
+      const response = await request(app).get('/api/cubcen/v1/agents')
 
       // Should either succeed (mocked) or fail with auth error
       expect([200, 401]).toContain(response.status)
@@ -288,8 +281,8 @@ describe('Core API Structure and Error Handling', () => {
         platformType: 'n8n',
         platformId: 'platform_1',
         configuration: {
-          largeField: 'x'.repeat(15 * 1024 * 1024) // 15MB
-        }
+          largeField: 'x'.repeat(15 * 1024 * 1024), // 15MB
+        },
       }
 
       const response = await request(app)

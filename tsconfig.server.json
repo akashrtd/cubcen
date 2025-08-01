@@ -24,9 +24,7 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": [
-    "src/**/*"
-  ],
+  "include": ["src/**/*"],
   "exclude": [
     "src/app/**/*",
     "src/components/**/*",

@@ -85,6 +85,7 @@ The Cubcen dashboard provides a comprehensive view of your AI agent ecosystem:
 The agent list provides a comprehensive overview of all your agents:
 
 **Columns:**
+
 - **Name**: Agent display name
 - **Platform**: Source platform (n8n, Make.com, etc.)
 - **Status**: Current operational status
@@ -93,6 +94,7 @@ The agent list provides a comprehensive overview of all your agents:
 - **Actions**: Quick action buttons
 
 **Status Indicators:**
+
 - 🟢 **Active**: Agent is running and healthy
 - 🟡 **Idle**: Agent is available but not currently executing
 - 🔴 **Error**: Agent has encountered an error
@@ -104,24 +106,28 @@ The agent list provides a comprehensive overview of all your agents:
 Click on any agent to view detailed information:
 
 #### Overview Tab
+
 - Agent metadata and configuration
 - Current status and health metrics
 - Platform-specific information
 - Recent execution history
 
 #### Performance Tab
+
 - Execution time trends
 - Success/failure rates over time
 - Resource usage metrics
 - Performance comparisons
 
 #### Configuration Tab
+
 - Agent settings and parameters
 - Environment variables
 - Scheduling configuration
 - Notification preferences
 
 #### Logs Tab
+
 - Real-time log streaming
 - Historical log search
 - Error log filtering
@@ -130,19 +136,23 @@ Click on any agent to view detailed information:
 ### Agent Actions
 
 **Start/Stop Agent**
+
 - Manually start or stop agent execution
 - Useful for maintenance or troubleshooting
 
 **Restart Agent**
+
 - Restart a problematic agent
 - Clears temporary issues and resets state
 
 **Edit Configuration**
+
 - Modify agent settings
 - Update scheduling parameters
 - Change notification preferences
 
 **View Logs**
+
 - Access detailed execution logs
 - Filter by time range or log level
 - Export logs for analysis
@@ -154,6 +164,7 @@ Click on any agent to view detailed information:
 Cubcen provides a visual kanban board for task management:
 
 **Columns:**
+
 - **Pending**: Tasks waiting to be executed
 - **In Progress**: Currently executing tasks
 - **Completed**: Successfully finished tasks
@@ -162,6 +173,7 @@ Cubcen provides a visual kanban board for task management:
 ### Task Cards
 
 Each task card displays:
+
 - Task name and description
 - Assigned agent
 - Priority level (Low, Medium, High, Critical)
@@ -182,14 +194,17 @@ Each task card displays:
 ### Task Scheduling Options
 
 **Immediate Execution**
+
 - Task runs as soon as possible
 - Useful for urgent operations
 
 **Scheduled Execution**
+
 - Set specific date and time
 - Good for planned maintenance or reports
 
 **Recurring Tasks**
+
 - Set up repeating schedules
 - Options: Hourly, Daily, Weekly, Monthly
 - Cron expression support for complex schedules
@@ -197,11 +212,13 @@ Each task card displays:
 ### Task Monitoring
 
 **Real-Time Updates**
+
 - Task status updates automatically
 - Progress indicators show completion percentage
 - Live log streaming during execution
 
 **Task History**
+
 - View all historical task executions
 - Filter by agent, status, or date range
 - Export task data for analysis
@@ -213,6 +230,7 @@ Each task card displays:
 The analytics dashboard provides insights into your agent ecosystem:
 
 #### Key Performance Indicators (KPIs)
+
 - **Total Executions**: Number of tasks executed
 - **Average Response Time**: Mean execution duration
 - **Success Rate**: Percentage of successful executions
@@ -220,12 +238,14 @@ The analytics dashboard provides insights into your agent ecosystem:
 - **Uptime**: Agent availability percentage
 
 #### Performance Charts
+
 - **Execution Trends**: Task volume over time
 - **Response Time Trends**: Performance changes
 - **Success Rate Trends**: Reliability metrics
 - **Agent Comparison**: Relative performance analysis
 
 #### Error Analysis
+
 - **Error Patterns**: Common failure types
 - **Error Frequency**: Error occurrence rates
 - **Error Resolution Time**: Time to fix issues
@@ -261,17 +281,20 @@ Set up automatic report generation:
 ### n8n Integration
 
 **Setup Requirements:**
+
 - n8n instance with API access enabled
 - API key with appropriate permissions
 - Network connectivity between Cubcen and n8n
 
 **Configuration Steps:**
+
 1. In n8n, generate an API key
 2. In Cubcen, add n8n platform connection
 3. Enter n8n base URL and API key
 4. Test connection and save
 
 **Supported Features:**
+
 - Workflow discovery and monitoring
 - Execution status tracking
 - Error reporting and alerting
@@ -280,11 +303,13 @@ Set up automatic report generation:
 ### Make.com Integration
 
 **Setup Requirements:**
+
 - Make.com account with API access
 - OAuth application credentials
 - Appropriate scenario permissions
 
 **Configuration Steps:**
+
 1. Create OAuth app in Make.com
 2. In Cubcen, add Make.com platform connection
 3. Enter client ID and client secret
@@ -292,6 +317,7 @@ Set up automatic report generation:
 5. Test connection and save
 
 **Supported Features:**
+
 - Scenario discovery and monitoring
 - Execution tracking and logging
 - Resource usage monitoring
@@ -313,11 +339,13 @@ Cubcen supports a plugin architecture for adding new platforms:
 #### Agent Not Responding
 
 **Symptoms:**
+
 - Agent shows as offline
 - No recent activity logs
 - Tasks fail to execute
 
 **Solutions:**
+
 1. Check platform connectivity
 2. Verify agent configuration
 3. Restart the agent
@@ -326,11 +354,13 @@ Cubcen supports a plugin architecture for adding new platforms:
 #### High Error Rates
 
 **Symptoms:**
+
 - Multiple task failures
 - Error alerts increasing
 - Performance degradation
 
 **Solutions:**
+
 1. Review error logs for patterns
 2. Check agent resource usage
 3. Verify input data quality
@@ -339,11 +369,13 @@ Cubcen supports a plugin architecture for adding new platforms:
 #### Slow Performance
 
 **Symptoms:**
+
 - Tasks taking longer than usual
 - High response times
 - System feels sluggish
 
 **Solutions:**
+
 1. Check system resource usage
 2. Review database performance
 3. Analyze network connectivity
@@ -352,11 +384,13 @@ Cubcen supports a plugin architecture for adding new platforms:
 ### Getting Help
 
 #### Built-in Help
+
 - **Help Center**: Access from the main menu
 - **Tooltips**: Hover over UI elements for quick help
 - **Documentation**: Links to relevant guides
 
 #### Support Channels
+
 - **Email Support**: support@cubcen.com
 - **Knowledge Base**: Online documentation and FAQs
 - **Community Forum**: User community discussions
@@ -364,6 +398,7 @@ Cubcen supports a plugin architecture for adding new platforms:
 #### Diagnostic Information
 
 When contacting support, provide:
+
 - Cubcen version number
 - Browser and version
 - Error messages and screenshots
@@ -375,18 +410,21 @@ When contacting support, provide:
 ### Agent Management
 
 **Organization**
+
 - Use descriptive agent names
 - Group related agents with tags
 - Maintain consistent naming conventions
 - Document agent purposes and configurations
 
 **Monitoring**
+
 - Set up appropriate alerts for critical agents
 - Monitor performance trends regularly
 - Review error patterns weekly
 - Keep agent configurations up to date
 
 **Maintenance**
+
 - Schedule regular agent health checks
 - Update platform integrations as needed
 - Archive unused agents
@@ -395,12 +433,14 @@ When contacting support, provide:
 ### Task Management
 
 **Scheduling**
+
 - Avoid overlapping resource-intensive tasks
 - Use appropriate priority levels
 - Consider time zone differences
 - Plan for peak usage periods
 
 **Error Handling**
+
 - Set up retry policies for transient failures
 - Configure appropriate timeout values
 - Implement fallback procedures
@@ -409,12 +449,14 @@ When contacting support, provide:
 ### Security
 
 **Access Control**
+
 - Use strong passwords and enable 2FA
 - Regularly review user permissions
 - Audit access logs periodically
 - Follow principle of least privilege
 
 **Data Protection**
+
 - Avoid storing sensitive data in task parameters
 - Use environment variables for secrets
 - Regularly backup configurations
@@ -423,12 +465,14 @@ When contacting support, provide:
 ### Performance Optimization
 
 **Resource Management**
+
 - Monitor system resource usage
 - Scale infrastructure as needed
 - Optimize database queries
 - Use caching where appropriate
 
 **Network Optimization**
+
 - Ensure reliable network connectivity
 - Monitor API rate limits
 - Implement connection pooling
@@ -487,6 +531,7 @@ Set up automated responses to events:
 Cubcen provides a powerful platform for managing your AI agent ecosystem. This guide covers the essential features and best practices to help you get the most out of your investment.
 
 For additional help:
+
 - Check the **Help Center** within the application
 - Visit our **Knowledge Base** online
 - Contact **Support** for personalized assistance

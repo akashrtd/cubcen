@@ -1,23 +1,48 @@
-"use client"
+'use client'
 
 import React, { useState, useEffect, useCallback } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { 
-  Search, 
-  Filter, 
-  RefreshCw, 
-  AlertTriangle, 
-  Info, 
-  AlertCircle, 
+import {
+  Search,
+  Filter,
+  RefreshCw,
+  AlertTriangle,
+  Info,
+  AlertCircle,
   XCircle,
   Zap,
   Calendar,
@@ -25,7 +50,7 @@ import {
   User,
   Server,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
 } from 'lucide-react'
 import { ErrorLog, ErrorFilter } from '@/types/error'
 import { format } from 'date-fns'
@@ -39,7 +64,7 @@ const ERROR_LEVEL_COLORS = {
   INFO: 'bg-blue-100 text-blue-800 border-blue-200',
   WARN: 'bg-yellow-100 text-yellow-800 border-yellow-200',
   ERROR: 'bg-red-100 text-red-800 border-red-200',
-  FATAL: 'bg-red-200 text-red-900 border-red-300'
+  FATAL: 'bg-red-200 text-red-900 border-red-300',
 }
 
 const ERROR_LEVEL_ICONS = {
@@ -47,7 +72,7 @@ const ERROR_LEVEL_ICONS = {
   INFO: Info,
   WARN: AlertTriangle,
   ERROR: AlertCircle,
-  FATAL: XCircle
+  FATAL: XCircle,
 }
 
 export function ErrorLogViewer({ className }: ErrorLogViewerProps) {
@@ -65,42 +90,51 @@ export function ErrorLogViewer({ className }: ErrorLogViewerProps) {
   const limit = 25
 
   // Fetch error logs
-  const fetchLogs = useCallback(async (page = 1, newFilter?: ErrorFilter) => {
-    try {
-      setLoading(page === 1)
-      setRefreshing(page !== 1)
-      
-      const filterToUse = newFilter || filter
-      const params = new URLSearchParams({
-        page: page.toString(),
-        limit: limit.toString(),
-        ...(filterToUse.level && { level: filterToUse.level }),
-        ...(filterToUse.source && { source: filterToUse.source }),
-        ...(filterToUse.agentId && { agentId: filterToUse.agentId }),
-        ...(filterToUse.taskId && { taskId: filterToUse.taskId }),
-        ...(filterToUse.dateFrom && { dateFrom: filterToUse.dateFrom.toISOString() }),
-        ...(filterToUse.dateTo && { dateTo: filterToUse.dateTo.toISOString() }),
-        ...(searchTerm && { search: searchTerm })
-      })
+  const fetchLogs = useCallback(
+    async (page = 1, newFilter?: ErrorFilter) => {
+      try {
+        setLoading(page === 1)
+        setRefreshing(page !== 1)
 
-      const response = await fetch(`/api/cubcen/v1/errors/logs?${params}`)
-      if (!response.ok) {
-        throw new Error('Failed to fetch error logs')
+        const filterToUse = newFilter || filter
+        const params = new URLSearchParams({
+          page: page.toString(),
+          limit: limit.toString(),
+          ...(filterToUse.level && { level: filterToUse.level }),
+          ...(filterToUse.source && { source: filterToUse.source }),
+          ...(filterToUse.agentId && { agentId: filterToUse.agentId }),
+          ...(filterToUse.taskId && { taskId: filterToUse.taskId }),
+          ...(filterToUse.dateFrom && {
+            dateFrom: filterToUse.dateFrom.toISOString(),
+          }),
+          ...(filterToUse.dateTo && {
+            dateTo: filterToUse.dateTo.toISOString(),
+          }),
+          ...(searchTerm && { search: searchTerm }),
+        })
+
+        const response = await fetch(`/api/cubcen/v1/errors/logs?${params}`)
+        if (!response.ok) {
+          throw new Error('Failed to fetch error logs')
+        }
+
+        const data = await response.json()
+        setLogs(data.logs)
+        setTotal(data.total)
+        setTotalPages(data.totalPages)
+        setCurrentPage(data.page)
+        setError(null)
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : 'Failed to fetch error logs'
+        )
+      } finally {
+        setLoading(false)
+        setRefreshing(false)
       }
-
-      const data = await response.json()
-      setLogs(data.logs)
-      setTotal(data.total)
-      setTotalPages(data.totalPages)
-      setCurrentPage(data.page)
-      setError(null)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch error logs')
-    } finally {
-      setLoading(false)
-      setRefreshing(false)
-    }
-  }, [filter, searchTerm])
+    },
+    [filter, searchTerm]
+  )
 
   // Initial load
   useEffect(() => {
@@ -114,12 +148,15 @@ export function ErrorLogViewer({ className }: ErrorLogViewerProps) {
   }, [fetchLogs])
 
   // Handle filter change
-  const handleFilterChange = useCallback((newFilter: Partial<ErrorFilter>) => {
-    const updatedFilter = { ...filter, ...newFilter }
-    setFilter(updatedFilter)
-    setCurrentPage(1)
-    fetchLogs(1, updatedFilter)
-  }, [filter, fetchLogs])
+  const handleFilterChange = useCallback(
+    (newFilter: Partial<ErrorFilter>) => {
+      const updatedFilter = { ...filter, ...newFilter }
+      setFilter(updatedFilter)
+      setCurrentPage(1)
+      fetchLogs(1, updatedFilter)
+    },
+    [filter, fetchLogs]
+  )
 
   // Handle refresh
   const handleRefresh = useCallback(() => {
@@ -127,9 +164,12 @@ export function ErrorLogViewer({ className }: ErrorLogViewerProps) {
   }, [fetchLogs, currentPage])
 
   // Handle pagination
-  const handlePageChange = useCallback((page: number) => {
-    fetchLogs(page)
-  }, [fetchLogs])
+  const handlePageChange = useCallback(
+    (page: number) => {
+      fetchLogs(page)
+    },
+    [fetchLogs]
+  )
 
   // Format timestamp
   const formatTimestamp = (timestamp: Date) => {
@@ -144,7 +184,9 @@ export function ErrorLogViewer({ className }: ErrorLogViewerProps) {
 
   // Truncate message for table display
   const truncateMessage = (message: string, maxLength = 80) => {
-    return message.length > maxLength ? `${message.slice(0, maxLength)}...` : message
+    return message.length > maxLength
+      ? `${message.slice(0, maxLength)}...`
+      : message
   }
 
   if (loading && logs.length === 0) {
@@ -195,7 +237,9 @@ export function ErrorLogViewer({ className }: ErrorLogViewerProps) {
             disabled={refreshing}
             className="border-[#3F51B5] text-[#3F51B5] hover:bg-[#3F51B5] hover:text-white"
           >
-            <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`}
+            />
             Refresh
           </Button>
         </CardTitle>
@@ -219,8 +263,8 @@ export function ErrorLogViewer({ className }: ErrorLogViewerProps) {
               <Input
                 placeholder="Search error messages..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                onChange={e => setSearchTerm(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleSearch()}
                 className="pl-10"
               />
             </div>
@@ -228,8 +272,11 @@ export function ErrorLogViewer({ className }: ErrorLogViewerProps) {
           <div className="flex gap-2">
             <Select
               value={filter.level || 'all'}
-              onValueChange={(value) => 
-                handleFilterChange({ level: value === 'all' ? undefined : value as ErrorLog['level'] })
+              onValueChange={value =>
+                handleFilterChange({
+                  level:
+                    value === 'all' ? undefined : (value as ErrorLog['level']),
+                })
               }
             >
               <SelectTrigger className="w-32">
@@ -247,7 +294,9 @@ export function ErrorLogViewer({ className }: ErrorLogViewerProps) {
             <Input
               placeholder="Source filter..."
               value={filter.source || ''}
-              onChange={(e) => handleFilterChange({ source: e.target.value || undefined })}
+              onChange={e =>
+                handleFilterChange({ source: e.target.value || undefined })
+              }
               className="w-40"
             />
             <Button
@@ -276,16 +325,19 @@ export function ErrorLogViewer({ className }: ErrorLogViewerProps) {
             <TableBody>
               {logs.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center py-8 text-gray-500">
+                  <TableCell
+                    colSpan={5}
+                    className="text-center py-8 text-gray-500"
+                  >
                     No error logs found
                   </TableCell>
                 </TableRow>
               ) : (
-                logs.map((log) => (
+                logs.map(log => (
                   <TableRow key={log.id} className="hover:bg-gray-50">
                     <TableCell>
-                      <Badge 
-                        variant="outline" 
+                      <Badge
+                        variant="outline"
                         className={`${ERROR_LEVEL_COLORS[log.level]} flex items-center gap-1`}
                       >
                         {getLevelIcon(log.level)}
@@ -309,7 +361,9 @@ export function ErrorLogViewer({ className }: ErrorLogViewerProps) {
                     </TableCell>
                     <TableCell>
                       <div className="space-y-1">
-                        <div className="text-sm">{truncateMessage(log.message)}</div>
+                        <div className="text-sm">
+                          {truncateMessage(log.message)}
+                        </div>
                         {(log.agentId || log.taskId) && (
                           <div className="flex gap-2 text-xs text-gray-500">
                             {log.agentId && (
@@ -352,33 +406,47 @@ export function ErrorLogViewer({ className }: ErrorLogViewerProps) {
                               {/* Basic Info */}
                               <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                  <label className="text-sm font-medium text-gray-600">Timestamp</label>
+                                  <label className="text-sm font-medium text-gray-600">
+                                    Timestamp
+                                  </label>
                                   <div className="flex items-center gap-2 mt-1">
                                     <Calendar className="h-4 w-4 text-gray-400" />
-                                    <span className="text-sm">{formatTimestamp(log.timestamp)}</span>
+                                    <span className="text-sm">
+                                      {formatTimestamp(log.timestamp)}
+                                    </span>
                                   </div>
                                 </div>
                                 <div>
-                                  <label className="text-sm font-medium text-gray-600">Source</label>
+                                  <label className="text-sm font-medium text-gray-600">
+                                    Source
+                                  </label>
                                   <div className="flex items-center gap-2 mt-1">
                                     <Server className="h-4 w-4 text-gray-400" />
-                                    <span className="text-sm font-mono">{log.source}</span>
+                                    <span className="text-sm font-mono">
+                                      {log.source}
+                                    </span>
                                   </div>
                                 </div>
                               </div>
 
                               {/* Message */}
                               <div>
-                                <label className="text-sm font-medium text-gray-600">Message</label>
+                                <label className="text-sm font-medium text-gray-600">
+                                  Message
+                                </label>
                                 <div className="mt-1 p-3 bg-gray-50 rounded-lg">
-                                  <pre className="text-sm whitespace-pre-wrap">{log.message}</pre>
+                                  <pre className="text-sm whitespace-pre-wrap">
+                                    {log.message}
+                                  </pre>
                                 </div>
                               </div>
 
                               {/* Stack Trace */}
                               {log.stackTrace && (
                                 <div>
-                                  <label className="text-sm font-medium text-gray-600">Stack Trace</label>
+                                  <label className="text-sm font-medium text-gray-600">
+                                    Stack Trace
+                                  </label>
                                   <div className="mt-1 p-3 bg-red-50 rounded-lg">
                                     <pre className="text-xs text-red-800 whitespace-pre-wrap overflow-x-auto">
                                       {log.stackTrace}
@@ -388,44 +456,60 @@ export function ErrorLogViewer({ className }: ErrorLogViewerProps) {
                               )}
 
                               {/* Context */}
-                              {log.context && Object.keys(log.context).length > 0 && (
-                                <div>
-                                  <label className="text-sm font-medium text-gray-600">Context</label>
-                                  <div className="mt-1 p-3 bg-blue-50 rounded-lg">
-                                    <pre className="text-xs text-blue-800 whitespace-pre-wrap overflow-x-auto">
-                                      {JSON.stringify(log.context, null, 2)}
-                                    </pre>
+                              {log.context &&
+                                Object.keys(log.context).length > 0 && (
+                                  <div>
+                                    <label className="text-sm font-medium text-gray-600">
+                                      Context
+                                    </label>
+                                    <div className="mt-1 p-3 bg-blue-50 rounded-lg">
+                                      <pre className="text-xs text-blue-800 whitespace-pre-wrap overflow-x-auto">
+                                        {JSON.stringify(log.context, null, 2)}
+                                      </pre>
+                                    </div>
                                   </div>
-                                </div>
-                              )}
+                                )}
 
                               {/* Related IDs */}
-                              {(log.agentId || log.taskId || log.platformId || log.userId) && (
+                              {(log.agentId ||
+                                log.taskId ||
+                                log.platformId ||
+                                log.userId) && (
                                 <div>
-                                  <label className="text-sm font-medium text-gray-600">Related IDs</label>
+                                  <label className="text-sm font-medium text-gray-600">
+                                    Related IDs
+                                  </label>
                                   <div className="mt-1 grid grid-cols-2 gap-2">
                                     {log.agentId && (
                                       <div className="flex items-center gap-2 p-2 bg-gray-50 rounded">
                                         <User className="h-4 w-4 text-gray-400" />
-                                        <span className="text-sm">Agent: {log.agentId}</span>
+                                        <span className="text-sm">
+                                          Agent: {log.agentId}
+                                        </span>
                                       </div>
                                     )}
                                     {log.taskId && (
                                       <div className="flex items-center gap-2 p-2 bg-gray-50 rounded">
                                         <Zap className="h-4 w-4 text-gray-400" />
-                                        <span className="text-sm">Task: {log.taskId}</span>
+                                        <span className="text-sm">
+                                          Task: {log.taskId}
+                                        </span>
                                       </div>
                                     )}
                                     {log.platformId && (
                                       <div className="flex items-center gap-2 p-2 bg-gray-50 rounded">
                                         <Server className="h-4 w-4 text-gray-400" />
-                                        <span className="text-sm">Platform: {log.platformId}</span>
+                                        <span className="text-sm">
+                                          Platform: {log.platformId}
+                                        </span>
                                       </div>
                                     )}
                                     {log.userId && (
                                       <div className="flex items-center gap-2 p-2 bg-gray-50 rounded">
                                         <User className="h-4 w-4 text-gray-400" />
-                                        <span className="text-sm">User: {log.userId}</span>
+                                        <span className="text-sm">
+                                          User: {log.userId}
+                                        </span>
                                       </div>
                                     )}
                                   </div>
@@ -447,7 +531,8 @@ export function ErrorLogViewer({ className }: ErrorLogViewerProps) {
         {totalPages > 1 && (
           <div className="flex items-center justify-between mt-4">
             <div className="text-sm text-gray-600">
-              Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, total)} of {total} entries
+              Showing {(currentPage - 1) * limit + 1} to{' '}
+              {Math.min(currentPage * limit, total)} of {total} entries
             </div>
             <div className="flex items-center gap-2">
               <Button

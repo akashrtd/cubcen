@@ -30,18 +30,14 @@
     {
       "passed": false,
       "message": "JWT_SECRET not configured",
-      "recommendations": [
-        "Set a strong JWT_SECRET in environment variables"
-      ],
+      "recommendations": ["Set a strong JWT_SECRET in environment variables"],
       "name": "JWT Secret Strength",
       "severity": "critical"
     },
     {
       "passed": false,
       "message": "DATABASE_URL not configured",
-      "recommendations": [
-        "Configure DATABASE_URL in environment variables"
-      ],
+      "recommendations": ["Configure DATABASE_URL in environment variables"],
       "name": "Database Security Configuration",
       "severity": "high"
     },
@@ -89,9 +85,7 @@
         "totalRequests": 20,
         "rateLimitedCount": 0
       },
-      "recommendations": [
-        "Implement rate limiting to prevent abuse"
-      ],
+      "recommendations": ["Implement rate limiting to prevent abuse"],
       "name": "Rate Limiting",
       "severity": "medium"
     },
@@ -99,13 +93,9 @@
       "passed": false,
       "message": "Found 1 file permission issues",
       "details": {
-        "issues": [
-          ".env is readable by group/others"
-        ]
+        "issues": [".env is readable by group/others"]
       },
-      "recommendations": [
-        "Set .env permissions to 600"
-      ],
+      "recommendations": ["Set .env permissions to 600"],
       "name": "File Permissions",
       "severity": "medium"
     },
@@ -124,13 +114,9 @@
       "passed": false,
       "message": "Found 1 Docker security issues",
       "details": {
-        "issues": [
-          "Docker COPY commands should use --chown for security"
-        ]
+        "issues": ["Docker COPY commands should use --chown for security"]
       },
-      "recommendations": [
-        "Use COPY --chown=user:group syntax"
-      ],
+      "recommendations": ["Use COPY --chown=user:group syntax"],
       "name": "Docker Security",
       "severity": "medium"
     },

@@ -18,7 +18,9 @@ jest.mock('@/lib/logger', () => ({
   },
 }))
 
-const mockAnalyticsService = analyticsService as jest.Mocked<typeof analyticsService>
+const mockAnalyticsService = analyticsService as jest.Mocked<
+  typeof analyticsService
+>
 
 describe('Analytics Routes', () => {
   let app: express.Application
@@ -59,15 +61,9 @@ describe('Analytics Routes', () => {
         averageResponseTime: 120,
       },
     ],
-    platformDistribution: [
-      { platform: 'n8n (N8N)', count: 5 },
-    ],
-    dailyTaskTrends: [
-      { date: '2024-01-01', completed: 10, failed: 2 },
-    ],
-    errorPatterns: [
-      { error: 'Connection timeout', count: 5 },
-    ],
+    platformDistribution: [{ platform: 'n8n (N8N)', count: 5 }],
+    dailyTaskTrends: [{ date: '2024-01-01', completed: 10, failed: 2 }],
+    errorPatterns: [{ error: 'Connection timeout', count: 5 }],
   }
 
   describe('GET /api/cubcen/v1/analytics', () => {
@@ -84,7 +80,9 @@ describe('Analytics Routes', () => {
         timestamp: expect.any(String),
       })
 
-      expect(mockAnalyticsService.getAnalyticsData).toHaveBeenCalledWith(undefined)
+      expect(mockAnalyticsService.getAnalyticsData).toHaveBeenCalledWith(
+        undefined
+      )
     })
 
     it('should handle date range parameters', async () => {
@@ -124,7 +122,9 @@ describe('Analytics Routes', () => {
         .expect(500)
 
       expect(response.body.error.code).toBe('ANALYTICS_ERROR')
-      expect(response.body.error.message).toBe('Failed to retrieve analytics data')
+      expect(response.body.error.message).toBe(
+        'Failed to retrieve analytics data'
+      )
     })
   })
 
@@ -171,7 +171,9 @@ describe('Analytics Routes', () => {
   describe('POST /api/cubcen/v1/analytics/export', () => {
     it('should export data as CSV', async () => {
       mockAnalyticsService.getAnalyticsData.mockResolvedValue(mockAnalyticsData)
-      mockAnalyticsService.exportData.mockResolvedValue('name,tasks\nAgent 1,50')
+      mockAnalyticsService.exportData.mockResolvedValue(
+        'name,tasks\nAgent 1,50'
+      )
 
       const response = await request(app)
         .post('/api/cubcen/v1/analytics/export')
@@ -179,7 +181,9 @@ describe('Analytics Routes', () => {
         .expect(200)
 
       expect(response.headers['content-type']).toBe('text/csv; charset=utf-8')
-      expect(response.headers['content-disposition']).toMatch(/attachment; filename=/)
+      expect(response.headers['content-disposition']).toMatch(
+        /attachment; filename=/
+      )
       expect(response.text).toBe('name,tasks\nAgent 1,50')
 
       expect(mockAnalyticsService.exportData).toHaveBeenCalledWith(
@@ -197,7 +201,9 @@ describe('Analytics Routes', () => {
         .send({ format: 'json', dataType: 'overview' })
         .expect(200)
 
-      expect(response.headers['content-type']).toBe('application/json; charset=utf-8')
+      expect(response.headers['content-type']).toBe(
+        'application/json; charset=utf-8'
+      )
       expect(response.text).toBe('{"data": "test"}')
 
       expect(mockAnalyticsService.exportData).toHaveBeenCalledWith(
@@ -269,7 +275,9 @@ describe('Analytics Routes', () => {
         .expect(500)
 
       expect(response.body.error.code).toBe('EXPORT_ERROR')
-      expect(response.body.error.message).toBe('Failed to export analytics data')
+      expect(response.body.error.message).toBe(
+        'Failed to export analytics data'
+      )
     })
 
     it('should include date range in query parameters', async () => {

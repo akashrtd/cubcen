@@ -24,7 +24,9 @@ jest.mock('../kpi-cards', () => ({
 jest.mock('../performance-charts', () => ({
   PerformanceCharts: ({ data, loading }: any) => (
     <div data-testid="performance-charts">
-      {loading ? 'Loading charts...' : `Charts: ${data.dailyTaskTrends.length} trends`}
+      {loading
+        ? 'Loading charts...'
+        : `Charts: ${data.dailyTaskTrends.length} trends`}
     </div>
   ),
 }))
@@ -48,7 +50,14 @@ jest.mock('../error-patterns-chart', () => ({
 jest.mock('../date-range-picker', () => ({
   DatePickerWithRange: ({ date, onDateChange }: any) => (
     <div data-testid="date-picker">
-      <button onClick={() => onDateChange({ from: new Date('2024-01-01'), to: new Date('2024-01-31') })}>
+      <button
+        onClick={() =>
+          onDateChange({
+            from: new Date('2024-01-01'),
+            to: new Date('2024-01-31'),
+          })
+        }
+      >
         Select Date Range
       </button>
     </div>
@@ -94,15 +103,9 @@ const mockAnalyticsData = {
       averageResponseTime: 120,
     },
   ],
-  platformDistribution: [
-    { platform: 'n8n (N8N)', count: 5 },
-  ],
-  dailyTaskTrends: [
-    { date: '2024-01-01', completed: 10, failed: 2 },
-  ],
-  errorPatterns: [
-    { error: 'Connection timeout', count: 5 },
-  ],
+  platformDistribution: [{ platform: 'n8n (N8N)', count: 5 }],
+  dailyTaskTrends: [{ date: '2024-01-01', completed: 10, failed: 2 }],
+  errorPatterns: [{ error: 'Connection timeout', count: 5 }],
 }
 
 describe('AnalyticsDashboard', () => {
@@ -110,10 +113,11 @@ describe('AnalyticsDashboard', () => {
     jest.clearAllMocks()
     ;(fetch as jest.Mock).mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve({
-        success: true,
-        data: mockAnalyticsData,
-      }),
+      json: () =>
+        Promise.resolve({
+          success: true,
+          data: mockAnalyticsData,
+        }),
     })
   })
 
@@ -122,7 +126,7 @@ describe('AnalyticsDashboard', () => {
 
     // Should show loading skeletons
     expect(screen.getByText('Analytics')).toBeInTheDocument()
-    
+
     // Check for loading skeleton elements by class
     const skeletonElements = document.querySelectorAll('.animate-pulse')
     expect(skeletonElements.length).toBeGreaterThan(0)
@@ -156,7 +160,9 @@ describe('AnalyticsDashboard', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Error Loading Analytics')).toBeInTheDocument()
-      expect(screen.getByText('Failed to load analytics data. Please try again.')).toBeInTheDocument()
+      expect(
+        screen.getByText('Failed to load analytics data. Please try again.')
+      ).toBeInTheDocument()
     })
 
     expect(toast.error).toHaveBeenCalledWith(
@@ -274,10 +280,11 @@ describe('AnalyticsDashboard', () => {
   it('should handle successful API response with no success flag', async () => {
     ;(fetch as jest.Mock).mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve({
-        success: false,
-        error: { message: 'Custom error message' },
-      }),
+      json: () =>
+        Promise.resolve({
+          success: false,
+          error: { message: 'Custom error message' },
+        }),
     })
 
     render(<AnalyticsDashboard />)
@@ -308,7 +315,9 @@ describe('AnalyticsDashboard', () => {
   })
 
   it('should apply custom className', () => {
-    const { container } = render(<AnalyticsDashboard className="custom-class" />)
+    const { container } = render(
+      <AnalyticsDashboard className="custom-class" />
+    )
 
     expect(container.firstChild).toHaveClass('custom-class')
   })

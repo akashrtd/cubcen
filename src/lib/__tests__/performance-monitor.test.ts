@@ -84,7 +84,7 @@ describe('PerformanceMonitor', () => {
 
     it('should handle error requests', () => {
       performanceMonitor.recordAPIRequest(500, true)
-      
+
       // Should not throw error
       expect(true).toBe(true)
     })
@@ -114,7 +114,7 @@ describe('PerformanceMonitor', () => {
       mockPrisma.agent.count.mockRejectedValueOnce(new Error('Database error'))
 
       const stats = await performanceMonitor.getCurrentStats()
-      
+
       // Should still return stats with default values
       expect(stats).toHaveProperty('cpu')
       expect(stats).toHaveProperty('memory')
@@ -154,7 +154,7 @@ describe('PerformanceMonitor', () => {
     it('should resolve alerts', () => {
       const alertId = 'test-alert-123'
       const resolved = performanceMonitor.resolveAlert(alertId)
-      
+
       // Should return false for non-existent alert
       expect(resolved).toBe(false)
     })
@@ -164,9 +164,9 @@ describe('PerformanceMonitor', () => {
     it('should reset API metrics', () => {
       performanceMonitor.recordAPIRequest(100, false)
       performanceMonitor.recordAPIRequest(200, true)
-      
+
       performanceMonitor.resetAPIMetrics()
-      
+
       // Should not throw error
       expect(true).toBe(true)
     })
@@ -176,7 +176,7 @@ describe('PerformanceMonitor', () => {
     it('should destroy monitor properly', () => {
       performanceMonitor.startMonitoring()
       performanceMonitor.destroy()
-      
+
       // Should not throw error
       expect(true).toBe(true)
     })

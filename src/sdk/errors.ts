@@ -31,63 +31,99 @@ export class CubcenError extends Error {
 }
 
 export class CubcenAuthenticationError extends CubcenError {
-  constructor(message: string = 'Authentication failed', requestId?: string, details?: unknown) {
+  constructor(
+    message: string = 'Authentication failed',
+    requestId?: string,
+    details?: unknown
+  ) {
     super(message, 'AUTHENTICATION_ERROR', 401, requestId, details)
     this.name = 'CubcenAuthenticationError'
   }
 }
 
 export class CubcenAuthorizationError extends CubcenError {
-  constructor(message: string = 'Access denied', requestId?: string, details?: unknown) {
+  constructor(
+    message: string = 'Access denied',
+    requestId?: string,
+    details?: unknown
+  ) {
     super(message, 'AUTHORIZATION_ERROR', 403, requestId, details)
     this.name = 'CubcenAuthorizationError'
   }
 }
 
 export class CubcenValidationError extends CubcenError {
-  constructor(message: string = 'Validation failed', requestId?: string, details?: unknown) {
+  constructor(
+    message: string = 'Validation failed',
+    requestId?: string,
+    details?: unknown
+  ) {
     super(message, 'VALIDATION_ERROR', 400, requestId, details)
     this.name = 'CubcenValidationError'
   }
 }
 
 export class CubcenNotFoundError extends CubcenError {
-  constructor(message: string = 'Resource not found', requestId?: string, details?: unknown) {
+  constructor(
+    message: string = 'Resource not found',
+    requestId?: string,
+    details?: unknown
+  ) {
     super(message, 'NOT_FOUND_ERROR', 404, requestId, details)
     this.name = 'CubcenNotFoundError'
   }
 }
 
 export class CubcenConflictError extends CubcenError {
-  constructor(message: string = 'Resource conflict', requestId?: string, details?: unknown) {
+  constructor(
+    message: string = 'Resource conflict',
+    requestId?: string,
+    details?: unknown
+  ) {
     super(message, 'CONFLICT_ERROR', 409, requestId, details)
     this.name = 'CubcenConflictError'
   }
 }
 
 export class CubcenRateLimitError extends CubcenError {
-  constructor(message: string = 'Rate limit exceeded', requestId?: string, details?: unknown) {
+  constructor(
+    message: string = 'Rate limit exceeded',
+    requestId?: string,
+    details?: unknown
+  ) {
     super(message, 'RATE_LIMIT_ERROR', 429, requestId, details)
     this.name = 'CubcenRateLimitError'
   }
 }
 
 export class CubcenServerError extends CubcenError {
-  constructor(message: string = 'Internal server error', requestId?: string, details?: unknown) {
+  constructor(
+    message: string = 'Internal server error',
+    requestId?: string,
+    details?: unknown
+  ) {
     super(message, 'SERVER_ERROR', 500, requestId, details)
     this.name = 'CubcenServerError'
   }
 }
 
 export class CubcenNetworkError extends CubcenError {
-  constructor(message: string = 'Network error', requestId?: string, details?: unknown) {
+  constructor(
+    message: string = 'Network error',
+    requestId?: string,
+    details?: unknown
+  ) {
     super(message, 'NETWORK_ERROR', undefined, requestId, details)
     this.name = 'CubcenNetworkError'
   }
 }
 
 export class CubcenTimeoutError extends CubcenError {
-  constructor(message: string = 'Request timeout', requestId?: string, details?: unknown) {
+  constructor(
+    message: string = 'Request timeout',
+    requestId?: string,
+    details?: unknown
+  ) {
     super(message, 'TIMEOUT_ERROR', 408, requestId, details)
     this.name = 'CubcenTimeoutError'
   }

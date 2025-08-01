@@ -3,24 +3,28 @@
 
 import jwt from 'jsonwebtoken'
 import { randomBytes } from 'crypto'
-import { 
-  TokenPayload, 
-  RefreshTokenPayload, 
-  JWTConfig, 
+import {
+  TokenPayload,
+  RefreshTokenPayload,
+  JWTConfig,
   AuthToken,
   TokenExpiredError,
-  InvalidTokenError
+  InvalidTokenError,
 } from '@/types/auth'
 import { UserRole } from '@/types/auth'
 
 // JWT Configuration - should be loaded from environment variables
 function getJWTConfig(): JWTConfig {
   return {
-    accessTokenSecret: process.env.JWT_ACCESS_SECRET || 'cubcen-access-secret-change-in-production',
-    refreshTokenSecret: process.env.JWT_REFRESH_SECRET || 'cubcen-refresh-secret-change-in-production',
+    accessTokenSecret:
+      process.env.JWT_ACCESS_SECRET ||
+      'cubcen-access-secret-change-in-production',
+    refreshTokenSecret:
+      process.env.JWT_REFRESH_SECRET ||
+      'cubcen-refresh-secret-change-in-production',
     accessTokenExpiry: process.env.JWT_ACCESS_EXPIRY || '15m',
     refreshTokenExpiry: process.env.JWT_REFRESH_EXPIRY || '7d',
-    issuer: process.env.JWT_ISSUER || 'cubcen'
+    issuer: process.env.JWT_ISSUER || 'cubcen',
   }
 }
 
@@ -37,18 +41,22 @@ function generateTokenId(): string {
 /**
  * Create an access token for a user
  */
-export function createAccessToken(userId: string, email: string, role: UserRole): string {
+export function createAccessToken(
+  userId: string,
+  email: string,
+  role: UserRole
+): string {
   const config = getJWTConfig()
   const payload: Omit<TokenPayload, 'iat' | 'exp'> = {
     userId,
     email,
-    role
+    role,
   }
 
   return jwt.sign(payload, config.accessTokenSecret, {
     expiresIn: config.accessTokenExpiry,
     issuer: config.issuer,
-    subject: userId
+    subject: userId,
   } as jwt.SignOptions)
 }
 
@@ -60,24 +68,28 @@ export function createRefreshToken(userId: string): string {
   const tokenId = generateTokenId()
   const payload: Omit<RefreshTokenPayload, 'iat' | 'exp'> = {
     userId,
-    tokenId
+    tokenId,
   }
 
   return jwt.sign(payload, config.refreshTokenSecret, {
     expiresIn: config.refreshTokenExpiry,
     issuer: config.issuer,
-    subject: userId
+    subject: userId,
   } as jwt.SignOptions)
 }
 
 /**
  * Create both access and refresh tokens for a user
  */
-export function createTokenPair(userId: string, email: string, role: UserRole): AuthToken {
+export function createTokenPair(
+  userId: string,
+  email: string,
+  role: UserRole
+): AuthToken {
   const config = getJWTConfig()
   const accessToken = createAccessToken(userId, email, role)
   const refreshToken = createRefreshToken(userId)
-  
+
   // Calculate expiry time in seconds
   const expiresIn = getTokenExpirySeconds(config.accessTokenExpiry)
 
@@ -85,7 +97,7 @@ export function createTokenPair(userId: string, email: string, role: UserRole): 
     accessToken,
     refreshToken,
     expiresIn,
-    tokenType: 'Bearer'
+    tokenType: 'Bearer',
   }
 }
 
@@ -96,7 +108,7 @@ export function verifyAccessToken(token: string): TokenPayload {
   const config = getJWTConfig()
   try {
     const decoded = jwt.verify(token, config.accessTokenSecret, {
-      issuer: config.issuer
+      issuer: config.issuer,
     }) as TokenPayload
 
     return decoded
@@ -118,7 +130,7 @@ export function verifyRefreshToken(token: string): RefreshTokenPayload {
   const config = getJWTConfig()
   try {
     const decoded = jwt.verify(token, config.refreshTokenSecret, {
-      issuer: config.issuer
+      issuer: config.issuer,
     }) as RefreshTokenPayload
 
     return decoded
@@ -136,7 +148,9 @@ export function verifyRefreshToken(token: string): RefreshTokenPayload {
 /**
  * Extract token from Authorization header
  */
-export function extractTokenFromHeader(authHeader: string | undefined): string | null {
+export function extractTokenFromHeader(
+  authHeader: string | undefined
+): string | null {
   if (!authHeader) {
     return null
   }
@@ -152,7 +166,11 @@ export function extractTokenFromHeader(authHeader: string | undefined): string |
 /**
  * Generate a token for testing purposes
  */
-export function generateToken(userId: string, email: string, role: UserRole = UserRole.VIEWER): string {
+export function generateToken(
+  userId: string,
+  email: string,
+  role: UserRole = UserRole.VIEWER
+): string {
   return createAccessToken(userId, email, role)
 }
 
@@ -195,11 +213,16 @@ function getTokenExpirySeconds(expiryString: string): number {
   const unit = match[2]
 
   switch (unit) {
-    case 's': return value
-    case 'm': return value * 60
-    case 'h': return value * 60 * 60
-    case 'd': return value * 60 * 60 * 24
-    default: return 900
+    case 's':
+      return value
+    case 'm':
+      return value * 60
+    case 'h':
+      return value * 60 * 60
+    case 'd':
+      return value * 60 * 60 * 24
+    default:
+      return 900
   }
 }
 
@@ -221,7 +244,10 @@ export function getTokenRemainingTime(token: string): number | null {
 /**
  * Check if token needs refresh (expires within threshold)
  */
-export function shouldRefreshToken(token: string, thresholdSeconds: number = 300): boolean {
+export function shouldRefreshToken(
+  token: string,
+  thresholdSeconds: number = 300
+): boolean {
   const remaining = getTokenRemainingTime(token)
   return remaining === null || remaining <= thresholdSeconds
 }
@@ -230,25 +256,30 @@ export function shouldRefreshToken(token: string, thresholdSeconds: number = 300
  * Validate JWT configuration on startup
  */
 export function validateJWTConfig(): void {
-  const requiredEnvVars = [
-    'JWT_ACCESS_SECRET',
-    'JWT_REFRESH_SECRET'
-  ]
+  const requiredEnvVars = ['JWT_ACCESS_SECRET', 'JWT_REFRESH_SECRET']
 
   const missing = requiredEnvVars.filter(envVar => !process.env[envVar])
-  
+
   if (missing.length > 0) {
-    console.warn(`Warning: Missing JWT environment variables: ${missing.join(', ')}. Using default values (not secure for production).`)
+    console.warn(
+      `Warning: Missing JWT environment variables: ${missing.join(', ')}. Using default values (not secure for production).`
+    )
   }
 
   if (process.env.NODE_ENV === 'production') {
     if (!process.env.JWT_ACCESS_SECRET || !process.env.JWT_REFRESH_SECRET) {
       throw new Error('JWT secrets must be set in production environment')
     }
-    
-    if (process.env.JWT_ACCESS_SECRET === 'cubcen-access-secret-change-in-production' ||
-        process.env.JWT_REFRESH_SECRET === 'cubcen-refresh-secret-change-in-production') {
-      throw new Error('Default JWT secrets detected in production. Please set secure secrets.')
+
+    if (
+      process.env.JWT_ACCESS_SECRET ===
+        'cubcen-access-secret-change-in-production' ||
+      process.env.JWT_REFRESH_SECRET ===
+        'cubcen-refresh-secret-change-in-production'
+    ) {
+      throw new Error(
+        'Default JWT secrets detected in production. Please set secure secrets.'
+      )
     }
   }
 }

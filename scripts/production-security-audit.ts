@@ -42,7 +42,8 @@ interface AuditReport {
 
 class ProductionSecurityAuditor {
   private baseUrl: string
-  private results: Array<SecurityResult & { name: string; severity: string }> = []
+  private results: Array<SecurityResult & { name: string; severity: string }> =
+    []
 
   constructor(baseUrl: string = 'http://localhost:3000') {
     this.baseUrl = baseUrl
@@ -56,92 +57,92 @@ class ProductionSecurityAuditor {
         name: 'Environment Configuration Security',
         description: 'Validate production environment configuration',
         severity: 'critical',
-        check: () => this.checkEnvironmentSecurity()
+        check: () => this.checkEnvironmentSecurity(),
       },
       {
         name: 'JWT Secret Strength',
         description: 'Validate JWT secret strength and entropy',
         severity: 'critical',
-        check: () => this.checkJWTSecurity()
+        check: () => this.checkJWTSecurity(),
       },
       {
         name: 'Database Security Configuration',
         description: 'Check database security settings',
         severity: 'high',
-        check: () => this.checkDatabaseSecurity()
+        check: () => this.checkDatabaseSecurity(),
       },
       {
         name: 'HTTPS and TLS Configuration',
         description: 'Validate SSL/TLS configuration',
         severity: 'high',
-        check: () => this.checkHTTPSSecurity()
+        check: () => this.checkHTTPSSecurity(),
       },
       {
         name: 'Security Headers',
         description: 'Validate security headers implementation',
         severity: 'high',
-        check: () => this.checkSecurityHeaders()
+        check: () => this.checkSecurityHeaders(),
       },
       {
         name: 'Authentication Security',
         description: 'Test authentication mechanisms',
         severity: 'critical',
-        check: () => this.checkAuthenticationSecurity()
+        check: () => this.checkAuthenticationSecurity(),
       },
       {
         name: 'Input Validation Security',
         description: 'Test input validation and sanitization',
         severity: 'high',
-        check: () => this.checkInputValidation()
+        check: () => this.checkInputValidation(),
       },
       {
         name: 'Rate Limiting',
         description: 'Validate rate limiting implementation',
         severity: 'medium',
-        check: () => this.checkRateLimiting()
+        check: () => this.checkRateLimiting(),
       },
       {
         name: 'File Permissions',
         description: 'Check file and directory permissions',
         severity: 'medium',
-        check: () => this.checkFilePermissions()
+        check: () => this.checkFilePermissions(),
       },
       {
         name: 'Dependency Vulnerabilities',
         description: 'Scan for vulnerable dependencies',
         severity: 'high',
-        check: () => this.checkDependencyVulnerabilities()
+        check: () => this.checkDependencyVulnerabilities(),
       },
       {
         name: 'Docker Security',
         description: 'Validate Docker container security',
         severity: 'medium',
-        check: () => this.checkDockerSecurity()
+        check: () => this.checkDockerSecurity(),
       },
       {
         name: 'Logging Security',
         description: 'Check for sensitive data in logs',
         severity: 'medium',
-        check: () => this.checkLoggingSecurity()
+        check: () => this.checkLoggingSecurity(),
       },
       {
         name: 'API Security',
         description: 'Test API security controls',
         severity: 'high',
-        check: () => this.checkAPISecurity()
+        check: () => this.checkAPISecurity(),
       },
       {
         name: 'Session Security',
         description: 'Validate session management security',
         severity: 'high',
-        check: () => this.checkSessionSecurity()
+        check: () => this.checkSessionSecurity(),
       },
       {
         name: 'Information Disclosure',
         description: 'Check for information disclosure vulnerabilities',
         severity: 'medium',
-        check: () => this.checkInformationDisclosure()
-      }
+        check: () => this.checkInformationDisclosure(),
+      },
     ]
 
     // Run all security checks
@@ -149,21 +150,33 @@ class ProductionSecurityAuditor {
       try {
         console.log(`🔍 Running: ${check.name}`)
         console.log(`   ${check.description}`)
-        
+
         const result = await check.check()
-        this.results.push({ ...result, name: check.name, severity: check.severity })
-        
+        this.results.push({
+          ...result,
+          name: check.name,
+          severity: check.severity,
+        })
+
         const status = result.passed ? '✅ PASS' : '❌ FAIL'
-        const severity = result.passed ? '' : ` [${check.severity.toUpperCase()}]`
+        const severity = result.passed
+          ? ''
+          : ` [${check.severity.toUpperCase()}]`
         console.log(`   ${status}${severity}: ${result.message}\n`)
-        
       } catch (error) {
         const errorResult: SecurityResult = {
           passed: false,
           message: `Security check failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-          recommendations: ['Review the security check implementation', 'Ensure all dependencies are available']
+          recommendations: [
+            'Review the security check implementation',
+            'Ensure all dependencies are available',
+          ],
         }
-        this.results.push({ ...errorResult, name: check.name, severity: check.severity })
+        this.results.push({
+          ...errorResult,
+          name: check.name,
+          severity: check.severity,
+        })
         console.log(`   ❌ ERROR: ${errorResult.message}\n`)
       }
     }
@@ -174,9 +187,13 @@ class ProductionSecurityAuditor {
     this.displaySummary(report)
 
     // Exit with appropriate code
-    const criticalFailures = this.results.filter(r => !r.passed && r.severity === 'critical')
-    const highFailures = this.results.filter(r => !r.passed && r.severity === 'high')
-    
+    const criticalFailures = this.results.filter(
+      r => !r.passed && r.severity === 'critical'
+    )
+    const highFailures = this.results.filter(
+      r => !r.passed && r.severity === 'high'
+    )
+
     if (criticalFailures.length > 0 || highFailures.length > 2) {
       console.log('\n❌ SECURITY AUDIT FAILED - Deployment blocked!')
       process.exit(1)
@@ -204,13 +221,17 @@ class ProductionSecurityAuditor {
         const mode = stats.mode & parseInt('777', 8)
         if (mode & parseInt('044', 8)) {
           issues.push('.env file is readable by group/others')
-          recommendations.push('Set .env file permissions to 600 (owner read/write only)')
+          recommendations.push(
+            'Set .env file permissions to 600 (owner read/write only)'
+          )
         }
       }
 
       // Check NODE_ENV
       if (process.env.NODE_ENV !== 'production') {
-        issues.push(`NODE_ENV is '${process.env.NODE_ENV}', should be 'production'`)
+        issues.push(
+          `NODE_ENV is '${process.env.NODE_ENV}', should be 'production'`
+        )
         recommendations.push('Set NODE_ENV=production in environment')
       }
 
@@ -226,7 +247,7 @@ class ProductionSecurityAuditor {
       // Check for default/weak values
       const defaultValues = {
         JWT_SECRET: ['your-super-secret-jwt-key', 'change-me', 'secret'],
-        DATABASE_URL: ['file:./dev.db', 'sqlite://dev.db']
+        DATABASE_URL: ['file:./dev.db', 'sqlite://dev.db'],
       }
 
       for (const [key, defaults] of Object.entries(defaultValues)) {
@@ -239,15 +260,18 @@ class ProductionSecurityAuditor {
 
       return {
         passed: issues.length === 0,
-        message: issues.length === 0 ? 'Environment configuration is secure' : `Found ${issues.length} configuration issues`,
+        message:
+          issues.length === 0
+            ? 'Environment configuration is secure'
+            : `Found ${issues.length} configuration issues`,
         details: { issues },
-        recommendations
+        recommendations,
       }
     } catch (error) {
       return {
         passed: false,
         message: `Environment check failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        recommendations: ['Ensure .env file exists and is readable']
+        recommendations: ['Ensure .env file exists and is readable'],
       }
     }
   }
@@ -261,47 +285,58 @@ class ProductionSecurityAuditor {
       return {
         passed: false,
         message: 'JWT_SECRET not configured',
-        recommendations: ['Set a strong JWT_SECRET in environment variables']
+        recommendations: ['Set a strong JWT_SECRET in environment variables'],
       }
     }
 
     // Check length
     if (jwtSecret.length < 32) {
-      issues.push(`JWT secret is too short (${jwtSecret.length} chars, minimum 32)`)
+      issues.push(
+        `JWT secret is too short (${jwtSecret.length} chars, minimum 32)`
+      )
       recommendations.push('Use a JWT secret of at least 32 characters')
     }
 
     // Check entropy
     const entropy = this.calculateEntropy(jwtSecret)
     if (entropy < 4.0) {
-      issues.push(`JWT secret has low entropy (${entropy.toFixed(2)}, minimum 4.0)`)
-      recommendations.push('Use a JWT secret with high entropy (random characters)')
+      issues.push(
+        `JWT secret has low entropy (${entropy.toFixed(2)}, minimum 4.0)`
+      )
+      recommendations.push(
+        'Use a JWT secret with high entropy (random characters)'
+      )
     }
 
     // Check for common patterns
     const commonPatterns = [
       /^(.)\1+$/, // Repeated characters
       /^(abc|123|qwe)/i, // Common sequences
-      /password|secret|key/i // Common words
+      /password|secret|key/i, // Common words
     ]
 
     for (const pattern of commonPatterns) {
       if (pattern.test(jwtSecret)) {
         issues.push('JWT secret contains predictable patterns')
-        recommendations.push('Generate a random JWT secret using cryptographically secure methods')
+        recommendations.push(
+          'Generate a random JWT secret using cryptographically secure methods'
+        )
         break
       }
     }
 
     return {
       passed: issues.length === 0,
-      message: issues.length === 0 ? 'JWT secret is secure' : `JWT secret has ${issues.length} security issues`,
-      details: { 
-        length: jwtSecret.length, 
+      message:
+        issues.length === 0
+          ? 'JWT secret is secure'
+          : `JWT secret has ${issues.length} security issues`,
+      details: {
+        length: jwtSecret.length,
         entropy: entropy.toFixed(2),
-        issues 
+        issues,
       },
-      recommendations
+      recommendations,
     }
   }
 
@@ -327,25 +362,32 @@ class ProductionSecurityAuditor {
 
     try {
       const databaseUrl = process.env.DATABASE_URL
-      
+
       if (!databaseUrl) {
         return {
           passed: false,
           message: 'DATABASE_URL not configured',
-          recommendations: ['Configure DATABASE_URL in environment variables']
+          recommendations: ['Configure DATABASE_URL in environment variables'],
         }
       }
 
       // Check for SQLite in production
       if (databaseUrl.includes('file:') || databaseUrl.includes('sqlite:')) {
         issues.push('Using SQLite database in production')
-        recommendations.push('Consider using PostgreSQL or MySQL for production')
+        recommendations.push(
+          'Consider using PostgreSQL or MySQL for production'
+        )
       }
 
       // Check for embedded credentials
-      if (databaseUrl.includes('password') && !databaseUrl.includes('localhost')) {
+      if (
+        databaseUrl.includes('password') &&
+        !databaseUrl.includes('localhost')
+      ) {
         issues.push('Database URL may contain embedded credentials')
-        recommendations.push('Use environment variables for database credentials')
+        recommendations.push(
+          'Use environment variables for database credentials'
+        )
       }
 
       // Check for default database names
@@ -357,15 +399,18 @@ class ProductionSecurityAuditor {
 
       return {
         passed: issues.length === 0,
-        message: issues.length === 0 ? 'Database configuration is secure' : `Found ${issues.length} database security issues`,
+        message:
+          issues.length === 0
+            ? 'Database configuration is secure'
+            : `Found ${issues.length} database security issues`,
         details: { issues },
-        recommendations
+        recommendations,
       }
     } catch (error) {
       return {
         passed: false,
         message: `Database security check failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        recommendations: ['Verify database configuration']
+        recommendations: ['Verify database configuration'],
       }
     }
   }
@@ -378,11 +423,14 @@ class ProductionSecurityAuditor {
       // Check if HTTPS is enforced
       const response = await axios.get(`${this.baseUrl}/api/cubcen/v1/health`, {
         validateStatus: () => true,
-        timeout: 5000
+        timeout: 5000,
       })
 
       // Check if running on HTTP in production
-      if (this.baseUrl.startsWith('http://') && process.env.NODE_ENV === 'production') {
+      if (
+        this.baseUrl.startsWith('http://') &&
+        process.env.NODE_ENV === 'production'
+      ) {
         issues.push('Application is running on HTTP in production')
         recommendations.push('Configure HTTPS with valid SSL certificate')
       }
@@ -396,15 +444,20 @@ class ProductionSecurityAuditor {
 
       return {
         passed: issues.length === 0,
-        message: issues.length === 0 ? 'HTTPS configuration is secure' : `Found ${issues.length} HTTPS security issues`,
+        message:
+          issues.length === 0
+            ? 'HTTPS configuration is secure'
+            : `Found ${issues.length} HTTPS security issues`,
         details: { issues, headers: Object.keys(headers) },
-        recommendations
+        recommendations,
       }
     } catch (error) {
       return {
         passed: false,
         message: `HTTPS security check failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        recommendations: ['Ensure application is accessible for security testing']
+        recommendations: [
+          'Ensure application is accessible for security testing',
+        ],
       }
     }
   }
@@ -416,7 +469,7 @@ class ProductionSecurityAuditor {
     try {
       const response = await axios.get(`${this.baseUrl}/api/cubcen/v1/health`, {
         validateStatus: () => true,
-        timeout: 5000
+        timeout: 5000,
       })
 
       const headers = response.headers
@@ -425,19 +478,21 @@ class ProductionSecurityAuditor {
         'x-frame-options': ['DENY', 'SAMEORIGIN'],
         'x-xss-protection': '1; mode=block',
         'referrer-policy': ['strict-origin-when-cross-origin', 'no-referrer'],
-        'content-security-policy': null // Just check presence
+        'content-security-policy': null, // Just check presence
       }
 
       for (const [header, expectedValues] of Object.entries(requiredHeaders)) {
         const actualValue = headers[header]
-        
+
         if (!actualValue) {
           issues.push(`Missing security header: ${header}`)
           recommendations.push(`Add ${header} header`)
         } else if (expectedValues && Array.isArray(expectedValues)) {
           if (!expectedValues.includes(actualValue)) {
             issues.push(`Incorrect value for ${header}: ${actualValue}`)
-            recommendations.push(`Set ${header} to one of: ${expectedValues.join(', ')}`)
+            recommendations.push(
+              `Set ${header} to one of: ${expectedValues.join(', ')}`
+            )
           }
         } else if (expectedValues && actualValue !== expectedValues) {
           issues.push(`Incorrect value for ${header}: ${actualValue}`)
@@ -456,15 +511,20 @@ class ProductionSecurityAuditor {
 
       return {
         passed: issues.length === 0,
-        message: issues.length === 0 ? 'Security headers are properly configured' : `Found ${issues.length} security header issues`,
+        message:
+          issues.length === 0
+            ? 'Security headers are properly configured'
+            : `Found ${issues.length} security header issues`,
         details: { issues, presentHeaders: Object.keys(headers) },
-        recommendations
+        recommendations,
       }
     } catch (error) {
       return {
         passed: false,
         message: `Security headers check failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        recommendations: ['Ensure application is accessible for header testing']
+        recommendations: [
+          'Ensure application is accessible for header testing',
+        ],
       }
     }
   }
@@ -475,22 +535,30 @@ class ProductionSecurityAuditor {
 
     try {
       // Test 1: Access protected endpoint without authentication
-      const unauthResponse = await axios.get(`${this.baseUrl}/api/cubcen/v1/users`, {
-        validateStatus: () => true,
-        timeout: 5000
-      })
+      const unauthResponse = await axios.get(
+        `${this.baseUrl}/api/cubcen/v1/users`,
+        {
+          validateStatus: () => true,
+          timeout: 5000,
+        }
+      )
 
       if (unauthResponse.status === 200) {
         issues.push('Protected endpoint accessible without authentication')
-        recommendations.push('Implement authentication middleware for protected routes')
+        recommendations.push(
+          'Implement authentication middleware for protected routes'
+        )
       }
 
       // Test 2: Test with invalid token
-      const invalidTokenResponse = await axios.get(`${this.baseUrl}/api/cubcen/v1/users`, {
-        headers: { Authorization: 'Bearer invalid-token-12345' },
-        validateStatus: () => true,
-        timeout: 5000
-      })
+      const invalidTokenResponse = await axios.get(
+        `${this.baseUrl}/api/cubcen/v1/users`,
+        {
+          headers: { Authorization: 'Bearer invalid-token-12345' },
+          validateStatus: () => true,
+          timeout: 5000,
+        }
+      )
 
       if (invalidTokenResponse.status === 200) {
         issues.push('Invalid JWT token accepted')
@@ -498,26 +566,38 @@ class ProductionSecurityAuditor {
       }
 
       // Test 3: Test login endpoint security
-      const loginResponse = await axios.post(`${this.baseUrl}/api/cubcen/v1/auth/login`, {
-        email: 'nonexistent@example.com',
-        password: 'wrongpassword'
-      }, {
-        validateStatus: () => true,
-        timeout: 5000
-      })
+      const loginResponse = await axios.post(
+        `${this.baseUrl}/api/cubcen/v1/auth/login`,
+        {
+          email: 'nonexistent@example.com',
+          password: 'wrongpassword',
+        },
+        {
+          validateStatus: () => true,
+          timeout: 5000,
+        }
+      )
 
       // Should not reveal whether user exists
-      if (loginResponse.data && (loginResponse.data as any).message && 
-          (loginResponse.data as any).message.toLowerCase().includes('user not found')) {
+      if (
+        loginResponse.data &&
+        (loginResponse.data as any).message &&
+        (loginResponse.data as any).message
+          .toLowerCase()
+          .includes('user not found')
+      ) {
         issues.push('Login endpoint reveals user existence')
         recommendations.push('Use generic error messages for login failures')
       }
 
       return {
         passed: issues.length === 0,
-        message: issues.length === 0 ? 'Authentication security is properly configured' : `Found ${issues.length} authentication security issues`,
+        message:
+          issues.length === 0
+            ? 'Authentication security is properly configured'
+            : `Found ${issues.length} authentication security issues`,
         details: { issues },
-        recommendations
+        recommendations,
       }
     } catch (error) {
       // If endpoints don't exist, that's not necessarily a security issue
@@ -525,14 +605,16 @@ class ProductionSecurityAuditor {
         return {
           passed: true,
           message: 'Authentication endpoints not available for testing',
-          details: { note: 'Endpoints may not be implemented yet' }
+          details: { note: 'Endpoints may not be implemented yet' },
         }
       }
 
       return {
         passed: false,
         message: `Authentication security check failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        recommendations: ['Ensure authentication endpoints are accessible for testing']
+        recommendations: [
+          'Ensure authentication endpoints are accessible for testing',
+        ],
       }
     }
   }
@@ -547,24 +629,30 @@ class ProductionSecurityAuditor {
         { name: 'SQL Injection', payload: "'; DROP TABLE users; --" },
         { name: 'Path Traversal', payload: '../../etc/passwd' },
         { name: 'Command Injection', payload: '; cat /etc/passwd' },
-        { name: 'LDAP Injection', payload: '*)(uid=*))(|(uid=*' }
+        { name: 'LDAP Injection', payload: '*)(uid=*))(|(uid=*' },
       ]
 
       for (const input of maliciousInputs) {
         try {
-          const response = await axios.post(`${this.baseUrl}/api/cubcen/v1/test`, {
-            input: input.payload
-          }, {
-            validateStatus: () => true,
-            timeout: 5000
-          })
+          const response = await axios.post(
+            `${this.baseUrl}/api/cubcen/v1/test`,
+            {
+              input: input.payload,
+            },
+            {
+              validateStatus: () => true,
+              timeout: 5000,
+            }
+          )
 
           // Check if malicious input is reflected without sanitization
           if (response.data && typeof response.data === 'object') {
             const responseStr = JSON.stringify(response.data)
             if (responseStr.includes(input.payload)) {
               issues.push(`${input.name} payload not sanitized`)
-              recommendations.push(`Implement input sanitization for ${input.name}`)
+              recommendations.push(
+                `Implement input sanitization for ${input.name}`
+              )
             }
           }
         } catch (error) {
@@ -574,15 +662,18 @@ class ProductionSecurityAuditor {
 
       return {
         passed: issues.length === 0,
-        message: issues.length === 0 ? 'Input validation appears secure' : `Found ${issues.length} input validation issues`,
+        message:
+          issues.length === 0
+            ? 'Input validation appears secure'
+            : `Found ${issues.length} input validation issues`,
         details: { issues },
-        recommendations
+        recommendations,
       }
     } catch (error) {
       return {
         passed: true,
         message: 'Input validation test endpoints not available',
-        details: { note: 'Test endpoints may not be implemented' }
+        details: { note: 'Test endpoints may not be implemented' },
       }
     }
   }
@@ -598,10 +689,12 @@ class ProductionSecurityAuditor {
       // Make multiple rapid requests
       for (let i = 0; i < 20; i++) {
         requests.push(
-          axios.get(endpoint, {
-            validateStatus: () => true,
-            timeout: 2000
-          }).catch(() => ({ status: 0 }))
+          axios
+            .get(endpoint, {
+              validateStatus: () => true,
+              timeout: 2000,
+            })
+            .catch(() => ({ status: 0 }))
         )
       }
 
@@ -615,18 +708,23 @@ class ProductionSecurityAuditor {
 
       return {
         passed: issues.length === 0,
-        message: issues.length === 0 ? 'Rate limiting is working' : 'Rate limiting may not be implemented',
-        details: { 
-          totalRequests: requests.length, 
-          rateLimitedCount: rateLimitedResponses.length 
+        message:
+          issues.length === 0
+            ? 'Rate limiting is working'
+            : 'Rate limiting may not be implemented',
+        details: {
+          totalRequests: requests.length,
+          rateLimitedCount: rateLimitedResponses.length,
         },
-        recommendations
+        recommendations,
       }
     } catch (error) {
       return {
         passed: true,
         message: 'Rate limiting test could not be completed',
-        details: { error: error instanceof Error ? error.message : 'Unknown error' }
+        details: {
+          error: error instanceof Error ? error.message : 'Unknown error',
+        },
       }
     }
   }
@@ -644,22 +742,22 @@ class ProductionSecurityAuditor {
         '.env',
         'package.json',
         'docker-compose.yml',
-        'prisma/schema.prisma'
+        'prisma/schema.prisma',
       ]
 
       for (const file of criticalFiles) {
         if (existsSync(file)) {
           const stats = fs.statSync(file)
           const mode = stats.mode & parseInt('777', 8)
-          
+
           // Check if world-writable
           if (mode & parseInt('002', 8)) {
             issues.push(`${file} is world-writable`)
             recommendations.push(`Remove world-write permission from ${file}`)
           }
-          
+
           // Check if .env is readable by others
-          if (file === '.env' && (mode & parseInt('044', 8))) {
+          if (file === '.env' && mode & parseInt('044', 8)) {
             issues.push(`${file} is readable by group/others`)
             recommendations.push(`Set ${file} permissions to 600`)
           }
@@ -672,7 +770,7 @@ class ProductionSecurityAuditor {
         if (existsSync(dir)) {
           const stats = fs.statSync(dir)
           const mode = stats.mode & parseInt('777', 8)
-          
+
           if (mode & parseInt('002', 8)) {
             issues.push(`${dir}/ directory is world-writable`)
             recommendations.push(`Remove world-write permission from ${dir}/`)
@@ -682,15 +780,20 @@ class ProductionSecurityAuditor {
 
       return {
         passed: issues.length === 0,
-        message: issues.length === 0 ? 'File permissions are secure' : `Found ${issues.length} file permission issues`,
+        message:
+          issues.length === 0
+            ? 'File permissions are secure'
+            : `Found ${issues.length} file permission issues`,
         details: { issues },
-        recommendations
+        recommendations,
       }
     } catch (error) {
       return {
         passed: false,
         message: `File permissions check failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        recommendations: ['Ensure file system is accessible for permission checking']
+        recommendations: [
+          'Ensure file system is accessible for permission checking',
+        ],
       }
     }
   }
@@ -701,47 +804,59 @@ class ProductionSecurityAuditor {
 
     try {
       // Run npm audit
-      const auditOutput = execSync('npm audit --json', { 
+      const auditOutput = execSync('npm audit --json', {
         encoding: 'utf8',
-        cwd: process.cwd()
+        cwd: process.cwd(),
       })
 
       const auditResult = JSON.parse(auditOutput)
-      
+
       if (auditResult.vulnerabilities) {
         const vulnCount = Object.keys(auditResult.vulnerabilities).length
-        const highVulns = Object.values(auditResult.vulnerabilities)
-          .filter((v: any) => v.severity === 'high' || v.severity === 'critical').length
+        const highVulns = Object.values(auditResult.vulnerabilities).filter(
+          (v: any) => v.severity === 'high' || v.severity === 'critical'
+        ).length
 
         if (vulnCount > 0) {
-          issues.push(`Found ${vulnCount} dependency vulnerabilities (${highVulns} high/critical)`)
+          issues.push(
+            `Found ${vulnCount} dependency vulnerabilities (${highVulns} high/critical)`
+          )
           recommendations.push('Run npm audit fix to resolve vulnerabilities')
-          recommendations.push('Update vulnerable dependencies to secure versions')
+          recommendations.push(
+            'Update vulnerable dependencies to secure versions'
+          )
         }
       }
 
       return {
         passed: issues.length === 0,
-        message: issues.length === 0 ? 'No dependency vulnerabilities found' : `Found dependency vulnerabilities`,
-        details: { 
-          vulnerabilityCount: auditResult.vulnerabilities ? Object.keys(auditResult.vulnerabilities).length : 0,
-          issues 
+        message:
+          issues.length === 0
+            ? 'No dependency vulnerabilities found'
+            : `Found dependency vulnerabilities`,
+        details: {
+          vulnerabilityCount: auditResult.vulnerabilities
+            ? Object.keys(auditResult.vulnerabilities).length
+            : 0,
+          issues,
         },
-        recommendations
+        recommendations,
       }
     } catch (error) {
       // npm audit returns non-zero exit code when vulnerabilities are found
       if (error instanceof Error && 'stdout' in error) {
         try {
           const auditResult = JSON.parse((error as any).stdout)
-          const vulnCount = auditResult.vulnerabilities ? Object.keys(auditResult.vulnerabilities).length : 0
-          
+          const vulnCount = auditResult.vulnerabilities
+            ? Object.keys(auditResult.vulnerabilities).length
+            : 0
+
           if (vulnCount > 0) {
             return {
               passed: false,
               message: `Found ${vulnCount} dependency vulnerabilities`,
               details: { vulnerabilityCount: vulnCount },
-              recommendations: ['Run npm audit fix to resolve vulnerabilities']
+              recommendations: ['Run npm audit fix to resolve vulnerabilities'],
             }
           }
         } catch (parseError) {
@@ -752,7 +867,7 @@ class ProductionSecurityAuditor {
       return {
         passed: false,
         message: `Dependency vulnerability check failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        recommendations: ['Ensure npm is available and package.json exists']
+        recommendations: ['Ensure npm is available and package.json exists'],
       }
     }
   }
@@ -765,19 +880,19 @@ class ProductionSecurityAuditor {
       // Check if Dockerfile exists and analyze it
       if (existsSync('Dockerfile')) {
         const dockerfile = readFileSync('Dockerfile', 'utf8')
-        
+
         // Check for running as root
         if (!dockerfile.includes('USER ') || dockerfile.includes('USER root')) {
           issues.push('Docker container may be running as root')
           recommendations.push('Add non-root user in Dockerfile')
         }
-        
+
         // Check for COPY --chown usage
         if (dockerfile.includes('COPY ') && !dockerfile.includes('--chown=')) {
           issues.push('Docker COPY commands should use --chown for security')
           recommendations.push('Use COPY --chown=user:group syntax')
         }
-        
+
         // Check for health check
         if (!dockerfile.includes('HEALTHCHECK')) {
           issues.push('Docker container lacks health check')
@@ -790,15 +905,18 @@ class ProductionSecurityAuditor {
 
       return {
         passed: issues.length === 0,
-        message: issues.length === 0 ? 'Docker configuration is secure' : `Found ${issues.length} Docker security issues`,
+        message:
+          issues.length === 0
+            ? 'Docker configuration is secure'
+            : `Found ${issues.length} Docker security issues`,
         details: { issues },
-        recommendations
+        recommendations,
       }
     } catch (error) {
       return {
         passed: false,
         message: `Docker security check failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        recommendations: ['Ensure Dockerfile is readable']
+        recommendations: ['Ensure Dockerfile is readable'],
       }
     }
   }
@@ -815,23 +933,28 @@ class ProductionSecurityAuditor {
         /secret["\s]*[:=]["\s]*[^"\s]+/gi,
         /token["\s]*[:=]["\s]*[^"\s]+/gi,
         /api[_-]?key["\s]*[:=]["\s]*[^"\s]+/gi,
-        /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g // Email addresses
+        /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g, // Email addresses
       ]
 
       for (const logDir of logDirs) {
         if (existsSync(logDir)) {
           const fs = require('fs')
-          const files = fs.readdirSync(logDir).filter((f: string) => f.endsWith('.log'))
-          
-          for (const file of files.slice(0, 5)) { // Check only recent log files
+          const files = fs
+            .readdirSync(logDir)
+            .filter((f: string) => f.endsWith('.log'))
+
+          for (const file of files.slice(0, 5)) {
+            // Check only recent log files
             try {
               const content = readFileSync(join(logDir, file), 'utf8')
               const lines = content.split('\n').slice(-100) // Check last 100 lines
-              
+
               for (const pattern of sensitivePatterns) {
                 if (lines.some(line => pattern.test(line))) {
                   issues.push(`Potential sensitive data found in ${file}`)
-                  recommendations.push('Review logging configuration to prevent sensitive data exposure')
+                  recommendations.push(
+                    'Review logging configuration to prevent sensitive data exposure'
+                  )
                   break
                 }
               }
@@ -844,15 +967,20 @@ class ProductionSecurityAuditor {
 
       return {
         passed: issues.length === 0,
-        message: issues.length === 0 ? 'Logging security is acceptable' : `Found ${issues.length} logging security issues`,
+        message:
+          issues.length === 0
+            ? 'Logging security is acceptable'
+            : `Found ${issues.length} logging security issues`,
         details: { issues },
-        recommendations
+        recommendations,
       }
     } catch (error) {
       return {
         passed: true,
         message: 'Logging security check could not be completed',
-        details: { error: error instanceof Error ? error.message : 'Unknown error' }
+        details: {
+          error: error instanceof Error ? error.message : 'Unknown error',
+        },
       }
     }
   }
@@ -863,10 +991,13 @@ class ProductionSecurityAuditor {
 
     try {
       // Test API versioning
-      const versionResponse = await axios.get(`${this.baseUrl}/api/cubcen/v999/health`, {
-        validateStatus: () => true,
-        timeout: 5000
-      })
+      const versionResponse = await axios.get(
+        `${this.baseUrl}/api/cubcen/v999/health`,
+        {
+          validateStatus: () => true,
+          timeout: 5000,
+        }
+      )
 
       if (versionResponse.status === 200) {
         issues.push('API accepts invalid version numbers')
@@ -879,10 +1010,13 @@ class ProductionSecurityAuditor {
         try {
           const docResponse = await axios.get(`${this.baseUrl}${endpoint}`, {
             validateStatus: () => true,
-            timeout: 3000
+            timeout: 3000,
           })
 
-          if (docResponse.status === 200 && process.env.NODE_ENV === 'production') {
+          if (
+            docResponse.status === 200 &&
+            process.env.NODE_ENV === 'production'
+          ) {
             issues.push(`API documentation exposed at ${endpoint}`)
             recommendations.push('Disable API documentation in production')
           }
@@ -893,15 +1027,20 @@ class ProductionSecurityAuditor {
 
       return {
         passed: issues.length === 0,
-        message: issues.length === 0 ? 'API security is properly configured' : `Found ${issues.length} API security issues`,
+        message:
+          issues.length === 0
+            ? 'API security is properly configured'
+            : `Found ${issues.length} API security issues`,
         details: { issues },
-        recommendations
+        recommendations,
       }
     } catch (error) {
       return {
         passed: true,
         message: 'API security check could not be completed',
-        details: { error: error instanceof Error ? error.message : 'Unknown error' }
+        details: {
+          error: error instanceof Error ? error.message : 'Unknown error',
+        },
       }
     }
   }
@@ -913,27 +1052,34 @@ class ProductionSecurityAuditor {
     try {
       const response = await axios.get(`${this.baseUrl}/api/cubcen/v1/health`, {
         validateStatus: () => true,
-        timeout: 5000
+        timeout: 5000,
       })
 
       const setCookieHeader = response.headers['set-cookie']
-      
+
       if (setCookieHeader) {
-        const cookies = Array.isArray(setCookieHeader) ? setCookieHeader : [setCookieHeader]
-        
+        const cookies = Array.isArray(setCookieHeader)
+          ? setCookieHeader
+          : [setCookieHeader]
+
         for (const cookie of cookies) {
           // Check for HttpOnly flag
           if (!cookie.includes('HttpOnly')) {
             issues.push('Session cookie missing HttpOnly flag')
             recommendations.push('Add HttpOnly flag to session cookies')
           }
-          
+
           // Check for Secure flag in production
-          if (process.env.NODE_ENV === 'production' && !cookie.includes('Secure')) {
+          if (
+            process.env.NODE_ENV === 'production' &&
+            !cookie.includes('Secure')
+          ) {
             issues.push('Session cookie missing Secure flag in production')
-            recommendations.push('Add Secure flag to session cookies in production')
+            recommendations.push(
+              'Add Secure flag to session cookies in production'
+            )
           }
-          
+
           // Check for SameSite attribute
           if (!cookie.includes('SameSite')) {
             issues.push('Session cookie missing SameSite attribute')
@@ -944,15 +1090,20 @@ class ProductionSecurityAuditor {
 
       return {
         passed: issues.length === 0,
-        message: issues.length === 0 ? 'Session security is properly configured' : `Found ${issues.length} session security issues`,
+        message:
+          issues.length === 0
+            ? 'Session security is properly configured'
+            : `Found ${issues.length} session security issues`,
         details: { issues },
-        recommendations
+        recommendations,
       }
     } catch (error) {
       return {
         passed: true,
         message: 'Session security check could not be completed',
-        details: { error: error instanceof Error ? error.message : 'Unknown error' }
+        details: {
+          error: error instanceof Error ? error.message : 'Unknown error',
+        },
       }
     }
   }
@@ -969,14 +1120,14 @@ class ProductionSecurityAuditor {
         '/api/cubcen/v1/config',
         '/api/cubcen/v1/debug',
         '/server-status',
-        '/info'
+        '/info',
       ]
 
       for (const endpoint of sensitiveEndpoints) {
         try {
           const response = await axios.get(`${this.baseUrl}${endpoint}`, {
             validateStatus: () => true,
-            timeout: 3000
+            timeout: 3000,
           })
 
           if (response.status === 200) {
@@ -990,15 +1141,20 @@ class ProductionSecurityAuditor {
 
       return {
         passed: issues.length === 0,
-        message: issues.length === 0 ? 'No information disclosure vulnerabilities found' : `Found ${issues.length} information disclosure issues`,
+        message:
+          issues.length === 0
+            ? 'No information disclosure vulnerabilities found'
+            : `Found ${issues.length} information disclosure issues`,
         details: { issues },
-        recommendations
+        recommendations,
       }
     } catch (error) {
       return {
         passed: true,
         message: 'Information disclosure check could not be completed',
-        details: { error: error instanceof Error ? error.message : 'Unknown error' }
+        details: {
+          error: error instanceof Error ? error.message : 'Unknown error',
+        },
       }
     }
   }
@@ -1006,10 +1162,18 @@ class ProductionSecurityAuditor {
   private generateReport(): AuditReport {
     const passed = this.results.filter(r => r.passed).length
     const failed = this.results.filter(r => !r.passed).length
-    const critical = this.results.filter(r => !r.passed && r.severity === 'critical').length
-    const high = this.results.filter(r => !r.passed && r.severity === 'high').length
-    const medium = this.results.filter(r => !r.passed && r.severity === 'medium').length
-    const low = this.results.filter(r => !r.passed && r.severity === 'low').length
+    const critical = this.results.filter(
+      r => !r.passed && r.severity === 'critical'
+    ).length
+    const high = this.results.filter(
+      r => !r.passed && r.severity === 'high'
+    ).length
+    const medium = this.results.filter(
+      r => !r.passed && r.severity === 'medium'
+    ).length
+    const low = this.results.filter(
+      r => !r.passed && r.severity === 'low'
+    ).length
 
     let overallStatus: 'pass' | 'fail' | 'warning' = 'pass'
     if (critical > 0 || high > 2) {
@@ -1028,9 +1192,9 @@ class ProductionSecurityAuditor {
         critical,
         high,
         medium,
-        low
+        low,
       },
-      results: this.results
+      results: this.results,
     }
   }
 
@@ -1047,23 +1211,29 @@ class ProductionSecurityAuditor {
 
     console.log(`\n📊 OVERALL STATUS: ${report.overallStatus.toUpperCase()}`)
     console.log(`📅 Audit Date: ${new Date(report.timestamp).toLocaleString()}`)
-    
+
     console.log(`\n📈 RESULTS SUMMARY:`)
     console.log(`   Total Checks: ${report.summary.total}`)
     console.log(`   Passed: ${report.summary.passed} ✅`)
     console.log(`   Failed: ${report.summary.failed} ❌`)
-    
+
     if (report.summary.failed > 0) {
       console.log(`\n🚨 FAILURES BY SEVERITY:`)
-      if (report.summary.critical > 0) console.log(`   Critical: ${report.summary.critical} 🔴`)
-      if (report.summary.high > 0) console.log(`   High: ${report.summary.high} 🟠`)
-      if (report.summary.medium > 0) console.log(`   Medium: ${report.summary.medium} 🟡`)
-      if (report.summary.low > 0) console.log(`   Low: ${report.summary.low} 🔵`)
+      if (report.summary.critical > 0)
+        console.log(`   Critical: ${report.summary.critical} 🔴`)
+      if (report.summary.high > 0)
+        console.log(`   High: ${report.summary.high} 🟠`)
+      if (report.summary.medium > 0)
+        console.log(`   Medium: ${report.summary.medium} 🟡`)
+      if (report.summary.low > 0)
+        console.log(`   Low: ${report.summary.low} 🔵`)
 
       console.log(`\n🔧 FAILED CHECKS:`)
       const failedChecks = this.results.filter(r => !r.passed)
       failedChecks.forEach(check => {
-        console.log(`   ❌ ${check.name} [${check.severity.toUpperCase()}]: ${check.message}`)
+        console.log(
+          `   ❌ ${check.name} [${check.severity.toUpperCase()}]: ${check.message}`
+        )
         if (check.recommendations && check.recommendations.length > 0) {
           check.recommendations.forEach(rec => {
             console.log(`      💡 ${rec}`)
@@ -1078,12 +1248,18 @@ class ProductionSecurityAuditor {
         console.log(`   ✅ READY FOR DEPLOYMENT - All security checks passed`)
         break
       case 'warning':
-        console.log(`   ⚠️ DEPLOYMENT WITH CAUTION - Some security issues found`)
-        console.log(`   📝 Review and address warnings before production deployment`)
+        console.log(
+          `   ⚠️ DEPLOYMENT WITH CAUTION - Some security issues found`
+        )
+        console.log(
+          `   📝 Review and address warnings before production deployment`
+        )
         break
       case 'fail':
         console.log(`   ❌ DEPLOYMENT BLOCKED - Critical security issues found`)
-        console.log(`   🛑 Must resolve critical and high severity issues before deployment`)
+        console.log(
+          `   🛑 Must resolve critical and high severity issues before deployment`
+        )
         break
     }
 
@@ -1095,7 +1271,7 @@ class ProductionSecurityAuditor {
 if (require.main === module) {
   const baseUrl = process.argv[2] || 'http://localhost:3000'
   const auditor = new ProductionSecurityAuditor(baseUrl)
-  
+
   auditor.runFullAudit().catch(error => {
     console.error('❌ Security audit failed:', error.message)
     process.exit(1)

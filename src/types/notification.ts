@@ -14,7 +14,7 @@ export interface NotificationChannel {
 export enum NotificationChannelType {
   EMAIL = 'email',
   SLACK = 'slack',
-  IN_APP = 'in_app'
+  IN_APP = 'in_app',
 }
 
 export interface NotificationPreference {
@@ -37,21 +37,21 @@ export enum NotificationEventType {
   WORKFLOW_COMPLETED = 'workflow_completed',
   SYSTEM_ERROR = 'system_error',
   HEALTH_CHECK_FAILED = 'health_check_failed',
-  PLATFORM_DISCONNECTED = 'platform_disconnected'
+  PLATFORM_DISCONNECTED = 'platform_disconnected',
 }
 
 export enum NotificationPriority {
   LOW = 'low',
   MEDIUM = 'medium',
   HIGH = 'high',
-  CRITICAL = 'critical'
+  CRITICAL = 'critical',
 }
 
 export enum NotificationStatus {
   PENDING = 'pending',
   SENT = 'sent',
   FAILED = 'failed',
-  ACKNOWLEDGED = 'acknowledged'
+  ACKNOWLEDGED = 'acknowledged',
 }
 
 export interface Notification {
@@ -197,7 +197,10 @@ export interface NotificationService {
   sendInApp(inApp: InAppNotification): Promise<void>
   acknowledge(notificationId: string, userId: string): Promise<void>
   escalate(notificationId: string): Promise<void>
-  getNotifications(userId: string, options?: GetNotificationsOptions): Promise<Notification[]>
+  getNotifications(
+    userId: string,
+    options?: GetNotificationsOptions
+  ): Promise<Notification[]>
   markAsRead(notificationId: string, userId: string): Promise<void>
 }
 

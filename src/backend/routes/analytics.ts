@@ -13,7 +13,9 @@ const dateRangeSchema = z.object({
 
 const exportSchema = z.object({
   format: z.enum(['csv', 'json']),
-  dataType: z.enum(['overview', 'agents', 'tasks', 'trends', 'errors']).optional(),
+  dataType: z
+    .enum(['overview', 'agents', 'tasks', 'trends', 'errors'])
+    .optional(),
 })
 
 /**
@@ -23,7 +25,7 @@ const exportSchema = z.object({
 router.get('/', async (req: Request, res: Response) => {
   try {
     const query = dateRangeSchema.safeParse(req.query)
-    
+
     if (!query.success) {
       return res.status(400).json({
         error: {
@@ -37,7 +39,9 @@ router.get('/', async (req: Request, res: Response) => {
     let dateRange: DateRange | undefined
     if (query.data.startDate || query.data.endDate) {
       dateRange = {
-        startDate: query.data.startDate ? new Date(query.data.startDate) : new Date(0),
+        startDate: query.data.startDate
+          ? new Date(query.data.startDate)
+          : new Date(0),
         endDate: query.data.endDate ? new Date(query.data.endDate) : new Date(),
       }
     }
@@ -68,7 +72,7 @@ router.get('/', async (req: Request, res: Response) => {
 router.get('/kpis', async (req: Request, res: Response) => {
   try {
     const query = dateRangeSchema.safeParse(req.query)
-    
+
     if (!query.success) {
       return res.status(400).json({
         error: {
@@ -82,7 +86,9 @@ router.get('/kpis', async (req: Request, res: Response) => {
     let dateRange: DateRange | undefined
     if (query.data.startDate || query.data.endDate) {
       dateRange = {
-        startDate: query.data.startDate ? new Date(query.data.startDate) : new Date(0),
+        startDate: query.data.startDate
+          ? new Date(query.data.startDate)
+          : new Date(0),
         endDate: query.data.endDate ? new Date(query.data.endDate) : new Date(),
       }
     }
@@ -124,7 +130,7 @@ router.get('/kpis', async (req: Request, res: Response) => {
 router.post('/export', async (req: Request, res: Response) => {
   try {
     const body = exportSchema.safeParse(req.body)
-    
+
     if (!body.success) {
       return res.status(400).json({
         error: {
@@ -141,7 +147,9 @@ router.post('/export', async (req: Request, res: Response) => {
     let dateRange: DateRange | undefined
     if (query.success && (query.data.startDate || query.data.endDate)) {
       dateRange = {
-        startDate: query.data.startDate ? new Date(query.data.startDate) : new Date(0),
+        startDate: query.data.startDate
+          ? new Date(query.data.startDate)
+          : new Date(0),
         endDate: query.data.endDate ? new Date(query.data.endDate) : new Date(),
       }
     }
@@ -175,9 +183,12 @@ router.post('/export', async (req: Request, res: Response) => {
     // Set appropriate headers
     const timestamp = new Date().toISOString().split('T')[0]
     const filename = `cubcen-analytics-${dataType}-${timestamp}.${format}`
-    
+
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`)
-    res.setHeader('Content-Type', format === 'csv' ? 'text/csv' : 'application/json')
+    res.setHeader(
+      'Content-Type',
+      format === 'csv' ? 'text/csv' : 'application/json'
+    )
 
     res.send(exportedData)
   } catch (error) {
@@ -199,7 +210,7 @@ router.post('/export', async (req: Request, res: Response) => {
 router.get('/trends', async (req: Request, res: Response) => {
   try {
     const query = dateRangeSchema.safeParse(req.query)
-    
+
     if (!query.success) {
       return res.status(400).json({
         error: {
@@ -213,7 +224,9 @@ router.get('/trends', async (req: Request, res: Response) => {
     let dateRange: DateRange | undefined
     if (query.data.startDate || query.data.endDate) {
       dateRange = {
-        startDate: query.data.startDate ? new Date(query.data.startDate) : new Date(0),
+        startDate: query.data.startDate
+          ? new Date(query.data.startDate)
+          : new Date(0),
         endDate: query.data.endDate ? new Date(query.data.endDate) : new Date(),
       }
     }

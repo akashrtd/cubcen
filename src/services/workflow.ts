@@ -23,70 +23,108 @@ import {
   StepCondition,
   RetryConfig,
   WorkflowStatus,
-  WorkflowExecutionStatus
+  WorkflowExecutionStatus,
 } from '@/types/workflow'
 
 // Forward declaration to avoid circular dependency
 interface WebSocketService {
-  notifyWorkflowStatusChange(executionId: string, status: string, metadata?: Record<string, unknown>): void
+  notifyWorkflowStatusChange(
+    executionId: string,
+    status: string,
+    metadata?: Record<string, unknown>
+  ): void
   notifyWorkflowProgress(executionId: string, progress: any): void
-  notifyWorkflowError(executionId: string, error: string, context?: Record<string, unknown>): void
+  notifyWorkflowError(
+    executionId: string,
+    error: string,
+    context?: Record<string, unknown>
+  ): void
 }
 
 // Validation schemas
 const workflowCreationSchema = z.object({
   name: z.string().min(1).max(200),
   description: z.string().optional(),
-  steps: z.array(z.object({
-    agentId: z.string().min(1),
-    stepOrder: z.number().min(0),
-    name: z.string().min(1).max(200),
-    parameters: z.record(z.string(), z.unknown()).default({}),
-    conditions: z.array(z.object({
-      type: z.enum(['always', 'on_success', 'on_failure', 'expression']),
-      expression: z.string().optional(),
-      dependsOn: z.array(z.string()).optional()
-    })).default([{ type: 'always' }]),
-    retryConfig: z.object({
-      maxRetries: z.number().min(0).max(10).default(3),
-      backoffMs: z.number().min(100).default(1000),
-      backoffMultiplier: z.number().min(1).default(2),
-      maxBackoffMs: z.number().min(1000).default(30000)
-    }).optional(),
-    timeoutMs: z.number().min(1000).max(300000).default(60000)
-  })).min(1),
-  createdBy: z.string().min(1)
+  steps: z
+    .array(
+      z.object({
+        agentId: z.string().min(1),
+        stepOrder: z.number().min(0),
+        name: z.string().min(1).max(200),
+        parameters: z.record(z.string(), z.unknown()).default({}),
+        conditions: z
+          .array(
+            z.object({
+              type: z.enum([
+                'always',
+                'on_success',
+                'on_failure',
+                'expression',
+              ]),
+              expression: z.string().optional(),
+              dependsOn: z.array(z.string()).optional(),
+            })
+          )
+          .default([{ type: 'always' }]),
+        retryConfig: z
+          .object({
+            maxRetries: z.number().min(0).max(10).default(3),
+            backoffMs: z.number().min(100).default(1000),
+            backoffMultiplier: z.number().min(1).default(2),
+            maxBackoffMs: z.number().min(1000).default(30000),
+          })
+          .optional(),
+        timeoutMs: z.number().min(1000).max(300000).default(60000),
+      })
+    )
+    .min(1),
+  createdBy: z.string().min(1),
 })
 
 const workflowUpdateSchema = z.object({
   name: z.string().min(1).max(200).optional(),
   description: z.string().optional(),
   status: z.enum(['DRAFT', 'ACTIVE', 'PAUSED', 'ARCHIVED']).optional(),
-  steps: z.array(z.object({
-    id: z.string().optional(),
-    agentId: z.string().min(1),
-    stepOrder: z.number().min(0),
-    name: z.string().min(1).max(200),
-    parameters: z.record(z.string(), z.unknown()).default({}),
-    conditions: z.array(z.object({
-      type: z.enum(['always', 'on_success', 'on_failure', 'expression']),
-      expression: z.string().optional(),
-      dependsOn: z.array(z.string()).optional()
-    })).default([{ type: 'always' }]),
-    retryConfig: z.object({
-      maxRetries: z.number().min(0).max(10).default(3),
-      backoffMs: z.number().min(100).default(1000),
-      backoffMultiplier: z.number().min(1).default(2),
-      maxBackoffMs: z.number().min(1000).default(30000)
-    }).optional(),
-    timeoutMs: z.number().min(1000).max(300000).default(60000)
-  })).optional()
+  steps: z
+    .array(
+      z.object({
+        id: z.string().optional(),
+        agentId: z.string().min(1),
+        stepOrder: z.number().min(0),
+        name: z.string().min(1).max(200),
+        parameters: z.record(z.string(), z.unknown()).default({}),
+        conditions: z
+          .array(
+            z.object({
+              type: z.enum([
+                'always',
+                'on_success',
+                'on_failure',
+                'expression',
+              ]),
+              expression: z.string().optional(),
+              dependsOn: z.array(z.string()).optional(),
+            })
+          )
+          .default([{ type: 'always' }]),
+        retryConfig: z
+          .object({
+            maxRetries: z.number().min(0).max(10).default(3),
+            backoffMs: z.number().min(100).default(1000),
+            backoffMultiplier: z.number().min(1).default(2),
+            maxBackoffMs: z.number().min(1000).default(30000),
+          })
+          .optional(),
+        timeoutMs: z.number().min(1000).max(300000).default(60000),
+      })
+    )
+    .optional(),
 })
 
 const workflowExecutionSchema = z.object({
   variables: z.record(z.string(), z.unknown()).default({}),
   metadata: z.record(z.string(), z.unknown()).default({}),
-  dryRun: z.boolean().default(false)
+  dryRun: z.boolean().default(false),
 })
 
 export interface WorkflowCreationData {
@@ -127,7 +165,11 @@ export class WorkflowService extends EventEmitter {
   private runningExecutions: Map<string, WorkflowExecution> = new Map()
   private executionTimeouts: Map<string, NodeJS.Timeout> = new Map()
 
-  constructor(adapterManager: AdapterManager, taskService: TaskService, webSocketService?: WebSocketService) {
+  constructor(
+    adapterManager: AdapterManager,
+    taskService: TaskService,
+    webSocketService?: WebSocketService
+  ) {
     super()
     this.adapterManager = adapterManager
     this.taskService = taskService
@@ -144,7 +186,9 @@ export class WorkflowService extends EventEmitter {
   /**
    * Create a new workflow
    */
-  async createWorkflow(data: WorkflowCreationData): Promise<WorkflowDefinition> {
+  async createWorkflow(
+    data: WorkflowCreationData
+  ): Promise<WorkflowDefinition> {
     try {
       // Validate input data
       const validatedData = workflowCreationSchema.parse(data)
@@ -152,7 +196,7 @@ export class WorkflowService extends EventEmitter {
       logger.info('Creating new workflow', {
         name: validatedData.name,
         stepCount: validatedData.steps.length,
-        createdBy: validatedData.createdBy
+        createdBy: validatedData.createdBy,
       })
 
       // Validate workflow definition
@@ -165,15 +209,17 @@ export class WorkflowService extends EventEmitter {
           id: '', // Will be set after creation
           workflowId: '',
           ...step,
-          conditions: step.conditions || [{ type: 'always' }]
+          conditions: step.conditions || [{ type: 'always' }],
         })),
         createdBy: validatedData.createdBy,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       })
 
       if (!validation.valid) {
-        throw new Error(`Workflow validation failed: ${validation.errors.map(e => e.message).join(', ')}`)
+        throw new Error(
+          `Workflow validation failed: ${validation.errors.map(e => e.message).join(', ')}`
+        )
       }
 
       // Create workflow in database
@@ -189,23 +235,25 @@ export class WorkflowService extends EventEmitter {
               stepOrder: step.stepOrder,
               name: step.name,
               parameters: JSON.stringify(step.parameters || {}),
-              conditions: JSON.stringify(step.conditions || [{ type: 'always' }])
-            }))
-          }
+              conditions: JSON.stringify(
+                step.conditions || [{ type: 'always' }]
+              ),
+            })),
+          },
         },
         include: {
           steps: {
             include: {
-              agent: true
+              agent: true,
             },
             orderBy: {
-              stepOrder: 'asc'
-            }
+              stepOrder: 'asc',
+            },
           },
           creator: {
-            select: { id: true, email: true, name: true }
-          }
-        }
+            select: { id: true, email: true, name: true },
+          },
+        },
       })
 
       const workflowDefinition: WorkflowDefinition = {
@@ -220,24 +268,24 @@ export class WorkflowService extends EventEmitter {
           stepOrder: step.stepOrder,
           name: step.name,
           parameters: JSON.parse(step.parameters),
-          conditions: JSON.parse(step.conditions)
+          conditions: JSON.parse(step.conditions),
         })),
         createdBy: workflow.createdBy,
         createdAt: workflow.createdAt,
-        updatedAt: workflow.updatedAt
+        updatedAt: workflow.updatedAt,
       }
 
       logger.info('Workflow created successfully', {
         workflowId: workflow.id,
         name: workflow.name,
-        stepCount: workflow.steps.length
+        stepCount: workflow.steps.length,
       })
 
       return workflowDefinition
     } catch (error) {
       logger.error('Failed to create workflow', error as Error, {
         name: data.name,
-        stepCount: data.steps.length
+        stepCount: data.steps.length,
       })
       throw error
     }
@@ -246,17 +294,23 @@ export class WorkflowService extends EventEmitter {
   /**
    * Update an existing workflow
    */
-  async updateWorkflow(workflowId: string, data: WorkflowUpdateData): Promise<WorkflowDefinition> {
+  async updateWorkflow(
+    workflowId: string,
+    data: WorkflowUpdateData
+  ): Promise<WorkflowDefinition> {
     try {
       // Validate input data
       const validatedData = workflowUpdateSchema.parse(data)
 
-      logger.info('Updating workflow', { workflowId, updateData: validatedData })
+      logger.info('Updating workflow', {
+        workflowId,
+        updateData: validatedData,
+      })
 
       // Check if workflow exists
       const existingWorkflow = await prisma.workflow.findUnique({
         where: { id: workflowId },
-        include: { steps: true }
+        include: { steps: true },
       })
 
       if (!existingWorkflow) {
@@ -269,23 +323,25 @@ export class WorkflowService extends EventEmitter {
       }
 
       // Update workflow and steps in transaction
-      const workflow = await prisma.$transaction(async (tx) => {
+      const workflow = await prisma.$transaction(async tx => {
         // Update workflow
         const updatedWorkflow = await tx.workflow.update({
           where: { id: workflowId },
           data: {
             ...(validatedData.name && { name: validatedData.name }),
-            ...(validatedData.description !== undefined && { description: validatedData.description }),
+            ...(validatedData.description !== undefined && {
+              description: validatedData.description,
+            }),
             ...(validatedData.status && { status: validatedData.status }),
-            updatedAt: new Date()
-          }
+            updatedAt: new Date(),
+          },
         })
 
         // Update steps if provided
         if (validatedData.steps) {
           // Delete existing steps
           await tx.workflowStep.deleteMany({
-            where: { workflowId }
+            where: { workflowId },
           })
 
           // Create new steps
@@ -296,8 +352,10 @@ export class WorkflowService extends EventEmitter {
               stepOrder: step.stepOrder,
               name: step.name,
               parameters: JSON.stringify(step.parameters || {}),
-              conditions: JSON.stringify(step.conditions || [{ type: 'always' }])
-            }))
+              conditions: JSON.stringify(
+                step.conditions || [{ type: 'always' }]
+              ),
+            })),
           })
         }
 
@@ -307,16 +365,16 @@ export class WorkflowService extends EventEmitter {
           include: {
             steps: {
               include: {
-                agent: true
+                agent: true,
               },
               orderBy: {
-                stepOrder: 'asc'
-              }
+                stepOrder: 'asc',
+              },
             },
             creator: {
-              select: { id: true, email: true, name: true }
-            }
-          }
+              select: { id: true, email: true, name: true },
+            },
+          },
         })
       })
 
@@ -336,16 +394,16 @@ export class WorkflowService extends EventEmitter {
           stepOrder: step.stepOrder,
           name: step.name,
           parameters: JSON.parse(step.parameters),
-          conditions: JSON.parse(step.conditions)
+          conditions: JSON.parse(step.conditions),
         })),
         createdBy: workflow.createdBy,
         createdAt: workflow.createdAt,
-        updatedAt: workflow.updatedAt
+        updatedAt: workflow.updatedAt,
       }
 
       logger.info('Workflow updated successfully', {
         workflowId,
-        name: workflow.name
+        name: workflow.name,
       })
 
       return workflowDefinition
@@ -365,16 +423,16 @@ export class WorkflowService extends EventEmitter {
         include: {
           steps: {
             include: {
-              agent: true
+              agent: true,
             },
             orderBy: {
-              stepOrder: 'asc'
-            }
+              stepOrder: 'asc',
+            },
           },
           creator: {
-            select: { id: true, email: true, name: true }
-          }
-        }
+            select: { id: true, email: true, name: true },
+          },
+        },
       })
 
       if (!workflow) {
@@ -393,11 +451,11 @@ export class WorkflowService extends EventEmitter {
           stepOrder: step.stepOrder,
           name: step.name,
           parameters: JSON.parse(step.parameters),
-          conditions: JSON.parse(step.conditions)
+          conditions: JSON.parse(step.conditions),
         })),
         createdBy: workflow.createdBy,
         createdAt: workflow.createdAt,
-        updatedAt: workflow.updatedAt
+        updatedAt: workflow.updatedAt,
       }
     } catch (error) {
       logger.error('Failed to get workflow', error as Error, { workflowId })
@@ -425,7 +483,7 @@ export class WorkflowService extends EventEmitter {
         page = 1,
         limit = 10,
         sortBy = 'createdAt',
-        sortOrder = 'desc'
+        sortOrder = 'desc',
       } = options
 
       // Build where clause
@@ -436,14 +494,15 @@ export class WorkflowService extends EventEmitter {
 
       if (dateFrom || dateTo) {
         where.createdAt = {}
-        if (dateFrom) (where.createdAt as Record<string, unknown>).gte = dateFrom
+        if (dateFrom)
+          (where.createdAt as Record<string, unknown>).gte = dateFrom
         if (dateTo) (where.createdAt as Record<string, unknown>).lte = dateTo
       }
 
       if (search) {
         where.OR = [
           { name: { contains: search, mode: 'insensitive' } },
-          { description: { contains: search, mode: 'insensitive' } }
+          { description: { contains: search, mode: 'insensitive' } },
         ] as Record<string, unknown>[]
       }
 
@@ -456,46 +515,48 @@ export class WorkflowService extends EventEmitter {
         include: {
           steps: {
             include: {
-              agent: true
+              agent: true,
             },
             orderBy: {
-              stepOrder: 'asc'
-            }
+              stepOrder: 'asc',
+            },
           },
           creator: {
-            select: { id: true, email: true, name: true }
-          }
+            select: { id: true, email: true, name: true },
+          },
         },
         orderBy: { [sortBy]: sortOrder },
         skip: (page - 1) * limit,
-        take: limit
+        take: limit,
       })
 
-      const workflowDefinitions: WorkflowDefinition[] = workflows.map(workflow => ({
-        id: workflow.id,
-        name: workflow.name,
-        description: workflow.description || undefined,
-        status: workflow.status as WorkflowStatus,
-        steps: workflow.steps.map(step => ({
-          id: step.id,
-          workflowId: step.workflowId,
-          agentId: step.agentId,
-          stepOrder: step.stepOrder,
-          name: step.name,
-          parameters: JSON.parse(step.parameters),
-          conditions: JSON.parse(step.conditions)
-        })),
-        createdBy: workflow.createdBy,
-        createdAt: workflow.createdAt,
-        updatedAt: workflow.updatedAt
-      }))
+      const workflowDefinitions: WorkflowDefinition[] = workflows.map(
+        workflow => ({
+          id: workflow.id,
+          name: workflow.name,
+          description: workflow.description || undefined,
+          status: workflow.status as WorkflowStatus,
+          steps: workflow.steps.map(step => ({
+            id: step.id,
+            workflowId: step.workflowId,
+            agentId: step.agentId,
+            stepOrder: step.stepOrder,
+            name: step.name,
+            parameters: JSON.parse(step.parameters),
+            conditions: JSON.parse(step.conditions),
+          })),
+          createdBy: workflow.createdBy,
+          createdAt: workflow.createdAt,
+          updatedAt: workflow.updatedAt,
+        })
+      )
 
       return {
         workflows: workflowDefinitions,
         total,
         page,
         limit,
-        totalPages: Math.ceil(total / limit)
+        totalPages: Math.ceil(total / limit),
       }
     } catch (error) {
       logger.error('Failed to get workflows', error as Error, options)
@@ -517,7 +578,7 @@ export class WorkflowService extends EventEmitter {
 
       // Delete workflow (cascade will delete steps)
       await prisma.workflow.delete({
-        where: { id: workflowId }
+        where: { id: workflowId },
       })
 
       logger.info('Workflow deleted successfully', { workflowId })
@@ -530,7 +591,9 @@ export class WorkflowService extends EventEmitter {
   /**
    * Validate workflow definition
    */
-  async validateWorkflowDefinition(workflow: WorkflowDefinition): Promise<WorkflowValidationResult> {
+  async validateWorkflowDefinition(
+    workflow: WorkflowDefinition
+  ): Promise<WorkflowValidationResult> {
     const errors: WorkflowValidationError[] = []
     const warnings: WorkflowValidationWarning[] = []
 
@@ -538,24 +601,26 @@ export class WorkflowService extends EventEmitter {
       // Check if all agents exist and are active
       const agentIds = workflow.steps.map(step => step.agentId)
       const agents = await prisma.agent.findMany({
-        where: { id: { in: agentIds } }
+        where: { id: { in: agentIds } },
       })
 
       const existingAgentIds = new Set(agents.map(agent => agent.id))
-      const activeAgentIds = new Set(agents.filter(agent => agent.status === 'ACTIVE').map(agent => agent.id))
+      const activeAgentIds = new Set(
+        agents.filter(agent => agent.status === 'ACTIVE').map(agent => agent.id)
+      )
 
       for (const step of workflow.steps) {
         if (!existingAgentIds.has(step.agentId)) {
           errors.push({
             type: 'missing_agent',
             stepId: step.id,
-            message: `Agent ${step.agentId} not found for step "${step.name}"`
+            message: `Agent ${step.agentId} not found for step "${step.name}"`,
           })
         } else if (!activeAgentIds.has(step.agentId)) {
           warnings.push({
             type: 'missing_dependency',
             stepId: step.id,
-            message: `Agent ${step.agentId} is not active for step "${step.name}"`
+            message: `Agent ${step.agentId} is not active for step "${step.name}"`,
           })
         }
       }
@@ -563,11 +628,11 @@ export class WorkflowService extends EventEmitter {
       // Check for circular dependencies
       const dependencies = this.buildDependencyGraph(workflow.steps)
       const circularDeps = this.detectCircularDependencies(dependencies)
-      
+
       for (const cycle of circularDeps) {
         errors.push({
           type: 'circular_dependency',
-          message: `Circular dependency detected: ${cycle.join(' -> ')}`
+          message: `Circular dependency detected: ${cycle.join(' -> ')}`,
         })
       }
 
@@ -578,7 +643,7 @@ export class WorkflowService extends EventEmitter {
           warnings.push({
             type: 'unreachable_step',
             stepId: step.id,
-            message: `Step "${step.name}" may be unreachable`
+            message: `Step "${step.name}" may be unreachable`,
           })
         }
       }
@@ -590,7 +655,7 @@ export class WorkflowService extends EventEmitter {
             errors.push({
               type: 'invalid_condition',
               stepId: step.id,
-              message: `Expression condition missing expression for step "${step.name}"`
+              message: `Expression condition missing expression for step "${step.name}"`,
             })
           }
 
@@ -600,7 +665,7 @@ export class WorkflowService extends EventEmitter {
                 errors.push({
                   type: 'invalid_condition',
                   stepId: step.id,
-                  message: `Dependency "${depId}" not found for step "${step.name}"`
+                  message: `Dependency "${depId}" not found for step "${step.name}"`,
                 })
               }
             }
@@ -611,17 +676,21 @@ export class WorkflowService extends EventEmitter {
       return {
         valid: errors.length === 0,
         errors,
-        warnings
+        warnings,
       }
     } catch (error) {
-      logger.error('Failed to validate workflow', error as Error, { workflowId: workflow.id })
+      logger.error('Failed to validate workflow', error as Error, {
+        workflowId: workflow.id,
+      })
       return {
         valid: false,
-        errors: [{
-          type: 'invalid_parameters',
-          message: `Validation error: ${(error as Error).message}`
-        }],
-        warnings: []
+        errors: [
+          {
+            type: 'invalid_parameters',
+            message: `Validation error: ${(error as Error).message}`,
+          },
+        ],
+        warnings: [],
       }
     }
   }
@@ -629,7 +698,11 @@ export class WorkflowService extends EventEmitter {
   /**
    * Execute a workflow
    */
-  async executeWorkflow(workflowId: string, options: WorkflowExecutionOptions = {}, createdBy: string): Promise<string> {
+  async executeWorkflow(
+    workflowId: string,
+    options: WorkflowExecutionOptions = {},
+    createdBy: string
+  ): Promise<string> {
     try {
       // Validate input data
       const validatedOptions = workflowExecutionSchema.parse(options)
@@ -637,7 +710,7 @@ export class WorkflowService extends EventEmitter {
       logger.info('Starting workflow execution', {
         workflowId,
         options: validatedOptions,
-        createdBy
+        createdBy,
       })
 
       // Get workflow definition
@@ -647,18 +720,22 @@ export class WorkflowService extends EventEmitter {
       }
 
       if (workflow.status !== 'ACTIVE') {
-        throw new Error(`Workflow ${workflowId} is not active (status: ${workflow.status})`)
+        throw new Error(
+          `Workflow ${workflowId} is not active (status: ${workflow.status})`
+        )
       }
 
       // Validate workflow before execution
       const validation = await this.validateWorkflowDefinition(workflow)
       if (!validation.valid) {
-        throw new Error(`Workflow validation failed: ${validation.errors.map(e => e.message).join(', ')}`)
+        throw new Error(
+          `Workflow validation failed: ${validation.errors.map(e => e.message).join(', ')}`
+        )
       }
 
       // Create workflow execution
       const executionId = `exec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-      
+
       const execution: WorkflowExecution = {
         id: executionId,
         workflowId,
@@ -667,7 +744,7 @@ export class WorkflowService extends EventEmitter {
         context: {
           variables: validatedOptions.variables || {},
           stepOutputs: {},
-          metadata: validatedOptions.metadata || {}
+          metadata: validatedOptions.metadata || {},
         },
         stepExecutions: workflow.steps.map(step => ({
           id: `step_${step.id}_${Date.now()}`,
@@ -676,43 +753,55 @@ export class WorkflowService extends EventEmitter {
           agentId: step.agentId,
           status: 'PENDING',
           input: {},
-          retryCount: 0
+          retryCount: 0,
         })),
-        createdBy
+        createdBy,
       }
 
       // Store execution
       this.runningExecutions.set(executionId, execution)
 
       // Notify WebSocket clients
-      this.webSocketService?.notifyWorkflowStatusChange(executionId, 'PENDING', {
-        workflowId,
-        workflowName: workflow.name,
-        totalSteps: workflow.steps.length
-      })
+      this.webSocketService?.notifyWorkflowStatusChange(
+        executionId,
+        'PENDING',
+        {
+          workflowId,
+          workflowName: workflow.name,
+          totalSteps: workflow.steps.length,
+        }
+      )
 
       // Start execution (don't await - run asynchronously)
       if (!validatedOptions.dryRun) {
         this.performWorkflowExecution(workflow, execution).catch(error => {
-          logger.error('Unhandled workflow execution error', error, { executionId })
+          logger.error('Unhandled workflow execution error', error, {
+            executionId,
+          })
         })
       } else {
         // For dry run, just validate and return
         execution.status = 'COMPLETED'
         execution.completedAt = new Date()
         this.runningExecutions.delete(executionId)
-        
-        this.webSocketService?.notifyWorkflowStatusChange(executionId, 'COMPLETED', {
-          dryRun: true,
-          validation
-        })
+
+        this.webSocketService?.notifyWorkflowStatusChange(
+          executionId,
+          'COMPLETED',
+          {
+            dryRun: true,
+            validation,
+          }
+        )
       }
 
       logger.info('Workflow execution started', { executionId, workflowId })
 
       return executionId
     } catch (error) {
-      logger.error('Failed to start workflow execution', error as Error, { workflowId })
+      logger.error('Failed to start workflow execution', error as Error, {
+        workflowId,
+      })
       throw error
     }
   }
@@ -759,14 +848,20 @@ export class WorkflowService extends EventEmitter {
       this.runningExecutions.delete(executionId)
 
       // Notify WebSocket clients
-      this.webSocketService?.notifyWorkflowStatusChange(executionId, 'CANCELLED', {
-        cancelled: true,
-        timestamp: new Date()
-      })
+      this.webSocketService?.notifyWorkflowStatusChange(
+        executionId,
+        'CANCELLED',
+        {
+          cancelled: true,
+          timestamp: new Date(),
+        }
+      )
 
       logger.info('Workflow execution cancelled', { executionId })
     } catch (error) {
-      logger.error('Failed to cancel workflow execution', error as Error, { executionId })
+      logger.error('Failed to cancel workflow execution', error as Error, {
+        executionId,
+      })
       throw error
     }
   }
@@ -781,11 +876,18 @@ export class WorkflowService extends EventEmitter {
     }
 
     const totalSteps = execution.stepExecutions.length
-    const completedSteps = execution.stepExecutions.filter(step => step.status === 'COMPLETED').length
-    const failedSteps = execution.stepExecutions.filter(step => step.status === 'FAILED').length
-    const currentStep = execution.stepExecutions.find(step => step.status === 'RUNNING')
+    const completedSteps = execution.stepExecutions.filter(
+      step => step.status === 'COMPLETED'
+    ).length
+    const failedSteps = execution.stepExecutions.filter(
+      step => step.status === 'FAILED'
+    ).length
+    const currentStep = execution.stepExecutions.find(
+      step => step.status === 'RUNNING'
+    )
 
-    const progress = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0
+    const progress =
+      totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0
 
     return {
       workflowExecutionId: executionId,
@@ -793,28 +895,35 @@ export class WorkflowService extends EventEmitter {
       completedSteps,
       failedSteps,
       currentStep: currentStep?.stepId,
-      progress
+      progress,
     }
   }
 
   /**
    * Perform workflow execution
    */
-  private async performWorkflowExecution(workflow: WorkflowDefinition, execution: WorkflowExecution): Promise<void> {
+  private async performWorkflowExecution(
+    workflow: WorkflowDefinition,
+    execution: WorkflowExecution
+  ): Promise<void> {
     try {
       logger.info('Performing workflow execution', {
         executionId: execution.id,
         workflowId: workflow.id,
-        stepCount: workflow.steps.length
+        stepCount: workflow.steps.length,
       })
 
       // Update execution status
       execution.status = 'RUNNING'
 
       // Notify WebSocket clients
-      this.webSocketService?.notifyWorkflowStatusChange(execution.id, 'RUNNING', {
-        startedAt: execution.startedAt
-      })
+      this.webSocketService?.notifyWorkflowStatusChange(
+        execution.id,
+        'RUNNING',
+        {
+          startedAt: execution.startedAt,
+        }
+      )
 
       // Execute steps sequentially
       for (const step of workflow.steps) {
@@ -825,7 +934,9 @@ export class WorkflowService extends EventEmitter {
 
         // Check step conditions
         if (!this.shouldExecuteStep(step, execution)) {
-          const stepExecution = execution.stepExecutions.find(se => se.stepId === step.id)
+          const stepExecution = execution.stepExecutions.find(
+            se => se.stepId === step.id
+          )
           if (stepExecution) {
             stepExecution.status = 'SKIPPED'
             stepExecution.completedAt = new Date()
@@ -837,12 +948,18 @@ export class WorkflowService extends EventEmitter {
         await this.executeWorkflowStep(workflow, step, execution)
 
         // Check if step failed and should stop execution
-        const stepExecution = execution.stepExecutions.find(se => se.stepId === step.id)
+        const stepExecution = execution.stepExecutions.find(
+          se => se.stepId === step.id
+        )
         if (stepExecution?.status === 'FAILED') {
           // Check if we should continue on failure
-          const continueOnFailure = step.conditions.some(c => c.type === 'on_failure')
+          const continueOnFailure = step.conditions.some(
+            c => c.type === 'on_failure'
+          )
           if (!continueOnFailure) {
-            throw new Error(`Step "${step.name}" failed and workflow cannot continue`)
+            throw new Error(
+              `Step "${step.name}" failed and workflow cannot continue`
+            )
           }
         }
 
@@ -861,25 +978,32 @@ export class WorkflowService extends EventEmitter {
       this.runningExecutions.delete(execution.id)
 
       // Notify WebSocket clients
-      this.webSocketService?.notifyWorkflowStatusChange(execution.id, 'COMPLETED', {
-        completedAt: execution.completedAt,
-        totalSteps: workflow.steps.length,
-        completedSteps: execution.stepExecutions.filter(se => se.status === 'COMPLETED').length
-      })
+      this.webSocketService?.notifyWorkflowStatusChange(
+        execution.id,
+        'COMPLETED',
+        {
+          completedAt: execution.completedAt,
+          totalSteps: workflow.steps.length,
+          completedSteps: execution.stepExecutions.filter(
+            se => se.status === 'COMPLETED'
+          ).length,
+        }
+      )
 
       // Emit completion event
       this.emit('workflowCompleted', {
         executionId: execution.id,
         workflowId: workflow.id,
-        duration: execution.completedAt.getTime() - execution.startedAt.getTime()
+        duration:
+          execution.completedAt.getTime() - execution.startedAt.getTime(),
       })
 
       logger.info('Workflow execution completed successfully', {
         executionId: execution.id,
         workflowId: workflow.id,
-        duration: execution.completedAt.getTime() - execution.startedAt.getTime()
+        duration:
+          execution.completedAt.getTime() - execution.startedAt.getTime(),
       })
-
     } catch (error) {
       await this.handleWorkflowError(execution, error as Error)
     }
@@ -888,8 +1012,14 @@ export class WorkflowService extends EventEmitter {
   /**
    * Execute a single workflow step
    */
-  private async executeWorkflowStep(workflow: WorkflowDefinition, step: WorkflowStepDefinition, execution: WorkflowExecution): Promise<void> {
-    const stepExecution = execution.stepExecutions.find(se => se.stepId === step.id)
+  private async executeWorkflowStep(
+    workflow: WorkflowDefinition,
+    step: WorkflowStepDefinition,
+    execution: WorkflowExecution
+  ): Promise<void> {
+    const stepExecution = execution.stepExecutions.find(
+      se => se.stepId === step.id
+    )
     if (!stepExecution) {
       throw new Error(`Step execution not found for step ${step.id}`)
     }
@@ -899,7 +1029,7 @@ export class WorkflowService extends EventEmitter {
         executionId: execution.id,
         stepId: step.id,
         stepName: step.name,
-        agentId: step.agentId
+        agentId: step.agentId,
       })
 
       // Update step status
@@ -909,14 +1039,14 @@ export class WorkflowService extends EventEmitter {
       // Prepare step input by merging parameters with context variables
       const stepInput = {
         ...step.parameters,
-        ...this.resolveVariables(step.parameters, execution.context)
+        ...this.resolveVariables(step.parameters, execution.context),
       }
       stepExecution.input = stepInput
 
       // Get agent and adapter
       const agent = await prisma.agent.findUnique({
         where: { id: step.agentId },
-        include: { platform: true }
+        include: { platform: true },
       })
 
       if (!agent) {
@@ -933,11 +1063,11 @@ export class WorkflowService extends EventEmitter {
         maxRetries: 3,
         backoffMs: 1000,
         backoffMultiplier: 2,
-        maxBackoffMs: 30000
+        maxBackoffMs: 30000,
       }
 
       let lastError: Error | null = null
-      
+
       for (let attempt = 0; attempt <= retryConfig.maxRetries; attempt++) {
         try {
           // Execute agent
@@ -951,7 +1081,8 @@ export class WorkflowService extends EventEmitter {
           stepExecution.output = result.data as Record<string, unknown>
           stepExecution.status = 'COMPLETED'
           stepExecution.completedAt = new Date()
-          stepExecution.executionTime = Date.now() - (stepExecution.startedAt?.getTime() || Date.now())
+          stepExecution.executionTime =
+            Date.now() - (stepExecution.startedAt?.getTime() || Date.now())
 
           // Update workflow context with step output
           execution.context.stepOutputs[step.id] = result.data
@@ -961,11 +1092,10 @@ export class WorkflowService extends EventEmitter {
             stepId: step.id,
             stepName: step.name,
             executionTime: stepExecution.executionTime,
-            attempt: attempt + 1
+            attempt: attempt + 1,
           })
 
           return // Success, exit retry loop
-
         } catch (error) {
           lastError = error as Error
           stepExecution.retryCount = attempt
@@ -973,7 +1103,8 @@ export class WorkflowService extends EventEmitter {
           if (attempt < retryConfig.maxRetries) {
             // Calculate backoff delay
             const delay = Math.min(
-              retryConfig.backoffMs * Math.pow(retryConfig.backoffMultiplier, attempt),
+              retryConfig.backoffMs *
+                Math.pow(retryConfig.backoffMultiplier, attempt),
               retryConfig.maxBackoffMs
             )
 
@@ -984,7 +1115,7 @@ export class WorkflowService extends EventEmitter {
               attempt: attempt + 1,
               maxRetries: retryConfig.maxRetries,
               retryDelay: delay,
-              error: (error as Error).message
+              error: (error as Error).message,
             })
 
             // Wait before retry
@@ -995,19 +1126,19 @@ export class WorkflowService extends EventEmitter {
 
       // All retries exhausted
       throw lastError || new Error('Step execution failed after all retries')
-
     } catch (error) {
       // Mark step as failed
       stepExecution.status = 'FAILED'
       stepExecution.completedAt = new Date()
       stepExecution.error = (error as Error).message
-      stepExecution.executionTime = Date.now() - (stepExecution.startedAt?.getTime() || Date.now())
+      stepExecution.executionTime =
+        Date.now() - (stepExecution.startedAt?.getTime() || Date.now())
 
       logger.error('Workflow step failed', error as Error, {
         executionId: execution.id,
         stepId: step.id,
         stepName: step.name,
-        retryCount: stepExecution.retryCount
+        retryCount: stepExecution.retryCount,
       })
 
       throw error
@@ -1017,7 +1148,10 @@ export class WorkflowService extends EventEmitter {
   /**
    * Check if a step should be executed based on its conditions
    */
-  private shouldExecuteStep(step: WorkflowStepDefinition, execution: WorkflowExecution): boolean {
+  private shouldExecuteStep(
+    step: WorkflowStepDefinition,
+    execution: WorkflowExecution
+  ): boolean {
     for (const condition of step.conditions) {
       switch (condition.type) {
         case 'always':
@@ -1026,7 +1160,9 @@ export class WorkflowService extends EventEmitter {
         case 'on_success':
           if (condition.dependsOn) {
             return condition.dependsOn.every(depId => {
-              const depExecution = execution.stepExecutions.find(se => se.stepId === depId)
+              const depExecution = execution.stepExecutions.find(
+                se => se.stepId === depId
+              )
               return depExecution?.status === 'COMPLETED'
             })
           }
@@ -1035,14 +1171,16 @@ export class WorkflowService extends EventEmitter {
         case 'on_failure':
           if (condition.dependsOn) {
             return condition.dependsOn.some(depId => {
-              const depExecution = execution.stepExecutions.find(se => se.stepId === depId)
+              const depExecution = execution.stepExecutions.find(
+                se => se.stepId === depId
+              )
               return depExecution?.status === 'FAILED'
             })
           }
           return false
 
         case 'expression':
-          // For now, just return true. In a full implementation, 
+          // For now, just return true. In a full implementation,
           // this would evaluate the expression against the workflow context
           return true
 
@@ -1057,11 +1195,18 @@ export class WorkflowService extends EventEmitter {
   /**
    * Resolve variables in parameters using workflow context
    */
-  private resolveVariables(parameters: Record<string, unknown>, context: WorkflowContext): Record<string, unknown> {
+  private resolveVariables(
+    parameters: Record<string, unknown>,
+    context: WorkflowContext
+  ): Record<string, unknown> {
     const resolved: Record<string, unknown> = {}
 
     for (const [key, value] of Object.entries(parameters)) {
-      if (typeof value === 'string' && value.startsWith('${') && value.endsWith('}')) {
+      if (
+        typeof value === 'string' &&
+        value.startsWith('${') &&
+        value.endsWith('}')
+      ) {
         // Variable reference like ${variables.myVar} or ${steps.step1.output.result}
         const varPath = value.slice(2, -1) // Remove ${ and }
         resolved[key] = this.getValueFromPath(varPath, context)
@@ -1094,10 +1239,13 @@ export class WorkflowService extends EventEmitter {
   /**
    * Handle workflow execution error
    */
-  private async handleWorkflowError(execution: WorkflowExecution, error: Error): Promise<void> {
+  private async handleWorkflowError(
+    execution: WorkflowExecution,
+    error: Error
+  ): Promise<void> {
     logger.error('Workflow execution failed', error, {
       executionId: execution.id,
-      workflowId: execution.workflowId
+      workflowId: execution.workflowId,
     })
 
     // Update execution status
@@ -1118,31 +1266,33 @@ export class WorkflowService extends EventEmitter {
     // Notify WebSocket clients
     this.webSocketService?.notifyWorkflowStatusChange(execution.id, 'FAILED', {
       error: error.message,
-      completedAt: execution.completedAt
+      completedAt: execution.completedAt,
     })
 
     this.webSocketService?.notifyWorkflowError(execution.id, error.message, {
       workflowId: execution.workflowId,
-      timestamp: new Date()
+      timestamp: new Date(),
     })
 
     // Emit failure event
     this.emit('workflowFailed', {
       executionId: execution.id,
       workflowId: execution.workflowId,
-      error: error.message
+      error: error.message,
     })
   }
 
   /**
    * Build dependency graph from workflow steps
    */
-  private buildDependencyGraph(steps: WorkflowStepDefinition[]): Map<string, string[]> {
+  private buildDependencyGraph(
+    steps: WorkflowStepDefinition[]
+  ): Map<string, string[]> {
     const graph = new Map<string, string[]>()
 
     for (const step of steps) {
       const dependencies: string[] = []
-      
+
       for (const condition of step.conditions) {
         if (condition.dependsOn) {
           dependencies.push(...condition.dependsOn)
@@ -1202,11 +1352,11 @@ export class WorkflowService extends EventEmitter {
    */
   private findReachableSteps(steps: WorkflowStepDefinition[]): Set<string> {
     const reachable = new Set<string>()
-    
+
     // Find steps with no dependencies (entry points)
-    const entryPoints = steps.filter(step => 
-      step.conditions.every(condition => 
-        !condition.dependsOn || condition.dependsOn.length === 0
+    const entryPoints = steps.filter(step =>
+      step.conditions.every(
+        condition => !condition.dependsOn || condition.dependsOn.length === 0
       )
     )
 
@@ -1217,7 +1367,7 @@ export class WorkflowService extends EventEmitter {
 
     // BFS to find all reachable steps
     const queue = [...entryPoints.map(step => step.id)]
-    
+
     while (queue.length > 0) {
       const stepId = queue.shift()!
       if (reachable.has(stepId)) {
@@ -1229,7 +1379,10 @@ export class WorkflowService extends EventEmitter {
       // Find steps that depend on this step
       for (const step of steps) {
         for (const condition of step.conditions) {
-          if (condition.dependsOn?.includes(stepId) && !reachable.has(step.id)) {
+          if (
+            condition.dependsOn?.includes(stepId) &&
+            !reachable.has(step.id)
+          ) {
             queue.push(step.id)
           }
         }
@@ -1249,7 +1402,9 @@ export class WorkflowService extends EventEmitter {
       // Cancel all running executions
       const runningExecutionIds = Array.from(this.runningExecutions.keys())
       await Promise.all(
-        runningExecutionIds.map(executionId => this.cancelWorkflowExecution(executionId))
+        runningExecutionIds.map(executionId =>
+          this.cancelWorkflowExecution(executionId)
+        )
       )
 
       // Clear timeouts

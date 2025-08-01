@@ -73,6 +73,7 @@ The adapter framework follows these design patterns:
 ### Dependencies
 
 #### Main Dependencies
+
 - next: 15.4.4
 - react: 19.1.0
 - typescript: 5
@@ -83,18 +84,21 @@ The adapter framework follows these design patterns:
 - socket.io: 4.8.1
 
 #### UI and Component Libraries
-- @radix-ui/*
+
+- @radix-ui/\*
 - shadcn/ui (via CLI, not a direct dependency)
 - lucide-react
 - recharts
 - sonner
 
 #### Data and State Management
-- @dnd-kit/*
+
+- @dnd-kit/\*
 - react-hook-form
 - zod
 
 #### Backend and API
+
 - axios
 - bcryptjs
 - jsonwebtoken

@@ -1,30 +1,30 @@
-import express from 'express';
-import { z } from 'zod';
-import { backupService } from '../../lib/backup';
-import { requireAuth } from '../middleware/auth';
-import { validateRequest } from '../middleware/validation';
-import { logger } from '../../lib/logger';
+import express from 'express'
+import { z } from 'zod'
+import { backupService } from '../../lib/backup'
+import { requireAuth } from '../middleware/auth'
+import { validateRequest } from '../middleware/validation'
+import { logger } from '../../lib/logger'
 
-const router = express.Router();
+const router = express.Router()
 
 // Validation schemas
 const createBackupSchema = z.object({
   body: z.object({
-    compress: z.boolean().optional().default(true)
-  })
-});
+    compress: z.boolean().optional().default(true),
+  }),
+})
 
 const restoreBackupSchema = z.object({
   body: z.object({
-    backupId: z.string().min(1)
-  })
-});
+    backupId: z.string().min(1),
+  }),
+})
 
 const deleteBackupSchema = z.object({
   params: z.object({
-    backupId: z.string().min(1)
-  })
-});
+    backupId: z.string().min(1),
+  }),
+})
 
 /**
  * @swagger
@@ -69,32 +69,32 @@ const deleteBackupSchema = z.object({
  */
 router.get('/', requireAuth, async (req, res) => {
   try {
-    const backups = await backupService.listBackups();
-    
+    const backups = await backupService.listBackups()
+
     logger.info('Listed backups', {
       userId: req.user?.id,
-      backupCount: backups.length
-    });
+      backupCount: backups.length,
+    })
 
     res.json({
       success: true,
-      data: backups
-    });
+      data: backups,
+    })
   } catch (error) {
     logger.error('Failed to list backups', error as Error, {
-      userId: req.user?.id
-    });
+      userId: req.user?.id,
+    })
 
     res.status(500).json({
       success: false,
       error: {
         code: 'BACKUP_LIST_FAILED',
         message: 'Failed to list backups',
-        timestamp: new Date().toISOString()
-      }
-    });
+        timestamp: new Date().toISOString(),
+      },
+    })
   }
-});
+})
 
 /**
  * @swagger
@@ -147,61 +147,68 @@ router.get('/', requireAuth, async (req, res) => {
  *       500:
  *         description: Internal server error
  */
-router.post('/', requireAuth, validateRequest(createBackupSchema), async (req, res) => {
-  try {
-    const { compress } = req.body;
-    
-    logger.info('Creating backup', {
-      userId: req.user?.id,
-      compress
-    });
+router.post(
+  '/',
+  requireAuth,
+  validateRequest(createBackupSchema),
+  async (req, res) => {
+    try {
+      const { compress } = req.body
 
-    const result = await backupService.createBackup(compress);
-
-    if (result.success) {
-      logger.info('Backup created successfully', {
+      logger.info('Creating backup', {
         userId: req.user?.id,
-        backupId: result.metadata?.id,
-        filename: result.metadata?.filename,
-        size: result.metadata?.size
-      });
+        compress,
+      })
 
-      res.status(201).json({
-        success: true,
-        data: result.metadata
-      });
-    } else {
-      logger.warn('Backup creation failed', {
+      const result = await backupService.createBackup(compress)
+
+      if (result.success) {
+        logger.info('Backup created successfully', {
+          userId: req.user?.id,
+          backupId: result.metadata?.id,
+          filename: result.metadata?.filename,
+          size: result.metadata?.size,
+        })
+
+        res.status(201).json({
+          success: true,
+          data: result.metadata,
+        })
+      } else {
+        logger.warn('Backup creation failed', {
+          userId: req.user?.id,
+          error: result.error,
+        })
+
+        const statusCode = result.error?.includes('already in progress')
+          ? 409
+          : 500
+
+        res.status(statusCode).json({
+          success: false,
+          error: {
+            code: 'BACKUP_CREATION_FAILED',
+            message: result.error || 'Failed to create backup',
+            timestamp: new Date().toISOString(),
+          },
+        })
+      }
+    } catch (error) {
+      logger.error('Backup creation error', error as Error, {
         userId: req.user?.id,
-        error: result.error
-      });
+      })
 
-      const statusCode = result.error?.includes('already in progress') ? 409 : 500;
-      
-      res.status(statusCode).json({
+      res.status(500).json({
         success: false,
         error: {
-          code: 'BACKUP_CREATION_FAILED',
-          message: result.error || 'Failed to create backup',
-          timestamp: new Date().toISOString()
-        }
-      });
+          code: 'BACKUP_CREATION_ERROR',
+          message: 'An unexpected error occurred while creating backup',
+          timestamp: new Date().toISOString(),
+        },
+      })
     }
-  } catch (error) {
-    logger.error('Backup creation error', error as Error, {
-      userId: req.user?.id
-    });
-
-    res.status(500).json({
-      success: false,
-      error: {
-        code: 'BACKUP_CREATION_ERROR',
-        message: 'An unexpected error occurred while creating backup',
-        timestamp: new Date().toISOString()
-      }
-    });
   }
-});
+)
 
 /**
  * @swagger
@@ -251,9 +258,9 @@ router.post('/', requireAuth, validateRequest(createBackupSchema), async (req, r
  */
 router.get('/:backupId', requireAuth, async (req, res) => {
   try {
-    const { backupId } = req.params;
-    const backups = await backupService.listBackups();
-    const backup = backups.find(b => b.id === backupId);
+    const { backupId } = req.params
+    const backups = await backupService.listBackups()
+    const backup = backups.find(b => b.id === backupId)
 
     if (!backup) {
       return res.status(404).json({
@@ -261,36 +268,36 @@ router.get('/:backupId', requireAuth, async (req, res) => {
         error: {
           code: 'BACKUP_NOT_FOUND',
           message: `Backup with ID ${backupId} not found`,
-          timestamp: new Date().toISOString()
-        }
-      });
+          timestamp: new Date().toISOString(),
+        },
+      })
     }
 
     logger.info('Retrieved backup details', {
       userId: req.user?.id,
-      backupId
-    });
+      backupId,
+    })
 
     res.json({
       success: true,
-      data: backup
-    });
+      data: backup,
+    })
   } catch (error) {
     logger.error('Failed to get backup details', error as Error, {
       userId: req.user?.id,
-      backupId: req.params.backupId
-    });
+      backupId: req.params.backupId,
+    })
 
     res.status(500).json({
       success: false,
       error: {
         code: 'BACKUP_DETAILS_FAILED',
         message: 'Failed to retrieve backup details',
-        timestamp: new Date().toISOString()
-      }
-    });
+        timestamp: new Date().toISOString(),
+      },
+    })
   }
-});
+})
 
 /**
  * @swagger
@@ -341,72 +348,77 @@ router.get('/:backupId', requireAuth, async (req, res) => {
  *       500:
  *         description: Internal server error
  */
-router.post('/restore', requireAuth, validateRequest(restoreBackupSchema), async (req, res) => {
-  try {
-    const { backupId } = req.body;
-    
-    logger.info('Starting database restore', {
-      userId: req.user?.id,
-      backupId
-    });
+router.post(
+  '/restore',
+  requireAuth,
+  validateRequest(restoreBackupSchema),
+  async (req, res) => {
+    try {
+      const { backupId } = req.body
 
-    const result = await backupService.restoreBackup(backupId);
-
-    if (result.success) {
-      logger.info('Database restored successfully', {
+      logger.info('Starting database restore', {
         userId: req.user?.id,
         backupId,
-        restoredFrom: result.restoredFrom
-      });
+      })
 
-      res.json({
-        success: true,
-        data: {
+      const result = await backupService.restoreBackup(backupId)
+
+      if (result.success) {
+        logger.info('Database restored successfully', {
+          userId: req.user?.id,
+          backupId,
           restoredFrom: result.restoredFrom,
-          restoredAt: new Date().toISOString()
+        })
+
+        res.json({
+          success: true,
+          data: {
+            restoredFrom: result.restoredFrom,
+            restoredAt: new Date().toISOString(),
+          },
+        })
+      } else {
+        logger.warn('Database restore failed', {
+          userId: req.user?.id,
+          backupId,
+          error: result.error,
+        })
+
+        let statusCode = 500
+        if (result.error?.includes('not found')) {
+          statusCode = 404
+        } else if (result.error?.includes('already in progress')) {
+          statusCode = 409
+        } else if (result.error?.includes('integrity check failed')) {
+          statusCode = 400
         }
-      });
-    } else {
-      logger.warn('Database restore failed', {
-        userId: req.user?.id,
-        backupId,
-        error: result.error
-      });
 
-      let statusCode = 500;
-      if (result.error?.includes('not found')) {
-        statusCode = 404;
-      } else if (result.error?.includes('already in progress')) {
-        statusCode = 409;
-      } else if (result.error?.includes('integrity check failed')) {
-        statusCode = 400;
+        res.status(statusCode).json({
+          success: false,
+          error: {
+            code: 'RESTORE_FAILED',
+            message: result.error || 'Failed to restore database',
+            timestamp: new Date().toISOString(),
+          },
+        })
       }
+    } catch (error) {
+      logger.error('Database restore error', error as Error, {
+        userId: req.user?.id,
+        backupId: req.body.backupId,
+      })
 
-      res.status(statusCode).json({
+      res.status(500).json({
         success: false,
         error: {
-          code: 'RESTORE_FAILED',
-          message: result.error || 'Failed to restore database',
-          timestamp: new Date().toISOString()
-        }
-      });
+          code: 'RESTORE_ERROR',
+          message: 'An unexpected error occurred during restore',
+          timestamp: new Date().toISOString(),
+        },
+      })
     }
-  } catch (error) {
-    logger.error('Database restore error', error as Error, {
-      userId: req.user?.id,
-      backupId: req.body.backupId
-    });
-
-    res.status(500).json({
-      success: false,
-      error: {
-        code: 'RESTORE_ERROR',
-        message: 'An unexpected error occurred during restore',
-        timestamp: new Date().toISOString()
-      }
-    });
   }
-});
+)
 
 /**
  * @swagger
@@ -442,58 +454,63 @@ router.post('/restore', requireAuth, validateRequest(restoreBackupSchema), async
  *       500:
  *         description: Internal server error
  */
-router.delete('/:backupId', requireAuth, validateRequest(deleteBackupSchema), async (req, res) => {
-  try {
-    const { backupId } = req.params;
-    
-    logger.info('Deleting backup', {
-      userId: req.user?.id,
-      backupId
-    });
+router.delete(
+  '/:backupId',
+  requireAuth,
+  validateRequest(deleteBackupSchema),
+  async (req, res) => {
+    try {
+      const { backupId } = req.params
 
-    const deleted = await backupService.deleteBackup(backupId);
-
-    if (deleted) {
-      logger.info('Backup deleted successfully', {
+      logger.info('Deleting backup', {
         userId: req.user?.id,
-        backupId
-      });
+        backupId,
+      })
 
-      res.json({
-        success: true,
-        message: 'Backup deleted successfully'
-      });
-    } else {
-      logger.warn('Backup not found for deletion', {
+      const deleted = await backupService.deleteBackup(backupId)
+
+      if (deleted) {
+        logger.info('Backup deleted successfully', {
+          userId: req.user?.id,
+          backupId,
+        })
+
+        res.json({
+          success: true,
+          message: 'Backup deleted successfully',
+        })
+      } else {
+        logger.warn('Backup not found for deletion', {
+          userId: req.user?.id,
+          backupId,
+        })
+
+        res.status(404).json({
+          success: false,
+          error: {
+            code: 'BACKUP_NOT_FOUND',
+            message: `Backup with ID ${backupId} not found`,
+            timestamp: new Date().toISOString(),
+          },
+        })
+      }
+    } catch (error) {
+      logger.error('Failed to delete backup', error as Error, {
         userId: req.user?.id,
-        backupId
-      });
+        backupId: req.params.backupId,
+      })
 
-      res.status(404).json({
+      res.status(500).json({
         success: false,
         error: {
-          code: 'BACKUP_NOT_FOUND',
-          message: `Backup with ID ${backupId} not found`,
-          timestamp: new Date().toISOString()
-        }
-      });
+          code: 'BACKUP_DELETE_FAILED',
+          message: 'Failed to delete backup',
+          timestamp: new Date().toISOString(),
+        },
+      })
     }
-  } catch (error) {
-    logger.error('Failed to delete backup', error as Error, {
-      userId: req.user?.id,
-      backupId: req.params.backupId
-    });
-
-    res.status(500).json({
-      success: false,
-      error: {
-        code: 'BACKUP_DELETE_FAILED',
-        message: 'Failed to delete backup',
-        timestamp: new Date().toISOString()
-      }
-    });
   }
-});
+)
 
 /**
  * @swagger
@@ -533,32 +550,32 @@ router.delete('/:backupId', requireAuth, validateRequest(deleteBackupSchema), as
  */
 router.get('/stats', requireAuth, async (req, res) => {
   try {
-    const stats = await backupService.getBackupStats();
-    
+    const stats = await backupService.getBackupStats()
+
     logger.info('Retrieved backup statistics', {
       userId: req.user?.id,
       totalBackups: stats.totalBackups,
-      totalSize: stats.totalSize
-    });
+      totalSize: stats.totalSize,
+    })
 
     res.json({
       success: true,
-      data: stats
-    });
+      data: stats,
+    })
   } catch (error) {
     logger.error('Failed to get backup statistics', error as Error, {
-      userId: req.user?.id
-    });
+      userId: req.user?.id,
+    })
 
     res.status(500).json({
       success: false,
       error: {
         code: 'BACKUP_STATS_FAILED',
         message: 'Failed to retrieve backup statistics',
-        timestamp: new Date().toISOString()
-      }
-    });
+        timestamp: new Date().toISOString(),
+      },
+    })
   }
-});
+})
 
-export default router;
+export default router

@@ -58,9 +58,7 @@
       "passed": false,
       "message": "Linting errors found",
       "score": 0,
-      "recommendations": [
-        "Fix linting errors: npm run lint --fix"
-      ],
+      "recommendations": ["Fix linting errors: npm run lint --fix"],
       "category": "Code Quality",
       "name": "Linting and Formatting",
       "critical": true
@@ -69,9 +67,7 @@
       "passed": false,
       "message": "TypeScript compilation errors",
       "score": 0,
-      "recommendations": [
-        "Fix TypeScript errors before deployment"
-      ],
+      "recommendations": ["Fix TypeScript errors before deployment"],
       "category": "Code Quality",
       "name": "Type Safety",
       "critical": true
@@ -80,9 +76,7 @@
       "passed": false,
       "message": "Build process failed",
       "score": 0,
-      "recommendations": [
-        "Fix build errors before deployment"
-      ],
+      "recommendations": ["Fix build errors before deployment"],
       "category": "Code Quality",
       "name": "Build Process",
       "critical": true
@@ -91,9 +85,7 @@
       "passed": false,
       "message": "Unit tests failed",
       "score": 0,
-      "recommendations": [
-        "Fix failing unit tests before deployment"
-      ],
+      "recommendations": ["Fix failing unit tests before deployment"],
       "category": "Testing",
       "name": "Unit Tests",
       "critical": true
@@ -102,9 +94,7 @@
       "passed": false,
       "message": "Integration tests failed",
       "score": 0,
-      "recommendations": [
-        "Fix failing integration tests"
-      ],
+      "recommendations": ["Fix failing integration tests"],
       "category": "Testing",
       "name": "Integration Tests",
       "critical": true
@@ -113,9 +103,7 @@
       "passed": false,
       "message": "E2E tests failed or not configured",
       "score": 30,
-      "recommendations": [
-        "Fix E2E tests or create them if missing"
-      ],
+      "recommendations": ["Fix E2E tests or create them if missing"],
       "category": "Testing",
       "name": "End-to-End Tests",
       "critical": false
@@ -133,13 +121,9 @@
       "message": "1 security issues found",
       "score": 80,
       "details": {
-        "issues": [
-          "NODE_ENV not set to production"
-        ]
+        "issues": ["NODE_ENV not set to production"]
       },
-      "recommendations": [
-        "Fix: NODE_ENV not set to production"
-      ],
+      "recommendations": ["Fix: NODE_ENV not set to production"],
       "category": "Security",
       "name": "Environment Configuration",
       "critical": true
@@ -184,13 +168,9 @@
       "message": "1 database issues found",
       "score": 70,
       "details": {
-        "issues": [
-          "DATABASE_URL not configured"
-        ]
+        "issues": ["DATABASE_URL not configured"]
       },
-      "recommendations": [
-        "Fix: DATABASE_URL not configured"
-      ],
+      "recommendations": ["Fix: DATABASE_URL not configured"],
       "category": "Infrastructure",
       "name": "Database Setup",
       "critical": true
@@ -200,11 +180,7 @@
       "message": "3 required variables missing",
       "score": 10,
       "details": {
-        "missingVars": [
-          "NODE_ENV",
-          "DATABASE_URL",
-          "JWT_SECRET"
-        ]
+        "missingVars": ["NODE_ENV", "DATABASE_URL", "JWT_SECRET"]
       },
       "recommendations": [
         "Set NODE_ENV environment variable",

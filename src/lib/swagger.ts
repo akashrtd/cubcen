@@ -42,22 +42,22 @@ const swaggerOptions: swaggerJsdoc.Options = {
       `,
       contact: {
         name: 'Cubcen API Support',
-        email: 'support@cubcen.com'
+        email: 'support@cubcen.com',
       },
       license: {
         name: 'MIT',
-        url: 'https://opensource.org/licenses/MIT'
-      }
+        url: 'https://opensource.org/licenses/MIT',
+      },
     },
     servers: [
       {
         url: process.env.API_BASE_URL || 'http://localhost:3000',
-        description: 'Development server'
+        description: 'Development server',
       },
       {
         url: 'https://api.cubcen.com',
-        description: 'Production server'
-      }
+        description: 'Production server',
+      },
     ],
     components: {
       securitySchemes: {
@@ -65,8 +65,9 @@ const swaggerOptions: swaggerJsdoc.Options = {
           type: 'http',
           scheme: 'bearer',
           bearerFormat: 'JWT',
-          description: 'JWT token obtained from /api/cubcen/v1/auth/login endpoint'
-        }
+          description:
+            'JWT token obtained from /api/cubcen/v1/auth/login endpoint',
+        },
       },
       schemas: {
         Error: {
@@ -80,30 +81,30 @@ const swaggerOptions: swaggerJsdoc.Options = {
                 code: {
                   type: 'string',
                   description: 'Error code identifier',
-                  example: 'VALIDATION_ERROR'
+                  example: 'VALIDATION_ERROR',
                 },
                 message: {
                   type: 'string',
                   description: 'Human-readable error message',
-                  example: 'Invalid input parameters'
+                  example: 'Invalid input parameters',
                 },
                 details: {
                   type: 'object',
-                  description: 'Additional error details (development only)'
+                  description: 'Additional error details (development only)',
                 },
                 timestamp: {
                   type: 'string',
                   format: 'date-time',
-                  description: 'ISO timestamp when error occurred'
+                  description: 'ISO timestamp when error occurred',
                 },
                 requestId: {
                   type: 'string',
                   description: 'Unique request identifier for tracking',
-                  example: 'req_1234567890_abc123'
-                }
-              }
-            }
-          }
+                  example: 'req_1234567890_abc123',
+                },
+              },
+            },
+          },
         },
         Agent: {
           type: 'object',
@@ -112,54 +113,54 @@ const swaggerOptions: swaggerJsdoc.Options = {
             id: {
               type: 'string',
               description: 'Unique agent identifier',
-              example: 'agent_123'
+              example: 'agent_123',
             },
             name: {
               type: 'string',
               description: 'Human-readable agent name',
-              example: 'Email Processing Agent'
+              example: 'Email Processing Agent',
             },
             platformId: {
               type: 'string',
               description: 'Platform-specific agent identifier',
-              example: 'n8n_workflow_456'
+              example: 'n8n_workflow_456',
             },
             platformType: {
               type: 'string',
               enum: ['n8n', 'make', 'zapier'],
-              description: 'Type of automation platform'
+              description: 'Type of automation platform',
             },
             status: {
               type: 'string',
               enum: ['active', 'inactive', 'error', 'maintenance'],
-              description: 'Current agent status'
+              description: 'Current agent status',
             },
             capabilities: {
               type: 'array',
               items: {
-                type: 'string'
+                type: 'string',
               },
               description: 'List of agent capabilities',
-              example: ['email', 'data-processing', 'api-integration']
+              example: ['email', 'data-processing', 'api-integration'],
             },
             configuration: {
               type: 'object',
-              description: 'Agent-specific configuration parameters'
+              description: 'Agent-specific configuration parameters',
             },
             healthStatus: {
-              $ref: '#/components/schemas/HealthStatus'
+              $ref: '#/components/schemas/HealthStatus',
             },
             createdAt: {
               type: 'string',
               format: 'date-time',
-              description: 'Agent creation timestamp'
+              description: 'Agent creation timestamp',
             },
             updatedAt: {
               type: 'string',
               format: 'date-time',
-              description: 'Last update timestamp'
-            }
-          }
+              description: 'Last update timestamp',
+            },
+          },
         },
         Task: {
           type: 'object',
@@ -168,56 +169,56 @@ const swaggerOptions: swaggerJsdoc.Options = {
             id: {
               type: 'string',
               description: 'Unique task identifier',
-              example: 'task_789'
+              example: 'task_789',
             },
             agentId: {
               type: 'string',
               description: 'ID of the agent executing this task',
-              example: 'agent_123'
+              example: 'agent_123',
             },
             workflowId: {
               type: 'string',
               description: 'Optional workflow identifier',
-              example: 'workflow_456'
+              example: 'workflow_456',
             },
             status: {
               type: 'string',
               enum: ['pending', 'running', 'completed', 'failed', 'cancelled'],
-              description: 'Current task status'
+              description: 'Current task status',
             },
             priority: {
               type: 'string',
               enum: ['low', 'medium', 'high', 'critical'],
-              description: 'Task execution priority'
+              description: 'Task execution priority',
             },
             scheduledAt: {
               type: 'string',
               format: 'date-time',
-              description: 'When the task is scheduled to run'
+              description: 'When the task is scheduled to run',
             },
             startedAt: {
               type: 'string',
               format: 'date-time',
-              description: 'When the task started executing'
+              description: 'When the task started executing',
             },
             completedAt: {
               type: 'string',
               format: 'date-time',
-              description: 'When the task completed'
+              description: 'When the task completed',
             },
             parameters: {
               type: 'object',
-              description: 'Task execution parameters'
+              description: 'Task execution parameters',
             },
             result: {
               type: 'object',
-              description: 'Task execution result'
+              description: 'Task execution result',
             },
             error: {
               type: 'object',
-              description: 'Error information if task failed'
-            }
-          }
+              description: 'Error information if task failed',
+            },
+          },
         },
         Platform: {
           type: 'object',
@@ -226,35 +227,35 @@ const swaggerOptions: swaggerJsdoc.Options = {
             id: {
               type: 'string',
               description: 'Unique platform identifier',
-              example: 'platform_n8n_001'
+              example: 'platform_n8n_001',
             },
             name: {
               type: 'string',
               description: 'Platform display name',
-              example: 'n8n Production'
+              example: 'n8n Production',
             },
             type: {
               type: 'string',
               enum: ['n8n', 'make', 'zapier'],
-              description: 'Platform type'
+              description: 'Platform type',
             },
             baseUrl: {
               type: 'string',
               format: 'uri',
               description: 'Base URL for platform API',
-              example: 'https://n8n.company.com'
+              example: 'https://n8n.company.com',
             },
             status: {
               type: 'string',
               enum: ['connected', 'disconnected', 'error'],
-              description: 'Platform connection status'
+              description: 'Platform connection status',
             },
             lastSyncAt: {
               type: 'string',
               format: 'date-time',
-              description: 'Last successful synchronization timestamp'
-            }
-          }
+              description: 'Last successful synchronization timestamp',
+            },
+          },
         },
         HealthStatus: {
           type: 'object',
@@ -263,18 +264,18 @@ const swaggerOptions: swaggerJsdoc.Options = {
             status: {
               type: 'string',
               enum: ['healthy', 'unhealthy', 'degraded'],
-              description: 'Health status indicator'
+              description: 'Health status indicator',
             },
             lastCheck: {
               type: 'string',
               format: 'date-time',
-              description: 'Last health check timestamp'
+              description: 'Last health check timestamp',
             },
             details: {
               type: 'object',
-              description: 'Additional health check details'
-            }
-          }
+              description: 'Additional health check details',
+            },
+          },
         },
         User: {
           type: 'object',
@@ -283,50 +284,47 @@ const swaggerOptions: swaggerJsdoc.Options = {
             id: {
               type: 'string',
               description: 'Unique user identifier',
-              example: 'user_123'
+              example: 'user_123',
             },
             email: {
               type: 'string',
               format: 'email',
               description: 'User email address',
-              example: 'user@company.com'
+              example: 'user@company.com',
             },
             role: {
               type: 'string',
               enum: ['admin', 'operator', 'viewer'],
-              description: 'User role for RBAC'
+              description: 'User role for RBAC',
             },
             permissions: {
               type: 'array',
               items: {
-                type: 'string'
+                type: 'string',
               },
-              description: 'List of user permissions'
+              description: 'List of user permissions',
             },
             createdAt: {
               type: 'string',
               format: 'date-time',
-              description: 'User creation timestamp'
+              description: 'User creation timestamp',
             },
             lastLoginAt: {
               type: 'string',
               format: 'date-time',
-              description: 'Last login timestamp'
-            }
-          }
-        }
-      }
+              description: 'Last login timestamp',
+            },
+          },
+        },
+      },
     },
     security: [
       {
-        bearerAuth: []
-      }
-    ]
+        bearerAuth: [],
+      },
+    ],
   },
-  apis: [
-    './src/backend/routes/*.ts',
-    './src/backend/routes/**/*.ts'
-  ]
+  apis: ['./src/backend/routes/*.ts', './src/backend/routes/**/*.ts'],
 }
 
 // Generate OpenAPI specification
@@ -351,8 +349,8 @@ const swaggerUiOptions = {
     showCommonExtensions: true,
     docExpansion: 'list',
     defaultModelsExpandDepth: 2,
-    defaultModelExpandDepth: 2
-  }
+    defaultModelExpandDepth: 2,
+  },
 }
 
 /**
@@ -361,17 +359,21 @@ const swaggerUiOptions = {
 export function setupSwagger(app: Express): void {
   try {
     // Serve Swagger UI
-    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, swaggerUiOptions))
-    
+    app.use(
+      '/api-docs',
+      swaggerUi.serve,
+      swaggerUi.setup(specs, swaggerUiOptions)
+    )
+
     // Serve raw OpenAPI spec
     app.get('/api-docs.json', (req, res) => {
       res.setHeader('Content-Type', 'application/json')
       res.send(specs)
     })
-    
+
     logger.info('Swagger documentation setup completed', {
       docsUrl: '/api-docs',
-      specUrl: '/api-docs.json'
+      specUrl: '/api-docs.json',
     })
   } catch (error) {
     logger.error('Failed to setup Swagger documentation', error as Error)
@@ -387,17 +389,17 @@ export function validateApiSpec(): boolean {
     if (!specs || typeof specs !== 'object') {
       throw new Error('Invalid OpenAPI specification generated')
     }
-    
+
     if (!specs.openapi || !specs.info || !specs.paths) {
       throw new Error('OpenAPI specification missing required fields')
     }
-    
+
     logger.info('OpenAPI specification validation passed', {
       version: specs.info.version,
       title: specs.info.title,
-      pathCount: Object.keys(specs.paths || {}).length
+      pathCount: Object.keys(specs.paths || {}).length,
     })
-    
+
     return true
   } catch (error) {
     logger.error('OpenAPI specification validation failed', error as Error)

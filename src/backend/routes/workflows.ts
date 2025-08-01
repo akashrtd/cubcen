@@ -14,7 +14,7 @@ import {
   WorkflowUpdateData,
   WorkflowExecutionOptions,
   WorkflowListOptions,
-  WorkflowStatus
+  WorkflowStatus,
 } from '@/types/workflow'
 
 // Validation schemas
@@ -22,92 +22,134 @@ const createWorkflowSchema = z.object({
   body: z.object({
     name: z.string().min(1).max(200),
     description: z.string().optional(),
-    steps: z.array(z.object({
-      agentId: z.string().min(1),
-      stepOrder: z.number().min(0),
-      name: z.string().min(1).max(200),
-      parameters: z.record(z.string(), z.unknown()).default({}),
-      conditions: z.array(z.object({
-        type: z.enum(['always', 'on_success', 'on_failure', 'expression']),
-        expression: z.string().optional(),
-        dependsOn: z.array(z.string()).optional()
-      })).default([{ type: 'always' }]),
-      retryConfig: z.object({
-        maxRetries: z.number().min(0).max(10).default(3),
-        backoffMs: z.number().min(100).default(1000),
-        backoffMultiplier: z.number().min(1).default(2),
-        maxBackoffMs: z.number().min(1000).default(30000)
-      }).optional(),
-      timeoutMs: z.number().min(1000).max(300000).default(60000)
-    })).min(1)
-  })
+    steps: z
+      .array(
+        z.object({
+          agentId: z.string().min(1),
+          stepOrder: z.number().min(0),
+          name: z.string().min(1).max(200),
+          parameters: z.record(z.string(), z.unknown()).default({}),
+          conditions: z
+            .array(
+              z.object({
+                type: z.enum([
+                  'always',
+                  'on_success',
+                  'on_failure',
+                  'expression',
+                ]),
+                expression: z.string().optional(),
+                dependsOn: z.array(z.string()).optional(),
+              })
+            )
+            .default([{ type: 'always' }]),
+          retryConfig: z
+            .object({
+              maxRetries: z.number().min(0).max(10).default(3),
+              backoffMs: z.number().min(100).default(1000),
+              backoffMultiplier: z.number().min(1).default(2),
+              maxBackoffMs: z.number().min(1000).default(30000),
+            })
+            .optional(),
+          timeoutMs: z.number().min(1000).max(300000).default(60000),
+        })
+      )
+      .min(1),
+  }),
 })
 
 const updateWorkflowSchema = z.object({
   params: z.object({
-    id: z.string().min(1)
+    id: z.string().min(1),
   }),
   body: z.object({
     name: z.string().min(1).max(200).optional(),
     description: z.string().optional(),
     status: z.enum(['DRAFT', 'ACTIVE', 'PAUSED', 'ARCHIVED']).optional(),
-    steps: z.array(z.object({
-      id: z.string().optional(),
-      agentId: z.string().min(1),
-      stepOrder: z.number().min(0),
-      name: z.string().min(1).max(200),
-      parameters: z.record(z.string(), z.unknown()).default({}),
-      conditions: z.array(z.object({
-        type: z.enum(['always', 'on_success', 'on_failure', 'expression']),
-        expression: z.string().optional(),
-        dependsOn: z.array(z.string()).optional()
-      })).default([{ type: 'always' }]),
-      retryConfig: z.object({
-        maxRetries: z.number().min(0).max(10).default(3),
-        backoffMs: z.number().min(100).default(1000),
-        backoffMultiplier: z.number().min(1).default(2),
-        maxBackoffMs: z.number().min(1000).default(30000)
-      }).optional(),
-      timeoutMs: z.number().min(1000).max(300000).default(60000)
-    })).optional()
-  })
+    steps: z
+      .array(
+        z.object({
+          id: z.string().optional(),
+          agentId: z.string().min(1),
+          stepOrder: z.number().min(0),
+          name: z.string().min(1).max(200),
+          parameters: z.record(z.string(), z.unknown()).default({}),
+          conditions: z
+            .array(
+              z.object({
+                type: z.enum([
+                  'always',
+                  'on_success',
+                  'on_failure',
+                  'expression',
+                ]),
+                expression: z.string().optional(),
+                dependsOn: z.array(z.string()).optional(),
+              })
+            )
+            .default([{ type: 'always' }]),
+          retryConfig: z
+            .object({
+              maxRetries: z.number().min(0).max(10).default(3),
+              backoffMs: z.number().min(100).default(1000),
+              backoffMultiplier: z.number().min(1).default(2),
+              maxBackoffMs: z.number().min(1000).default(30000),
+            })
+            .optional(),
+          timeoutMs: z.number().min(1000).max(300000).default(60000),
+        })
+      )
+      .optional(),
+  }),
 })
 
 const getWorkflowsSchema = z.object({
   query: z.object({
     page: z.string().transform(Number).pipe(z.number().min(1)).default('1'),
-    limit: z.string().transform(Number).pipe(z.number().min(1).max(100)).default('10'),
+    limit: z
+      .string()
+      .transform(Number)
+      .pipe(z.number().min(1).max(100))
+      .default('10'),
     status: z.enum(['DRAFT', 'ACTIVE', 'PAUSED', 'ARCHIVED']).optional(),
     createdBy: z.string().optional(),
-    dateFrom: z.string().datetime().transform(str => new Date(str)).optional(),
-    dateTo: z.string().datetime().transform(str => new Date(str)).optional(),
+    dateFrom: z
+      .string()
+      .datetime()
+      .transform(str => new Date(str))
+      .optional(),
+    dateTo: z
+      .string()
+      .datetime()
+      .transform(str => new Date(str))
+      .optional(),
     search: z.string().optional(),
     sortBy: z.string().default('createdAt'),
-    sortOrder: z.enum(['asc', 'desc']).default('desc')
-  })
+    sortOrder: z.enum(['asc', 'desc']).default('desc'),
+  }),
 })
 
 const executeWorkflowSchema = z.object({
   params: z.object({
-    id: z.string().min(1)
+    id: z.string().min(1),
   }),
   body: z.object({
     variables: z.record(z.string(), z.unknown()).default({}),
     metadata: z.record(z.string(), z.unknown()).default({}),
-    dryRun: z.boolean().default(false)
-  })
+    dryRun: z.boolean().default(false),
+  }),
 })
 
 const workflowIdSchema = z.object({
   params: z.object({
-    id: z.string().min(1)
-  })
+    id: z.string().min(1),
+  }),
 })
 
 const executionIdSchema = z.object({
   params: z.object({
-    executionId: z.string().min(1)
-  })
+    executionId: z.string().min(1),
+  }),
 })
 
 export function createWorkflowRoutes(workflowService: WorkflowService): Router {
@@ -218,8 +260,8 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
           return res.status(401).json({
             error: {
               code: 'UNAUTHORIZED',
-              message: 'User ID not found in token'
-            }
+              message: 'User ID not found in token',
+            },
           })
         }
 
@@ -227,7 +269,7 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
           name,
           description,
           steps,
-          createdBy: userId
+          createdBy: userId,
         }
 
         const workflow = await workflowService.createWorkflow(workflowData)
@@ -236,17 +278,17 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
           workflowId: workflow.id,
           name: workflow.name,
           userId,
-          stepCount: workflow.steps.length
+          stepCount: workflow.steps.length,
         })
 
         res.status(201).json({
           success: true,
-          data: workflow
+          data: workflow,
         })
       } catch (error) {
         logger.error('Failed to create workflow via API', error as Error, {
           userId: req.user?.id,
-          body: req.body
+          body: req.body,
         })
         next(error)
       }
@@ -354,19 +396,19 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
           dateTo: req.query.dateTo as Date,
           search: req.query.search as string,
           sortBy: req.query.sortBy as string,
-          sortOrder: req.query.sortOrder as 'asc' | 'desc'
+          sortOrder: req.query.sortOrder as 'asc' | 'desc',
         }
 
         const result = await workflowService.getWorkflows(options)
 
         res.json({
           success: true,
-          data: result
+          data: result,
         })
       } catch (error) {
         logger.error('Failed to get workflows via API', error as Error, {
           userId: req.user?.id,
-          query: req.query
+          query: req.query,
         })
         next(error)
       }
@@ -420,19 +462,19 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
           return res.status(404).json({
             error: {
               code: 'WORKFLOW_NOT_FOUND',
-              message: `Workflow with ID ${id} not found`
-            }
+              message: `Workflow with ID ${id} not found`,
+            },
           })
         }
 
         res.json({
           success: true,
-          data: workflow
+          data: workflow,
         })
       } catch (error) {
         logger.error('Failed to get workflow via API', error as Error, {
           userId: req.user?.id,
-          workflowId: req.params.id
+          workflowId: req.params.id,
         })
         next(error)
       }
@@ -559,18 +601,18 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
         logger.info('Workflow updated via API', {
           workflowId: id,
           userId: req.user?.id,
-          updateData
+          updateData,
         })
 
         res.json({
           success: true,
-          data: workflow
+          data: workflow,
         })
       } catch (error) {
         logger.error('Failed to update workflow via API', error as Error, {
           userId: req.user?.id,
           workflowId: req.params.id,
-          body: req.body
+          body: req.body,
         })
         next(error)
       }
@@ -622,17 +664,17 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
 
         logger.info('Workflow deleted via API', {
           workflowId: id,
-          userId: req.user?.id
+          userId: req.user?.id,
         })
 
         res.json({
           success: true,
-          message: 'Workflow deleted successfully'
+          message: 'Workflow deleted successfully',
         })
       } catch (error) {
         logger.error('Failed to delete workflow via API', error as Error, {
           userId: req.user?.id,
-          workflowId: req.params.id
+          workflowId: req.params.id,
         })
         next(error)
       }
@@ -710,21 +752,22 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
           return res.status(404).json({
             error: {
               code: 'WORKFLOW_NOT_FOUND',
-              message: `Workflow with ID ${id} not found`
-            }
+              message: `Workflow with ID ${id} not found`,
+            },
           })
         }
 
-        const validation = await workflowService.validateWorkflowDefinition(workflow)
+        const validation =
+          await workflowService.validateWorkflowDefinition(workflow)
 
         res.json({
           success: true,
-          data: validation
+          data: validation,
         })
       } catch (error) {
         logger.error('Failed to validate workflow via API', error as Error, {
           userId: req.user?.id,
-          workflowId: req.params.id
+          workflowId: req.params.id,
         })
         next(error)
       }
@@ -807,24 +850,28 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
           return res.status(401).json({
             error: {
               code: 'UNAUTHORIZED',
-              message: 'User ID not found in token'
-            }
+              message: 'User ID not found in token',
+            },
           })
         }
 
         const options: WorkflowExecutionOptions = {
           variables,
           metadata,
-          dryRun
+          dryRun,
         }
 
-        const executionId = await workflowService.executeWorkflow(id, options, userId)
+        const executionId = await workflowService.executeWorkflow(
+          id,
+          options,
+          userId
+        )
 
         logger.info('Workflow execution started via API', {
           workflowId: id,
           executionId,
           userId,
-          dryRun
+          dryRun,
         })
 
         res.json({
@@ -833,14 +880,14 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
             executionId,
             workflowId: id,
             status: 'PENDING',
-            startedAt: new Date().toISOString()
-          }
+            startedAt: new Date().toISOString(),
+          },
         })
       } catch (error) {
         logger.error('Failed to execute workflow via API', error as Error, {
           userId: req.user?.id,
           workflowId: req.params.id,
-          body: req.body
+          body: req.body,
         })
         next(error)
       }
@@ -914,20 +961,24 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
           return res.status(404).json({
             error: {
               code: 'EXECUTION_NOT_FOUND',
-              message: `Workflow execution with ID ${executionId} not found`
-            }
+              message: `Workflow execution with ID ${executionId} not found`,
+            },
           })
         }
 
         res.json({
           success: true,
-          data: execution
+          data: execution,
         })
       } catch (error) {
-        logger.error('Failed to get workflow execution via API', error as Error, {
-          userId: req.user?.id,
-          executionId: req.params.executionId
-        })
+        logger.error(
+          'Failed to get workflow execution via API',
+          error as Error,
+          {
+            userId: req.user?.id,
+            executionId: req.params.executionId,
+          }
+        )
         next(error)
       }
     }
@@ -978,18 +1029,22 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
 
         logger.info('Workflow execution cancelled via API', {
           executionId,
-          userId: req.user?.id
+          userId: req.user?.id,
         })
 
         res.json({
           success: true,
-          message: 'Workflow execution cancelled successfully'
+          message: 'Workflow execution cancelled successfully',
         })
       } catch (error) {
-        logger.error('Failed to cancel workflow execution via API', error as Error, {
-          userId: req.user?.id,
-          executionId: req.params.executionId
-        })
+        logger.error(
+          'Failed to cancel workflow execution via API',
+          error as Error,
+          {
+            userId: req.user?.id,
+            executionId: req.params.executionId,
+          }
+        )
         next(error)
       }
     }
@@ -1059,20 +1114,24 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
           return res.status(404).json({
             error: {
               code: 'EXECUTION_NOT_FOUND',
-              message: `Workflow execution with ID ${executionId} not found`
-            }
+              message: `Workflow execution with ID ${executionId} not found`,
+            },
           })
         }
 
         res.json({
           success: true,
-          data: progress
+          data: progress,
         })
       } catch (error) {
-        logger.error('Failed to get workflow execution progress via API', error as Error, {
-          userId: req.user?.id,
-          executionId: req.params.executionId
-        })
+        logger.error(
+          'Failed to get workflow execution progress via API',
+          error as Error,
+          {
+            userId: req.user?.id,
+            executionId: req.params.executionId,
+          }
+        )
         next(error)
       }
     }

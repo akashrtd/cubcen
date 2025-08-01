@@ -27,7 +27,7 @@ const jwtConfig = {
   algorithm: 'HS256',
   expiresIn: '15m', // Short-lived access tokens
   issuer: 'cubcen-platform',
-  audience: 'cubcen-users'
+  audience: 'cubcen-users',
 }
 
 // Refresh token configuration
@@ -35,11 +35,12 @@ const refreshTokenConfig = {
   expiresIn: '7d', // Longer-lived refresh tokens
   httpOnly: true,
   secure: true,
-  sameSite: 'strict'
+  sameSite: 'strict',
 }
 ```
 
 **Best Practices:**
+
 - Use short-lived access tokens (15 minutes)
 - Implement secure refresh token rotation
 - Store refresh tokens in httpOnly cookies
@@ -55,11 +56,12 @@ const sessionConfig = {
   maxSessionsPerUser: 5, // Limit concurrent sessions
   secureOnly: true, // HTTPS only
   sameSite: 'strict',
-  httpOnly: true
+  httpOnly: true,
 }
 ```
 
 **Security Features:**
+
 - Device fingerprinting for session validation
 - IP address consistency checks
 - Automatic session cleanup
@@ -77,11 +79,12 @@ const xssPatterns = [
   /javascript:/gi,
   /vbscript:/gi,
   /on\w+\s*=/gi,
-  /<(iframe|object|embed|form)\b[^>]*>/gi
+  /<(iframe|object|embed|form)\b[^>]*>/gi,
 ]
 ```
 
 **Implementation:**
+
 - Server-side input sanitization
 - Content Security Policy (CSP) headers
 - Output encoding for dynamic content
@@ -94,12 +97,13 @@ const xssPatterns = [
 const user = await prisma.user.findFirst({
   where: {
     email: userEmail, // Automatically parameterized
-    active: true
-  }
+    active: true,
+  },
 })
 ```
 
 **Best Practices:**
+
 - Always use parameterized queries
 - Validate input types and formats
 - Implement query result limits
@@ -115,11 +119,11 @@ const csrfToken = crypto.randomBytes(32).toString('hex')
 export function csrfProtection(req, res, next) {
   const token = req.headers['x-csrf-token'] || req.body._csrf
   const sessionToken = req.session?.csrfToken
-  
+
   if (!token || token !== sessionToken) {
     return res.status(403).json({ error: 'CSRF token invalid' })
   }
-  
+
   next()
 }
 ```
@@ -132,28 +136,37 @@ export function csrfProtection(req, res, next) {
 // Security headers implementation
 export function securityHeaders(req, res, next) {
   // Content Security Policy
-  res.setHeader('Content-Security-Policy', [
-    "default-src 'self'",
-    "script-src 'self' 'unsafe-inline'",
-    "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: https:",
-    "connect-src 'self' ws: wss:",
-    "object-src 'none'",
-    "frame-ancestors 'none'"
-  ].join('; '))
+  res.setHeader(
+    'Content-Security-Policy',
+    [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline'",
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data: https:",
+      "connect-src 'self' ws: wss:",
+      "object-src 'none'",
+      "frame-ancestors 'none'",
+    ].join('; ')
+  )
 
   // Additional security headers
   res.setHeader('X-Content-Type-Options', 'nosniff')
   res.setHeader('X-Frame-Options', 'DENY')
   res.setHeader('X-XSS-Protection', '1; mode=block')
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin')
-  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
-  
+  res.setHeader(
+    'Permissions-Policy',
+    'camera=(), microphone=(), geolocation=()'
+  )
+
   // HSTS for HTTPS
   if (req.secure) {
-    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload')
+    res.setHeader(
+      'Strict-Transport-Security',
+      'max-age=31536000; includeSubDomains; preload'
+    )
   }
-  
+
   next()
 }
 ```
@@ -174,13 +187,17 @@ class AdvancedRateLimiter {
 
   // Progressive blocking with exponential backoff
   calculateBlockDuration(attemptCount) {
-    const multiplier = Math.pow(this.progressiveMultiplier, Math.floor(attemptCount / this.maxAttempts))
+    const multiplier = Math.pow(
+      this.progressiveMultiplier,
+      Math.floor(attemptCount / this.maxAttempts)
+    )
     return this.blockDurationMs * multiplier
   }
 }
 ```
 
 **Rate Limiting Strategy:**
+
 - General API: 100 requests per 15 minutes per IP
 - Authentication: 5 attempts per 15 minutes per IP
 - Password reset: 3 attempts per hour per email
@@ -197,20 +214,21 @@ enum AuditEventType {
   LOGIN = 'LOGIN',
   LOGOUT = 'LOGOUT',
   LOGIN_FAILED = 'LOGIN_FAILED',
-  
+
   // Security events
   SUSPICIOUS_ACTIVITY = 'SUSPICIOUS_ACTIVITY',
   CSRF_ATTACK_BLOCKED = 'CSRF_ATTACK_BLOCKED',
   RATE_LIMIT_EXCEEDED = 'RATE_LIMIT_EXCEEDED',
-  
+
   // Data events
   DATA_ACCESSED = 'DATA_ACCESSED',
   DATA_MODIFIED = 'DATA_MODIFIED',
-  DATA_DELETED = 'DATA_DELETED'
+  DATA_DELETED = 'DATA_DELETED',
 }
 ```
 
 **Audit Log Requirements:**
+
 - Immutable log entries with cryptographic integrity
 - Comprehensive context capture (IP, user agent, request ID)
 - Automated log analysis and alerting
@@ -222,16 +240,17 @@ enum AuditEventType {
 ```typescript
 // Security event detection
 const securityPatterns = {
-  sqlInjection: /(\b(union|select|insert|update|delete|drop)\b.*\b(from|where|into)\b)/i,
+  sqlInjection:
+    /(\b(union|select|insert|update|delete|drop)\b.*\b(from|where|into)\b)/i,
   xssAttempt: /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
   pathTraversal: /\.\.[\/\\]/,
-  commandInjection: /[;&|`$(){}[\]]/
+  commandInjection: /[;&|`$(){}[\]]/,
 }
 
 // Real-time alerting
 function detectSuspiciousActivity(request) {
   const requestString = JSON.stringify(request)
-  
+
   for (const [type, pattern] of Object.entries(securityPatterns)) {
     if (pattern.test(requestString)) {
       auditLogger.logSecurityEvent(
@@ -239,13 +258,13 @@ function detectSuspiciousActivity(request) {
         `${type} detected in request`,
         request
       )
-      
+
       // Immediate alerting for critical events
       if (type === 'sqlInjection') {
         alertingService.sendCriticalAlert({
           type: 'SQL_INJECTION_ATTEMPT',
           source: request.ip,
-          details: requestString
+          details: requestString,
         })
       }
     }
@@ -258,11 +277,13 @@ function detectSuspiciousActivity(request) {
 ### Encryption Standards
 
 **Data at Rest:**
+
 - AES-256 encryption for sensitive data
 - Encrypted database backups
 - Secure key management with rotation
 
 **Data in Transit:**
+
 - TLS 1.3 for all communications
 - Certificate pinning for API clients
 - Encrypted WebSocket connections
@@ -286,16 +307,16 @@ function encryptApiKey(apiKey) {
   const iv = crypto.randomBytes(16)
   const cipher = crypto.createCipher(algorithm, key)
   cipher.setAAD(Buffer.from('api-key', 'utf8'))
-  
+
   let encrypted = cipher.update(apiKey, 'utf8', 'hex')
   encrypted += cipher.final('hex')
-  
+
   const authTag = cipher.getAuthTag()
-  
+
   return {
     encrypted,
     iv: iv.toString('hex'),
-    authTag: authTag.toString('hex')
+    authTag: authTag.toString('hex'),
   }
 }
 ```
@@ -314,16 +335,17 @@ const fileUploadConfig = {
     'text/plain',
     'text/csv',
     'application/json',
-    'application/pdf'
+    'application/pdf',
   ],
   maxFileSize: 10 * 1024 * 1024, // 10MB
   dangerousExtensions: ['.exe', '.bat', '.cmd', '.scr', '.vbs', '.js'],
   scanForMalware: true,
-  quarantineDirectory: '/tmp/quarantine'
+  quarantineDirectory: '/tmp/quarantine',
 }
 ```
 
 **Security Measures:**
+
 - MIME type validation
 - File extension filtering
 - Virus scanning integration
@@ -339,13 +361,13 @@ const fileUploadConfig = {
 app.use('/api/cubcen/v1/admin', [
   authenticate,
   requireRole(UserRole.ADMIN),
-  auditMiddleware
+  auditMiddleware,
 ])
 
 app.use('/api/cubcen/v1/agents', [
   authenticate,
   requirePermission(Permission.AGENT_READ),
-  rateLimitMiddleware
+  rateLimitMiddleware,
 ])
 ```
 
@@ -354,35 +376,37 @@ app.use('/api/cubcen/v1/agents', [
 ```typescript
 // Secure API versioning
 const apiVersions = {
-  'v1': {
+  v1: {
     supported: true,
     deprecated: false,
-    sunsetDate: null
+    sunsetDate: null,
   },
-  'v2': {
+  v2: {
     supported: true,
     deprecated: false,
-    sunsetDate: null
-  }
+    sunsetDate: null,
+  },
 }
 
 // Version validation middleware
 function validateApiVersion(req, res, next) {
   const version = req.params.version
   const versionInfo = apiVersions[version]
-  
+
   if (!versionInfo || !versionInfo.supported) {
     return res.status(400).json({
       error: 'Unsupported API version',
-      supportedVersions: Object.keys(apiVersions).filter(v => apiVersions[v].supported)
+      supportedVersions: Object.keys(apiVersions).filter(
+        v => apiVersions[v].supported
+      ),
     })
   }
-  
+
   if (versionInfo.deprecated) {
     res.setHeader('Sunset', versionInfo.sunsetDate)
     res.setHeader('Deprecation', 'true')
   }
-  
+
   next()
 }
 ```
@@ -397,17 +421,19 @@ const requiredEnvVars = [
   'DATABASE_URL',
   'JWT_SECRET',
   'ENCRYPTION_KEY',
-  'SESSION_SECRET'
+  'SESSION_SECRET',
 ]
 
 // Validate required environment variables
 function validateEnvironment() {
   const missing = requiredEnvVars.filter(key => !process.env[key])
-  
+
   if (missing.length > 0) {
-    throw new Error(`Missing required environment variables: ${missing.join(', ')}`)
+    throw new Error(
+      `Missing required environment variables: ${missing.join(', ')}`
+    )
   }
-  
+
   // Validate key strengths
   if (process.env.JWT_SECRET.length < 32) {
     throw new Error('JWT_SECRET must be at least 32 characters')
@@ -467,22 +493,22 @@ class SecurityIncidentHandler {
   async handleCriticalIncident(incident) {
     // Immediate containment
     await this.enableEmergencyMode()
-    
+
     // Alert security team
     await this.sendCriticalAlert(incident)
-    
+
     // Log incident details
     await auditLogger.logEvent({
       eventType: AuditEventType.SECURITY_BREACH_DETECTED,
       severity: AuditSeverity.CRITICAL,
       description: incident.description,
-      metadata: incident.details
+      metadata: incident.details,
     })
-    
+
     // Initiate response procedures
     await this.initiateIncidentResponse(incident)
   }
-  
+
   async enableEmergencyMode() {
     // Disable non-essential services
     // Increase logging verbosity
@@ -518,15 +544,16 @@ describe('Security Tests', () => {
     const response = await request(app)
       .post('/api/test')
       .send({ input: maliciousPayload })
-    
+
     expect(response.body.input).not.toContain('<script>')
   })
-  
+
   test('SQL Injection Prevention', async () => {
     const maliciousQuery = "'; DROP TABLE users; --"
-    const response = await request(app)
-      .get(`/api/users?search=${maliciousQuery}`)
-    
+    const response = await request(app).get(
+      `/api/users?search=${maliciousQuery}`
+    )
+
     expect(response.status).not.toBe(500)
     // Verify database integrity
   })
@@ -545,21 +572,25 @@ describe('Security Tests', () => {
 ### Regular Security Tasks
 
 **Daily:**
+
 - Monitor security alerts and logs
 - Review failed authentication attempts
 - Check system health and performance
 
 **Weekly:**
+
 - Update security signatures and rules
 - Review access logs and user activities
 - Validate backup integrity
 
 **Monthly:**
+
 - Security patch management
 - Access control review
 - Incident response drill
 
 **Quarterly:**
+
 - Security architecture review
 - Penetration testing
 - Security training updates
@@ -572,19 +603,19 @@ const securityMetrics = {
   // Authentication metrics
   failedLoginRate: 'Failed logins / Total login attempts',
   averageSessionDuration: 'Total session time / Number of sessions',
-  
+
   // Security event metrics
   securityIncidentCount: 'Number of security incidents per month',
   meanTimeToDetection: 'Average time to detect security incidents',
   meanTimeToResponse: 'Average time to respond to incidents',
-  
+
   // Vulnerability metrics
   criticalVulnerabilityCount: 'Number of critical vulnerabilities',
   averageTimeToRemediation: 'Time from discovery to fix',
-  
+
   // Compliance metrics
   auditLogCompleteness: 'Percentage of events properly logged',
-  accessControlCompliance: 'Percentage of users with appropriate access'
+  accessControlCompliance: 'Percentage of users with appropriate access',
 }
 ```
 

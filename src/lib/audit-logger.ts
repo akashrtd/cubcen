@@ -70,7 +70,7 @@ export enum AuditEventType {
   DATA_EXPORTED = 'DATA_EXPORTED',
   DATA_IMPORTED = 'DATA_IMPORTED',
   DATA_DELETED = 'DATA_DELETED',
-  DATA_ACCESSED = 'DATA_ACCESSED'
+  DATA_ACCESSED = 'DATA_ACCESSED',
 }
 
 /**
@@ -80,7 +80,7 @@ export enum AuditSeverity {
   LOW = 'LOW',
   MEDIUM = 'MEDIUM',
   HIGH = 'HIGH',
-  CRITICAL = 'CRITICAL'
+  CRITICAL = 'CRITICAL',
 }
 
 /**
@@ -180,7 +180,7 @@ export class AuditLogger {
   public async logEvent(event: AuditEvent): Promise<void> {
     try {
       const auditId = event.id || crypto.randomUUID()
-      
+
       await prisma.$executeRaw`
         INSERT INTO audit_logs (
           id, event_type, severity, user_id, user_email, user_role,
@@ -205,7 +205,7 @@ export class AuditLogger {
         userId: event.userId,
         action: event.action,
         success: event.success,
-        timestamp: event.timestamp.toISOString()
+        timestamp: event.timestamp.toISOString(),
       })
 
       // Log critical events to separate critical log
@@ -214,15 +214,14 @@ export class AuditLogger {
           auditId,
           eventType: event.eventType,
           userId: event.userId,
-          metadata: event.metadata
+          metadata: event.metadata,
         })
       }
-
     } catch (error) {
       logger.error('Failed to log audit event', error as Error, {
         eventType: event.eventType,
         userId: event.userId,
-        action: event.action
+        action: event.action,
       })
     }
   }
@@ -239,7 +238,7 @@ export class AuditLogger {
     errorMessage?: string
   ): Promise<void> {
     const severity = success ? AuditSeverity.LOW : AuditSeverity.MEDIUM
-    
+
     await this.logEvent({
       eventType,
       severity,
@@ -252,7 +251,7 @@ export class AuditLogger {
       requestId: req.headers['x-request-id'] as string,
       timestamp: new Date(),
       success,
-      errorMessage
+      errorMessage,
     })
   }
 
@@ -282,7 +281,7 @@ export class AuditLogger {
       userAgent: req.get('User-Agent'),
       requestId: req.headers['x-request-id'] as string,
       timestamp: new Date(),
-      success: true
+      success: true,
     })
   }
 
@@ -317,7 +316,7 @@ export class AuditLogger {
       requestId: req.headers['x-request-id'] as string,
       timestamp: new Date(),
       success,
-      errorMessage
+      errorMessage,
     })
   }
 
@@ -342,7 +341,7 @@ export class AuditLogger {
       userAgent: req.get('User-Agent'),
       requestId: req.headers['x-request-id'] as string,
       timestamp: new Date(),
-      success: false
+      success: false,
     })
   }
 
@@ -364,7 +363,7 @@ export class AuditLogger {
       description,
       metadata,
       timestamp: new Date(),
-      success
+      success,
     })
   }
 
@@ -381,7 +380,7 @@ export class AuditLogger {
     success?: boolean
     page?: number
     limit?: number
-  }): Promise<{ logs: AuditEvent[], total: number }> {
+  }): Promise<{ logs: AuditEvent[]; total: number }> {
     try {
       const page = filters.page || 1
       const limit = Math.min(filters.limit || 50, 100) // Max 100 records per page
@@ -426,18 +425,26 @@ export class AuditLogger {
       }
 
       // Get total count
-      const countResult = await prisma.$queryRawUnsafe(`
+      const countResult = (await prisma.$queryRawUnsafe(
+        `
         SELECT COUNT(*) as count FROM audit_logs ${whereClause}
-      `, ...params) as [{ count: number }]
+      `,
+        ...params
+      )) as [{ count: number }]
 
       const total = countResult[0].count
 
       // Get paginated results
-      const logs = await prisma.$queryRawUnsafe(`
+      const logs = (await prisma.$queryRawUnsafe(
+        `
         SELECT * FROM audit_logs ${whereClause}
         ORDER BY timestamp DESC
         LIMIT ? OFFSET ?
-      `, ...params, limit, offset) as unknown[]
+      `,
+        ...params,
+        limit,
+        offset
+      )) as unknown[]
 
       const formattedLogs: AuditEvent[] = (logs as any[]).map(log => ({
         id: log.id,
@@ -457,11 +464,10 @@ export class AuditLogger {
         requestId: log.request_id,
         timestamp: new Date(log.timestamp),
         success: Boolean(log.success),
-        errorMessage: log.error_message
+        errorMessage: log.error_message,
       }))
 
       return { logs: formattedLogs, total }
-
     } catch (error) {
       logger.error('Failed to retrieve audit logs', error as Error, { filters })
       throw new Error('Failed to retrieve audit logs')
@@ -483,12 +489,14 @@ export class AuditLogger {
       logger.info('Audit logs cleanup completed', {
         deletedCount: result,
         cutoffDate: cutoffDate.toISOString(),
-        retentionDays
+        retentionDays,
       })
 
       return result as number
     } catch (error) {
-      logger.error('Failed to cleanup old audit logs', error as Error, { retentionDays })
+      logger.error('Failed to cleanup old audit logs', error as Error, {
+        retentionDays,
+      })
       throw new Error('Failed to cleanup old audit logs')
     }
   }
@@ -505,14 +513,25 @@ export class AuditLogger {
       const { logs } = await this.getAuditLogs({
         startDate: filters.startDate,
         endDate: filters.endDate,
-        limit: 10000 // Large limit for export
+        limit: 10000, // Large limit for export
       })
 
       if (filters.format === 'csv') {
         const headers = [
-          'ID', 'Event Type', 'Severity', 'User ID', 'User Email', 'Resource Type',
-          'Resource ID', 'Action', 'Description', 'IP Address', 'User Agent',
-          'Timestamp', 'Success', 'Error Message'
+          'ID',
+          'Event Type',
+          'Severity',
+          'User ID',
+          'User Email',
+          'Resource Type',
+          'Resource ID',
+          'Action',
+          'Description',
+          'IP Address',
+          'User Agent',
+          'Timestamp',
+          'Success',
+          'Error Message',
         ]
 
         const csvRows = logs.map(log => [
@@ -529,16 +548,19 @@ export class AuditLogger {
           log.userAgent || '',
           log.timestamp.toISOString(),
           log.success.toString(),
-          log.errorMessage || ''
+          log.errorMessage || '',
         ])
 
-        return [headers, ...csvRows].map(row => 
-          row.map(cell => `"${cell.toString().replace(/"/g, '""')}"`).join(',')
-        ).join('\n')
+        return [headers, ...csvRows]
+          .map(row =>
+            row
+              .map(cell => `"${cell.toString().replace(/"/g, '""')}"`)
+              .join(',')
+          )
+          .join('\n')
       }
 
       return JSON.stringify(logs, null, 2)
-
     } catch (error) {
       logger.error('Failed to export audit logs', error as Error, { filters })
       throw new Error('Failed to export audit logs')

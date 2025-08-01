@@ -3,8 +3,18 @@
  */
 
 export type WorkflowStatus = 'DRAFT' | 'ACTIVE' | 'PAUSED' | 'ARCHIVED'
-export type WorkflowExecutionStatus = 'PENDING' | 'RUNNING' | 'COMPLETED' | 'FAILED' | 'CANCELLED'
-export type StepExecutionStatus = 'PENDING' | 'RUNNING' | 'COMPLETED' | 'FAILED' | 'SKIPPED'
+export type WorkflowExecutionStatus =
+  | 'PENDING'
+  | 'RUNNING'
+  | 'COMPLETED'
+  | 'FAILED'
+  | 'CANCELLED'
+export type StepExecutionStatus =
+  | 'PENDING'
+  | 'RUNNING'
+  | 'COMPLETED'
+  | 'FAILED'
+  | 'SKIPPED'
 
 export interface WorkflowDefinition {
   id: string
@@ -88,7 +98,11 @@ export interface WorkflowValidationResult {
 }
 
 export interface WorkflowValidationError {
-  type: 'missing_agent' | 'circular_dependency' | 'invalid_condition' | 'invalid_parameters'
+  type:
+    | 'missing_agent'
+    | 'circular_dependency'
+    | 'invalid_condition'
+    | 'invalid_parameters'
   stepId?: string
   message: string
 }
@@ -141,7 +155,13 @@ export interface WorkflowExecutionListOptions extends WorkflowExecutionFilter {
 
 // Events for workflow execution
 export interface WorkflowEvent {
-  type: 'workflow_started' | 'workflow_completed' | 'workflow_failed' | 'step_started' | 'step_completed' | 'step_failed'
+  type:
+    | 'workflow_started'
+    | 'workflow_completed'
+    | 'workflow_failed'
+    | 'step_started'
+    | 'step_completed'
+    | 'step_failed'
   workflowExecutionId: string
   stepId?: string
   timestamp: Date

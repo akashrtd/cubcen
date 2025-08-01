@@ -8,8 +8,8 @@ jest.mock('../../../hooks/use-websocket-agents', () => ({
     connected: true,
     connecting: false,
     error: null,
-    reconnect: jest.fn()
-  }))
+    reconnect: jest.fn(),
+  })),
 }))
 
 // Mock sonner toast
@@ -18,18 +18,18 @@ jest.mock('sonner', () => ({
     success: jest.fn(),
     error: jest.fn(),
     warning: jest.fn(),
-    info: jest.fn()
-  }
+    info: jest.fn(),
+  },
 }))
 
 // Mock localStorage
 const mockLocalStorage = {
   getItem: jest.fn(() => 'mock-token'),
   setItem: jest.fn(),
-  removeItem: jest.fn()
+  removeItem: jest.fn(),
 }
 Object.defineProperty(window, 'localStorage', {
-  value: mockLocalStorage
+  value: mockLocalStorage,
 })
 
 // Mock fetch
@@ -47,15 +47,16 @@ const mockAgentsResponse = {
         platform: {
           id: 'platform-1',
           name: 'n8n Instance',
-          type: 'N8N'
+          type: 'N8N',
         },
         status: 'ACTIVE',
         capabilities: '["webhook", "http-request"]',
         configuration: '{"timeout": 30000}',
-        healthStatus: '{"status":"healthy","lastCheck":"2024-01-01T10:00:00Z","responseTime":150}',
+        healthStatus:
+          '{"status":"healthy","lastCheck":"2024-01-01T10:00:00Z","responseTime":150}',
         description: 'Main automation agent',
         createdAt: '2024-01-01T09:00:00Z',
-        updatedAt: '2024-01-01T10:00:00Z'
+        updatedAt: '2024-01-01T10:00:00Z',
       },
       {
         id: 'agent-2',
@@ -64,17 +65,18 @@ const mockAgentsResponse = {
         platform: {
           id: 'platform-2',
           name: 'Make Scenario',
-          type: 'MAKE'
+          type: 'MAKE',
         },
         status: 'ERROR',
         capabilities: '["api-integration"]',
         configuration: '{}',
-        healthStatus: '{"status":"unhealthy","lastCheck":"2024-01-01T09:30:00Z","responseTime":5000,"error":"Connection timeout"}',
+        healthStatus:
+          '{"status":"unhealthy","lastCheck":"2024-01-01T09:30:00Z","responseTime":5000,"error":"Connection timeout"}',
         createdAt: '2024-01-01T08:00:00Z',
-        updatedAt: '2024-01-01T09:30:00Z'
-      }
-    ]
-  }
+        updatedAt: '2024-01-01T09:30:00Z',
+      },
+    ],
+  },
 }
 
 describe('AgentMonitoringDashboard', () => {
@@ -82,7 +84,7 @@ describe('AgentMonitoringDashboard', () => {
     jest.clearAllMocks()
     mockFetch.mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve(mockAgentsResponse)
+      json: () => Promise.resolve(mockAgentsResponse),
     })
   })
 
@@ -90,7 +92,11 @@ describe('AgentMonitoringDashboard', () => {
     render(<AgentMonitoringDashboard />)
 
     expect(screen.getByText('Agent Monitoring')).toBeInTheDocument()
-    expect(screen.getByText('Monitor and manage your AI agents across all platforms in real-time.')).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        'Monitor and manage your AI agents across all platforms in real-time.'
+      )
+    ).toBeInTheDocument()
 
     // Wait for agents to load
     await waitFor(() => {
@@ -110,9 +116,9 @@ describe('AgentMonitoringDashboard', () => {
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalledWith('/api/cubcen/v1/agents', {
         headers: {
-          'Authorization': 'Bearer mock-token',
-          'Content-Type': 'application/json'
-        }
+          Authorization: 'Bearer mock-token',
+          'Content-Type': 'application/json',
+        },
       })
     })
 
@@ -138,10 +144,9 @@ describe('AgentMonitoringDashboard', () => {
     render(<AgentMonitoringDashboard />)
 
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith(
-        'Failed to fetch agents',
-        { description: 'API Error' }
-      )
+      expect(toast.error).toHaveBeenCalledWith('Failed to fetch agents', {
+        description: 'API Error',
+      })
     })
 
     expect(screen.getByText('API Error')).toBeInTheDocument()
@@ -150,16 +155,15 @@ describe('AgentMonitoringDashboard', () => {
   it('handles API response errors', async () => {
     mockFetch.mockResolvedValue({
       ok: false,
-      statusText: 'Internal Server Error'
+      statusText: 'Internal Server Error',
     })
 
     render(<AgentMonitoringDashboard />)
 
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith(
-        'Failed to fetch agents',
-        { description: 'Failed to fetch agents: Internal Server Error' }
-      )
+      expect(toast.error).toHaveBeenCalledWith('Failed to fetch agents', {
+        description: 'Failed to fetch agents: Internal Server Error',
+      })
     })
   })
 
@@ -228,18 +232,18 @@ describe('AgentMonitoringDashboard', () => {
     const singleAgentResponse = {
       success: true,
       data: {
-        agent: mockAgentsResponse.data.agents[0]
-      }
+        agent: mockAgentsResponse.data.agents[0],
+      },
     }
 
     mockFetch
       .mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve(mockAgentsResponse)
+        json: () => Promise.resolve(mockAgentsResponse),
       })
       .mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve(singleAgentResponse)
+        json: () => Promise.resolve(singleAgentResponse),
       })
 
     render(<AgentMonitoringDashboard />)
@@ -250,18 +254,20 @@ describe('AgentMonitoringDashboard', () => {
     })
 
     // Find and click refresh button on first agent card
-    const refreshButtons = screen.getAllByRole('button').filter(button => 
-      button.querySelector('svg')?.classList.contains('lucide-refresh-cw')
-    )
-    
+    const refreshButtons = screen
+      .getAllByRole('button')
+      .filter(button =>
+        button.querySelector('svg')?.classList.contains('lucide-refresh-cw')
+      )
+
     fireEvent.click(refreshButtons[0])
 
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalledWith('/api/cubcen/v1/agents/agent-1', {
         headers: {
-          'Authorization': 'Bearer mock-token',
-          'Content-Type': 'application/json'
-        }
+          Authorization: 'Bearer mock-token',
+          'Content-Type': 'application/json',
+        },
       })
     })
 
@@ -272,7 +278,7 @@ describe('AgentMonitoringDashboard', () => {
     mockFetch
       .mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve(mockAgentsResponse)
+        json: () => Promise.resolve(mockAgentsResponse),
       })
       .mockRejectedValueOnce(new Error('Refresh failed'))
 
@@ -284,17 +290,18 @@ describe('AgentMonitoringDashboard', () => {
     })
 
     // Find and click refresh button on first agent card
-    const refreshButtons = screen.getAllByRole('button').filter(button => 
-      button.querySelector('svg')?.classList.contains('lucide-refresh-cw')
-    )
-    
+    const refreshButtons = screen
+      .getAllByRole('button')
+      .filter(button =>
+        button.querySelector('svg')?.classList.contains('lucide-refresh-cw')
+      )
+
     fireEvent.click(refreshButtons[0])
 
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith(
-        'Failed to refresh agent',
-        { description: 'Refresh failed' }
-      )
+      expect(toast.error).toHaveBeenCalledWith('Failed to refresh agent', {
+        description: 'Refresh failed',
+      })
     })
   })
 
@@ -310,35 +317,40 @@ describe('AgentMonitoringDashboard', () => {
     const configureButtons = screen.getAllByText('Configure')
     fireEvent.click(configureButtons[0])
 
-    expect(toast.info).toHaveBeenCalledWith(
-      'Configuration',
-      { description: 'Opening configuration for Test Agent 1' }
-    )
+    expect(toast.info).toHaveBeenCalledWith('Configuration', {
+      description: 'Opening configuration for Test Agent 1',
+    })
   })
 
   it('displays WebSocket error state', () => {
-    const { useWebSocketAgents } = require('../../../hooks/use-websocket-agents')
+    const {
+      useWebSocketAgents,
+    } = require('../../../hooks/use-websocket-agents')
     useWebSocketAgents.mockReturnValue({
       connected: false,
       connecting: false,
       error: 'Connection failed',
-      reconnect: jest.fn()
+      reconnect: jest.fn(),
     })
 
     render(<AgentMonitoringDashboard />)
 
     expect(screen.getByText('Offline')).toBeInTheDocument()
-    expect(screen.getByText('Real-time updates are unavailable: Connection failed')).toBeInTheDocument()
+    expect(
+      screen.getByText('Real-time updates are unavailable: Connection failed')
+    ).toBeInTheDocument()
     expect(screen.getByText('Try reconnecting')).toBeInTheDocument()
   })
 
   it('displays WebSocket connecting state', () => {
-    const { useWebSocketAgents } = require('../../../hooks/use-websocket-agents')
+    const {
+      useWebSocketAgents,
+    } = require('../../../hooks/use-websocket-agents')
     useWebSocketAgents.mockReturnValue({
       connected: false,
       connecting: true,
       error: null,
-      reconnect: jest.fn()
+      reconnect: jest.fn(),
     })
 
     render(<AgentMonitoringDashboard />)
@@ -348,12 +360,14 @@ describe('AgentMonitoringDashboard', () => {
 
   it('handles WebSocket reconnection', () => {
     const mockReconnect = jest.fn()
-    const { useWebSocketAgents } = require('../../../hooks/use-websocket-agents')
+    const {
+      useWebSocketAgents,
+    } = require('../../../hooks/use-websocket-agents')
     useWebSocketAgents.mockReturnValue({
       connected: false,
       connecting: false,
       error: 'Connection failed',
-      reconnect: mockReconnect
+      reconnect: mockReconnect,
     })
 
     render(<AgentMonitoringDashboard />)
@@ -366,8 +380,10 @@ describe('AgentMonitoringDashboard', () => {
 
   it('updates agent data from WebSocket events', async () => {
     const mockOnStatusUpdate = jest.fn()
-    const { useWebSocketAgents } = require('../../../hooks/use-websocket-agents')
-    
+    const {
+      useWebSocketAgents,
+    } = require('../../../hooks/use-websocket-agents')
+
     // Capture the callback functions
     let statusUpdateCallback: any
     useWebSocketAgents.mockImplementation((options: any) => {
@@ -376,7 +392,7 @@ describe('AgentMonitoringDashboard', () => {
         connected: true,
         connecting: false,
         error: null,
-        reconnect: jest.fn()
+        reconnect: jest.fn(),
       }
     })
 
@@ -392,7 +408,7 @@ describe('AgentMonitoringDashboard', () => {
       statusUpdateCallback({
         agentId: 'agent-1',
         status: 'inactive',
-        timestamp: new Date()
+        timestamp: new Date(),
       })
     }
 
@@ -406,16 +422,16 @@ describe('AgentMonitoringDashboard', () => {
     await waitFor(() => {
       // Total agents
       expect(screen.getByText('2')).toBeInTheDocument()
-      
+
       // Status counts
-      const activeCount = screen.getAllByText('1').filter(el => 
-        el.parentElement?.textContent?.includes('Active')
-      )
+      const activeCount = screen
+        .getAllByText('1')
+        .filter(el => el.parentElement?.textContent?.includes('Active'))
       expect(activeCount.length).toBeGreaterThan(0)
-      
-      const errorCount = screen.getAllByText('1').filter(el => 
-        el.parentElement?.textContent?.includes('Error')
-      )
+
+      const errorCount = screen
+        .getAllByText('1')
+        .filter(el => el.parentElement?.textContent?.includes('Error'))
       expect(errorCount.length).toBeGreaterThan(0)
     })
   })
@@ -423,10 +439,11 @@ describe('AgentMonitoringDashboard', () => {
   it('handles empty agent list', async () => {
     mockFetch.mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve({
-        success: true,
-        data: { agents: [] }
-      })
+      json: () =>
+        Promise.resolve({
+          success: true,
+          data: { agents: [] },
+        }),
     })
 
     render(<AgentMonitoringDashboard />)

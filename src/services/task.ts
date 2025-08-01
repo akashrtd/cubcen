@@ -11,9 +11,17 @@ import { EventEmitter } from 'events'
 
 // Forward declaration to avoid circular dependency
 interface WebSocketService {
-  notifyTaskStatusChange(taskId: string, status: TaskStatus, metadata?: Record<string, unknown>): void
+  notifyTaskStatusChange(
+    taskId: string,
+    status: TaskStatus,
+    metadata?: Record<string, unknown>
+  ): void
   notifyTaskProgress(taskId: string, progress: number, message?: string): void
-  notifyTaskError(taskId: string, error: string, context?: Record<string, unknown>): void
+  notifyTaskError(
+    taskId: string,
+    error: string,
+    context?: Record<string, unknown>
+  ): void
 }
 
 // Validation schemas
@@ -27,7 +35,7 @@ const taskCreationSchema = z.object({
   scheduledAt: z.date().optional(),
   maxRetries: z.number().min(0).max(10).default(3),
   timeoutMs: z.number().min(1000).max(300000).default(30000), // 1s to 5min
-  createdBy: z.string().min(1)
+  createdBy: z.string().min(1),
 })
 
 const taskUpdateSchema = z.object({
@@ -37,7 +45,7 @@ const taskUpdateSchema = z.object({
   parameters: z.record(z.string(), z.unknown()).optional(),
   scheduledAt: z.date().optional(),
   maxRetries: z.number().min(0).max(10).optional(),
-  timeoutMs: z.number().min(1000).max(300000).optional()
+  timeoutMs: z.number().min(1000).max(300000).optional(),
 })
 
 // Task queue interfaces
@@ -66,8 +74,6 @@ interface TaskResult {
   executionTime: number
   timestamp: Date
 }
-
-
 
 export interface TaskCreationData {
   agentId: string
@@ -120,7 +126,10 @@ export class TaskService extends EventEmitter {
   private queueProcessingInterval: number = 1000 // 1 second
   private isProcessing: boolean = false
 
-  constructor(adapterManager: AdapterManager, webSocketService?: WebSocketService) {
+  constructor(
+    adapterManager: AdapterManager,
+    webSocketService?: WebSocketService
+  ) {
     super()
     this.adapterManager = adapterManager
     this.webSocketService = webSocketService
@@ -142,19 +151,19 @@ export class TaskService extends EventEmitter {
       // Validate input data
       const validatedData = taskCreationSchema.parse({
         ...data,
-        scheduledAt: data.scheduledAt || new Date()
+        scheduledAt: data.scheduledAt || new Date(),
       })
 
       logger.info('Creating new task', {
         name: validatedData.name,
         agentId: validatedData.agentId,
         priority: validatedData.priority,
-        scheduledAt: validatedData.scheduledAt
+        scheduledAt: validatedData.scheduledAt,
       })
 
       // Verify agent exists and is active
       const agent = await prisma.agent.findUnique({
-        where: { id: validatedData.agentId }
+        where: { id: validatedData.agentId },
       })
 
       if (!agent) {
@@ -162,7 +171,9 @@ export class TaskService extends EventEmitter {
       }
 
       if (agent.status !== 'ACTIVE') {
-        throw new Error(`Agent ${agent.name} is not active (status: ${agent.status})`)
+        throw new Error(
+          `Agent ${agent.name} is not active (status: ${agent.status})`
+        )
       }
 
       // Create task in database
@@ -177,8 +188,8 @@ export class TaskService extends EventEmitter {
           parameters: JSON.stringify(validatedData.parameters),
           scheduledAt: validatedData.scheduledAt || new Date(),
           maxRetries: validatedData.maxRetries,
-          createdBy: validatedData.createdBy
-        }
+          createdBy: validatedData.createdBy,
+        },
       })
 
       // Add to task queue
@@ -189,7 +200,7 @@ export class TaskService extends EventEmitter {
         retryCount: 0,
         maxRetries: validatedData.maxRetries,
         timeoutMs: validatedData.timeoutMs,
-        createdAt: task.createdAt
+        createdAt: task.createdAt,
       })
 
       // Notify WebSocket clients
@@ -197,20 +208,20 @@ export class TaskService extends EventEmitter {
         name: task.name,
         agentId: task.agentId,
         priority: task.priority,
-        scheduledAt: task.scheduledAt
+        scheduledAt: task.scheduledAt,
       })
 
       logger.info('Task created successfully', {
         taskId: task.id,
         name: task.name,
-        agentId: task.agentId
+        agentId: task.agentId,
       })
 
       return task
     } catch (error) {
       logger.error('Failed to create task', error as Error, {
         agentId: data.agentId,
-        name: data.name
+        name: data.name,
       })
       throw error
     }
@@ -228,7 +239,7 @@ export class TaskService extends EventEmitter {
 
       // Check if task exists and is not running
       const existingTask = await prisma.task.findUnique({
-        where: { id: taskId }
+        where: { id: taskId },
       })
 
       if (!existingTask) {
@@ -244,13 +255,21 @@ export class TaskService extends EventEmitter {
         where: { id: taskId },
         data: {
           ...(validatedData.name && { name: validatedData.name }),
-          ...(validatedData.description !== undefined && { description: validatedData.description }),
+          ...(validatedData.description !== undefined && {
+            description: validatedData.description,
+          }),
           ...(validatedData.priority && { priority: validatedData.priority }),
-          ...(validatedData.parameters && { parameters: JSON.stringify(validatedData.parameters) }),
-          ...(validatedData.scheduledAt && { scheduledAt: validatedData.scheduledAt }),
-          ...(validatedData.maxRetries !== undefined && { maxRetries: validatedData.maxRetries }),
-          updatedAt: new Date()
-        }
+          ...(validatedData.parameters && {
+            parameters: JSON.stringify(validatedData.parameters),
+          }),
+          ...(validatedData.scheduledAt && {
+            scheduledAt: validatedData.scheduledAt,
+          }),
+          ...(validatedData.maxRetries !== undefined && {
+            maxRetries: validatedData.maxRetries,
+          }),
+          updatedAt: new Date(),
+        },
       })
 
       // Update in queue if present
@@ -260,7 +279,10 @@ export class TaskService extends EventEmitter {
           ...queuedTask,
           priority: validatedData.priority || queuedTask.priority,
           scheduledAt: validatedData.scheduledAt || queuedTask.scheduledAt,
-          maxRetries: validatedData.maxRetries !== undefined ? validatedData.maxRetries : queuedTask.maxRetries
+          maxRetries:
+            validatedData.maxRetries !== undefined
+              ? validatedData.maxRetries
+              : queuedTask.maxRetries,
         })
       }
 
@@ -284,9 +306,9 @@ export class TaskService extends EventEmitter {
           agent: true,
           workflow: true,
           creator: {
-            select: { id: true, email: true, name: true }
-          }
-        }
+            select: { id: true, email: true, name: true },
+          },
+        },
       })
 
       return task
@@ -319,7 +341,7 @@ export class TaskService extends EventEmitter {
         page = 1,
         limit = 10,
         sortBy = 'createdAt',
-        sortOrder = 'desc'
+        sortOrder = 'desc',
       } = options
 
       // Build where clause
@@ -333,14 +355,15 @@ export class TaskService extends EventEmitter {
 
       if (dateFrom || dateTo) {
         where.createdAt = {}
-        if (dateFrom) (where.createdAt as Record<string, unknown>).gte = dateFrom
+        if (dateFrom)
+          (where.createdAt as Record<string, unknown>).gte = dateFrom
         if (dateTo) (where.createdAt as Record<string, unknown>).lte = dateTo
       }
 
       if (search) {
         where.OR = [
           { name: { contains: search, mode: 'insensitive' } },
-          { description: { contains: search, mode: 'insensitive' } }
+          { description: { contains: search, mode: 'insensitive' } },
         ] as Record<string, unknown>[]
       }
 
@@ -352,18 +375,18 @@ export class TaskService extends EventEmitter {
         where,
         include: {
           agent: {
-            select: { id: true, name: true, platformId: true }
+            select: { id: true, name: true, platformId: true },
           },
           workflow: {
-            select: { id: true, name: true }
+            select: { id: true, name: true },
           },
           creator: {
-            select: { id: true, email: true, name: true }
-          }
+            select: { id: true, email: true, name: true },
+          },
         },
         orderBy: { [sortBy]: sortOrder },
         skip: (page - 1) * limit,
-        take: limit
+        take: limit,
       })
 
       return {
@@ -371,7 +394,7 @@ export class TaskService extends EventEmitter {
         total,
         page,
         limit,
-        totalPages: Math.ceil(total / limit)
+        totalPages: Math.ceil(total / limit),
       }
     } catch (error) {
       logger.error('Failed to get tasks', error as Error, options)
@@ -393,7 +416,7 @@ export class TaskService extends EventEmitter {
         clearTimeout(runningTask.timeout)
         runningTask.abortController.abort()
         this.runningTasks.delete(taskId)
-        
+
         logger.info('Running task cancelled', { taskId })
       }
 
@@ -406,14 +429,14 @@ export class TaskService extends EventEmitter {
         data: {
           status: 'CANCELLED',
           completedAt: new Date(),
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       })
 
       // Notify WebSocket clients
       this.webSocketService?.notifyTaskStatusChange(taskId, 'CANCELLED', {
         cancelled: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
 
       logger.info('Task cancelled successfully', { taskId })
@@ -432,7 +455,7 @@ export class TaskService extends EventEmitter {
 
       // Get task from database
       const task = await prisma.task.findUnique({
-        where: { id: taskId }
+        where: { id: taskId },
       })
 
       if (!task) {
@@ -440,7 +463,9 @@ export class TaskService extends EventEmitter {
       }
 
       if (task.status !== 'FAILED') {
-        throw new Error(`Task ${taskId} is not in failed state (status: ${task.status})`)
+        throw new Error(
+          `Task ${taskId} is not in failed state (status: ${task.status})`
+        )
       }
 
       // Reset task status and add back to queue
@@ -452,8 +477,8 @@ export class TaskService extends EventEmitter {
           completedAt: null,
           result: null,
           error: null,
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       })
 
       // Add back to queue
@@ -464,13 +489,13 @@ export class TaskService extends EventEmitter {
         retryCount: task.retryCount,
         maxRetries: task.maxRetries,
         timeoutMs: 30000, // Default timeout
-        createdAt: task.createdAt
+        createdAt: task.createdAt,
       })
 
       // Notify WebSocket clients
       this.webSocketService?.notifyTaskStatusChange(taskId, 'PENDING', {
         retried: true,
-        retryCount: task.retryCount
+        retryCount: task.retryCount,
       })
 
       logger.info('Task retry initiated', { taskId })
@@ -492,7 +517,7 @@ export class TaskService extends EventEmitter {
 
       // Delete from database
       await prisma.task.delete({
-        where: { id: taskId }
+        where: { id: taskId },
       })
 
       logger.info('Task deleted successfully', { taskId })
@@ -526,8 +551,8 @@ export class TaskService extends EventEmitter {
         id: task.id,
         priority: task.priority,
         scheduledAt: task.scheduledAt,
-        retryCount: task.retryCount
-      }))
+        retryCount: task.retryCount,
+      })),
     }
   }
 
@@ -539,12 +564,18 @@ export class TaskService extends EventEmitter {
     queueProcessingInterval?: number
   }): void {
     if (config.maxConcurrentTasks !== undefined) {
-      this.maxConcurrentTasks = Math.max(1, Math.min(100, config.maxConcurrentTasks))
+      this.maxConcurrentTasks = Math.max(
+        1,
+        Math.min(100, config.maxConcurrentTasks)
+      )
     }
-    
+
     if (config.queueProcessingInterval !== undefined) {
-      this.queueProcessingInterval = Math.max(100, Math.min(10000, config.queueProcessingInterval))
-      
+      this.queueProcessingInterval = Math.max(
+        100,
+        Math.min(10000, config.queueProcessingInterval)
+      )
+
       // Restart scheduler with new interval
       this.stopScheduler()
       this.startScheduler()
@@ -552,7 +583,7 @@ export class TaskService extends EventEmitter {
 
     logger.info('Task execution configuration updated', {
       maxConcurrentTasks: this.maxConcurrentTasks,
-      queueProcessingInterval: this.queueProcessingInterval
+      queueProcessingInterval: this.queueProcessingInterval,
     })
   }
 
@@ -561,12 +592,12 @@ export class TaskService extends EventEmitter {
    */
   private addToQueue(task: QueuedTask): void {
     this.taskQueue.set(task.id, task)
-    
+
     logger.debug('Task added to queue', {
       taskId: task.id,
       priority: task.priority,
       scheduledAt: task.scheduledAt,
-      queueSize: this.taskQueue.size
+      queueSize: this.taskQueue.size,
     })
   }
 
@@ -580,9 +611,10 @@ export class TaskService extends EventEmitter {
       .sort((a, b) => {
         // Sort by priority first (CRITICAL > HIGH > MEDIUM > LOW)
         const priorityOrder = { CRITICAL: 4, HIGH: 3, MEDIUM: 2, LOW: 1 }
-        const priorityDiff = priorityOrder[b.priority] - priorityOrder[a.priority]
+        const priorityDiff =
+          priorityOrder[b.priority] - priorityOrder[a.priority]
         if (priorityDiff !== 0) return priorityDiff
-        
+
         // Then by scheduled time (earlier first)
         return a.scheduledAt.getTime() - b.scheduledAt.getTime()
       })
@@ -595,18 +627,18 @@ export class TaskService extends EventEmitter {
    */
   private async executeTask(queuedTask: QueuedTask): Promise<void> {
     const { id: taskId, timeoutMs } = queuedTask
-    
+
     try {
       logger.info('Starting task execution', {
         taskId,
         retryCount: queuedTask.retryCount,
-        timeout: timeoutMs
+        timeout: timeoutMs,
       })
 
       // Get task details from database
       const task = await prisma.task.findUnique({
         where: { id: taskId },
-        include: { agent: { include: { platform: true } } }
+        include: { agent: { include: { platform: true } } },
       })
 
       if (!task) {
@@ -619,14 +651,14 @@ export class TaskService extends EventEmitter {
         data: {
           status: 'RUNNING',
           startedAt: new Date(),
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       })
 
       // Notify WebSocket clients
       this.webSocketService?.notifyTaskStatusChange(taskId, 'RUNNING', {
         startedAt: new Date(),
-        retryCount: queuedTask.retryCount
+        retryCount: queuedTask.retryCount,
       })
 
       // Create abort controller for cancellation
@@ -639,14 +671,17 @@ export class TaskService extends EventEmitter {
       }, timeoutMs)
 
       // Create task execution record
-      const executionPromise = this.performTaskExecution(task, abortController.signal)
-      
+      const executionPromise = this.performTaskExecution(
+        task,
+        abortController.signal
+      )
+
       const taskExecution: TaskExecution = {
         taskId,
         startTime,
         timeout,
         abortController,
-        promise: executionPromise
+        promise: executionPromise,
       }
 
       this.runningTasks.set(taskId, taskExecution)
@@ -660,9 +695,8 @@ export class TaskService extends EventEmitter {
 
       logger.info('Task execution completed successfully', {
         taskId,
-        executionTime: Date.now() - startTime.getTime()
+        executionTime: Date.now() - startTime.getTime(),
       })
-
     } catch (error) {
       // Clean up on error
       const execution = this.runningTasks.get(taskId)
@@ -678,32 +712,52 @@ export class TaskService extends EventEmitter {
   /**
    * Perform the actual task execution
    */
-  private async performTaskExecution(task: Task & { agent: Agent & { platform: any } }, signal: AbortSignal): Promise<void> {
+  private async performTaskExecution(
+    task: Task & { agent: Agent & { platform: any } },
+    signal: AbortSignal
+  ): Promise<void> {
     const startTime = Date.now()
-    
+
     try {
       // Get platform adapter
       const adapter = this.adapterManager.getAdapter(task.agent.platformId)
       if (!adapter) {
-        throw new Error(`No adapter found for platform ${task.agent.platformId}`)
+        throw new Error(
+          `No adapter found for platform ${task.agent.platformId}`
+        )
       }
 
       // Parse task parameters
       const parameters = JSON.parse(task.parameters || '{}')
 
       // Report progress
-      this.webSocketService?.notifyTaskProgress(task.id, 25, 'Initializing task execution')
+      this.webSocketService?.notifyTaskProgress(
+        task.id,
+        25,
+        'Initializing task execution'
+      )
 
       // Execute task through adapter
-      this.webSocketService?.notifyTaskProgress(task.id, 50, 'Executing agent workflow')
-      
-      const result = await adapter.executeAgent(task.agent.externalId, parameters)
+      this.webSocketService?.notifyTaskProgress(
+        task.id,
+        50,
+        'Executing agent workflow'
+      )
+
+      const result = await adapter.executeAgent(
+        task.agent.externalId,
+        parameters
+      )
 
       if (signal.aborted) {
         throw new Error('Task execution was cancelled')
       }
 
-      this.webSocketService?.notifyTaskProgress(task.id, 75, 'Processing results')
+      this.webSocketService?.notifyTaskProgress(
+        task.id,
+        75,
+        'Processing results'
+      )
 
       // Store successful result
       const executionTime = Date.now() - startTime
@@ -711,7 +765,7 @@ export class TaskService extends EventEmitter {
         success: result.success,
         data: result.data,
         executionTime,
-        timestamp: new Date()
+        timestamp: new Date(),
       }
 
       await prisma.task.update({
@@ -720,27 +774,30 @@ export class TaskService extends EventEmitter {
           status: 'COMPLETED',
           result: JSON.stringify(taskResult),
           completedAt: new Date(),
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       })
 
       // Final progress update
-      this.webSocketService?.notifyTaskProgress(task.id, 100, 'Task completed successfully')
+      this.webSocketService?.notifyTaskProgress(
+        task.id,
+        100,
+        'Task completed successfully'
+      )
 
       // Notify WebSocket clients
       this.webSocketService?.notifyTaskStatusChange(task.id, 'COMPLETED', {
         success: true,
         executionTime,
-        completedAt: new Date()
+        completedAt: new Date(),
       })
 
       // Emit completion event
       this.emit('taskCompleted', {
         taskId: task.id,
         agentId: task.agentId,
-        result: taskResult
+        result: taskResult,
       })
-
     } catch (error) {
       if (signal.aborted) {
         throw new Error('Task execution was cancelled')
@@ -752,17 +809,23 @@ export class TaskService extends EventEmitter {
   /**
    * Handle task execution error
    */
-  private async handleTaskError(queuedTask: QueuedTask, error: Error): Promise<void> {
+  private async handleTaskError(
+    queuedTask: QueuedTask,
+    error: Error
+  ): Promise<void> {
     const { id: taskId, retryCount, maxRetries } = queuedTask
-    
+
     logger.error('Task execution failed', error, {
       taskId,
       retryCount,
-      maxRetries
+      maxRetries,
     })
 
     // Check if we should retry
-    if (retryCount < maxRetries && error.message !== 'Task execution was cancelled') {
+    if (
+      retryCount < maxRetries &&
+      error.message !== 'Task execution was cancelled'
+    ) {
       // Increment retry count and reschedule
       const nextRetryDelay = Math.min(1000 * Math.pow(2, retryCount), 30000) // Exponential backoff, max 30s
       const nextScheduledAt = new Date(Date.now() + nextRetryDelay)
@@ -771,15 +834,15 @@ export class TaskService extends EventEmitter {
         where: { id: taskId },
         data: {
           retryCount: retryCount + 1,
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       })
 
       // Add back to queue for retry
       this.addToQueue({
         ...queuedTask,
         retryCount: retryCount + 1,
-        scheduledAt: nextScheduledAt
+        scheduledAt: nextScheduledAt,
       })
 
       // Notify about retry
@@ -787,22 +850,21 @@ export class TaskService extends EventEmitter {
         retrying: true,
         retryCount: retryCount + 1,
         nextRetryAt: nextScheduledAt,
-        error: error.message
+        error: error.message,
       })
 
       logger.info('Task scheduled for retry', {
         taskId,
         retryCount: retryCount + 1,
-        nextRetryAt: nextScheduledAt
+        nextRetryAt: nextScheduledAt,
       })
-
     } else {
       // Mark as failed
       const taskError = {
         message: error.message,
         stack: error.stack,
         timestamp: new Date(),
-        retryCount
+        retryCount,
       }
 
       await prisma.task.update({
@@ -811,28 +873,28 @@ export class TaskService extends EventEmitter {
           status: 'FAILED',
           error: JSON.stringify(taskError),
           completedAt: new Date(),
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       })
 
       // Notify WebSocket clients
       this.webSocketService?.notifyTaskStatusChange(taskId, 'FAILED', {
         error: error.message,
         retryCount,
-        maxRetriesExceeded: retryCount >= maxRetries
+        maxRetriesExceeded: retryCount >= maxRetries,
       })
 
       this.webSocketService?.notifyTaskError(taskId, error.message, {
         retryCount,
         maxRetries,
-        timestamp: new Date()
+        timestamp: new Date(),
       })
 
       // Emit failure event
       this.emit('taskFailed', {
         taskId,
         error: taskError,
-        retryCount
+        retryCount,
       })
     }
   }
@@ -851,7 +913,7 @@ export class TaskService extends EventEmitter {
 
     logger.info('Task scheduler started', {
       interval: this.queueProcessingInterval,
-      maxConcurrentTasks: this.maxConcurrentTasks
+      maxConcurrentTasks: this.maxConcurrentTasks,
     })
   }
 
@@ -870,7 +932,10 @@ export class TaskService extends EventEmitter {
    * Process the task queue
    */
   private async processQueue(): Promise<void> {
-    if (this.isProcessing || this.runningTasks.size >= this.maxConcurrentTasks) {
+    if (
+      this.isProcessing ||
+      this.runningTasks.size >= this.maxConcurrentTasks
+    ) {
       return
     }
 
@@ -889,7 +954,7 @@ export class TaskService extends EventEmitter {
         // Start execution (don't await - run concurrently)
         this.executeTask(nextTask).catch(error => {
           logger.error('Unhandled task execution error', error, {
-            taskId: nextTask.id
+            taskId: nextTask.id,
           })
         })
       }
@@ -910,9 +975,7 @@ export class TaskService extends EventEmitter {
 
       // Cancel all running tasks
       const runningTaskIds = Array.from(this.runningTasks.keys())
-      await Promise.all(
-        runningTaskIds.map(taskId => this.cancelTask(taskId))
-      )
+      await Promise.all(runningTaskIds.map(taskId => this.cancelTask(taskId)))
 
       // Clear queues
       this.taskQueue.clear()

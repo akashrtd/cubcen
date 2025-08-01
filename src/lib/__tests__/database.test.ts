@@ -27,9 +27,21 @@ describe('Database Service', () => {
     })
 
     it('should validate task status enum values', () => {
-      const validStatuses = ['PENDING', 'RUNNING', 'COMPLETED', 'FAILED', 'CANCELLED']
+      const validStatuses = [
+        'PENDING',
+        'RUNNING',
+        'COMPLETED',
+        'FAILED',
+        'CANCELLED',
+      ]
       validStatuses.forEach(status => {
-        expect(['PENDING', 'RUNNING', 'COMPLETED', 'FAILED', 'CANCELLED']).toContain(status)
+        expect([
+          'PENDING',
+          'RUNNING',
+          'COMPLETED',
+          'FAILED',
+          'CANCELLED',
+        ]).toContain(status)
       })
     })
 
@@ -71,39 +83,109 @@ describe('Database Service', () => {
 
   describe('Data Model Structure', () => {
     it('should have required user fields', () => {
-      const requiredUserFields = ['id', 'email', 'password', 'role', 'createdAt', 'updatedAt']
+      const requiredUserFields = [
+        'id',
+        'email',
+        'password',
+        'role',
+        'createdAt',
+        'updatedAt',
+      ]
       // This test validates that our schema includes all required fields
-      expect(requiredUserFields).toEqual(expect.arrayContaining([
-        'id', 'email', 'password', 'role', 'createdAt', 'updatedAt'
-      ]))
+      expect(requiredUserFields).toEqual(
+        expect.arrayContaining([
+          'id',
+          'email',
+          'password',
+          'role',
+          'createdAt',
+          'updatedAt',
+        ])
+      )
     })
 
     it('should have required platform fields', () => {
-      const requiredPlatformFields = ['id', 'name', 'type', 'baseUrl', 'status', 'authConfig']
-      expect(requiredPlatformFields).toEqual(expect.arrayContaining([
-        'id', 'name', 'type', 'baseUrl', 'status', 'authConfig'
-      ]))
+      const requiredPlatformFields = [
+        'id',
+        'name',
+        'type',
+        'baseUrl',
+        'status',
+        'authConfig',
+      ]
+      expect(requiredPlatformFields).toEqual(
+        expect.arrayContaining([
+          'id',
+          'name',
+          'type',
+          'baseUrl',
+          'status',
+          'authConfig',
+        ])
+      )
     })
 
     it('should have required agent fields', () => {
-      const requiredAgentFields = ['id', 'name', 'platformId', 'externalId', 'status', 'capabilities']
-      expect(requiredAgentFields).toEqual(expect.arrayContaining([
-        'id', 'name', 'platformId', 'externalId', 'status', 'capabilities'
-      ]))
+      const requiredAgentFields = [
+        'id',
+        'name',
+        'platformId',
+        'externalId',
+        'status',
+        'capabilities',
+      ]
+      expect(requiredAgentFields).toEqual(
+        expect.arrayContaining([
+          'id',
+          'name',
+          'platformId',
+          'externalId',
+          'status',
+          'capabilities',
+        ])
+      )
     })
 
     it('should have required task fields', () => {
-      const requiredTaskFields = ['id', 'agentId', 'status', 'priority', 'name', 'scheduledAt', 'createdBy']
-      expect(requiredTaskFields).toEqual(expect.arrayContaining([
-        'id', 'agentId', 'status', 'priority', 'name', 'scheduledAt', 'createdBy'
-      ]))
+      const requiredTaskFields = [
+        'id',
+        'agentId',
+        'status',
+        'priority',
+        'name',
+        'scheduledAt',
+        'createdBy',
+      ]
+      expect(requiredTaskFields).toEqual(
+        expect.arrayContaining([
+          'id',
+          'agentId',
+          'status',
+          'priority',
+          'name',
+          'scheduledAt',
+          'createdBy',
+        ])
+      )
     })
 
     it('should have required workflow fields', () => {
-      const requiredWorkflowFields = ['id', 'name', 'status', 'createdBy', 'createdAt']
-      expect(requiredWorkflowFields).toEqual(expect.arrayContaining([
-        'id', 'name', 'status', 'createdBy', 'createdAt'
-      ]))
+      const requiredWorkflowFields = [
+        'id',
+        'name',
+        'status',
+        'createdBy',
+        'createdAt',
+      ]
+      expect(requiredWorkflowFields).toEqual(
+        expect.arrayContaining([
+          'id',
+          'name',
+          'status',
+          'createdBy',
+          'createdAt',
+        ])
+      )
     })
   })
 
@@ -132,7 +214,7 @@ describe('Database Service', () => {
         'user.email',
         'platform.name_type',
         'agent.platformId_externalId',
-        'workflow_step.workflowId_stepOrder'
+        'workflow_step.workflowId_stepOrder',
       ]
 
       uniqueConstraints.forEach(constraint => {
@@ -172,7 +254,7 @@ describe('Database Service', () => {
         'workflow_step.conditions',
         'system_log.context',
         'agent_health.status',
-        'metric.tags'
+        'metric.tags',
       ]
 
       jsonFields.forEach(field => {
@@ -193,10 +275,10 @@ describe('Database Service', () => {
     })
 
     it('should validate JSON structure for health status', () => {
-      const sampleHealth = '{"status": "healthy", "lastCheck": "2024-01-01T00:00:00Z", "responseTime": 150}'
+      const sampleHealth =
+        '{"status": "healthy", "lastCheck": "2024-01-01T00:00:00Z", "responseTime": 150}'
       expect(() => JSON.parse(sampleHealth)).not.toThrow()
       expect(JSON.parse(sampleHealth)).toHaveProperty('status')
     })
   })
 })
-

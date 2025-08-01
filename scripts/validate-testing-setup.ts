@@ -11,13 +11,16 @@ import { existsSync, writeFileSync, mkdirSync } from 'fs'
 class TestingSetupValidator {
   async validateSetup(): Promise<void> {
     console.log('🧪 Validating Testing Setup for Cubcen')
-    console.log('=' .repeat(50))
+    console.log('='.repeat(50))
 
     const validations = [
       { name: 'Test Environment', test: () => this.validateTestEnvironment() },
       { name: 'Database Setup', test: () => this.validateTestDatabase() },
       { name: 'Jest Configuration', test: () => this.validateJestConfig() },
-      { name: 'Test Dependencies', test: () => this.validateTestDependencies() }
+      {
+        name: 'Test Dependencies',
+        test: () => this.validateTestDependencies(),
+      },
     ]
 
     let allPassed = true
@@ -26,10 +29,14 @@ class TestingSetupValidator {
       try {
         console.log(`🔍 ${validation.name}...`)
         const passed = await validation.test()
-        console.log(`   ${passed ? '✅' : '❌'} ${passed ? 'Valid' : 'Issues found'}`)
+        console.log(
+          `   ${passed ? '✅' : '❌'} ${passed ? 'Valid' : 'Issues found'}`
+        )
         if (!passed) allPassed = false
       } catch (error) {
-        console.log(`   ❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`)
+        console.log(
+          `   ❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`
+        )
         allPassed = false
       }
       console.log('')
@@ -66,9 +73,9 @@ class TestingSetupValidator {
       execSync('npx prisma generate', { stdio: 'pipe' })
 
       // Setup test database
-      execSync('npx prisma migrate deploy', { 
+      execSync('npx prisma migrate deploy', {
         stdio: 'pipe',
-        env: { ...process.env, DATABASE_URL: 'file:./e2e/temp/test.db' }
+        env: { ...process.env, DATABASE_URL: 'file:./e2e/temp/test.db' },
       })
 
       return true
@@ -82,11 +89,11 @@ class TestingSetupValidator {
     const jestFiles = [
       'jest.config.js',
       'jest.backend.config.js',
-      'jest.e2e.config.js'
+      'jest.e2e.config.js',
     ]
 
     const missingFiles = jestFiles.filter(file => !existsSync(file))
-    
+
     if (missingFiles.length > 0) {
       console.log(`   Missing Jest config files: ${missingFiles.join(', ')}`)
       return false

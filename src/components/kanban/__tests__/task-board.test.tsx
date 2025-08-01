@@ -6,19 +6,37 @@ import { Task, TaskStatus, TaskPriority } from '@/lib/database'
 
 // Mock the drag and drop functionality
 jest.mock('@dnd-kit/core', () => ({
-  DndContext: ({ children, onDragEnd }: { children: React.ReactNode; onDragEnd?: (event: { active: { id: string }; over: { id: string } }) => void }) => (
-    <div data-testid="dnd-context" onClick={() => onDragEnd?.({ active: { id: 'task-1' }, over: { id: 'RUNNING' } })}>
+  DndContext: ({
+    children,
+    onDragEnd,
+  }: {
+    children: React.ReactNode
+    onDragEnd?: (event: {
+      active: { id: string }
+      over: { id: string }
+    }) => void
+  }) => (
+    <div
+      data-testid="dnd-context"
+      onClick={() =>
+        onDragEnd?.({ active: { id: 'task-1' }, over: { id: 'RUNNING' } })
+      }
+    >
       {children}
     </div>
   ),
-  DragOverlay: ({ children }: { children: React.ReactNode }) => <div data-testid="drag-overlay">{children}</div>,
+  DragOverlay: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="drag-overlay">{children}</div>
+  ),
   useSensor: () => ({}),
   useSensors: () => [],
   closestCorners: () => ({}),
 }))
 
 jest.mock('@dnd-kit/sortable', () => ({
-  SortableContext: ({ children }: { children: React.ReactNode }) => <div data-testid="sortable-context">{children}</div>,
+  SortableContext: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="sortable-context">{children}</div>
+  ),
   verticalListSortingStrategy: {},
   useSortable: () => ({
     attributes: {},
@@ -142,14 +160,18 @@ describe('TaskBoard', () => {
 
   it('renders task management header', () => {
     render(<TaskBoard {...defaultProps} />)
-    
+
     expect(screen.getByText('Task Management')).toBeInTheDocument()
-    expect(screen.getByText('Manage and track task execution across all your agents.')).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        'Manage and track task execution across all your agents.'
+      )
+    ).toBeInTheDocument()
   })
 
   it('renders all task columns', () => {
     render(<TaskBoard {...defaultProps} />)
-    
+
     expect(screen.getByText('Pending')).toBeInTheDocument()
     expect(screen.getByText('In Progress')).toBeInTheDocument()
     expect(screen.getByText('Completed')).toBeInTheDocument()
@@ -158,7 +180,7 @@ describe('TaskBoard', () => {
 
   it('displays tasks in correct columns', () => {
     render(<TaskBoard {...defaultProps} />)
-    
+
     // Check that tasks are in the right columns by looking for task names
     expect(screen.getByText('Test Task 1')).toBeInTheDocument() // PENDING
     expect(screen.getByText('Test Task 2')).toBeInTheDocument() // RUNNING
@@ -168,7 +190,7 @@ describe('TaskBoard', () => {
 
   it('shows correct task counts in column headers', () => {
     render(<TaskBoard {...defaultProps} />)
-    
+
     // Each column should show the count of tasks
     const badges = screen.getAllByText('1')
     expect(badges).toHaveLength(4) // One task in each column
@@ -176,7 +198,7 @@ describe('TaskBoard', () => {
 
   it('shows high priority task indicator', () => {
     render(<TaskBoard {...defaultProps} />)
-    
+
     // Should show high priority indicators for HIGH and CRITICAL tasks
     const highPriorityBadges = screen.getAllByText(/high/)
     expect(highPriorityBadges.length).toBeGreaterThan(0)
@@ -185,10 +207,10 @@ describe('TaskBoard', () => {
   it('opens create task modal when create button is clicked', async () => {
     const user = userEvent.setup()
     render(<TaskBoard {...defaultProps} />)
-    
+
     const createButton = screen.getByText('Create Task')
     await user.click(createButton)
-    
+
     // Modal should open (we'll test the modal content in its own test file)
     expect(screen.getByText('Create New Task')).toBeInTheDocument()
   })
@@ -196,25 +218,27 @@ describe('TaskBoard', () => {
   it('opens filters when filter button is clicked', async () => {
     const user = userEvent.setup()
     render(<TaskBoard {...defaultProps} />)
-    
+
     const filterButton = screen.getByText('Filters')
     await user.click(filterButton)
-    
+
     expect(screen.getByText('Task Filters')).toBeInTheDocument()
   })
 
   it('filters tasks by search term', async () => {
     const user = userEvent.setup()
     render(<TaskBoard {...defaultProps} />)
-    
+
     // Open filters
     const filterButton = screen.getByText('Filters')
     await user.click(filterButton)
-    
+
     // Search for specific task
-    const searchInput = screen.getByPlaceholderText('Search by name or description')
+    const searchInput = screen.getByPlaceholderText(
+      'Search by name or description'
+    )
     await user.type(searchInput, 'Test Task 1')
-    
+
     // Should only show matching task
     expect(screen.getByText('Test Task 1')).toBeInTheDocument()
     // Other tasks should not be visible (this is a simplified test)
@@ -223,19 +247,19 @@ describe('TaskBoard', () => {
   it('filters tasks by agent', async () => {
     const user = userEvent.setup()
     render(<TaskBoard {...defaultProps} />)
-    
+
     // Open filters
     const filterButton = screen.getByText('Filters')
     await user.click(filterButton)
-    
+
     // Select agent filter
     const agentSelect = screen.getByDisplayValue('All agents')
     await user.click(agentSelect)
-    
+
     // Select specific agent
     const agentOption = screen.getByText('Test Agent 1')
     await user.click(agentOption)
-    
+
     // Should filter tasks by selected agent
     expect(screen.getByText('Test Task 1')).toBeInTheDocument()
     expect(screen.getByText('Test Task 3')).toBeInTheDocument()
@@ -244,19 +268,19 @@ describe('TaskBoard', () => {
   it('filters tasks by priority', async () => {
     const user = userEvent.setup()
     render(<TaskBoard {...defaultProps} />)
-    
+
     // Open filters
     const filterButton = screen.getByText('Filters')
     await user.click(filterButton)
-    
+
     // Select priority filter
     const prioritySelect = screen.getByDisplayValue('All priorities')
     await user.click(prioritySelect)
-    
+
     // Select HIGH priority
     const priorityOption = screen.getByText('High')
     await user.click(priorityOption)
-    
+
     // Should show only high priority tasks
     expect(screen.getByText('Test Task 1')).toBeInTheDocument()
   })
@@ -264,24 +288,26 @@ describe('TaskBoard', () => {
   it('handles drag and drop task status change', async () => {
     const mockOnTaskUpdate = jest.fn()
     render(<TaskBoard {...defaultProps} onTaskUpdate={mockOnTaskUpdate} />)
-    
+
     // Simulate drag and drop by clicking the DndContext
     const dndContext = screen.getByTestId('dnd-context')
     fireEvent.click(dndContext)
-    
+
     await waitFor(() => {
-      expect(mockOnTaskUpdate).toHaveBeenCalledWith('task-1', { status: 'RUNNING' })
+      expect(mockOnTaskUpdate).toHaveBeenCalledWith('task-1', {
+        status: 'RUNNING',
+      })
     })
   })
 
   it('opens task detail modal when task card is clicked', async () => {
     const user = userEvent.setup()
     render(<TaskBoard {...defaultProps} />)
-    
+
     // Click on a task card
     const taskCard = screen.getByText('Test Task 1')
     await user.click(taskCard)
-    
+
     // Task detail modal should open
     expect(screen.getByText('Test Task 1')).toBeInTheDocument()
   })
@@ -290,25 +316,25 @@ describe('TaskBoard', () => {
     const mockOnTaskCreate = jest.fn()
     const user = userEvent.setup()
     render(<TaskBoard {...defaultProps} onTaskCreate={mockOnTaskCreate} />)
-    
+
     // Open create modal
     const createButton = screen.getByText('Create Task')
     await user.click(createButton)
-    
+
     // Fill in task details
     const nameInput = screen.getByPlaceholderText('Enter task name')
     await user.type(nameInput, 'New Test Task')
-    
+
     // Select agent
     const agentSelect = screen.getByDisplayValue('Select an agent')
     await user.click(agentSelect)
     const agentOption = screen.getByText('Test Agent 1')
     await user.click(agentOption)
-    
+
     // Submit form
     const submitButton = screen.getByText('Create Task')
     await user.click(submitButton)
-    
+
     await waitFor(() => {
       expect(mockOnTaskCreate).toHaveBeenCalled()
     })
@@ -316,14 +342,14 @@ describe('TaskBoard', () => {
 
   it('shows loading state', () => {
     render(<TaskBoard {...defaultProps} isLoading={true} />)
-    
+
     // Should show loading indicators or disabled states
     expect(screen.getByText('Task Management')).toBeInTheDocument()
   })
 
   it('handles empty task list', () => {
     render(<TaskBoard {...defaultProps} tasks={[]} />)
-    
+
     // Should show empty state messages
     const emptyMessages = screen.getAllByText('No tasks')
     expect(emptyMessages.length).toBeGreaterThan(0)
@@ -332,45 +358,49 @@ describe('TaskBoard', () => {
   it('clears filters when clear button is clicked', async () => {
     const user = userEvent.setup()
     render(<TaskBoard {...defaultProps} />)
-    
+
     // Open filters and apply a filter
     const filterButton = screen.getByText('Filters')
     await user.click(filterButton)
-    
-    const searchInput = screen.getByPlaceholderText('Search by name or description')
+
+    const searchInput = screen.getByPlaceholderText(
+      'Search by name or description'
+    )
     await user.type(searchInput, 'test')
-    
+
     // Clear filters
     const clearButton = screen.getByText('Clear All')
     await user.click(clearButton)
-    
+
     // Search input should be cleared
     expect(searchInput).toHaveValue('')
   })
 
   it('handles drag and drop failures gracefully', async () => {
-    const mockOnTaskUpdate = jest.fn().mockRejectedValue(new Error('Update failed'))
+    const mockOnTaskUpdate = jest
+      .fn()
+      .mockRejectedValue(new Error('Update failed'))
     render(<TaskBoard {...defaultProps} onTaskUpdate={mockOnTaskUpdate} />)
-    
+
     // Simulate drag and drop
     const dndContext = screen.getByTestId('dnd-context')
     fireEvent.click(dndContext)
-    
+
     await waitFor(() => {
       expect(mockOnTaskUpdate).toHaveBeenCalled()
     })
-    
+
     // Should handle the error gracefully (no crash)
     expect(screen.getByText('Task Management')).toBeInTheDocument()
   })
 
   it('shows correct task statistics', () => {
     render(<TaskBoard {...defaultProps} />)
-    
+
     // Each column should show task count
     const taskCounts = screen.getAllByText('1')
     expect(taskCounts).toHaveLength(4) // One task per column
-    
+
     // Should show high priority count
     const highPriorityCount = screen.getByText('1 high')
     expect(highPriorityCount).toBeInTheDocument()

@@ -19,9 +19,9 @@ export class TestServer {
     this.prisma = new PrismaClient({
       datasources: {
         db: {
-          url: 'file:./e2e/temp/test.db'
-        }
-      }
+          url: 'file:./e2e/temp/test.db',
+        },
+      },
     })
   }
 
@@ -45,7 +45,7 @@ export class TestServer {
    * Stop the test server
    */
   async stop(): Promise<void> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       if (this.server) {
         this.server.close(() => {
           console.log('🛑 Test server stopped')

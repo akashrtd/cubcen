@@ -32,15 +32,15 @@ export async function createTestApp(): Promise<Express> {
   app.use('/health', healthRoutes)
 
   // Global error handler
-  app.use((error: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  app.use((error: Error, req: express.Request, res: express.Response) => {
     logger.error('Unhandled error in test app', error)
-    
+
     res.status(500).json({
       success: false,
       error: {
         code: 'INTERNAL_ERROR',
-        message: 'Internal server error'
-      }
+        message: 'Internal server error',
+      },
     })
   })
 

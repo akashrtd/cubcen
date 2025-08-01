@@ -18,7 +18,7 @@ import {
   NotificationContext,
   GetNotificationsOptions,
   EmailNotificationConfig,
-  SlackNotificationConfig
+  SlackNotificationConfig,
 } from '../types/notification'
 
 export class CubcenNotificationService implements NotificationService {
@@ -42,9 +42,9 @@ export class CubcenNotificationService implements NotificationService {
         secure: process.env.SMTP_SECURE === 'true',
         auth: {
           user: process.env.SMTP_USER || '',
-          pass: process.env.SMTP_PASS || ''
+          pass: process.env.SMTP_PASS || '',
         },
-        from: process.env.SMTP_FROM || 'noreply@cubcen.com'
+        from: process.env.SMTP_FROM || 'noreply@cubcen.com',
       }
 
       if (this.emailConfig.auth.user && this.emailConfig.auth.pass) {
@@ -52,15 +52,17 @@ export class CubcenNotificationService implements NotificationService {
           host: this.emailConfig.host,
           port: this.emailConfig.port,
           secure: this.emailConfig.secure,
-          auth: this.emailConfig.auth
+          auth: this.emailConfig.auth,
         })
 
         logger.info('Email transporter initialized', {
           host: this.emailConfig.host,
-          port: this.emailConfig.port
+          port: this.emailConfig.port,
         })
       } else {
-        logger.warn('Email configuration incomplete, email notifications disabled')
+        logger.warn(
+          'Email configuration incomplete, email notifications disabled'
+        )
       }
     } catch (error) {
       logger.error('Failed to initialize email transporter', error as Error)
@@ -76,7 +78,7 @@ export class CubcenNotificationService implements NotificationService {
           token: slackToken,
           defaultChannel: process.env.SLACK_DEFAULT_CHANNEL || '#alerts',
           username: process.env.SLACK_USERNAME || 'Cubcen Bot',
-          iconEmoji: process.env.SLACK_ICON_EMOJI || ':robot_face:'
+          iconEmoji: process.env.SLACK_ICON_EMOJI || ':robot_face:',
         }
         logger.info('Slack client initialized')
       } else {
@@ -93,10 +95,12 @@ export class CubcenNotificationService implements NotificationService {
         id: notification.id,
         eventType: notification.eventType,
         priority: notification.priority,
-        channels: notification.channels
+        channels: notification.channels,
       })
 
-      const channels = JSON.parse(notification.channels) as NotificationChannelType[]
+      const channels = JSON.parse(
+        notification.channels
+      ) as NotificationChannelType[]
       const promises: Promise<void>[] = []
 
       for (const channel of channels) {
@@ -126,42 +130,47 @@ export class CubcenNotificationService implements NotificationService {
         where: { id: notification.id },
         data: {
           status: NotificationStatus.SENT,
-          sentAt: new Date()
-        }
+          sentAt: new Date(),
+        },
       })
 
       logger.info('Notification sent successfully', { id: notification.id })
     } catch (error) {
       logger.error('Failed to send notification', error as Error, {
-        notificationId: notification.id
+        notificationId: notification.id,
       })
 
       await this.prisma.notification.update({
         where: { id: notification.id },
         data: {
           status: NotificationStatus.FAILED,
-          retryCount: { increment: 1 }
-        }
+          retryCount: { increment: 1 },
+        },
       })
 
       throw error
     }
   }
 
-  private async sendEmailNotification(notification: Notification): Promise<void> {
+  private async sendEmailNotification(
+    notification: Notification
+  ): Promise<void> {
     if (!this.emailTransporter || !notification.userId) return
 
     const user = await this.prisma.user.findUnique({
-      where: { id: notification.userId }
+      where: { id: notification.userId },
     })
 
     if (!user) {
       throw new Error(`User not found: ${notification.userId}`)
     }
 
-    const template = await this.getTemplate(notification.eventType, NotificationChannelType.EMAIL)
+    const template = await this.getTemplate(
+      notification.eventType,
+      NotificationChannelType.EMAIL
+    )
     const context = this.buildNotificationContext(notification)
-    
+
     const emailContent = this.renderTemplate(template.template, context)
     const subject = this.renderTemplate(template.subject, context)
 
@@ -169,18 +178,23 @@ export class CubcenNotificationService implements NotificationService {
       to: [user.email],
       subject,
       html: emailContent,
-      text: notification.message
+      text: notification.message,
     }
 
     await this.sendEmail(emailNotification)
   }
 
-  private async sendSlackNotification(notification: Notification): Promise<void> {
+  private async sendSlackNotification(
+    notification: Notification
+  ): Promise<void> {
     if (!this.slackClient || !this.slackConfig) return
 
-    const template = await this.getTemplate(notification.eventType, NotificationChannelType.SLACK)
+    const template = await this.getTemplate(
+      notification.eventType,
+      NotificationChannelType.SLACK
+    )
     const context = this.buildNotificationContext(notification)
-    
+
     const message = this.renderTemplate(template.template, context)
     const color = this.getSlackColorForPriority(notification.priority)
 
@@ -189,34 +203,38 @@ export class CubcenNotificationService implements NotificationService {
       text: notification.title,
       username: this.slackConfig.username,
       iconEmoji: this.slackConfig.iconEmoji,
-      attachments: [{
-        color,
-        title: notification.title,
-        text: message,
-        fields: [
-          {
-            title: 'Priority',
-            value: notification.priority.toUpperCase(),
-            short: true
-          },
-          {
-            title: 'Event Type',
-            value: notification.eventType.replace('_', ' ').toUpperCase(),
-            short: true
-          },
-          {
-            title: 'Time',
-            value: new Date().toISOString(),
-            short: true
-          }
-        ]
-      }]
+      attachments: [
+        {
+          color,
+          title: notification.title,
+          text: message,
+          fields: [
+            {
+              title: 'Priority',
+              value: notification.priority.toUpperCase(),
+              short: true,
+            },
+            {
+              title: 'Event Type',
+              value: notification.eventType.replace('_', ' ').toUpperCase(),
+              short: true,
+            },
+            {
+              title: 'Time',
+              value: new Date().toISOString(),
+              short: true,
+            },
+          ],
+        },
+      ],
     }
 
     await this.sendSlack(slackNotification)
   }
 
-  private async sendInAppNotification(notification: Notification): Promise<void> {
+  private async sendInAppNotification(
+    notification: Notification
+  ): Promise<void> {
     if (!notification.userId) return
 
     const inAppNotification: InAppNotification = {
@@ -226,7 +244,7 @@ export class CubcenNotificationService implements NotificationService {
       message: notification.message,
       type: this.getInAppTypeForPriority(notification.priority),
       read: false,
-      createdAt: new Date()
+      createdAt: new Date(),
     }
 
     await this.sendInApp(inAppNotification)
@@ -246,17 +264,17 @@ export class CubcenNotificationService implements NotificationService {
         subject: email.subject,
         html: email.html,
         text: email.text,
-        attachments: email.attachments
+        attachments: email.attachments,
       })
 
       logger.info('Email sent successfully', {
         messageId: info.messageId,
-        to: email.to
+        to: email.to,
       })
     } catch (error) {
       logger.error('Failed to send email', error as Error, {
         to: email.to,
-        subject: email.subject
+        subject: email.subject,
       })
       throw error
     }
@@ -275,17 +293,17 @@ export class CubcenNotificationService implements NotificationService {
         attachments: slack.attachments,
         username: slack.username,
         icon_emoji: slack.iconEmoji,
-        thread_ts: slack.threadTs
+        thread_ts: slack.threadTs,
       })
 
       logger.info('Slack message sent successfully', {
         channel: slack.channel,
-        ts: result.ts
+        ts: result.ts,
       })
     } catch (error) {
       logger.error('Failed to send Slack message', error as Error, {
         channel: slack.channel,
-        text: slack.text
+        text: slack.text,
       })
       throw error
     }
@@ -303,18 +321,18 @@ export class CubcenNotificationService implements NotificationService {
           read: inApp.read,
           actionUrl: inApp.actionUrl,
           actionText: inApp.actionText,
-          expiresAt: inApp.expiresAt
-        }
+          expiresAt: inApp.expiresAt,
+        },
       })
 
       logger.info('In-app notification created', {
         id: inApp.id,
-        userId: inApp.userId
+        userId: inApp.userId,
       })
     } catch (error) {
       logger.error('Failed to create in-app notification', error as Error, {
         id: inApp.id,
-        userId: inApp.userId
+        userId: inApp.userId,
       })
       throw error
     }
@@ -327,18 +345,18 @@ export class CubcenNotificationService implements NotificationService {
         data: {
           status: NotificationStatus.ACKNOWLEDGED,
           acknowledgedAt: new Date(),
-          acknowledgedBy: userId
-        }
+          acknowledgedBy: userId,
+        },
       })
 
       logger.info('Notification acknowledged', {
         notificationId,
-        userId
+        userId,
       })
     } catch (error) {
       logger.error('Failed to acknowledge notification', error as Error, {
         notificationId,
-        userId
+        userId,
       })
       throw error
     }
@@ -348,7 +366,7 @@ export class CubcenNotificationService implements NotificationService {
     try {
       const notification = await this.prisma.notification.findUnique({
         where: { id: notificationId },
-        include: { user: true }
+        include: { user: true },
       })
 
       if (!notification) {
@@ -357,7 +375,7 @@ export class CubcenNotificationService implements NotificationService {
 
       // Get escalation users (admins)
       const adminUsers = await this.prisma.user.findMany({
-        where: { role: 'ADMIN' }
+        where: { role: 'ADMIN' },
       })
 
       if (adminUsers.length === 0) {
@@ -370,8 +388,8 @@ export class CubcenNotificationService implements NotificationService {
         data: {
           notificationId,
           level: 1,
-          escalatedTo: JSON.stringify(adminUsers.map(u => u.id))
-        }
+          escalatedTo: JSON.stringify(adminUsers.map(u => u.id)),
+        },
       })
 
       // Send escalation notifications
@@ -384,11 +402,14 @@ export class CubcenNotificationService implements NotificationService {
           title: `ESCALATED: ${notification.title}`,
           message: `This alert has been escalated due to lack of acknowledgment.\n\nOriginal message: ${notification.message}`,
           userId: admin.id,
-          channels: JSON.stringify([NotificationChannelType.EMAIL, NotificationChannelType.SLACK]),
+          channels: JSON.stringify([
+            NotificationChannelType.EMAIL,
+            NotificationChannelType.SLACK,
+          ]),
           retryCount: 0,
           maxRetries: 3,
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
         }
 
         await this.send(escalationNotification)
@@ -396,17 +417,20 @@ export class CubcenNotificationService implements NotificationService {
 
       logger.info('Notification escalated', {
         notificationId,
-        escalatedTo: adminUsers.length
+        escalatedTo: adminUsers.length,
       })
     } catch (error) {
       logger.error('Failed to escalate notification', error as Error, {
-        notificationId
+        notificationId,
       })
       throw error
     }
   }
 
-  async getNotifications(userId: string, options: GetNotificationsOptions = {}): Promise<Notification[]> {
+  async getNotifications(
+    userId: string,
+    options: GetNotificationsOptions = {}
+  ): Promise<Notification[]> {
     try {
       const where: Record<string, unknown> = { userId }
 
@@ -423,13 +447,13 @@ export class CubcenNotificationService implements NotificationService {
         where,
         orderBy: { createdAt: 'desc' },
         take: options.limit || 50,
-        skip: options.offset || 0
+        skip: options.offset || 0,
       })
 
       return notifications.map(n => ({
         ...n,
         channels: JSON.parse(n.channels),
-        data: n.data ? JSON.parse(n.data) : undefined
+        data: n.data ? JSON.parse(n.data) : undefined,
       }))
     } catch (error) {
       logger.error('Failed to get notifications', error as Error, { userId })
@@ -442,32 +466,35 @@ export class CubcenNotificationService implements NotificationService {
       await this.prisma.inAppNotification.updateMany({
         where: {
           id: notificationId,
-          userId
+          userId,
         },
-        data: { read: true }
+        data: { read: true },
       })
 
       logger.info('In-app notification marked as read', {
         notificationId,
-        userId
+        userId,
       })
     } catch (error) {
       logger.error('Failed to mark notification as read', error as Error, {
         notificationId,
-        userId
+        userId,
       })
       throw error
     }
   }
 
-  private async getTemplate(eventType: NotificationEventType, channelType: NotificationChannelType) {
+  private async getTemplate(
+    eventType: NotificationEventType,
+    channelType: NotificationChannelType
+  ) {
     const template = await this.prisma.notificationTemplate.findUnique({
       where: {
         eventType_channelType: {
           eventType,
-          channelType
-        }
-      }
+          channelType,
+        },
+      },
     })
 
     if (!template) {
@@ -475,24 +502,26 @@ export class CubcenNotificationService implements NotificationService {
       return {
         subject: 'Cubcen Alert: {{title}}',
         template: '{{message}}',
-        variables: ['title', 'message']
+        variables: ['title', 'message'],
       }
     }
 
     return {
       subject: template.subject,
       template: template.template,
-      variables: JSON.parse(template.variables)
+      variables: JSON.parse(template.variables),
     }
   }
 
-  private buildNotificationContext(notification: Notification): NotificationContext {
+  private buildNotificationContext(
+    notification: Notification
+  ): NotificationContext {
     const context: NotificationContext = {
       timestamp: new Date(),
       title: notification.title,
       message: notification.message,
       priority: notification.priority,
-      eventType: notification.eventType
+      eventType: notification.eventType,
     }
 
     if (notification.data) {
@@ -503,7 +532,10 @@ export class CubcenNotificationService implements NotificationService {
     return context
   }
 
-  private renderTemplate(template: string, context: NotificationContext): string {
+  private renderTemplate(
+    template: string,
+    context: NotificationContext
+  ): string {
     let rendered = template
 
     Object.entries(context).forEach(([key, value]: [string, unknown]) => {
@@ -529,7 +561,9 @@ export class CubcenNotificationService implements NotificationService {
     }
   }
 
-  private getInAppTypeForPriority(priority: NotificationPriority): 'info' | 'success' | 'warning' | 'error' {
+  private getInAppTypeForPriority(
+    priority: NotificationPriority
+  ): 'info' | 'success' | 'warning' | 'error' {
     switch (priority) {
       case NotificationPriority.CRITICAL:
       case NotificationPriority.HIGH:
@@ -559,7 +593,7 @@ export class CubcenNotificationService implements NotificationService {
       priority = NotificationPriority.MEDIUM,
       userId,
       data,
-      channels = [NotificationChannelType.IN_APP]
+      channels = [NotificationChannelType.IN_APP],
     } = options
 
     const notification = await this.prisma.notification.create({
@@ -573,17 +607,19 @@ export class CubcenNotificationService implements NotificationService {
         userId,
         channels: JSON.stringify(channels),
         retryCount: 0,
-        maxRetries: 3
-      }
+        maxRetries: 3,
+      },
     })
 
     return {
       ...notification,
       channels,
-      data
+      data,
     }
   }
 }
 
 // Export singleton instance
-export const notificationService = new CubcenNotificationService(new PrismaClient())
+export const notificationService = new CubcenNotificationService(
+  new PrismaClient()
+)

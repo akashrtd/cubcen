@@ -16,14 +16,17 @@ All platform adapters must implement the `PlatformAdapter` interface:
 interface PlatformAdapter {
   // Authentication
   authenticate(credentials: PlatformCredentials): Promise<AuthResult>
-  
+
   // Agent Discovery
   discoverAgents(): Promise<Agent[]>
   getAgentStatus(agentId: string): Promise<AgentStatus>
-  
+
   // Agent Control
-  executeAgent(agentId: string, params: ExecutionParams): Promise<ExecutionResult>
-  
+  executeAgent(
+    agentId: string,
+    params: ExecutionParams
+  ): Promise<ExecutionResult>
+
   // Monitoring
   subscribeToEvents(callback: EventCallback): Promise<void>
   healthCheck(): Promise<HealthStatus>
@@ -54,7 +57,7 @@ export enum PlatformType {
   N8N = 'N8N',
   MAKE = 'MAKE',
   ZAPIER = 'ZAPIER',
-  YOUR_PLATFORM = 'YOUR_PLATFORM' // Add your platform here
+  YOUR_PLATFORM = 'YOUR_PLATFORM', // Add your platform here
 }
 ```
 
@@ -65,18 +68,18 @@ Create your adapter class extending `BaseAdapter`:
 ```typescript
 // src/backend/adapters/your-platform-adapter.ts
 import { BaseAdapter } from './base-adapter'
-import { 
-  PlatformCredentials, 
-  Agent, 
-  AgentStatus, 
-  ExecutionParams, 
+import {
+  PlatformCredentials,
+  Agent,
+  AgentStatus,
+  ExecutionParams,
   ExecutionResult,
-  HealthStatus 
+  HealthStatus,
 } from '@/types/platform'
 
 export class YourPlatformAdapter extends BaseAdapter {
   private apiClient: YourPlatformAPIClient
-  
+
   constructor(config: PlatformConfig) {
     super(config)
     this.apiClient = new YourPlatformAPIClient(config.baseUrl)
@@ -95,7 +98,7 @@ export class YourPlatformAdapter extends BaseAdapter {
 
   async discoverAgents(): Promise<Agent[]> {
     this.ensureAuthenticated()
-    
+
     try {
       const platformAgents = await this.apiClient.getAgents()
       return platformAgents.map(this.mapPlatformAgentToAgent)
@@ -107,7 +110,7 @@ export class YourPlatformAdapter extends BaseAdapter {
 
   async getAgentStatus(agentId: string): Promise<AgentStatus> {
     this.ensureAuthenticated()
-    
+
     try {
       const status = await this.apiClient.getAgentStatus(agentId)
       return this.mapPlatformStatusToStatus(status)
@@ -117,9 +120,12 @@ export class YourPlatformAdapter extends BaseAdapter {
     }
   }
 
-  async executeAgent(agentId: string, params: ExecutionParams): Promise<ExecutionResult> {
+  async executeAgent(
+    agentId: string,
+    params: ExecutionParams
+  ): Promise<ExecutionResult> {
     this.ensureAuthenticated()
-    
+
     try {
       const result = await this.apiClient.executeAgent(agentId, params)
       return this.mapPlatformResultToResult(result)
@@ -131,9 +137,9 @@ export class YourPlatformAdapter extends BaseAdapter {
 
   async subscribeToEvents(callback: EventCallback): Promise<void> {
     this.ensureAuthenticated()
-    
+
     try {
-      await this.apiClient.subscribeToWebhooks((event) => {
+      await this.apiClient.subscribeToWebhooks(event => {
         const mappedEvent = this.mapPlatformEventToEvent(event)
         callback(mappedEvent)
       })
@@ -149,13 +155,13 @@ export class YourPlatformAdapter extends BaseAdapter {
       return {
         status: health.ok ? 'healthy' : 'unhealthy',
         lastCheck: new Date(),
-        details: health
+        details: health,
       }
     } catch (error) {
       return {
         status: 'unhealthy',
         lastCheck: new Date(),
-        details: { error: error.message }
+        details: { error: error.message },
       }
     }
   }
@@ -174,10 +180,10 @@ export class YourPlatformAdapter extends BaseAdapter {
       description: platformAgent.description,
       healthStatus: {
         status: 'healthy',
-        lastCheck: new Date()
+        lastCheck: new Date(),
       },
       createdAt: new Date(platformAgent.createdAt),
-      updatedAt: new Date(platformAgent.updatedAt)
+      updatedAt: new Date(platformAgent.updatedAt),
     }
   }
 
@@ -232,7 +238,7 @@ export const yourPlatformConfigSchema = z.object({
   apiKey: z.string().min(1),
   webhookUrl: z.string().url().optional(),
   timeout: z.number().min(1000).max(60000).default(30000),
-  retries: z.number().min(0).max(5).default(3)
+  retries: z.number().min(0).max(5).default(3),
 })
 ```
 
@@ -258,10 +264,10 @@ describe('YourPlatformAdapter', () => {
       type: PlatformType.YOUR_PLATFORM,
       baseUrl: 'https://api.yourplatform.com',
       credentials: {
-        apiKey: 'test-api-key'
-      }
+        apiKey: 'test-api-key',
+      },
     }
-    
+
     adapter = new YourPlatformAdapter(mockConfig)
   })
 
@@ -270,22 +276,23 @@ describe('YourPlatformAdapter', () => {
       // Mock API response
       jest.spyOn(adapter['apiClient'], 'authenticate').mockResolvedValue({
         success: true,
-        token: 'auth-token'
+        token: 'auth-token',
       })
 
       const result = await adapter.authenticate(mockConfig.credentials)
-      
+
       expect(result.success).toBe(true)
       expect(adapter['isAuthenticated']).toBe(true)
     })
 
     it('should handle authentication failure', async () => {
-      jest.spyOn(adapter['apiClient'], 'authenticate').mockRejectedValue(
-        new Error('Invalid credentials')
-      )
+      jest
+        .spyOn(adapter['apiClient'], 'authenticate')
+        .mockRejectedValue(new Error('Invalid credentials'))
 
-      await expect(adapter.authenticate(mockConfig.credentials))
-        .rejects.toThrow('Failed to authenticate with platform')
+      await expect(
+        adapter.authenticate(mockConfig.credentials)
+      ).rejects.toThrow('Failed to authenticate with platform')
     })
   })
 
@@ -294,7 +301,7 @@ describe('YourPlatformAdapter', () => {
       // Authenticate first
       jest.spyOn(adapter['apiClient'], 'authenticate').mockResolvedValue({
         success: true,
-        token: 'auth-token'
+        token: 'auth-token',
       })
       await adapter.authenticate(mockConfig.credentials)
     })
@@ -307,14 +314,16 @@ describe('YourPlatformAdapter', () => {
           status: 'active',
           capabilities: ['email'],
           createdAt: '2024-01-01T00:00:00Z',
-          updatedAt: '2024-01-01T00:00:00Z'
-        }
+          updatedAt: '2024-01-01T00:00:00Z',
+        },
       ]
 
-      jest.spyOn(adapter['apiClient'], 'getAgents').mockResolvedValue(mockPlatformAgents)
+      jest
+        .spyOn(adapter['apiClient'], 'getAgents')
+        .mockResolvedValue(mockPlatformAgents)
 
       const agents = await adapter.discoverAgents()
-      
+
       expect(agents).toHaveLength(1)
       expect(agents[0].name).toBe('Test Agent 1')
       expect(agents[0].status).toBe('ACTIVE')
@@ -340,13 +349,13 @@ describe('YourPlatformAdapter Integration', () => {
 
   beforeAll(async () => {
     mockServer = await createMockServer()
-    
+
     adapter = new YourPlatformAdapter({
       id: 'test-platform',
       name: 'Test Platform',
       type: PlatformType.YOUR_PLATFORM,
       baseUrl: mockServer.url,
-      credentials: { apiKey: 'test-key' }
+      credentials: { apiKey: 'test-key' },
     })
   })
 
@@ -357,15 +366,15 @@ describe('YourPlatformAdapter Integration', () => {
   it('should perform full agent lifecycle', async () => {
     // Test authentication
     await adapter.authenticate({ apiKey: 'test-key' })
-    
+
     // Test agent discovery
     const agents = await adapter.discoverAgents()
     expect(agents.length).toBeGreaterThan(0)
-    
+
     // Test agent status
     const status = await adapter.getAgentStatus(agents[0].externalId)
     expect(status).toBeDefined()
-    
+
     // Test health check
     const health = await adapter.healthCheck()
     expect(health.status).toBe('healthy')
@@ -382,7 +391,10 @@ Define platform-specific error types:
 ```typescript
 // src/backend/adapters/errors/your-platform-errors.ts
 export class YourPlatformError extends Error {
-  constructor(message: string, public code?: string) {
+  constructor(
+    message: string,
+    public code?: string
+  ) {
     super(message)
     this.name = 'YourPlatformError'
   }
@@ -418,7 +430,7 @@ export class YourPlatformAdapter extends BaseAdapter {
     this.circuitBreaker = new CircuitBreaker({
       failureThreshold: 5,
       resetTimeout: 60000,
-      timeout: 30000
+      timeout: 30000,
     })
   }
 
@@ -554,7 +566,7 @@ Implement health check endpoints:
 router.get('/:id/health', async (req, res) => {
   const adapter = adapterManager.getAdapter(req.params.id)
   const health = await adapter.healthCheck()
-  
+
   res.status(health.status === 'healthy' ? 200 : 503).json(health)
 })
 ```
@@ -568,13 +580,13 @@ Use structured logging for debugging:
 ```typescript
 this.logger.info('Agent discovery started', {
   platformId: this.config.id,
-  platformType: this.config.type
+  platformType: this.config.type,
 })
 
 this.logger.error('Agent execution failed', error, {
   agentId,
   params,
-  platformId: this.config.id
+  platformId: this.config.id,
 })
 ```
 
@@ -586,12 +598,12 @@ Track adapter-specific metrics:
 // Track API call metrics
 this.metrics.increment('api.calls.total', {
   platform: this.config.type,
-  endpoint: 'discover_agents'
+  endpoint: 'discover_agents',
 })
 
 this.metrics.timing('api.response_time', responseTime, {
   platform: this.config.type,
-  endpoint: 'discover_agents'
+  endpoint: 'discover_agents',
 })
 ```
 

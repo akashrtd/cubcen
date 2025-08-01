@@ -1,7 +1,13 @@
 'use client'
 
 import React from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { AlertTriangle, RefreshCw } from 'lucide-react'
@@ -16,7 +22,10 @@ interface ErrorBoundaryProps {
   fallback?: React.ComponentType<{ error: Error; resetError: () => void }>
 }
 
-export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+export class ErrorBoundary extends React.Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
+> {
   constructor(props: ErrorBoundaryProps) {
     super(props)
     this.state = { hasError: false }
@@ -38,10 +47,20 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
     if (this.state.hasError) {
       if (this.props.fallback) {
         const FallbackComponent = this.props.fallback
-        return <FallbackComponent error={this.state.error!} resetError={this.resetError} />
+        return (
+          <FallbackComponent
+            error={this.state.error!}
+            resetError={this.resetError}
+          />
+        )
       }
 
-      return <DefaultErrorFallback error={this.state.error!} resetError={this.resetError} />
+      return (
+        <DefaultErrorFallback
+          error={this.state.error!}
+          resetError={this.resetError}
+        />
+      )
     }
 
     return this.props.children
@@ -72,17 +91,17 @@ function DefaultErrorFallback({ error, resetError }: ErrorFallbackProps) {
               {error.message}
             </AlertDescription>
           </Alert>
-          
+
           <div className="flex space-x-2">
-            <Button 
+            <Button
               onClick={resetError}
               className="flex-1 bg-cubcen-primary hover:bg-cubcen-primary-hover"
             >
               <RefreshCw className="mr-2 h-4 w-4" />
               Try Again
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => window.location.reload()}
               className="flex-1"
             >

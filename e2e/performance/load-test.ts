@@ -25,8 +25,10 @@ export class LoadTester {
     duration: number,
     data?: any
   ): Promise<LoadTestResult> {
-    console.log(`🚀 Starting load test: ${concurrency} concurrent ${method} requests to ${endpoint}`)
-    
+    console.log(
+      `🚀 Starting load test: ${concurrency} concurrent ${method} requests to ${endpoint}`
+    )
+
     const startTime = performance.now()
     const endTime = startTime + duration
     const promises: Promise<any>[] = []
@@ -34,7 +36,13 @@ export class LoadTester {
 
     // Create concurrent requests
     for (let i = 0; i < concurrency; i++) {
-      const promise = this.runRequestLoop(endpoint, method, endTime, data, results)
+      const promise = this.runRequestLoop(
+        endpoint,
+        method,
+        endTime,
+        data,
+        results
+      )
       promises.push(promise)
     }
 
@@ -42,7 +50,7 @@ export class LoadTester {
     await Promise.all(promises)
 
     const totalTime = performance.now() - startTime
-    
+
     return this.analyzeResults(results, totalTime, concurrency)
   }
 
@@ -58,7 +66,7 @@ export class LoadTester {
   ): Promise<void> {
     while (performance.now() < endTime) {
       const requestStart = performance.now()
-      
+
       try {
         let response
         switch (method) {
@@ -83,7 +91,7 @@ export class LoadTester {
           success: true,
           responseTime: requestTime,
           statusCode: response?.status || 0,
-          timestamp: new Date()
+          timestamp: new Date(),
         })
       } catch (error: any) {
         const requestTime = performance.now() - requestStart
@@ -92,7 +100,7 @@ export class LoadTester {
           responseTime: requestTime,
           statusCode: error.status || 500,
           error: error.message,
-          timestamp: new Date()
+          timestamp: new Date(),
         })
       }
 
@@ -124,12 +132,13 @@ export class LoadTester {
       responseTime: {
         min: Math.min(...responseTimes),
         max: Math.max(...responseTimes),
-        average: responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length,
+        average:
+          responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length,
         p50: this.percentile(responseTimes, 50),
         p95: this.percentile(responseTimes, 95),
-        p99: this.percentile(responseTimes, 99)
+        p99: this.percentile(responseTimes, 99),
       },
-      errors: this.groupErrors(failedRequests)
+      errors: this.groupErrors(failedRequests),
     }
 
     console.log('📊 Load test results:', analysis)
@@ -150,7 +159,7 @@ export class LoadTester {
    */
   private groupErrors(failedRequests: RequestResult[]): Record<string, number> {
     const errors: Record<string, number> = {}
-    
+
     failedRequests.forEach(request => {
       const key = `${request.statusCode}: ${request.error || 'Unknown error'}`
       errors[key] = (errors[key] || 0) + 1
@@ -166,15 +175,20 @@ export class LoadTester {
     operations: number,
     concurrency: number
   ): Promise<DatabaseLoadResult> {
-    console.log(`🗄️ Testing database load: ${operations} operations with ${concurrency} concurrent connections`)
-    
+    console.log(
+      `🗄️ Testing database load: ${operations} operations with ${concurrency} concurrent connections`
+    )
+
     const startTime = performance.now()
     const promises: Promise<any>[] = []
     const results: DatabaseOperationResult[] = []
 
     // Create concurrent database operations
     for (let i = 0; i < concurrency; i++) {
-      const promise = this.runDatabaseOperations(operations / concurrency, results)
+      const promise = this.runDatabaseOperations(
+        operations / concurrency,
+        results
+      )
       promises.push(promise)
     }
 
@@ -190,9 +204,11 @@ export class LoadTester {
       failedOperations: failedOps.length,
       successRate: (successfulOps.length / results.length) * 100,
       operationsPerSecond: results.length / (totalTime / 1000),
-      averageResponseTime: successfulOps.reduce((sum, op) => sum + op.responseTime, 0) / successfulOps.length,
+      averageResponseTime:
+        successfulOps.reduce((sum, op) => sum + op.responseTime, 0) /
+        successfulOps.length,
       duration: totalTime,
-      errors: this.groupDatabaseErrors(failedOps)
+      errors: this.groupDatabaseErrors(failedOps),
     }
   }
 
@@ -207,7 +223,7 @@ export class LoadTester {
 
     for (let i = 0; i < count; i++) {
       const operationStart = performance.now()
-      
+
       try {
         // Mix of read and write operations
         if (i % 4 === 0) {
@@ -220,8 +236,8 @@ export class LoadTester {
               status: 'active',
               capabilities: JSON.stringify(['testing']),
               configuration: JSON.stringify({ test: true }),
-              healthStatus: 'healthy'
-            }
+              healthStatus: 'healthy',
+            },
           })
         } else if (i % 4 === 1) {
           // Read operation
@@ -232,7 +248,7 @@ export class LoadTester {
           if (agents.length > 0) {
             await prisma.agent.update({
               where: { id: agents[0].id },
-              data: { updatedAt: new Date() }
+              data: { updatedAt: new Date() },
             })
           }
         } else {
@@ -240,9 +256,9 @@ export class LoadTester {
           await prisma.agent.findMany({
             include: {
               platform: true,
-              tasks: { take: 5 }
+              tasks: { take: 5 },
             },
-            take: 5
+            take: 5,
           })
         }
 
@@ -251,7 +267,7 @@ export class LoadTester {
           success: true,
           responseTime,
           operation: 'database',
-          timestamp: new Date()
+          timestamp: new Date(),
         })
       } catch (error: any) {
         const responseTime = performance.now() - operationStart
@@ -260,7 +276,7 @@ export class LoadTester {
           responseTime,
           operation: 'database',
           error: error.message,
-          timestamp: new Date()
+          timestamp: new Date(),
         })
       }
     }
@@ -269,9 +285,11 @@ export class LoadTester {
   /**
    * Group database errors
    */
-  private groupDatabaseErrors(failedOps: DatabaseOperationResult[]): Record<string, number> {
+  private groupDatabaseErrors(
+    failedOps: DatabaseOperationResult[]
+  ): Record<string, number> {
     const errors: Record<string, number> = {}
-    
+
     failedOps.forEach(op => {
       const key = op.error || 'Unknown database error'
       errors[key] = (errors[key] || 0) + 1
@@ -285,7 +303,7 @@ export class LoadTester {
    */
   async testMemoryUsage(duration: number): Promise<MemoryTestResult> {
     console.log(`🧠 Testing memory usage for ${duration}ms`)
-    
+
     const startMemory = process.memoryUsage()
     const memorySnapshots: MemorySnapshot[] = []
     const startTime = performance.now()
@@ -299,7 +317,7 @@ export class LoadTester {
         heapUsed: memory.heapUsed,
         heapTotal: memory.heapTotal,
         external: memory.external,
-        rss: memory.rss
+        rss: memory.rss,
       })
     }, 100)
 
@@ -310,10 +328,12 @@ export class LoadTester {
     }
 
     clearInterval(interval)
-    
+
     const endMemory = process.memoryUsage()
     const maxHeapUsed = Math.max(...memorySnapshots.map(s => s.heapUsed))
-    const avgHeapUsed = memorySnapshots.reduce((sum, s) => sum + s.heapUsed, 0) / memorySnapshots.length
+    const avgHeapUsed =
+      memorySnapshots.reduce((sum, s) => sum + s.heapUsed, 0) /
+      memorySnapshots.length
 
     return {
       startMemory,
@@ -322,7 +342,7 @@ export class LoadTester {
       avgHeapUsed,
       memoryGrowth: endMemory.heapUsed - startMemory.heapUsed,
       snapshots: memorySnapshots,
-      duration
+      duration,
     }
   }
 }

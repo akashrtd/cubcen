@@ -18,11 +18,10 @@ describe('Agent Management E2E Tests', () => {
   describe('Agent Discovery and Registration', () => {
     it('should list all agents with proper structure', async () => {
       const response = await api.get('/api/cubcen/v1/agents')
-        .expect(200)
-
+      expect(response.status).toBe(200)
       expect(Array.isArray(response.body)).toBe(true)
       expect(response.body.length).toBeGreaterThan(0)
-      
+
       response.body.forEach((agent: any) => {
         ValidationHelper.validateAgent(agent)
       })
@@ -31,10 +30,11 @@ describe('Agent Management E2E Tests', () => {
     it('should get agent by ID with detailed information', async () => {
       // First get list of agents
       const listResponse = await api.get('/api/cubcen/v1/agents')
+      expect(listResponse.status).toBe(200)
       const agentId = listResponse.body[0].id
 
       const response = await api.get(`/api/cubcen/v1/agents/${agentId}`)
-        .expect(200)
+      expect(response.status).toBe(200)
 
       ValidationHelper.validateAgent(response.body)
       expect(response.body.id).toBe(agentId)
@@ -44,8 +44,7 @@ describe('Agent Management E2E Tests', () => {
 
     it('should return 404 for non-existent agent', async () => {
       const response = await api.get('/api/cubcen/v1/agents/non-existent-id')
-        .expect(404)
-
+      expect(response.status).toBe(404)
       expect(response.body.error).toContain('Agent not found')
     })
 
@@ -58,12 +57,12 @@ describe('Agent Management E2E Tests', () => {
         capabilities: ['testing', 'automation'],
         configuration: {
           triggers: ['webhook'],
-          actions: ['log_data']
-        }
+          actions: ['log_data'],
+        },
       }
 
       const response = await api.post('/api/cubcen/v1/agents', agentData)
-        .expect(201)
+      expect(response.status).toBe(201)
 
       ValidationHelper.validateAgent(response.body)
       expect(response.body.name).toBe(agentData.name)
@@ -78,12 +77,11 @@ describe('Agent Management E2E Tests', () => {
         platformType: 'n8n',
         externalId: 'workflow-1', // Existing external ID
         capabilities: ['testing'],
-        configuration: {}
+        configuration: {},
       }
 
       const response = await api.post('/api/cubcen/v1/agents', agentData)
-        .expect(409)
-
+      expect(response.status).toBe(409)
       expect(response.body.error).toContain('already exists')
     })
   })
@@ -94,40 +92,41 @@ describe('Agent Management E2E Tests', () => {
     beforeAll(async () => {
       // Get an existing agent for testing
       const response = await api.get('/api/cubcen/v1/agents')
+      expect(response.status).toBe(200)
       testAgentId = response.body[0].id
     })
 
     it('should update agent status', async () => {
       const response = await api.put(`/api/cubcen/v1/agents/${testAgentId}/status`, {
-        status: 'maintenance'
-      }).expect(200)
-
+        status: 'maintenance',
+      })
+      expect(response.status).toBe(200)
       expect(response.body.status).toBe('maintenance')
       expect(response.body.updatedAt).toBeDefined()
     })
 
     it('should reject invalid status values', async () => {
       const response = await api.put(`/api/cubcen/v1/agents/${testAgentId}/status`, {
-        status: 'invalid-status'
-      }).expect(400)
-
+        status: 'invalid-status',
+      })
+      expect(response.status).toBe(400)
       expect(response.body.error).toContain('Invalid status')
     })
 
     it('should get agent health status', async () => {
       const response = await api.get(`/api/cubcen/v1/agents/${testAgentId}/health`)
-        .expect(200)
-
+      expect(response.status).toBe(200)
       expect(response.body).toHaveProperty('status')
       expect(response.body).toHaveProperty('lastCheck')
       expect(response.body).toHaveProperty('responseTime')
-      expect(['healthy', 'unhealthy', 'degraded']).toContain(response.body.status)
+      expect(['healthy', 'unhealthy', 'degraded']).toContain(
+        response.body.status
+      )
     })
 
     it('should trigger health check for agent', async () => {
-      const response = await api.post(`/api/cubcen/v1/agents/${testAgentId}/health-check`)
-        .expect(200)
-
+      const response = await api.post(`/api/cubcen/v1/agents/${testAgentId}/health-check`, {})
+      expect(response.status).toBe(200)
       expect(response.body).toHaveProperty('status')
       expect(response.body).toHaveProperty('timestamp')
       expect(response.body).toHaveProperty('responseTime')
@@ -139,6 +138,7 @@ describe('Agent Management E2E Tests', () => {
 
     beforeAll(async () => {
       const response = await api.get('/api/cubcen/v1/agents')
+      expect(response.status).toBe(200)
       testAgentId = response.body[0].id
     })
 
@@ -148,14 +148,14 @@ describe('Agent Management E2E Tests', () => {
         actions: ['send_email', 'log_data', 'api_call'],
         settings: {
           timeout: 30000,
-          retries: 3
-        }
+          retries: 3,
+        },
       }
 
       const response = await api.put(`/api/cubcen/v1/agents/${testAgentId}/configuration`, {
-        configuration: newConfig
-      }).expect(200)
-
+        configuration: newConfig,
+      })
+      expect(response.status).toBe(200)
       expect(response.body.configuration).toEqual(newConfig)
       expect(response.body.updatedAt).toBeDefined()
     })
@@ -163,20 +163,19 @@ describe('Agent Management E2E Tests', () => {
     it('should validate configuration schema', async () => {
       const invalidConfig = {
         triggers: 'invalid-format', // Should be array
-        actions: []
+        actions: [],
       }
 
       const response = await api.put(`/api/cubcen/v1/agents/${testAgentId}/configuration`, {
-        configuration: invalidConfig
-      }).expect(400)
-
+        configuration: invalidConfig,
+      })
+      expect(response.status).toBe(400)
       expect(response.body.error).toContain('Invalid configuration')
     })
 
     it('should get agent configuration history', async () => {
       const response = await api.get(`/api/cubcen/v1/agents/${testAgentId}/configuration/history`)
-        .expect(200)
-
+      expect(response.status).toBe(200)
       expect(Array.isArray(response.body)).toBe(true)
       response.body.forEach((config: any) => {
         expect(config).toHaveProperty('id')
@@ -190,8 +189,7 @@ describe('Agent Management E2E Tests', () => {
   describe('Agent Filtering and Search', () => {
     it('should filter agents by status', async () => {
       const response = await api.get('/api/cubcen/v1/agents?status=active')
-        .expect(200)
-
+      expect(response.status).toBe(200)
       expect(Array.isArray(response.body)).toBe(true)
       response.body.forEach((agent: any) => {
         expect(agent.status).toBe('active')
@@ -200,8 +198,7 @@ describe('Agent Management E2E Tests', () => {
 
     it('should filter agents by platform type', async () => {
       const response = await api.get('/api/cubcen/v1/agents?platformType=n8n')
-        .expect(200)
-
+      expect(response.status).toBe(200)
       expect(Array.isArray(response.body)).toBe(true)
       response.body.forEach((agent: any) => {
         expect(agent.platformType).toBe('n8n')
@@ -210,8 +207,7 @@ describe('Agent Management E2E Tests', () => {
 
     it('should search agents by name', async () => {
       const response = await api.get('/api/cubcen/v1/agents?search=Email')
-        .expect(200)
-
+      expect(response.status).toBe(200)
       expect(Array.isArray(response.body)).toBe(true)
       response.body.forEach((agent: any) => {
         expect(agent.name.toLowerCase()).toContain('email')
@@ -220,8 +216,7 @@ describe('Agent Management E2E Tests', () => {
 
     it('should paginate agent results', async () => {
       const response = await api.get('/api/cubcen/v1/agents?page=1&limit=2')
-        .expect(200)
-
+      expect(response.status).toBe(200)
       expect(response.body).toHaveProperty('data')
       expect(response.body).toHaveProperty('pagination')
       expect(response.body.data.length).toBeLessThanOrEqual(2)
@@ -236,13 +231,13 @@ describe('Agent Management E2E Tests', () => {
 
     beforeAll(async () => {
       const response = await api.get('/api/cubcen/v1/agents')
+      expect(response.status).toBe(200)
       testAgentId = response.body[0].id
     })
 
     it('should get agent performance metrics', async () => {
       const response = await api.get(`/api/cubcen/v1/agents/${testAgentId}/metrics`)
-        .expect(200)
-
+      expect(response.status).toBe(200)
       expect(response.body).toHaveProperty('executionCount')
       expect(response.body).toHaveProperty('successRate')
       expect(response.body).toHaveProperty('averageExecutionTime')
@@ -255,9 +250,9 @@ describe('Agent Management E2E Tests', () => {
       const startDate = new Date(endDate.getTime() - 24 * 60 * 60 * 1000) // 24 hours ago
 
       const response = await api.get(
-        `/api/cubcen/v1/agents/${testAgentId}/metrics?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`
-      ).expect(200)
-
+          `/api/cubcen/v1/agents/${testAgentId}/metrics?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`
+        )
+      expect(response.status).toBe(200)
       expect(response.body).toHaveProperty('executionCount')
       expect(response.body).toHaveProperty('timeRange')
       expect(response.body.timeRange.startDate).toBe(startDate.toISOString())
@@ -269,17 +264,18 @@ describe('Agent Management E2E Tests', () => {
     it('should receive real-time agent status updates via WebSocket', async () => {
       // This would require WebSocket testing setup
       // For now, we'll test the HTTP endpoints that trigger WebSocket updates
-      
+
       const agents = await api.get('/api/cubcen/v1/agents')
+      expect(agents.status).toBe(200)
       const testAgentId = agents.body[0].id
 
       // Update agent status and verify it triggers real-time update
       const response = await api.put(`/api/cubcen/v1/agents/${testAgentId}/status`, {
-        status: 'active'
-      }).expect(200)
-
+          status: 'active',
+        })
+      expect(response.status).toBe(200)
       expect(response.body.status).toBe('active')
-      
+
       // In a real WebSocket test, we would verify that connected clients
       // receive the status update message
     })
@@ -288,13 +284,14 @@ describe('Agent Management E2E Tests', () => {
   describe('Agent Error Handling', () => {
     it('should handle agent execution errors gracefully', async () => {
       const agents = await api.get('/api/cubcen/v1/agents')
+      expect(agents.status).toBe(200)
       const testAgentId = agents.body[0].id
 
       // Simulate agent execution with error
       const response = await api.post(`/api/cubcen/v1/agents/${testAgentId}/execute`, {
-        parameters: { simulateError: true }
-      }).expect(500)
-
+          parameters: { simulateError: true },
+        })
+      expect(response.status).toBe(500)
       expect(response.body).toHaveProperty('error')
       expect(response.body).toHaveProperty('timestamp')
       expect(response.body).toHaveProperty('agentId')
@@ -302,12 +299,12 @@ describe('Agent Management E2E Tests', () => {
 
     it('should log agent errors for debugging', async () => {
       const agents = await api.get('/api/cubcen/v1/agents')
+      expect(agents.status).toBe(200)
       const testAgentId = agents.body[0].id
 
       // Get agent error logs
       const response = await api.get(`/api/cubcen/v1/agents/${testAgentId}/errors`)
-        .expect(200)
-
+      expect(response.status).toBe(200)
       expect(Array.isArray(response.body)).toBe(true)
       response.body.forEach((error: any) => {
         expect(error).toHaveProperty('id')

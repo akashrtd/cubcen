@@ -13,22 +13,22 @@ jest.mock('@/lib/database', () => ({
       count: jest.fn(),
       findMany: jest.fn(),
       groupBy: jest.fn(),
-      findFirst: jest.fn()
+      findFirst: jest.fn(),
     },
     task: {
       findMany: jest.fn(),
       findUnique: jest.fn(),
-      update: jest.fn()
-    }
-  }
+      update: jest.fn(),
+    },
+  },
 }))
 
 jest.mock('@/lib/logger', () => ({
   logger: {
     error: jest.fn(),
     info: jest.fn(),
-    warn: jest.fn()
-  }
+    warn: jest.fn(),
+  },
 }))
 
 const mockPrisma = prisma as jest.Mocked<typeof prisma>
@@ -51,8 +51,8 @@ describe('ErrorService', () => {
           message: 'Test error',
           context: '{"agentId": "agent1"}',
           source: 'test-service',
-          timestamp: new Date()
-        }
+          timestamp: new Date(),
+        },
       ]
 
       mockPrisma.systemLog.count.mockResolvedValue(1)
@@ -67,13 +67,13 @@ describe('ErrorService', () => {
             level: 'ERROR',
             message: 'Test error',
             source: 'test-service',
-            agentId: 'agent1'
-          })
+            agentId: 'agent1',
+          }),
         ]),
         total: 1,
         page: 1,
         limit: 50,
-        totalPages: 1
+        totalPages: 1,
       })
 
       expect(mockPrisma.systemLog.count).toHaveBeenCalledWith({ where: {} })
@@ -81,7 +81,7 @@ describe('ErrorService', () => {
         where: {},
         orderBy: { timestamp: 'desc' },
         skip: 0,
-        take: 50
+        take: 50,
       })
     })
 
@@ -89,7 +89,7 @@ describe('ErrorService', () => {
       const filter = {
         level: 'ERROR' as const,
         source: 'test-service',
-        search: 'connection'
+        search: 'connection',
       }
 
       mockPrisma.systemLog.count.mockResolvedValue(0)
@@ -103,9 +103,9 @@ describe('ErrorService', () => {
           source: { contains: 'test-service', mode: 'insensitive' },
           OR: [
             { message: { contains: 'connection', mode: 'insensitive' } },
-            { context: { contains: 'connection', mode: 'insensitive' } }
-          ]
-        }
+            { context: { contains: 'connection', mode: 'insensitive' } },
+          ],
+        },
       })
     })
 
@@ -123,9 +123,9 @@ describe('ErrorService', () => {
         where: {
           timestamp: {
             gte: dateFrom,
-            lte: dateTo
-          }
-        }
+            lte: dateTo,
+          },
+        },
       })
     })
 
@@ -140,7 +140,7 @@ describe('ErrorService', () => {
         where: {},
         orderBy: { timestamp: 'desc' },
         skip: 40, // (3-1) * 20
-        take: 20
+        take: 20,
       })
     })
 
@@ -148,7 +148,9 @@ describe('ErrorService', () => {
       const error = new Error('Database connection failed')
       mockPrisma.systemLog.count.mockRejectedValue(error)
 
-      await expect(errorService.getErrorLogs()).rejects.toThrow('Database connection failed')
+      await expect(errorService.getErrorLogs()).rejects.toThrow(
+        'Database connection failed'
+      )
       expect(mockLogger.error).toHaveBeenCalledWith(
         'Failed to get error logs',
         error,
@@ -161,7 +163,7 @@ describe('ErrorService', () => {
     it('should calculate error statistics correctly', async () => {
       const timeRange = {
         from: new Date('2024-01-01'),
-        to: new Date('2024-01-02')
+        to: new Date('2024-01-02'),
       }
 
       // Mock total count
@@ -170,22 +172,22 @@ describe('ErrorService', () => {
       // Mock by level grouping
       mockPrisma.systemLog.groupBy.mockResolvedValueOnce([
         { level: 'ERROR', _count: { level: 30 } },
-        { level: 'WARN', _count: { level: 20 } }
+        { level: 'WARN', _count: { level: 20 } },
       ])
 
       // Mock by source grouping
       mockPrisma.systemLog.groupBy.mockResolvedValueOnce([
         { source: 'agent-service', _count: { source: 25 } },
-        { source: 'task-service', _count: { source: 15 } }
+        { source: 'task-service', _count: { source: 15 } },
       ])
 
       // Mock top errors
       mockPrisma.systemLog.groupBy.mockResolvedValueOnce([
-        { 
-          message: 'Connection timeout', 
+        {
+          message: 'Connection timeout',
           _count: { message: 10 },
-          _max: { timestamp: new Date('2024-01-01T12:00:00Z') }
-        }
+          _max: { timestamp: new Date('2024-01-01T12:00:00Z') },
+        },
       ])
 
       // Mock previous period count for trend
@@ -197,27 +199,27 @@ describe('ErrorService', () => {
         total: 50,
         byLevel: {
           ERROR: 30,
-          WARN: 20
+          WARN: 20,
         },
         bySource: {
           'agent-service': 25,
-          'task-service': 15
+          'task-service': 15,
         },
         recentTrend: 'increasing',
         topErrors: [
           {
             message: 'Connection timeout',
             count: 10,
-            lastOccurrence: new Date('2024-01-01T12:00:00Z')
-          }
-        ]
+            lastOccurrence: new Date('2024-01-01T12:00:00Z'),
+          },
+        ],
       })
     })
 
     it('should handle empty results', async () => {
       const timeRange = {
         from: new Date('2024-01-01'),
-        to: new Date('2024-01-02')
+        to: new Date('2024-01-02'),
       }
 
       mockPrisma.systemLog.count.mockResolvedValue(0)
@@ -236,7 +238,7 @@ describe('ErrorService', () => {
     it('should detect error patterns correctly', async () => {
       const timeRange = {
         from: new Date('2024-01-01'),
-        to: new Date('2024-01-02')
+        to: new Date('2024-01-02'),
       }
 
       // Mock frequent errors
@@ -245,14 +247,14 @@ describe('ErrorService', () => {
           message: 'Connection timeout',
           source: 'n8n-adapter',
           _count: { message: 5 },
-          _max: { timestamp: new Date('2024-01-01T12:00:00Z') }
-        }
+          _max: { timestamp: new Date('2024-01-01T12:00:00Z') },
+        },
       ])
 
       // Mock affected agents query
       mockPrisma.systemLog.findMany.mockResolvedValueOnce([
         { context: '{"agentId": "agent1"}' },
-        { context: '{"agentId": "agent2"}' }
+        { context: '{"agentId": "agent2"}' },
       ])
 
       const result = await errorService.detectErrorPatterns(timeRange)
@@ -264,14 +266,14 @@ describe('ErrorService', () => {
         frequency: 5,
         affectedAgents: ['agent1', 'agent2'],
         severity: 'MEDIUM',
-        suggestedAction: 'Check network connectivity and platform API status'
+        suggestedAction: 'Check network connectivity and platform API status',
       })
     })
 
     it('should determine severity based on frequency and affected agents', async () => {
       const timeRange = {
         from: new Date('2024-01-01'),
-        to: new Date('2024-01-02')
+        to: new Date('2024-01-02'),
       }
 
       // Mock high frequency error
@@ -280,8 +282,8 @@ describe('ErrorService', () => {
           message: 'Critical system error',
           source: 'core-service',
           _count: { message: 15 },
-          _max: { timestamp: new Date() }
-        }
+          _max: { timestamp: new Date() },
+        },
       ])
 
       mockPrisma.systemLog.findMany.mockResolvedValueOnce([
@@ -290,7 +292,7 @@ describe('ErrorService', () => {
         { context: '{"agentId": "agent3"}' },
         { context: '{"agentId": "agent4"}' },
         { context: '{"agentId": "agent5"}' },
-        { context: '{"agentId": "agent6"}' }
+        { context: '{"agentId": "agent6"}' },
       ])
 
       const result = await errorService.detectErrorPatterns(timeRange)
@@ -312,8 +314,8 @@ describe('ErrorService', () => {
           maxRetries: 3,
           updatedAt: new Date(),
           parameters: '{"param1": "value1"}',
-          agent: { name: 'Test Agent' }
-        }
+          agent: { name: 'Test Agent' },
+        },
       ]
 
       mockPrisma.task.findMany.mockResolvedValue(mockTasks)
@@ -331,27 +333,27 @@ describe('ErrorService', () => {
         retryCount: 1,
         maxRetries: 3,
         canRetry: true,
-        parameters: { param1: 'value1' }
+        parameters: { param1: 'value1' },
       })
 
       expect(mockPrisma.task.findMany).toHaveBeenCalledWith({
         where: {
           status: { in: ['FAILED', 'CANCELLED'] },
           retryCount: {
-            lt: expect.any(Object)
-          }
+            lt: expect.any(Object),
+          },
         },
         include: {
           agent: {
             select: {
-              name: true
-            }
-          }
+              name: true,
+            },
+          },
         },
         orderBy: {
-          updatedAt: 'desc'
+          updatedAt: 'desc',
         },
-        take: 50
+        take: 50,
       })
     })
   })
@@ -363,11 +365,14 @@ describe('ErrorService', () => {
         id: taskId,
         status: 'FAILED',
         retryCount: 1,
-        maxRetries: 3
+        maxRetries: 3,
       }
 
       mockPrisma.task.findUnique.mockResolvedValue(mockTask)
-      mockPrisma.task.update.mockResolvedValue({ ...mockTask, status: 'PENDING' })
+      mockPrisma.task.update.mockResolvedValue({
+        ...mockTask,
+        status: 'PENDING',
+      })
 
       await errorService.retryTask(taskId)
 
@@ -379,18 +384,15 @@ describe('ErrorService', () => {
           error: null,
           startedAt: null,
           completedAt: null,
-          updatedAt: expect.any(Date)
-        }
+          updatedAt: expect.any(Date),
+        },
       })
 
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'Task retry initiated',
-        {
-          taskId,
-          retryCount: 2,
-          maxRetries: 3
-        }
-      )
+      expect(mockLogger.info).toHaveBeenCalledWith('Task retry initiated', {
+        taskId,
+        retryCount: 2,
+        maxRetries: 3,
+      })
     })
 
     it('should throw error if task not found', async () => {
@@ -406,7 +408,7 @@ describe('ErrorService', () => {
         id: 'task1',
         status: 'COMPLETED',
         retryCount: 0,
-        maxRetries: 3
+        maxRetries: 3,
       }
 
       mockPrisma.task.findUnique.mockResolvedValue(mockTask)
@@ -421,7 +423,7 @@ describe('ErrorService', () => {
         id: 'task1',
         status: 'FAILED',
         retryCount: 3,
-        maxRetries: 3
+        maxRetries: 3,
       }
 
       mockPrisma.task.findUnique.mockResolvedValue(mockTask)
@@ -435,9 +437,10 @@ describe('ErrorService', () => {
   describe('bulkRetryTasks', () => {
     it('should retry multiple tasks successfully', async () => {
       const taskIds = ['task1', 'task2']
-      
+
       // Mock successful retries
-      jest.spyOn(errorService, 'retryTask')
+      jest
+        .spyOn(errorService, 'retryTask')
         .mockResolvedValueOnce(undefined)
         .mockResolvedValueOnce(undefined)
 
@@ -445,7 +448,7 @@ describe('ErrorService', () => {
 
       expect(result).toEqual({
         successful: ['task1', 'task2'],
-        failed: []
+        failed: [],
       })
 
       expect(errorService.retryTask).toHaveBeenCalledTimes(2)
@@ -454,15 +457,16 @@ describe('ErrorService', () => {
         {
           total: 2,
           successful: 2,
-          failed: 0
+          failed: 0,
         }
       )
     })
 
     it('should handle partial failures', async () => {
       const taskIds = ['task1', 'task2']
-      
-      jest.spyOn(errorService, 'retryTask')
+
+      jest
+        .spyOn(errorService, 'retryTask')
         .mockResolvedValueOnce(undefined)
         .mockRejectedValueOnce(new Error('Task not found'))
 
@@ -470,7 +474,7 @@ describe('ErrorService', () => {
 
       expect(result).toEqual({
         successful: ['task1'],
-        failed: [{ taskId: 'task2', error: 'Task not found' }]
+        failed: [{ taskId: 'task2', error: 'Task not found' }],
       })
     })
   })
@@ -481,37 +485,41 @@ describe('ErrorService', () => {
         {
           message: 'Connection timeout occurred',
           source: 'n8n-adapter',
-          expected: 'Check network connectivity and platform API status'
+          expected: 'Check network connectivity and platform API status',
         },
         {
           message: 'Authentication failed',
           source: 'make-adapter',
-          expected: 'Verify API credentials and refresh authentication tokens'
+          expected: 'Verify API credentials and refresh authentication tokens',
         },
         {
           message: 'Request timeout',
           source: 'zapier-adapter',
-          expected: 'Increase timeout settings or check platform performance'
+          expected: 'Increase timeout settings or check platform performance',
         },
         {
           message: 'Rate limit exceeded',
           source: 'api-service',
-          expected: 'Implement rate limiting or upgrade platform plan'
+          expected: 'Implement rate limiting or upgrade platform plan',
         },
         {
           message: 'Invalid parameter format',
           source: 'validation-service',
-          expected: 'Review input parameters and data validation rules'
+          expected: 'Review input parameters and data validation rules',
         },
         {
           message: 'Unknown error',
           source: 'unknown-service',
-          expected: 'Review error details and check platform documentation'
-        }
+          expected: 'Review error details and check platform documentation',
+        },
       ]
 
       testCases.forEach(({ message, source, expected }) => {
-        const result = (errorService as unknown as { generateSuggestedAction: (message: string, source: string) => string }).generateSuggestedAction(message, source)
+        const result = (
+          errorService as unknown as {
+            generateSuggestedAction: (message: string, source: string) => string
+          }
+        ).generateSuggestedAction(message, source)
         expect(result).toBe(expected)
       })
     })

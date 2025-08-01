@@ -6,9 +6,16 @@
  */
 
 import { performanceMonitor } from '../src/lib/performance-monitor'
-import { dbPerformanceMonitor, DatabaseOptimizer } from '../src/lib/database-performance'
+import {
+  dbPerformanceMonitor,
+  DatabaseOptimizer,
+} from '../src/lib/database-performance'
 import { cache, CacheWarmer } from '../src/lib/cache'
-import { Benchmark, LoadTester, PerformanceTestSuite } from '../src/lib/benchmark'
+import {
+  Benchmark,
+  LoadTester,
+  PerformanceTestSuite,
+} from '../src/lib/benchmark'
 import { logger } from '../src/lib/logger'
 
 async function testPerformanceFeatures() {
@@ -19,13 +26,16 @@ async function testPerformanceFeatures() {
     console.log('1. Testing Cache System...')
     cache.set('test-key', { data: 'test-value', timestamp: Date.now() })
     const cachedValue = cache.get('test-key')
-    console.log('   ✅ Cache set/get working:', cachedValue ? 'SUCCESS' : 'FAILED')
-    
+    console.log(
+      '   ✅ Cache set/get working:',
+      cachedValue ? 'SUCCESS' : 'FAILED'
+    )
+
     const cacheStats = cache.getStats()
     console.log('   📊 Cache stats:', {
       entries: cacheStats.totalEntries,
       hitRate: cacheStats.hitRate + '%',
-      memoryUsage: Math.round(cacheStats.memoryUsage / 1024) + 'KB'
+      memoryUsage: Math.round(cacheStats.memoryUsage / 1024) + 'KB',
     })
 
     // 2. Test Cache Warming
@@ -36,18 +46,18 @@ async function testPerformanceFeatures() {
     // 3. Test Performance Monitoring
     console.log('\n3. Testing Performance Monitoring...')
     performanceMonitor.startMonitoring()
-    
+
     // Simulate some API requests
     performanceMonitor.recordAPIRequest(150, false)
     performanceMonitor.recordAPIRequest(200, false)
     performanceMonitor.recordAPIRequest(500, true)
-    
+
     const stats = await performanceMonitor.getCurrentStats()
     console.log('   📊 Performance stats:', {
       apiRequests: stats.api.requestCount,
       avgResponseTime: Math.round(stats.api.averageResponseTime) + 'ms',
       errorRate: stats.api.errorRate + '%',
-      memoryUsage: Math.round(stats.memory.percentage) + '%'
+      memoryUsage: Math.round(stats.memory.percentage) + '%',
     })
 
     // 4. Test Database Performance Monitoring
@@ -56,7 +66,7 @@ async function testPerformanceFeatures() {
     console.log('   📊 Database stats:', {
       totalQueries: dbStats.totalQueries,
       avgQueryTime: dbStats.averageQueryTime + 'ms',
-      slowQueries: dbStats.slowQueries.length
+      slowQueries: dbStats.slowQueries.length,
     })
 
     // 5. Test Database Optimization
@@ -67,7 +77,7 @@ async function testPerformanceFeatures() {
     console.log('   📊 Analysis:', {
       tables: analysis.tableStats.length,
       recommendations: analysis.indexRecommendations.length,
-      optimizations: analysis.queryOptimizations.length
+      optimizations: analysis.queryOptimizations.length,
     })
 
     // 6. Test Benchmarking
@@ -84,7 +94,7 @@ async function testPerformanceFeatures() {
     console.log('   📊 Benchmark result:', {
       operations: benchmarkResult.operations,
       opsPerSecond: Math.round(benchmarkResult.opsPerSecond),
-      avgTime: benchmarkResult.averageTime + 'ms'
+      avgTime: benchmarkResult.averageTime + 'ms',
     })
 
     // 7. Test Load Testing
@@ -96,13 +106,13 @@ async function testPerformanceFeatures() {
       operation: async () => {
         // Simulate API call
         await new Promise(resolve => setTimeout(resolve, Math.random() * 50))
-      }
+      },
     })
     console.log('   📊 Load test result:', {
       totalOps: loadTestResult.totalOperations,
-      successRate: (100 - loadTestResult.errorRate) + '%',
+      successRate: 100 - loadTestResult.errorRate + '%',
       opsPerSecond: Math.round(loadTestResult.operationsPerSecond),
-      avgResponseTime: Math.round(loadTestResult.averageResponseTime) + 'ms'
+      avgResponseTime: Math.round(loadTestResult.averageResponseTime) + 'ms',
     })
 
     // 8. Test Performance Alerts
@@ -115,7 +125,9 @@ async function testPerformanceFeatures() {
     const metrics = performanceMonitor.getMetrics('api_request_count')
     console.log('   📊 Collected metrics:', metrics.length)
 
-    console.log('\n✅ All performance optimization features tested successfully!')
+    console.log(
+      '\n✅ All performance optimization features tested successfully!'
+    )
     console.log('\n📋 Summary of implemented features:')
     console.log('   • In-memory caching with TTL and invalidation')
     console.log('   • Database query optimization and indexing')
@@ -124,7 +136,6 @@ async function testPerformanceFeatures() {
     console.log('   • Performance metrics collection and analysis')
     console.log('   • Cache warming and optimization strategies')
     console.log('   • Lazy loading and pagination utilities')
-
   } catch (error) {
     console.error('❌ Error testing performance features:', error)
   } finally {
@@ -141,7 +152,7 @@ if (require.main === module) {
       console.log('\n🎉 Performance testing completed!')
       process.exit(0)
     })
-    .catch((error) => {
+    .catch(error => {
       console.error('💥 Performance testing failed:', error)
       process.exit(1)
     })

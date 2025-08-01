@@ -1,10 +1,24 @@
 'use client'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts'
 import { useState } from 'react'
 import { AnalyticsData } from '@/services/analytics'
 
@@ -46,7 +60,9 @@ export function ErrorPatternsChart({ data, loading }: ErrorPatternsChartProps) {
         <CardContent>
           <div className="text-center py-12">
             <AlertTriangle className="mx-auto h-12 w-12 text-green-600 mb-4" />
-            <h3 className="text-lg font-medium mb-2 text-green-600">No Errors Found</h3>
+            <h3 className="text-lg font-medium mb-2 text-green-600">
+              No Errors Found
+            </h3>
             <p className="text-muted-foreground">
               Great! No error patterns detected in the selected time period.
             </p>
@@ -92,9 +108,17 @@ export function ErrorPatternsChart({ data, loading }: ErrorPatternsChartProps) {
     if (percentage >= 30) {
       return <Badge variant="destructive">Critical</Badge>
     } else if (percentage >= 15) {
-      return <Badge className="bg-orange-100 text-orange-800 border-orange-200">High</Badge>
+      return (
+        <Badge className="bg-orange-100 text-orange-800 border-orange-200">
+          High
+        </Badge>
+      )
     } else if (percentage >= 5) {
-      return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">Medium</Badge>
+      return (
+        <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">
+          Medium
+        </Badge>
+      )
     } else {
       return <Badge variant="outline">Low</Badge>
     }
@@ -108,7 +132,8 @@ export function ErrorPatternsChart({ data, loading }: ErrorPatternsChartProps) {
           Error Patterns Analysis
         </CardTitle>
         <CardDescription>
-          Most common error patterns and their frequency ({totalErrors} total errors)
+          Most common error patterns and their frequency ({totalErrors} total
+          errors)
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -116,21 +141,26 @@ export function ErrorPatternsChart({ data, loading }: ErrorPatternsChartProps) {
           {/* Chart */}
           <div>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={displayData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+              <BarChart
+                data={displayData}
+                margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+              >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis 
-                  dataKey="error" 
+                <XAxis
+                  dataKey="error"
                   angle={-45}
                   textAnchor="end"
                   height={80}
                   interval={0}
                   tick={{ fontSize: 12 }}
-                  tickFormatter={(value) => value.length > 20 ? `${value.substring(0, 20)}...` : value}
+                  tickFormatter={value =>
+                    value.length > 20 ? `${value.substring(0, 20)}...` : value
+                  }
                 />
                 <YAxis />
                 <Tooltip content={<CustomTooltip />} />
-                <Bar 
-                  dataKey="count" 
+                <Bar
+                  dataKey="count"
                   fill="#F44336"
                   radius={[4, 4, 0, 0]}
                   cursor="pointer"
@@ -156,7 +186,8 @@ export function ErrorPatternsChart({ data, loading }: ErrorPatternsChartProps) {
                     </>
                   ) : (
                     <>
-                      Show All ({data.length}) <ChevronDown className="ml-1 h-4 w-4" />
+                      Show All ({data.length}){' '}
+                      <ChevronDown className="ml-1 h-4 w-4" />
                     </>
                   )}
                 </Button>
@@ -165,21 +196,27 @@ export function ErrorPatternsChart({ data, loading }: ErrorPatternsChartProps) {
 
             <div className="space-y-2">
               {displayData.map((error, index) => {
-                const percentage = ((error.count / totalErrors) * 100).toFixed(1)
+                const percentage = ((error.count / totalErrors) * 100).toFixed(
+                  1
+                )
                 const isSelected = selectedError === error.error
-                
+
                 return (
                   <div
                     key={index}
                     className={`border rounded-lg p-3 cursor-pointer transition-colors ${
-                      isSelected ? 'border-red-200 bg-red-50' : 'border-border hover:border-red-200'
+                      isSelected
+                        ? 'border-red-200 bg-red-50'
+                        : 'border-border hover:border-red-200'
                     }`}
                     onClick={() => handleErrorClick(error.error)}
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center space-x-2 mb-1">
-                          <span className="font-medium text-sm">#{index + 1}</span>
+                          <span className="font-medium text-sm">
+                            #{index + 1}
+                          </span>
                           {getSeverityBadge(error.count)}
                           <Badge variant="outline" className="text-xs">
                             {error.count} occurrences
@@ -188,7 +225,9 @@ export function ErrorPatternsChart({ data, loading }: ErrorPatternsChartProps) {
                             {percentage}%
                           </Badge>
                         </div>
-                        <p className={`text-sm ${isSelected ? 'text-red-800' : 'text-muted-foreground'} break-words`}>
+                        <p
+                          className={`text-sm ${isSelected ? 'text-red-800' : 'text-muted-foreground'} break-words`}
+                        >
                           {error.error}
                         </p>
                       </div>
@@ -208,20 +247,24 @@ export function ErrorPatternsChart({ data, loading }: ErrorPatternsChartProps) {
                             <span className="font-medium">Frequency:</span>
                             <div className="mt-1">
                               <div className="bg-red-200 rounded-full h-2">
-                                <div 
+                                <div
                                   className="bg-red-600 h-2 rounded-full"
                                   style={{ width: `${percentage}%` }}
                                 />
                               </div>
-                              <span className="text-red-700 mt-1 block">{percentage}% of all errors</span>
+                              <span className="text-red-700 mt-1 block">
+                                {percentage}% of all errors
+                              </span>
                             </div>
                           </div>
                           <div>
                             <span className="font-medium">Impact:</span>
                             <div className="mt-1 text-red-700">
-                              {error.count > 50 ? 'High impact - needs immediate attention' :
-                               error.count > 10 ? 'Medium impact - should be investigated' :
-                               'Low impact - monitor for trends'}
+                              {error.count > 50
+                                ? 'High impact - needs immediate attention'
+                                : error.count > 10
+                                  ? 'Medium impact - should be investigated'
+                                  : 'Low impact - monitor for trends'}
                             </div>
                           </div>
                         </div>
@@ -248,7 +291,8 @@ export function ErrorPatternsChart({ data, loading }: ErrorPatternsChartProps) {
               <div>
                 <span className="text-muted-foreground">Most Common:</span>
                 <div className="font-semibold text-red-600">
-                  {data[0]?.error.substring(0, 30)}{data[0]?.error.length > 30 ? '...' : ''}
+                  {data[0]?.error.substring(0, 30)}
+                  {data[0]?.error.length > 30 ? '...' : ''}
                 </div>
               </div>
             </div>

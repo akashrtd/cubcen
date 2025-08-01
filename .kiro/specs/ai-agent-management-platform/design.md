@@ -17,6 +17,7 @@ Cubcen is a centralized AI agent management platform that provides unified contr
 ### UI Design System
 
 **shadcn/ui Integration**:
+
 - **Component Library**: Pre-built, accessible React components
 - **Customizable**: Tailwind CSS-based styling with theme support
 - **Type-Safe**: Full TypeScript support with proper prop types
@@ -25,6 +26,7 @@ Cubcen is a centralized AI agent management platform that provides unified contr
 - **Developer Experience**: Copy-paste components with easy customization
 
 **Key UI Components for Cubcen**:
+
 - **Dashboard**: Card, Badge, Progress, Alert components for status displays
 - **Data Tables**: Table, Pagination for agent lists and task history
 - **Forms**: Input, Select, Checkbox, Button for configuration interfaces
@@ -35,32 +37,35 @@ Cubcen is a centralized AI agent management platform that provides unified contr
 ### Cubcen Design System
 
 **Brand Colors**:
+
 - **Primary**: `#3F51B5` (Indigo) - Main brand color for buttons, links, and primary actions
 - **Secondary**: `#B19ADA` (Light Purple) - Accent color for highlights, badges, and secondary elements
 - **Color Palette**:
   ```css
   :root {
-    --cubcen-primary: #3F51B5;
-    --cubcen-primary-hover: #303F9F;
-    --cubcen-primary-light: #7986CB;
-    --cubcen-secondary: #B19ADA;
-    --cubcen-secondary-hover: #9C7BC7;
-    --cubcen-secondary-light: #D1C4E9;
+    --cubcen-primary: #3f51b5;
+    --cubcen-primary-hover: #303f9f;
+    --cubcen-primary-light: #7986cb;
+    --cubcen-secondary: #b19ada;
+    --cubcen-secondary-hover: #9c7bc7;
+    --cubcen-secondary-light: #d1c4e9;
   }
   ```
 
 **Design Tokens**:
+
 - **Typography**: Inter font family for modern, readable interface
 - **Spacing**: 8px base unit for consistent spacing system
 - **Border Radius**: 6px for subtle rounded corners
 - **Shadows**: Subtle elevation with primary color tints
-- **Status Colors**: 
+- **Status Colors**:
   - Success: `#4CAF50` (Green)
-  - Warning: `#FF9800` (Orange) 
+  - Warning: `#FF9800` (Orange)
   - Error: `#F44336` (Red)
   - Info: `#2196F3` (Blue)
 
 **Component Theming**:
+
 - **Buttons**: Primary uses `#3F51B5`, Secondary uses `#B19ADA`
 - **Badges**: Status badges use secondary color `#B19ADA` for active states
 - **Progress Bars**: Primary color `#3F51B5` for completion indicators
@@ -78,13 +83,13 @@ graph TB
         MOBILE[Mobile App]
         API_CLIENT[API Clients]
     end
-    
+
     subgraph "API Gateway"
         GATEWAY[API Gateway]
         AUTH[Authentication Service]
         RATE_LIMIT[Rate Limiting]
     end
-    
+
     subgraph "Core Services"
         AGENT_MGR[Agent Manager]
         TASK_SCHED[Task Scheduler]
@@ -92,13 +97,13 @@ graph TB
         WORKFLOW[Workflow Engine]
         ANALYTICS[Analytics Service]
     end
-    
+
     subgraph "Platform Adapters"
         N8N_ADAPTER[n8n Adapter]
         MAKE_ADAPTER[Make.com Adapter]
         ZAPIER_ADAPTER[Zapier Adapter]
     end
-    
+
     subgraph "Data Layer"
         SQLITE[(SQLite - MVP)]
         MEMORY[(In-Memory Queues - MVP)]
@@ -107,17 +112,17 @@ graph TB
         REDIS[(Redis - Future)]
         INFLUX[(InfluxDB - Future)]
     end
-    
+
     subgraph "External Platforms"
         N8N[n8n Platform]
         MAKE[Make.com]
         ZAPIER[Zapier]
     end
-    
+
     WEB --> GATEWAY
     MOBILE --> GATEWAY
     API_CLIENT --> GATEWAY
-    
+
     GATEWAY --> AUTH
     GATEWAY --> RATE_LIMIT
     GATEWAY --> AGENT_MGR
@@ -125,15 +130,15 @@ graph TB
     GATEWAY --> MONITOR
     GATEWAY --> WORKFLOW
     GATEWAY --> ANALYTICS
-    
+
     AGENT_MGR --> N8N_ADAPTER
     AGENT_MGR --> MAKE_ADAPTER
     AGENT_MGR --> ZAPIER_ADAPTER
-    
+
     N8N_ADAPTER --> N8N
     MAKE_ADAPTER --> MAKE
     ZAPIER_ADAPTER --> ZAPIER
-    
+
     AGENT_MGR --> SQLITE
     TASK_SCHED --> MEMORY
     MONITOR --> SQLITE
@@ -143,6 +148,7 @@ graph TB
 ### MVP Architecture Simplifications
 
 For the MVP phase, the architecture will be simplified:
+
 - **Monolithic Backend**: Single Node.js application instead of microservices
 - **SQLite Database**: Instead of PostgreSQL for faster setup
 - **In-Memory Queues**: Instead of Redis for task scheduling
@@ -154,6 +160,7 @@ For the MVP phase, the architecture will be simplified:
 ### 1. Frontend Components
 
 #### Web Dashboard
+
 - **Technology**: React with TypeScript, Next.js, shadcn/ui
 - **UI Framework**: shadcn/ui components with Tailwind CSS
 - **Key Features**:
@@ -164,6 +171,7 @@ For the MVP phase, the architecture will be simplified:
   - User management and settings
 
 #### Component Structure
+
 ```
 src/
 ├── components/
@@ -207,6 +215,7 @@ src/
 ### 2. Backend Services
 
 #### API Gateway
+
 - **Technology**: Express.js with TypeScript
 - **Responsibilities**:
   - Request routing and load balancing
@@ -216,6 +225,7 @@ src/
   - API versioning
 
 #### Agent Manager Service
+
 - **Technology**: Node.js with TypeScript
 - **Responsibilities**:
   - Platform connection management
@@ -235,6 +245,7 @@ interface AgentManager {
 ```
 
 #### Task Scheduler Service
+
 - **Technology**: Node.js with in-memory queues (MVP) / Bull Queue with Redis (Future)
 - **Responsibilities**:
   - Task scheduling and execution
@@ -254,6 +265,7 @@ interface TaskScheduler {
 ```
 
 #### Monitoring Service
+
 - **Technology**: Node.js with SQLite storage (MVP) / InfluxDB integration (Future)
 - **Responsibilities**:
   - Real-time agent monitoring
@@ -275,23 +287,29 @@ interface MonitoringService {
 ### 3. Platform Adapters
 
 #### Base Adapter Interface
+
 ```typescript
 interface PlatformAdapter {
   authenticate(credentials: PlatformCredentials): Promise<AuthResult>
   discoverAgents(): Promise<Agent[]>
   getAgentStatus(agentId: string): Promise<AgentStatus>
-  executeAgent(agentId: string, params: ExecutionParams): Promise<ExecutionResult>
+  executeAgent(
+    agentId: string,
+    params: ExecutionParams
+  ): Promise<ExecutionResult>
   subscribeToEvents(callback: EventCallback): Promise<void>
   healthCheck(): Promise<HealthStatus>
 }
 ```
 
 #### n8n Adapter
+
 - **API Integration**: n8n REST API and WebSocket
 - **Authentication**: API key or OAuth
 - **Capabilities**: Workflow discovery, execution, monitoring
 
 #### Make.com Adapter
+
 - **API Integration**: Make.com REST API
 - **Authentication**: OAuth 2.0
 - **Capabilities**: Scenario management, execution, monitoring
@@ -353,12 +371,14 @@ interface Platform {
 ## Error Handling
 
 ### Error Categories
+
 1. **Platform Connection Errors**: Network issues, authentication failures
 2. **Agent Execution Errors**: Runtime errors, timeout issues
 3. **Data Validation Errors**: Invalid parameters, schema mismatches
 4. **System Errors**: Database failures, service unavailability
 
 ### Error Handling Strategy
+
 ```typescript
 class ErrorHandler {
   handlePlatformError(error: PlatformError): ErrorResponse {
@@ -367,7 +387,7 @@ class ErrorHandler {
     // Generate user-friendly message
     // Trigger alerts if critical
   }
-  
+
   handleAgentError(error: AgentError): ErrorResponse {
     // Categorize error type
     // Apply recovery procedures
@@ -378,6 +398,7 @@ class ErrorHandler {
 ```
 
 ### Recovery Mechanisms
+
 - **Automatic Retry**: Exponential backoff for transient failures
 - **Circuit Breaker**: Prevent cascade failures
 - **Fallback Procedures**: Alternative execution paths
@@ -388,24 +409,28 @@ class ErrorHandler {
 ### Testing Pyramid
 
 #### Unit Tests (70%)
+
 - **Framework**: Jest with TypeScript
 - **Coverage**: All business logic, utilities, and pure functions
 - **Mocking**: External dependencies and platform APIs
 - **Target**: 90% code coverage
 
 #### Integration Tests (20%)
+
 - **Framework**: Jest with Supertest
 - **Scope**: API endpoints, database operations, service interactions
 - **Environment**: Test database and mock external services
 - **Focus**: Data flow and service communication
 
 #### End-to-End Tests (10%)
+
 - **Framework**: Playwright or Cypress
 - **Scope**: Critical user journeys and workflows
 - **Environment**: Staging environment with real integrations
 - **Focus**: User experience and system reliability
 
 ### Testing Implementation
+
 ```typescript
 // Unit Test Example
 describe('AgentManager', () => {
@@ -424,17 +449,18 @@ describe('Agent API', () => {
       .post('/api/agents')
       .send(mockAgentData)
       .expect(201)
-    
+
     const getResponse = await request(app)
       .get(`/api/agents/${response.body.id}`)
       .expect(200)
-    
+
     expect(getResponse.body.name).toBe(mockAgentData.name)
   })
 })
 ```
 
 ### MVP Testing Approach
+
 - **Focus on Core Flows**: Agent registration, monitoring, task execution
 - **Manual Testing**: Initial platform integrations and error scenarios
 - **Automated CI**: Basic unit and integration tests
@@ -443,12 +469,14 @@ describe('Agent API', () => {
 ## Performance Considerations
 
 ### Scalability Targets
+
 - **Concurrent Users**: 100+ simultaneous users
 - **Agent Capacity**: 1000+ agents across platforms
 - **Task Throughput**: 10,000+ tasks per hour
 - **Response Time**: <200ms for API calls, <2s for dashboard loads
 
 ### Optimization Strategies
+
 - **Database Indexing**: Optimized queries for agent and task lookups
 - **Caching**: Redis for frequently accessed data
 - **Connection Pooling**: Efficient database and HTTP connections
@@ -456,6 +484,7 @@ describe('Agent API', () => {
 - **WebSocket Optimization**: Efficient real-time updates
 
 ### Monitoring and Metrics
+
 - **Application Metrics**: Response times, error rates, throughput
 - **Infrastructure Metrics**: CPU, memory, disk usage
 - **Business Metrics**: Agent utilization, task success rates
@@ -466,6 +495,7 @@ describe('Agent API', () => {
 ### 1. Security & Authentication (MVP Critical)
 
 #### Basic Security Implementation
+
 ```typescript
 // JWT-based authentication
 interface AuthService {
@@ -478,8 +508,8 @@ interface AuthService {
 // Basic RBAC
 enum UserRole {
   ADMIN = 'admin',
-  OPERATOR = 'operator', 
-  VIEWER = 'viewer'
+  OPERATOR = 'operator',
+  VIEWER = 'viewer',
 }
 
 interface User {
@@ -491,6 +521,7 @@ interface User {
 ```
 
 #### Security Measures
+
 - **JWT Authentication**: Secure token-based auth with refresh tokens
 - **Password Hashing**: bcrypt for secure password storage
 - **API Rate Limiting**: Basic rate limiting to prevent abuse
@@ -501,6 +532,7 @@ interface User {
 ### 2. Logging & Observability (MVP Critical)
 
 #### Structured Logging
+
 ```typescript
 interface Logger {
   info(message: string, context?: Record<string, any>): void
@@ -520,12 +552,13 @@ const logger = winston.createLogger({
   transports: [
     new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
     new winston.transports.File({ filename: 'logs/combined.log' }),
-    new winston.transports.Console()
-  ]
+    new winston.transports.Console(),
+  ],
 })
 ```
 
 #### Health Checks
+
 ```typescript
 interface HealthCheck {
   name: string
@@ -540,16 +573,17 @@ app.get('/health', (req, res) => {
     checkDatabase(),
     checkExternalAPIs(),
     checkMemoryUsage(),
-    checkDiskSpace()
+    checkDiskSpace(),
   ]
-  
-  const overallStatus = checks.every(c => c.status === 'healthy') 
-    ? 'healthy' : 'unhealthy'
-    
+
+  const overallStatus = checks.every(c => c.status === 'healthy')
+    ? 'healthy'
+    : 'unhealthy'
+
   res.status(overallStatus === 'healthy' ? 200 : 503).json({
     status: overallStatus,
     checks,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   })
 })
 ```
@@ -557,6 +591,7 @@ app.get('/health', (req, res) => {
 ### 3. Configuration Management (MVP Essential)
 
 #### Environment Configuration
+
 ```typescript
 interface Config {
   port: number
@@ -577,6 +612,7 @@ interface FeatureFlags {
 ```
 
 #### Configuration Validation
+
 ```typescript
 import Joi from 'joi'
 
@@ -584,22 +620,26 @@ const configSchema = Joi.object({
   port: Joi.number().port().default(3000),
   database: Joi.object({
     path: Joi.string().required(),
-    maxConnections: Joi.number().default(10)
+    maxConnections: Joi.number().default(10),
   }).required(),
-  platforms: Joi.array().items(
-    Joi.object({
-      name: Joi.string().required(),
-      type: Joi.string().valid('n8n', 'make').required(),
-      baseUrl: Joi.string().uri().required(),
-      credentials: Joi.object().required()
-    })
-  ).min(1).required()
+  platforms: Joi.array()
+    .items(
+      Joi.object({
+        name: Joi.string().required(),
+        type: Joi.string().valid('n8n', 'make').required(),
+        baseUrl: Joi.string().uri().required(),
+        credentials: Joi.object().required(),
+      })
+    )
+    .min(1)
+    .required(),
 })
 ```
 
 ### 4. Error Handling & Recovery (MVP Critical)
 
 #### Global Error Handler
+
 ```typescript
 interface ErrorResponse {
   error: {
@@ -614,34 +654,35 @@ interface ErrorResponse {
 // Express error middleware
 app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
   const errorId = generateErrorId()
-  
+
   logger.error('Unhandled error', error, {
     requestId: errorId,
     url: req.url,
     method: req.method,
-    userAgent: req.get('User-Agent')
+    userAgent: req.get('User-Agent'),
   })
-  
+
   const statusCode = error instanceof ValidationError ? 400 : 500
-  
+
   res.status(statusCode).json({
     error: {
       code: error.name,
       message: error.message,
       requestId: errorId,
-      timestamp: new Date().toISOString()
-    }
+      timestamp: new Date().toISOString(),
+    },
   })
 })
 ```
 
 #### Circuit Breaker Pattern
+
 ```typescript
 class CircuitBreaker {
   private failures = 0
   private lastFailureTime?: Date
   private state: 'closed' | 'open' | 'half-open' = 'closed'
-  
+
   async execute<T>(operation: () => Promise<T>): Promise<T> {
     if (this.state === 'open') {
       if (this.shouldAttemptReset()) {
@@ -650,7 +691,7 @@ class CircuitBreaker {
         throw new Error('Circuit breaker is open')
       }
     }
-    
+
     try {
       const result = await operation()
       this.onSuccess()
@@ -666,6 +707,7 @@ class CircuitBreaker {
 ### 5. Data Backup & Recovery (MVP Essential)
 
 #### Database Backup Strategy
+
 ```typescript
 interface BackupService {
   createBackup(): Promise<BackupResult>
@@ -679,14 +721,14 @@ class SQLiteBackupService implements BackupService {
   async createBackup(): Promise<BackupResult> {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
     const backupPath = `backups/cubcen-${timestamp}.db`
-    
+
     await fs.copyFile(this.dbPath, backupPath)
-    
+
     return {
       id: generateId(),
       path: backupPath,
       size: await this.getFileSize(backupPath),
-      createdAt: new Date()
+      createdAt: new Date(),
     }
   }
 }
@@ -695,6 +737,7 @@ class SQLiteBackupService implements BackupService {
 ### 6. API Documentation (MVP Essential)
 
 #### OpenAPI/Swagger Integration
+
 ```typescript
 import swaggerJsdoc from 'swagger-jsdoc'
 import swaggerUi from 'swagger-ui-express'
@@ -705,16 +748,16 @@ const swaggerOptions = {
     info: {
       title: 'Cubcen API',
       version: '1.0.0',
-      description: 'AI Agent Management Platform API'
+      description: 'AI Agent Management Platform API',
     },
     servers: [
       {
         url: process.env.API_BASE_URL || 'http://localhost:3000',
-        description: 'Development server'
-      }
-    ]
+        description: 'Development server',
+      },
+    ],
   },
-  apis: ['./src/routes/*.ts']
+  apis: ['./src/routes/*.ts'],
 }
 
 const specs = swaggerJsdoc(swaggerOptions)
@@ -724,6 +767,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs))
 ### 7. Basic Monitoring Dashboard (MVP)
 
 #### System Metrics Collection
+
 ```typescript
 interface SystemMetrics {
   timestamp: Date
@@ -737,7 +781,7 @@ interface SystemMetrics {
 
 class MetricsCollector {
   private metrics: SystemMetrics[] = []
-  
+
   async collectMetrics(): Promise<SystemMetrics> {
     const metrics = {
       timestamp: new Date(),
@@ -746,9 +790,9 @@ class MetricsCollector {
       activeAgents: await this.getActiveAgentCount(),
       runningTasks: await this.getRunningTaskCount(),
       errorRate: await this.getErrorRate(),
-      responseTime: await this.getAverageResponseTime()
+      responseTime: await this.getAverageResponseTime(),
     }
-    
+
     this.metrics.push(metrics)
     return metrics
   }
@@ -758,28 +802,22 @@ class MetricsCollector {
 ### MVP Implementation Priority
 
 **Phase 1 (Week 1-2)**:
+
 1. Basic authentication and user management
 2. Database setup with SQLite
 3. Core API structure with error handling
 4. Basic logging and health checks
 
-**Phase 2 (Week 3-4)**:
-5. Platform adapter framework
-6. n8n integration (read-only)
-7. Basic agent discovery and monitoring
-8. Simple dashboard with real-time updates
+**Phase 2 (Week 3-4)**: 5. Platform adapter framework 6. n8n integration (read-only) 7. Basic agent discovery and monitoring 8. Simple dashboard with real-time updates
 
-**Phase 3 (Week 5-6)**:
-9. Task scheduling and execution
-10. Error recovery mechanisms
-11. Basic analytics and reporting
-12. API documentation and testing
+**Phase 3 (Week 5-6)**: 9. Task scheduling and execution 10. Error recovery mechanisms 11. Basic analytics and reporting 12. API documentation and testing
 
 This MVP approach ensures we have a production-ready foundation with essential security, monitoring, and recovery features while keeping the scope manageable.
 
 ## Requirements Alignment
 
 ### MVP Phase 1 Requirements Coverage
+
 - **Requirement 1**: Platform integration (Tasks 6-8)
 - **Requirement 2**: Real-time monitoring (Tasks 9-10, 14)
 - **Requirement 3**: Task scheduling (Task 11)
@@ -789,6 +827,7 @@ This MVP approach ensures we have a production-ready foundation with essential s
 - **Requirement 15**: Notifications and alerts (Task 18)
 
 ### Design System Integration
+
 - **Cubcen Brand Colors**: #3F51B5 (primary), #B19ADA (secondary)
 - **shadcn/ui Components**: Consistent, accessible UI components
 - **Tailwind CSS**: Custom theme with Cubcen color palette

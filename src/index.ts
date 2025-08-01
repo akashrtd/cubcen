@@ -22,64 +22,71 @@ async function startServer() {
     // Test database connection
     await prisma.$connect()
     logger.info('Database connection established')
-    
+
     // Create HTTP server
     const httpServer = createServer(app)
-    
+
     // Initialize adapter manager and services
     const adapterManager = new AdapterManager()
     const agentService = new AgentService(adapterManager)
-    
+
     // Initialize WebSocket service with agent service integration
-    const webSocketService = initializeWebSocketService(httpServer, agentService)
-    
+    const webSocketService = initializeWebSocketService(
+      httpServer,
+      agentService
+    )
+
     // Initialize task service with adapter manager and WebSocket service
     const taskService = new TaskService(adapterManager, webSocketService)
-    
+
     // Initialize workflow service with adapter manager, task service, and WebSocket service
-    const workflowService = new WorkflowService(adapterManager, taskService, webSocketService)
-    
+    const workflowService = new WorkflowService(
+      adapterManager,
+      taskService,
+      webSocketService
+    )
+
     // Set WebSocket service in agent service for real-time updates
     agentService.setWebSocketService(webSocketService)
-    
+
     // Initialize task routes with the task service
     initializeTaskService(adapterManager, webSocketService)
-    
+
     // Initialize workflow routes
     app.use('/api/cubcen/v1/workflows', createWorkflowRoutes(workflowService))
-    
+
     // Initialize scheduled backup service
     const backupConfig = config.getBackupConfig()
     if (backupConfig.enabled) {
       scheduledBackupService.start()
       logger.info('Scheduled backup service started', {
         intervalHours: backupConfig.intervalHours,
-        retentionDays: backupConfig.retentionDays
+        retentionDays: backupConfig.retentionDays,
       })
     }
-    
+
     logger.info('Services initialized', {
       webSocket: true,
       agentService: true,
       taskService: true,
       workflowService: true,
-      scheduledBackup: backupConfig.enabled
+      scheduledBackup: backupConfig.enabled,
     })
-    
+
     // Start the server
     const server = httpServer.listen(PORT, () => {
       logger.info(`Cubcen server started successfully`, {
         port: PORT,
         environment: process.env.NODE_ENV || 'development',
         nodeVersion: process.version,
-        websocket: true
+        websocket: true,
       })
     })
-    
+
     // Graceful shutdown
     const gracefulShutdown = async (signal: string) => {
       logger.info(`Received ${signal}, shutting down gracefully`)
-      
+
       // Stop scheduled backup service
       try {
         scheduledBackupService.stop()
@@ -87,7 +94,7 @@ async function startServer() {
       } catch (error) {
         logger.error('Error stopping scheduled backup service', error as Error)
       }
-      
+
       // Cleanup workflow service first
       try {
         await workflowService.cleanup()
@@ -95,7 +102,7 @@ async function startServer() {
       } catch (error) {
         logger.error('Error cleaning up workflow service', error as Error)
       }
-      
+
       // Cleanup task service
       try {
         await taskService.cleanup()
@@ -103,7 +110,7 @@ async function startServer() {
       } catch (error) {
         logger.error('Error cleaning up task service', error as Error)
       }
-      
+
       // Cleanup agent service
       try {
         await agentService.cleanup()
@@ -111,7 +118,7 @@ async function startServer() {
       } catch (error) {
         logger.error('Error cleaning up agent service', error as Error)
       }
-      
+
       // Shutdown WebSocket service
       try {
         await webSocketService.shutdown()
@@ -119,30 +126,31 @@ async function startServer() {
       } catch (error) {
         logger.error('Error closing WebSocket service', error as Error)
       }
-      
+
       server.close(async () => {
         logger.info('HTTP server closed')
-        
+
         try {
           await prisma.$disconnect()
           logger.info('Database connection closed')
         } catch (error) {
           logger.error('Error closing database connection', error as Error)
         }
-        
+
         process.exit(0)
       })
-      
+
       // Force close after 10 seconds
       setTimeout(() => {
-        logger.error('Could not close connections in time, forcefully shutting down')
+        logger.error(
+          'Could not close connections in time, forcefully shutting down'
+        )
         process.exit(1)
       }, 10000)
     }
-    
+
     process.on('SIGTERM', () => gracefulShutdown('SIGTERM'))
     process.on('SIGINT', () => gracefulShutdown('SIGINT'))
-    
   } catch (error) {
     logger.error('Failed to start server', error as Error)
     process.exit(1)
@@ -150,12 +158,15 @@ async function startServer() {
 }
 
 // Handle unhandled promise rejections
-process.on('unhandledRejection', (reason: unknown, promise: Promise<unknown>) => {
-  logger.error('Unhandled promise rejection', new Error(String(reason)), {
-    promise: promise.toString()
-  })
-  process.exit(1)
-})
+process.on(
+  'unhandledRejection',
+  (reason: unknown, promise: Promise<unknown>) => {
+    logger.error('Unhandled promise rejection', new Error(String(reason)), {
+      promise: promise.toString(),
+    })
+    process.exit(1)
+  }
+)
 
 // Handle uncaught exceptions
 process.on('uncaughtException', (error: Error) => {

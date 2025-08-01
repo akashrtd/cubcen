@@ -24,7 +24,10 @@ interface ValidationErrorResponse {
 /**
  * Generic validation middleware factory
  */
-export function validate(schema: ZodSchema, source: 'body' | 'query' | 'params' = 'body') {
+export function validate(
+  schema: ZodSchema,
+  source: 'body' | 'query' | 'params' = 'body'
+) {
   return (req: Request, res: Response, next: NextFunction): void => {
     try {
       let dataToValidate: unknown
@@ -77,14 +80,14 @@ export function validate(schema: ZodSchema, source: 'body' | 'query' | 'params' 
           source,
           path: req.path,
           method: req.method,
-          error: (assignError as Error).message
+          error: (assignError as Error).message,
         })
       }
 
       logger.debug('Validation successful', {
         source,
         path: req.path,
-        method: req.method
+        method: req.method,
       })
 
       next()
@@ -94,13 +97,13 @@ export function validate(schema: ZodSchema, source: 'body' | 'query' | 'params' 
           source,
           path: req.path,
           method: req.method,
-          errors: error.issues
+          errors: error.issues,
         })
 
         const validationErrors = error.issues.map((err: z.ZodIssue) => ({
           field: err.path.join('.'),
           message: err.message,
-          code: err.code
+          code: err.code,
         }))
 
         const response: ValidationErrorResponse = {
@@ -108,8 +111,8 @@ export function validate(schema: ZodSchema, source: 'body' | 'query' | 'params' 
             code: 'VALIDATION_ERROR',
             message: 'Request validation failed',
             details: validationErrors,
-            timestamp: new Date().toISOString()
-          }
+            timestamp: new Date().toISOString(),
+          },
         }
 
         res.status(400).json(response)
@@ -119,15 +122,15 @@ export function validate(schema: ZodSchema, source: 'body' | 'query' | 'params' 
       logger.error('Unexpected validation error', error as Error, {
         source,
         path: req.path,
-        method: req.method
+        method: req.method,
       })
 
       res.status(500).json({
         error: {
           code: 'INTERNAL_ERROR',
           message: 'Internal server error during validation',
-          timestamp: new Date().toISOString()
-        }
+          timestamp: new Date().toISOString(),
+        },
       })
     }
   }
@@ -164,7 +167,12 @@ export function validateRequest(schemas: {
 }) {
   return (req: Request, res: Response, next: NextFunction): void => {
     try {
-      const errors: Array<{ source: string; field: string; message: string; code: string }> = []
+      const errors: Array<{
+        source: string
+        field: string
+        message: string
+        code: string
+      }> = []
 
       // Validate body if schema provided
       if (schemas.body) {
@@ -172,12 +180,14 @@ export function validateRequest(schemas: {
           req.body = schemas.body.parse(req.body)
         } catch (error) {
           if (error instanceof ZodError) {
-            errors.push(...error.issues.map((err: z.ZodIssue) => ({
-              source: 'body',
-              field: err.path.join('.'),
-              message: err.message,
-              code: err.code
-            })))
+            errors.push(
+              ...error.issues.map((err: z.ZodIssue) => ({
+                source: 'body',
+                field: err.path.join('.'),
+                message: err.message,
+                code: err.code,
+              }))
+            )
           }
         }
       }
@@ -188,12 +198,14 @@ export function validateRequest(schemas: {
           req.query = schemas.query.parse(req.query) as Request['query']
         } catch (error) {
           if (error instanceof ZodError) {
-            errors.push(...error.issues.map((err: z.ZodIssue) => ({
-              source: 'query',
-              field: err.path.join('.'),
-              message: err.message,
-              code: err.code
-            })))
+            errors.push(
+              ...error.issues.map((err: z.ZodIssue) => ({
+                source: 'query',
+                field: err.path.join('.'),
+                message: err.message,
+                code: err.code,
+              }))
+            )
           }
         }
       }
@@ -204,12 +216,14 @@ export function validateRequest(schemas: {
           req.params = schemas.params.parse(req.params) as Request['params']
         } catch (error) {
           if (error instanceof ZodError) {
-            errors.push(...error.issues.map((err: z.ZodIssue) => ({
-              source: 'params',
-              field: err.path.join('.'),
-              message: err.message,
-              code: err.code
-            })))
+            errors.push(
+              ...error.issues.map((err: z.ZodIssue) => ({
+                source: 'params',
+                field: err.path.join('.'),
+                message: err.message,
+                code: err.code,
+              }))
+            )
           }
         }
       }
@@ -219,7 +233,7 @@ export function validateRequest(schemas: {
         logger.warn('Request validation failed', {
           path: req.path,
           method: req.method,
-          errors
+          errors,
         })
 
         const response: ValidationErrorResponse = {
@@ -229,10 +243,10 @@ export function validateRequest(schemas: {
             details: errors.map(err => ({
               field: `${err.source}.${err.field}`,
               message: err.message,
-              code: err.code
+              code: err.code,
             })),
-            timestamp: new Date().toISOString()
-          }
+            timestamp: new Date().toISOString(),
+          },
         }
 
         res.status(400).json(response)
@@ -241,22 +255,22 @@ export function validateRequest(schemas: {
 
       logger.debug('Request validation successful', {
         path: req.path,
-        method: req.method
+        method: req.method,
       })
 
       next()
     } catch (error) {
       logger.error('Unexpected request validation error', error as Error, {
         path: req.path,
-        method: req.method
+        method: req.method,
       })
 
       res.status(500).json({
         error: {
           code: 'INTERNAL_ERROR',
           message: 'Internal server error during validation',
-          timestamp: new Date().toISOString()
-        }
+          timestamp: new Date().toISOString(),
+        },
       })
     }
   }
@@ -265,7 +279,11 @@ export function validateRequest(schemas: {
 /**
  * Sanitize input middleware - removes potentially dangerous characters
  */
-export function sanitizeInput(req: Request, res: Response, next: NextFunction): void {
+export function sanitizeInput(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
   try {
     // Recursively sanitize object
     function sanitizeObject(obj: unknown): unknown {
@@ -277,11 +295,11 @@ export function sanitizeInput(req: Request, res: Response, next: NextFunction): 
           .replace(/on\w+\s*=/gi, '') // Remove event handlers
           .trim()
       }
-      
+
       if (Array.isArray(obj)) {
         return obj.map(sanitizeObject)
       }
-      
+
       if (obj && typeof obj === 'object') {
         const sanitized: Record<string, unknown> = {}
         for (const [key, value] of Object.entries(obj)) {
@@ -289,7 +307,7 @@ export function sanitizeInput(req: Request, res: Response, next: NextFunction): 
         }
         return sanitized
       }
-      
+
       return obj
     }
 
@@ -299,32 +317,34 @@ export function sanitizeInput(req: Request, res: Response, next: NextFunction): 
         req.body = sanitizeObject(req.body)
       } catch {
         // If body is not modifiable, skip sanitization
-        logger.debug('Body sanitization skipped - not modifiable', { path: req.path })
+        logger.debug('Body sanitization skipped - not modifiable', {
+          path: req.path,
+        })
       }
     }
-    
+
     // Sanitize query parameters (create new object to avoid read-only issues)
     if (req.query) {
-      req.query = sanitizeObject(req.query) as typeof req.query;
+      req.query = sanitizeObject(req.query) as typeof req.query
     }
 
     if (req.params) {
-      req.params = sanitizeObject(req.params) as typeof req.params;
+      req.params = sanitizeObject(req.params) as typeof req.params
     }
 
     next()
   } catch (error) {
     logger.error('Input sanitization error', error as Error, {
       path: req.path,
-      method: req.method
+      method: req.method,
     })
 
     res.status(500).json({
       error: {
         code: 'SANITIZATION_ERROR',
         message: 'Input sanitization failed',
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      },
     })
   }
 }
@@ -334,26 +354,26 @@ export function sanitizeInput(req: Request, res: Response, next: NextFunction): 
  */
 export const rateLimitSchema = z.object({
   'x-forwarded-for': z.string().optional(),
-  'x-real-ip': z.string().optional()
+  'x-real-ip': z.string().optional(),
 })
 
 /**
  * Common parameter schemas
  */
 export const idParamSchema = z.object({
-  id: z.string().min(1, 'ID is required')
+  id: z.string().min(1, 'ID is required'),
 })
 
 export const paginationQuerySchema = z.object({
   page: z.coerce.number().min(1).default(1),
   limit: z.coerce.number().min(1).max(100).default(20),
   sortBy: z.string().optional(),
-  sortOrder: z.enum(['asc', 'desc']).default('desc')
+  sortOrder: z.enum(['asc', 'desc']).default('desc'),
 })
 
 export const searchQuerySchema = z.object({
   q: z.string().min(1, 'Search query is required'),
-  ...paginationQuerySchema.shape
+  ...paginationQuerySchema.shape,
 })
 
 /**
@@ -362,5 +382,8 @@ export const searchQuerySchema = z.object({
 export const fileUploadSchema = z.object({
   filename: z.string().min(1, 'Filename is required'),
   mimetype: z.string().min(1, 'MIME type is required'),
-  size: z.number().min(1).max(10 * 1024 * 1024, 'File size must be less than 10MB')
+  size: z
+    .number()
+    .min(1)
+    .max(10 * 1024 * 1024, 'File size must be less than 10MB'),
 })

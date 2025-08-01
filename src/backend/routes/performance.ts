@@ -7,7 +7,10 @@ import { Router } from 'express'
 import { z } from 'zod'
 import { logger } from '@/lib/logger'
 import { performanceMonitor } from '@/lib/performance-monitor'
-import { dbPerformanceMonitor, DatabaseOptimizer } from '@/lib/database-performance'
+import {
+  dbPerformanceMonitor,
+  DatabaseOptimizer,
+} from '@/lib/database-performance'
 import { cache } from '@/lib/cache'
 import { Benchmark, LoadTester, PerformanceTestSuite } from '@/lib/benchmark'
 import { authMiddleware } from '@/backend/middleware/auth'
@@ -122,36 +125,43 @@ router.get('/metrics', async (req, res) => {
  *       200:
  *         description: Historical performance metrics
  */
-router.get('/metrics/history', validateRequest(metricsQuerySchema, 'query'), async (req, res) => {
-  try {
-    const { metric, startDate, endDate, limit } = req.query as any
+router.get(
+  '/metrics/history',
+  validateRequest(metricsQuerySchema, 'query'),
+  async (req, res) => {
+    try {
+      const { metric, startDate, endDate, limit } = req.query as any
 
-    const timeRange = startDate && endDate ? {
-      start: new Date(startDate),
-      end: new Date(endDate),
-    } : undefined
+      const timeRange =
+        startDate && endDate
+          ? {
+              start: new Date(startDate),
+              end: new Date(endDate),
+            }
+          : undefined
 
-    const metrics = performanceMonitor.getMetrics(metric, timeRange)
-    const limitedMetrics = limit ? metrics.slice(-limit) : metrics
+      const metrics = performanceMonitor.getMetrics(metric, timeRange)
+      const limitedMetrics = limit ? metrics.slice(-limit) : metrics
 
-    res.json({
-      success: true,
-      data: limitedMetrics,
-      meta: {
-        total: metrics.length,
-        returned: limitedMetrics.length,
-        metric,
-        timeRange,
-      },
-    })
-  } catch (error) {
-    logger.error('Failed to get metrics history', error)
-    res.status(500).json({
-      success: false,
-      error: 'Failed to retrieve metrics history',
-    })
+      res.json({
+        success: true,
+        data: limitedMetrics,
+        meta: {
+          total: metrics.length,
+          returned: limitedMetrics.length,
+          metric,
+          timeRange,
+        },
+      })
+    } catch (error) {
+      logger.error('Failed to get metrics history', error)
+      res.status(500).json({
+        success: false,
+        error: 'Failed to retrieve metrics history',
+      })
+    }
   }
-})
+)
 
 /**
  * @swagger
@@ -382,48 +392,52 @@ router.post('/cache/clear', async (req, res) => {
  *       200:
  *         description: Benchmark completed
  */
-router.post('/benchmark', validateRequest(benchmarkSchema), async (req, res) => {
-  try {
-    // Require admin role for benchmarks
-    if (req.user?.role !== 'ADMIN') {
-      return res.status(403).json({
+router.post(
+  '/benchmark',
+  validateRequest(benchmarkSchema),
+  async (req, res) => {
+    try {
+      // Require admin role for benchmarks
+      if (req.user?.role !== 'ADMIN') {
+        return res.status(403).json({
+          success: false,
+          error: 'Admin role required for performance benchmarks',
+        })
+      }
+
+      const { name, iterations = 100 } = req.body
+
+      let result
+      switch (name) {
+        case 'database':
+          result = await Benchmark.benchmarkDatabase()
+          break
+        case 'cache':
+          result = await Benchmark.benchmarkCache()
+          break
+        case 'api':
+          result = await Benchmark.benchmarkAPI()
+          break
+        default:
+          return res.status(400).json({
+            success: false,
+            error: 'Invalid benchmark name. Use: database, cache, or api',
+          })
+      }
+
+      res.json({
+        success: true,
+        data: result,
+      })
+    } catch (error) {
+      logger.error('Failed to run benchmark', error)
+      res.status(500).json({
         success: false,
-        error: 'Admin role required for performance benchmarks',
+        error: 'Failed to run benchmark',
       })
     }
-
-    const { name, iterations = 100 } = req.body
-
-    let result
-    switch (name) {
-      case 'database':
-        result = await Benchmark.benchmarkDatabase()
-        break
-      case 'cache':
-        result = await Benchmark.benchmarkCache()
-        break
-      case 'api':
-        result = await Benchmark.benchmarkAPI()
-        break
-      default:
-        return res.status(400).json({
-          success: false,
-          error: 'Invalid benchmark name. Use: database, cache, or api',
-        })
-    }
-
-    res.json({
-      success: true,
-      data: result,
-    })
-  } catch (error) {
-    logger.error('Failed to run benchmark', error)
-    res.status(500).json({
-      success: false,
-      error: 'Failed to run benchmark',
-    })
   }
-})
+)
 
 /**
  * @swagger

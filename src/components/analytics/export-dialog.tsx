@@ -11,7 +11,13 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Download, FileText, Database, Loader2 } from 'lucide-react'
@@ -27,18 +33,43 @@ interface ExportDialogProps {
 type ExportFormat = 'csv' | 'json'
 type DataType = 'overview' | 'agents' | 'tasks' | 'trends' | 'errors'
 
-export function ExportDialog({ open, onOpenChange, dateRange }: ExportDialogProps) {
+export function ExportDialog({
+  open,
+  onOpenChange,
+  dateRange,
+}: ExportDialogProps) {
   const [format, setFormat] = useState<ExportFormat>('csv')
   const [dataType, setDataType] = useState<DataType>('overview')
   const [includeCharts, setIncludeCharts] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const dataTypeOptions = [
-    { value: 'overview', label: 'Complete Analytics Overview', description: 'All analytics data including KPIs, trends, and performance metrics' },
-    { value: 'agents', label: 'Agent Performance Data', description: 'Detailed performance metrics for all agents' },
-    { value: 'tasks', label: 'Task Analytics', description: 'Task status and priority distribution data' },
-    { value: 'trends', label: 'Trend Data', description: 'Daily task trends and historical data' },
-    { value: 'errors', label: 'Error Patterns', description: 'Error analysis and pattern data' },
+    {
+      value: 'overview',
+      label: 'Complete Analytics Overview',
+      description:
+        'All analytics data including KPIs, trends, and performance metrics',
+    },
+    {
+      value: 'agents',
+      label: 'Agent Performance Data',
+      description: 'Detailed performance metrics for all agents',
+    },
+    {
+      value: 'tasks',
+      label: 'Task Analytics',
+      description: 'Task status and priority distribution data',
+    },
+    {
+      value: 'trends',
+      label: 'Trend Data',
+      description: 'Daily task trends and historical data',
+    },
+    {
+      value: 'errors',
+      label: 'Error Patterns',
+      description: 'Error analysis and pattern data',
+    },
   ]
 
   const handleExport = async () => {
@@ -53,16 +84,19 @@ export function ExportDialog({ open, onOpenChange, dateRange }: ExportDialogProp
         params.append('endDate', dateRange.to.toISOString())
       }
 
-      const response = await fetch(`/api/cubcen/v1/analytics/export?${params}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          format,
-          dataType,
-        }),
-      })
+      const response = await fetch(
+        `/api/cubcen/v1/analytics/export?${params}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            format,
+            dataType,
+          }),
+        }
+      )
 
       if (!response.ok) {
         throw new Error(`Export failed: ${response.statusText}`)
@@ -91,7 +125,8 @@ export function ExportDialog({ open, onOpenChange, dateRange }: ExportDialogProp
 
       onOpenChange(false)
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Export failed'
+      const errorMessage =
+        error instanceof Error ? error.message : 'Export failed'
       toast.error('Export failed', {
         description: errorMessage,
       })
@@ -100,7 +135,9 @@ export function ExportDialog({ open, onOpenChange, dateRange }: ExportDialogProp
     }
   }
 
-  const selectedDataType = dataTypeOptions.find(option => option.value === dataType)
+  const selectedDataType = dataTypeOptions.find(
+    option => option.value === dataType
+  )
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -119,16 +156,21 @@ export function ExportDialog({ open, onOpenChange, dateRange }: ExportDialogProp
           {/* Data Type Selection */}
           <div className="space-y-3">
             <Label className="text-sm font-medium">Data Type</Label>
-            <Select value={dataType} onValueChange={(value: DataType) => setDataType(value)}>
+            <Select
+              value={dataType}
+              onValueChange={(value: DataType) => setDataType(value)}
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {dataTypeOptions.map((option) => (
+                {dataTypeOptions.map(option => (
                   <SelectItem key={option.value} value={option.value}>
                     <div className="flex flex-col">
                       <span className="font-medium">{option.label}</span>
-                      <span className="text-xs text-muted-foreground">{option.description}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {option.description}
+                      </span>
                     </div>
                   </SelectItem>
                 ))}
@@ -144,10 +186,16 @@ export function ExportDialog({ open, onOpenChange, dateRange }: ExportDialogProp
           {/* Format Selection */}
           <div className="space-y-3">
             <Label className="text-sm font-medium">Export Format</Label>
-            <RadioGroup value={format} onValueChange={(value: ExportFormat) => setFormat(value)}>
+            <RadioGroup
+              value={format}
+              onValueChange={(value: ExportFormat) => setFormat(value)}
+            >
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="csv" id="csv" />
-                <Label htmlFor="csv" className="flex items-center cursor-pointer">
+                <Label
+                  htmlFor="csv"
+                  className="flex items-center cursor-pointer"
+                >
                   <FileText className="mr-2 h-4 w-4 text-green-600" />
                   <div>
                     <div className="font-medium">CSV Format</div>
@@ -159,7 +207,10 @@ export function ExportDialog({ open, onOpenChange, dateRange }: ExportDialogProp
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="json" id="json" />
-                <Label htmlFor="json" className="flex items-center cursor-pointer">
+                <Label
+                  htmlFor="json"
+                  className="flex items-center cursor-pointer"
+                >
                   <Database className="mr-2 h-4 w-4 text-blue-600" />
                   <div>
                     <div className="font-medium">JSON Format</div>
@@ -176,13 +227,18 @@ export function ExportDialog({ open, onOpenChange, dateRange }: ExportDialogProp
           <div className="space-y-3">
             <Label className="text-sm font-medium">Additional Options</Label>
             <div className="flex items-center space-x-2">
-              <Checkbox 
-                id="include-charts" 
+              <Checkbox
+                id="include-charts"
                 checked={includeCharts}
-                onCheckedChange={(checked) => setIncludeCharts(checked as boolean)}
+                onCheckedChange={checked =>
+                  setIncludeCharts(checked as boolean)
+                }
                 disabled // Not implemented yet
               />
-              <Label htmlFor="include-charts" className="text-sm text-muted-foreground">
+              <Label
+                htmlFor="include-charts"
+                className="text-sm text-muted-foreground"
+              >
                 Include chart data (Coming soon)
               </Label>
             </div>
@@ -193,7 +249,8 @@ export function ExportDialog({ open, onOpenChange, dateRange }: ExportDialogProp
             <div className="bg-muted/50 rounded-lg p-3">
               <Label className="text-sm font-medium">Date Range</Label>
               <p className="text-sm text-muted-foreground mt-1">
-                {dateRange.from?.toLocaleDateString()} - {dateRange.to?.toLocaleDateString()}
+                {dateRange.from?.toLocaleDateString()} -{' '}
+                {dateRange.to?.toLocaleDateString()}
               </p>
             </div>
           )}
@@ -203,12 +260,13 @@ export function ExportDialog({ open, onOpenChange, dateRange }: ExportDialogProp
             <div className="flex items-center">
               <Database className="mr-2 h-4 w-4 text-blue-600" />
               <div className="text-sm">
-                <div className="font-medium text-blue-800">Export Information</div>
+                <div className="font-medium text-blue-800">
+                  Export Information
+                </div>
                 <div className="text-blue-600">
-                  {format === 'csv' 
+                  {format === 'csv'
                     ? 'CSV files are optimized for spreadsheet applications and data analysis tools.'
-                    : 'JSON files preserve data structure and are ideal for programmatic access.'
-                  }
+                    : 'JSON files preserve data structure and are ideal for programmatic access.'}
                 </div>
               </div>
             </div>
@@ -216,10 +274,18 @@ export function ExportDialog({ open, onOpenChange, dateRange }: ExportDialogProp
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={loading}
+          >
             Cancel
           </Button>
-          <Button onClick={handleExport} disabled={loading} className="bg-cubcen-primary hover:bg-cubcen-primary/90">
+          <Button
+            onClick={handleExport}
+            disabled={loading}
+            className="bg-cubcen-primary hover:bg-cubcen-primary/90"
+          >
             {loading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

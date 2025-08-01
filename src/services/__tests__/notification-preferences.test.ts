@@ -5,7 +5,7 @@ import { PrismaClient } from '../../generated/prisma'
 import { NotificationPreferencesService } from '../notification-preferences'
 import {
   NotificationEventType,
-  NotificationChannelType
+  NotificationChannelType,
 } from '../../types/notification'
 
 describe('NotificationPreferencesService', () => {
@@ -29,8 +29,8 @@ describe('NotificationPreferencesService', () => {
         email: uniqueEmail,
         password: 'hashedpassword',
         role: 'ADMIN',
-        name: 'Test User'
-      }
+        name: 'Test User',
+      },
     })
   })
 
@@ -48,7 +48,9 @@ describe('NotificationPreferencesService', () => {
 
   describe('getUserPreferences', () => {
     it('should return empty array for user with no preferences', async () => {
-      const preferences = await preferencesService.getUserPreferences(mockUser.id)
+      const preferences = await preferencesService.getUserPreferences(
+        mockUser.id
+      )
       expect(preferences).toEqual([])
     })
 
@@ -57,21 +59,29 @@ describe('NotificationPreferencesService', () => {
         data: {
           userId: mockUser.id,
           eventType: NotificationEventType.AGENT_DOWN,
-          channels: JSON.stringify([NotificationChannelType.EMAIL, NotificationChannelType.SLACK]),
+          channels: JSON.stringify([
+            NotificationChannelType.EMAIL,
+            NotificationChannelType.SLACK,
+          ]),
           enabled: true,
-          escalationDelay: 15
-        }
+          escalationDelay: 15,
+        },
       })
 
-      const preferences = await preferencesService.getUserPreferences(mockUser.id)
-      
+      const preferences = await preferencesService.getUserPreferences(
+        mockUser.id
+      )
+
       expect(preferences).toHaveLength(1)
       expect(preferences[0]).toMatchObject({
         userId: mockUser.id,
         eventType: NotificationEventType.AGENT_DOWN,
-        channels: [NotificationChannelType.EMAIL, NotificationChannelType.SLACK],
+        channels: [
+          NotificationChannelType.EMAIL,
+          NotificationChannelType.SLACK,
+        ],
         enabled: true,
-        escalationDelay: 15
+        escalationDelay: 15,
       })
     })
   })
@@ -83,7 +93,7 @@ describe('NotificationPreferencesService', () => {
         NotificationEventType.TASK_FAILED,
         {
           channels: [NotificationChannelType.IN_APP],
-          enabled: true
+          enabled: true,
         }
       )
 
@@ -91,7 +101,7 @@ describe('NotificationPreferencesService', () => {
         userId: mockUser.id,
         eventType: NotificationEventType.TASK_FAILED,
         channels: [NotificationChannelType.IN_APP],
-        enabled: true
+        enabled: true,
       })
     })
 
@@ -102,8 +112,8 @@ describe('NotificationPreferencesService', () => {
           userId: mockUser.id,
           eventType: NotificationEventType.AGENT_ERROR,
           channels: JSON.stringify([NotificationChannelType.EMAIL]),
-          enabled: true
-        }
+          enabled: true,
+        },
       })
 
       // Update preference
@@ -111,18 +121,24 @@ describe('NotificationPreferencesService', () => {
         mockUser.id,
         NotificationEventType.AGENT_ERROR,
         {
-          channels: [NotificationChannelType.EMAIL, NotificationChannelType.SLACK],
+          channels: [
+            NotificationChannelType.EMAIL,
+            NotificationChannelType.SLACK,
+          ],
           enabled: false,
-          escalationDelay: 30
+          escalationDelay: 30,
         }
       )
 
       expect(updated).toMatchObject({
         userId: mockUser.id,
         eventType: NotificationEventType.AGENT_ERROR,
-        channels: [NotificationChannelType.EMAIL, NotificationChannelType.SLACK],
+        channels: [
+          NotificationChannelType.EMAIL,
+          NotificationChannelType.SLACK,
+        ],
         enabled: false,
-        escalationDelay: 30
+        escalationDelay: 30,
       })
     })
   })
@@ -130,25 +146,37 @@ describe('NotificationPreferencesService', () => {
   describe('getDefaultPreferences', () => {
     it('should return default preferences for all event types', async () => {
       const defaults = await preferencesService.getDefaultPreferences()
-      
+
       expect(defaults).toHaveProperty(NotificationEventType.AGENT_DOWN)
       expect(defaults).toHaveProperty(NotificationEventType.TASK_FAILED)
       expect(defaults).toHaveProperty(NotificationEventType.SYSTEM_ERROR)
-      
-      expect(defaults[NotificationEventType.AGENT_DOWN]).toContain(NotificationChannelType.EMAIL)
-      expect(defaults[NotificationEventType.AGENT_DOWN]).toContain(NotificationChannelType.SLACK)
+
+      expect(defaults[NotificationEventType.AGENT_DOWN]).toContain(
+        NotificationChannelType.EMAIL
+      )
+      expect(defaults[NotificationEventType.AGENT_DOWN]).toContain(
+        NotificationChannelType.SLACK
+      )
     })
   })
 
   describe('initializeUserPreferences', () => {
     it('should create default preferences for new user', async () => {
       await preferencesService.initializeUserPreferences(mockUser.id)
-      
-      const preferences = await preferencesService.getUserPreferences(mockUser.id)
-      
+
+      const preferences = await preferencesService.getUserPreferences(
+        mockUser.id
+      )
+
       expect(preferences.length).toBeGreaterThan(0)
-      expect(preferences.some(p => p.eventType === NotificationEventType.AGENT_DOWN)).toBe(true)
-      expect(preferences.some(p => p.eventType === NotificationEventType.SYSTEM_ERROR)).toBe(true)
+      expect(
+        preferences.some(p => p.eventType === NotificationEventType.AGENT_DOWN)
+      ).toBe(true)
+      expect(
+        preferences.some(
+          p => p.eventType === NotificationEventType.SYSTEM_ERROR
+        )
+      ).toBe(true)
     })
 
     it('should not duplicate existing preferences', async () => {
@@ -158,15 +186,19 @@ describe('NotificationPreferencesService', () => {
           userId: mockUser.id,
           eventType: NotificationEventType.AGENT_DOWN,
           channels: JSON.stringify([NotificationChannelType.EMAIL]),
-          enabled: true
-        }
+          enabled: true,
+        },
       })
 
       await preferencesService.initializeUserPreferences(mockUser.id)
-      
-      const preferences = await preferencesService.getUserPreferences(mockUser.id)
-      const agentDownPrefs = preferences.filter(p => p.eventType === NotificationEventType.AGENT_DOWN)
-      
+
+      const preferences = await preferencesService.getUserPreferences(
+        mockUser.id
+      )
+      const agentDownPrefs = preferences.filter(
+        p => p.eventType === NotificationEventType.AGENT_DOWN
+      )
+
       expect(agentDownPrefs).toHaveLength(1)
     })
   })
@@ -185,13 +217,13 @@ describe('NotificationPreferencesService', () => {
           enabled: true,
           configuration: JSON.stringify({
             host: 'smtp.test.com',
-            port: 587
-          })
-        }
+            port: 587,
+          }),
+        },
       })
 
       const channels = await preferencesService.getNotificationChannels()
-      
+
       expect(channels).toHaveLength(1)
       expect(channels[0]).toMatchObject({
         type: NotificationChannelType.EMAIL,
@@ -199,8 +231,8 @@ describe('NotificationPreferencesService', () => {
         enabled: true,
         configuration: {
           host: 'smtp.test.com',
-          port: 587
-        }
+          port: 587,
+        },
       })
     })
   })
@@ -213,34 +245,37 @@ describe('NotificationPreferencesService', () => {
           name: 'Slack Channel',
           enabled: true,
           configuration: JSON.stringify({
-            defaultChannel: '#alerts'
-          })
-        }
+            defaultChannel: '#alerts',
+          }),
+        },
       })
 
-      const updated = await preferencesService.updateNotificationChannel(channel.id, {
-        name: 'Updated Slack Channel',
-        enabled: false,
-        configuration: {
-          defaultChannel: '#notifications',
-          username: 'Cubcen Bot'
+      const updated = await preferencesService.updateNotificationChannel(
+        channel.id,
+        {
+          name: 'Updated Slack Channel',
+          enabled: false,
+          configuration: {
+            defaultChannel: '#notifications',
+            username: 'Cubcen Bot',
+          },
         }
-      })
+      )
 
       expect(updated).toMatchObject({
         name: 'Updated Slack Channel',
         enabled: false,
         configuration: {
           defaultChannel: '#notifications',
-          username: 'Cubcen Bot'
-        }
+          username: 'Cubcen Bot',
+        },
       })
     })
 
     it('should handle non-existent channel', async () => {
       await expect(
         preferencesService.updateNotificationChannel('non-existent', {
-          name: 'Test'
+          name: 'Test',
         })
       ).rejects.toThrow()
     })
@@ -253,8 +288,8 @@ describe('NotificationPreferencesService', () => {
         name: 'In-App Channel',
         enabled: true,
         configuration: {
-          maxNotifications: 100
-        }
+          maxNotifications: 100,
+        },
       })
 
       expect(channel).toMatchObject({
@@ -262,8 +297,8 @@ describe('NotificationPreferencesService', () => {
         name: 'In-App Channel',
         enabled: true,
         configuration: {
-          maxNotifications: 100
-        }
+          maxNotifications: 100,
+        },
       })
     })
   })
@@ -274,9 +309,12 @@ describe('NotificationPreferencesService', () => {
         data: {
           userId: mockUser.id,
           eventType: NotificationEventType.WORKFLOW_FAILED,
-          channels: JSON.stringify([NotificationChannelType.EMAIL, NotificationChannelType.SLACK]),
-          enabled: true
-        }
+          channels: JSON.stringify([
+            NotificationChannelType.EMAIL,
+            NotificationChannelType.SLACK,
+          ]),
+          enabled: true,
+        },
       })
 
       const channels = await preferencesService.getUserPreferencesForEvent(
@@ -284,7 +322,10 @@ describe('NotificationPreferencesService', () => {
         NotificationEventType.WORKFLOW_FAILED
       )
 
-      expect(channels).toEqual([NotificationChannelType.EMAIL, NotificationChannelType.SLACK])
+      expect(channels).toEqual([
+        NotificationChannelType.EMAIL,
+        NotificationChannelType.SLACK,
+      ])
     })
 
     it('should return empty array for disabled preference', async () => {
@@ -293,8 +334,8 @@ describe('NotificationPreferencesService', () => {
           userId: mockUser.id,
           eventType: NotificationEventType.TASK_COMPLETED,
           channels: JSON.stringify([NotificationChannelType.IN_APP]),
-          enabled: false
-        }
+          enabled: false,
+        },
       })
 
       const channels = await preferencesService.getUserPreferencesForEvent(
@@ -323,32 +364,42 @@ describe('NotificationPreferencesService', () => {
           eventType: NotificationEventType.AGENT_DOWN,
           channels: [NotificationChannelType.EMAIL],
           enabled: true,
-          escalationDelay: 15
+          escalationDelay: 15,
         },
         {
           eventType: NotificationEventType.TASK_FAILED,
-          channels: [NotificationChannelType.IN_APP, NotificationChannelType.EMAIL],
-          enabled: true
-        }
+          channels: [
+            NotificationChannelType.IN_APP,
+            NotificationChannelType.EMAIL,
+          ],
+          enabled: true,
+        },
       ]
 
       await preferencesService.bulkUpdatePreferences(mockUser.id, preferences)
 
       const userPrefs = await preferencesService.getUserPreferences(mockUser.id)
-      
+
       expect(userPrefs).toHaveLength(2)
-      
-      const agentDownPref = userPrefs.find(p => p.eventType === NotificationEventType.AGENT_DOWN)
+
+      const agentDownPref = userPrefs.find(
+        p => p.eventType === NotificationEventType.AGENT_DOWN
+      )
       expect(agentDownPref).toMatchObject({
         channels: [NotificationChannelType.EMAIL],
         enabled: true,
-        escalationDelay: 15
+        escalationDelay: 15,
       })
 
-      const taskFailedPref = userPrefs.find(p => p.eventType === NotificationEventType.TASK_FAILED)
+      const taskFailedPref = userPrefs.find(
+        p => p.eventType === NotificationEventType.TASK_FAILED
+      )
       expect(taskFailedPref).toMatchObject({
-        channels: [NotificationChannelType.IN_APP, NotificationChannelType.EMAIL],
-        enabled: true
+        channels: [
+          NotificationChannelType.IN_APP,
+          NotificationChannelType.EMAIL,
+        ],
+        enabled: true,
       })
     })
 
@@ -358,8 +409,8 @@ describe('NotificationPreferencesService', () => {
         {
           eventType: 'INVALID_EVENT_TYPE' as NotificationEventType,
           channels: [NotificationChannelType.EMAIL],
-          enabled: true
-        }
+          enabled: true,
+        },
       ]
 
       await expect(

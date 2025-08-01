@@ -13,15 +13,24 @@ import {
   requireResourcePermission,
   canAccessResource,
   getAccessibleResources,
-  getResourceActions
+  getResourceActions,
 } from '../rbac'
 
 describe('RBAC System', () => {
   describe('PERMISSIONS constant', () => {
     it('should have all required permission definitions', () => {
-      expect(PERMISSIONS.USER_CREATE).toEqual({ resource: 'user', action: 'create' })
-      expect(PERMISSIONS.AGENT_READ).toEqual({ resource: 'agent', action: 'read' })
-      expect(PERMISSIONS.SYSTEM_CONFIGURE).toEqual({ resource: 'system', action: 'configure' })
+      expect(PERMISSIONS.USER_CREATE).toEqual({
+        resource: 'user',
+        action: 'create',
+      })
+      expect(PERMISSIONS.AGENT_READ).toEqual({
+        resource: 'agent',
+        action: 'read',
+      })
+      expect(PERMISSIONS.SYSTEM_CONFIGURE).toEqual({
+        resource: 'system',
+        action: 'configure',
+      })
     })
   })
 
@@ -34,40 +43,44 @@ describe('RBAC System', () => {
 
     it('should give ADMIN full permissions', () => {
       const adminPermissions = ROLE_PERMISSIONS[UserRole.ADMIN]
-      
+
       // Admin should have all user management permissions
       expect(adminPermissions).toContainEqual(PERMISSIONS.USER_CREATE)
       expect(adminPermissions).toContainEqual(PERMISSIONS.USER_DELETE)
       expect(adminPermissions).toContainEqual(PERMISSIONS.USER_MANAGE_ROLES)
-      
+
       // Admin should have system configuration permissions
       expect(adminPermissions).toContainEqual(PERMISSIONS.SYSTEM_CONFIGURE)
     })
 
     it('should give OPERATOR appropriate permissions', () => {
       const operatorPermissions = ROLE_PERMISSIONS[UserRole.OPERATOR]
-      
+
       // Operator should have agent management permissions
       expect(operatorPermissions).toContainEqual(PERMISSIONS.AGENT_CREATE)
       expect(operatorPermissions).toContainEqual(PERMISSIONS.AGENT_EXECUTE)
-      
+
       // Operator should NOT have user management permissions
       expect(operatorPermissions).not.toContainEqual(PERMISSIONS.USER_CREATE)
       expect(operatorPermissions).not.toContainEqual(PERMISSIONS.USER_DELETE)
-      expect(operatorPermissions).not.toContainEqual(PERMISSIONS.USER_MANAGE_ROLES)
-      
+      expect(operatorPermissions).not.toContainEqual(
+        PERMISSIONS.USER_MANAGE_ROLES
+      )
+
       // Operator should NOT have system configuration permissions
-      expect(operatorPermissions).not.toContainEqual(PERMISSIONS.SYSTEM_CONFIGURE)
+      expect(operatorPermissions).not.toContainEqual(
+        PERMISSIONS.SYSTEM_CONFIGURE
+      )
     })
 
     it('should give VIEWER read-only permissions', () => {
       const viewerPermissions = ROLE_PERMISSIONS[UserRole.VIEWER]
-      
+
       // Viewer should have read permissions
       expect(viewerPermissions).toContainEqual(PERMISSIONS.USER_READ)
       expect(viewerPermissions).toContainEqual(PERMISSIONS.AGENT_READ)
       expect(viewerPermissions).toContainEqual(PERMISSIONS.SYSTEM_READ)
-      
+
       // Viewer should NOT have create/update/delete permissions
       expect(viewerPermissions).not.toContainEqual(PERMISSIONS.USER_CREATE)
       expect(viewerPermissions).not.toContainEqual(PERMISSIONS.AGENT_CREATE)
@@ -79,45 +92,75 @@ describe('RBAC System', () => {
   describe('hasPermission', () => {
     it('should return true for valid admin permissions', () => {
       expect(hasPermission(UserRole.ADMIN, PERMISSIONS.USER_CREATE)).toBe(true)
-      expect(hasPermission(UserRole.ADMIN, PERMISSIONS.SYSTEM_CONFIGURE)).toBe(true)
+      expect(hasPermission(UserRole.ADMIN, PERMISSIONS.SYSTEM_CONFIGURE)).toBe(
+        true
+      )
       expect(hasPermission(UserRole.ADMIN, PERMISSIONS.AGENT_DELETE)).toBe(true)
     })
 
     it('should return true for valid operator permissions', () => {
-      expect(hasPermission(UserRole.OPERATOR, PERMISSIONS.AGENT_CREATE)).toBe(true)
-      expect(hasPermission(UserRole.OPERATOR, PERMISSIONS.TASK_EXECUTE)).toBe(true)
-      expect(hasPermission(UserRole.OPERATOR, PERMISSIONS.WORKFLOW_CREATE)).toBe(true)
+      expect(hasPermission(UserRole.OPERATOR, PERMISSIONS.AGENT_CREATE)).toBe(
+        true
+      )
+      expect(hasPermission(UserRole.OPERATOR, PERMISSIONS.TASK_EXECUTE)).toBe(
+        true
+      )
+      expect(
+        hasPermission(UserRole.OPERATOR, PERMISSIONS.WORKFLOW_CREATE)
+      ).toBe(true)
     })
 
     it('should return false for invalid operator permissions', () => {
-      expect(hasPermission(UserRole.OPERATOR, PERMISSIONS.USER_CREATE)).toBe(false)
-      expect(hasPermission(UserRole.OPERATOR, PERMISSIONS.SYSTEM_CONFIGURE)).toBe(false)
-      expect(hasPermission(UserRole.OPERATOR, PERMISSIONS.USER_MANAGE_ROLES)).toBe(false)
+      expect(hasPermission(UserRole.OPERATOR, PERMISSIONS.USER_CREATE)).toBe(
+        false
+      )
+      expect(
+        hasPermission(UserRole.OPERATOR, PERMISSIONS.SYSTEM_CONFIGURE)
+      ).toBe(false)
+      expect(
+        hasPermission(UserRole.OPERATOR, PERMISSIONS.USER_MANAGE_ROLES)
+      ).toBe(false)
     })
 
     it('should return true for valid viewer permissions', () => {
       expect(hasPermission(UserRole.VIEWER, PERMISSIONS.USER_READ)).toBe(true)
       expect(hasPermission(UserRole.VIEWER, PERMISSIONS.AGENT_READ)).toBe(true)
-      expect(hasPermission(UserRole.VIEWER, PERMISSIONS.ANALYTICS_READ)).toBe(true)
+      expect(hasPermission(UserRole.VIEWER, PERMISSIONS.ANALYTICS_READ)).toBe(
+        true
+      )
     })
 
     it('should return false for invalid viewer permissions', () => {
-      expect(hasPermission(UserRole.VIEWER, PERMISSIONS.USER_CREATE)).toBe(false)
-      expect(hasPermission(UserRole.VIEWER, PERMISSIONS.AGENT_CREATE)).toBe(false)
-      expect(hasPermission(UserRole.VIEWER, PERMISSIONS.SYSTEM_CONFIGURE)).toBe(false)
+      expect(hasPermission(UserRole.VIEWER, PERMISSIONS.USER_CREATE)).toBe(
+        false
+      )
+      expect(hasPermission(UserRole.VIEWER, PERMISSIONS.AGENT_CREATE)).toBe(
+        false
+      )
+      expect(hasPermission(UserRole.VIEWER, PERMISSIONS.SYSTEM_CONFIGURE)).toBe(
+        false
+      )
     })
   })
 
   describe('hasResourcePermission', () => {
     it('should return true for valid resource permissions', () => {
       expect(hasResourcePermission(UserRole.ADMIN, 'user', 'create')).toBe(true)
-      expect(hasResourcePermission(UserRole.OPERATOR, 'agent', 'execute')).toBe(true)
-      expect(hasResourcePermission(UserRole.VIEWER, 'system', 'read')).toBe(true)
+      expect(hasResourcePermission(UserRole.OPERATOR, 'agent', 'execute')).toBe(
+        true
+      )
+      expect(hasResourcePermission(UserRole.VIEWER, 'system', 'read')).toBe(
+        true
+      )
     })
 
     it('should return false for invalid resource permissions', () => {
-      expect(hasResourcePermission(UserRole.VIEWER, 'user', 'create')).toBe(false)
-      expect(hasResourcePermission(UserRole.OPERATOR, 'system', 'configure')).toBe(false)
+      expect(hasResourcePermission(UserRole.VIEWER, 'user', 'create')).toBe(
+        false
+      )
+      expect(
+        hasResourcePermission(UserRole.OPERATOR, 'system', 'configure')
+      ).toBe(false)
     })
   })
 
@@ -132,14 +175,18 @@ describe('RBAC System', () => {
     it('should return appropriate permissions for operator', () => {
       const permissions = getRolePermissions(UserRole.OPERATOR)
       expect(permissions.length).toBeGreaterThan(10)
-      expect(permissions.length).toBeLessThan(ROLE_PERMISSIONS[UserRole.ADMIN].length)
+      expect(permissions.length).toBeLessThan(
+        ROLE_PERMISSIONS[UserRole.ADMIN].length
+      )
       expect(permissions).toContainEqual(PERMISSIONS.AGENT_CREATE)
       expect(permissions).not.toContainEqual(PERMISSIONS.USER_CREATE)
     })
 
     it('should return limited permissions for viewer', () => {
       const permissions = getRolePermissions(UserRole.VIEWER)
-      expect(permissions.length).toBeLessThan(ROLE_PERMISSIONS[UserRole.OPERATOR].length)
+      expect(permissions.length).toBeLessThan(
+        ROLE_PERMISSIONS[UserRole.OPERATOR].length
+      )
       expect(permissions).toContainEqual(PERMISSIONS.USER_READ)
       expect(permissions).not.toContainEqual(PERMISSIONS.USER_CREATE)
     })
@@ -177,19 +224,27 @@ describe('RBAC System', () => {
 
     it('should throw with custom error message', () => {
       const customMessage = 'Custom access denied message'
-      
+
       expect(() => {
-        requirePermission(UserRole.VIEWER, PERMISSIONS.USER_CREATE, customMessage)
-      }).toThrow(new AuthorizationError(customMessage, 'INSUFFICIENT_PERMISSIONS'))
+        requirePermission(
+          UserRole.VIEWER,
+          PERMISSIONS.USER_CREATE,
+          customMessage
+        )
+      }).toThrow(
+        new AuthorizationError(customMessage, 'INSUFFICIENT_PERMISSIONS')
+      )
     })
 
     it('should throw with default error message', () => {
       expect(() => {
         requirePermission(UserRole.VIEWER, PERMISSIONS.USER_CREATE)
-      }).toThrow(new AuthorizationError(
-        'Access denied. Required permission: create on user',
-        'INSUFFICIENT_PERMISSIONS'
-      ))
+      }).toThrow(
+        new AuthorizationError(
+          'Access denied. Required permission: create on user',
+          'INSUFFICIENT_PERMISSIONS'
+        )
+      )
     })
   })
 
@@ -266,7 +321,7 @@ describe('RBAC System', () => {
       expect(resources).toContain('system')
       expect(resources).toContain('analytics')
       expect(resources).toContain('reports')
-      
+
       // All resources are accessible to viewer, but with limited actions
       expect(resources.length).toBeGreaterThan(0)
     })

@@ -7,7 +7,7 @@ import {
   NotificationPreference,
   NotificationEventType,
   NotificationChannelType,
-  NotificationChannel
+  NotificationChannel,
 } from '../types/notification'
 
 export class NotificationPreferencesService {
@@ -21,12 +21,12 @@ export class NotificationPreferencesService {
     try {
       const preferences = await this.prisma.notificationPreference.findMany({
         where: { userId },
-        orderBy: { eventType: 'asc' }
+        orderBy: { eventType: 'asc' },
       })
 
       return preferences.map(p => ({
         ...p,
-        channels: JSON.parse(p.channels) as NotificationChannelType[]
+        channels: JSON.parse(p.channels) as NotificationChannelType[],
       }))
     } catch (error) {
       logger.error('Failed to get user preferences', error as Error, { userId })
@@ -40,86 +40,118 @@ export class NotificationPreferencesService {
     preference: Partial<NotificationPreference>
   ): Promise<NotificationPreference> {
     try {
-      const channels = preference.channels ? JSON.stringify(preference.channels) : undefined
+      const channels = preference.channels
+        ? JSON.stringify(preference.channels)
+        : undefined
 
       const updated = await this.prisma.notificationPreference.upsert({
         where: {
           userId_eventType: {
             userId,
-            eventType
-          }
+            eventType,
+          },
         },
         update: {
           channels: channels || undefined,
           enabled: preference.enabled,
-          escalationDelay: preference.escalationDelay
+          escalationDelay: preference.escalationDelay,
         },
         create: {
           userId,
           eventType,
-          channels: channels || JSON.stringify([NotificationChannelType.IN_APP]),
+          channels:
+            channels || JSON.stringify([NotificationChannelType.IN_APP]),
           enabled: preference.enabled ?? true,
-          escalationDelay: preference.escalationDelay
-        }
+          escalationDelay: preference.escalationDelay,
+        },
       })
 
       return {
         ...updated,
-        channels: JSON.parse(updated.channels) as NotificationChannelType[]
+        channels: JSON.parse(updated.channels) as NotificationChannelType[],
       }
     } catch (error) {
       logger.error('Failed to update user preference', error as Error, {
         userId,
-        eventType
+        eventType,
       })
       throw error
     }
   }
 
-  async getDefaultPreferences(): Promise<Record<NotificationEventType, NotificationChannelType[]>> {
+  async getDefaultPreferences(): Promise<
+    Record<NotificationEventType, NotificationChannelType[]>
+  > {
     return {
-      [NotificationEventType.AGENT_DOWN]: [NotificationChannelType.EMAIL, NotificationChannelType.SLACK],
-      [NotificationEventType.AGENT_ERROR]: [NotificationChannelType.IN_APP, NotificationChannelType.EMAIL],
+      [NotificationEventType.AGENT_DOWN]: [
+        NotificationChannelType.EMAIL,
+        NotificationChannelType.SLACK,
+      ],
+      [NotificationEventType.AGENT_ERROR]: [
+        NotificationChannelType.IN_APP,
+        NotificationChannelType.EMAIL,
+      ],
       [NotificationEventType.TASK_FAILED]: [NotificationChannelType.IN_APP],
       [NotificationEventType.TASK_COMPLETED]: [NotificationChannelType.IN_APP],
-      [NotificationEventType.WORKFLOW_FAILED]: [NotificationChannelType.EMAIL, NotificationChannelType.SLACK],
-      [NotificationEventType.WORKFLOW_COMPLETED]: [NotificationChannelType.IN_APP],
-      [NotificationEventType.SYSTEM_ERROR]: [NotificationChannelType.EMAIL, NotificationChannelType.SLACK],
-      [NotificationEventType.HEALTH_CHECK_FAILED]: [NotificationChannelType.EMAIL],
-      [NotificationEventType.PLATFORM_DISCONNECTED]: [NotificationChannelType.EMAIL, NotificationChannelType.SLACK]
+      [NotificationEventType.WORKFLOW_FAILED]: [
+        NotificationChannelType.EMAIL,
+        NotificationChannelType.SLACK,
+      ],
+      [NotificationEventType.WORKFLOW_COMPLETED]: [
+        NotificationChannelType.IN_APP,
+      ],
+      [NotificationEventType.SYSTEM_ERROR]: [
+        NotificationChannelType.EMAIL,
+        NotificationChannelType.SLACK,
+      ],
+      [NotificationEventType.HEALTH_CHECK_FAILED]: [
+        NotificationChannelType.EMAIL,
+      ],
+      [NotificationEventType.PLATFORM_DISCONNECTED]: [
+        NotificationChannelType.EMAIL,
+        NotificationChannelType.SLACK,
+      ],
     }
   }
 
   async initializeUserPreferences(userId: string): Promise<void> {
     try {
       const defaults = await this.getDefaultPreferences()
-      const existingPreferences = await this.prisma.notificationPreference.findMany({
-        where: { userId }
-      })
+      const existingPreferences =
+        await this.prisma.notificationPreference.findMany({
+          where: { userId },
+        })
 
-      const existingEventTypes = new Set(existingPreferences.map(p => p.eventType))
+      const existingEventTypes = new Set(
+        existingPreferences.map(p => p.eventType)
+      )
 
       const preferencesToCreate = Object.entries(defaults)
-        .filter(([eventType]) => !existingEventTypes.has(eventType as NotificationEventType))
+        .filter(
+          ([eventType]) =>
+            !existingEventTypes.has(eventType as NotificationEventType)
+        )
         .map(([eventType, channels]) => ({
           userId,
           eventType: eventType as NotificationEventType,
           channels: JSON.stringify(channels),
-          enabled: true
+          enabled: true,
         }))
 
       if (preferencesToCreate.length > 0) {
         await this.prisma.notificationPreference.createMany({
-          data: preferencesToCreate
+          data: preferencesToCreate,
         })
 
         logger.info('Initialized user notification preferences', {
           userId,
-          count: preferencesToCreate.length
+          count: preferencesToCreate.length,
         })
       }
     } catch (error) {
-      logger.error('Failed to initialize user preferences', error as Error, { userId })
+      logger.error('Failed to initialize user preferences', error as Error, {
+        userId,
+      })
       throw error
     }
   }
@@ -127,12 +159,12 @@ export class NotificationPreferencesService {
   async getNotificationChannels(): Promise<NotificationChannel[]> {
     try {
       const channels = await this.prisma.notificationChannel.findMany({
-        orderBy: { name: 'asc' }
+        orderBy: { name: 'asc' },
       })
 
       return channels.map(c => ({
         ...c,
-        configuration: JSON.parse(c.configuration)
+        configuration: JSON.parse(c.configuration),
       }))
     } catch (error) {
       logger.error('Failed to get notification channels', error as Error)
@@ -145,8 +177,8 @@ export class NotificationPreferencesService {
     updates: Partial<NotificationChannel>
   ): Promise<NotificationChannel> {
     try {
-      const configuration = updates.configuration 
-        ? JSON.stringify(updates.configuration) 
+      const configuration = updates.configuration
+        ? JSON.stringify(updates.configuration)
         : undefined
 
       const updated = await this.prisma.notificationChannel.update({
@@ -154,41 +186,43 @@ export class NotificationPreferencesService {
         data: {
           name: updates.name,
           enabled: updates.enabled,
-          configuration
-        }
+          configuration,
+        },
       })
 
       return {
         ...updated,
-        configuration: JSON.parse(updated.configuration)
+        configuration: JSON.parse(updated.configuration),
       }
     } catch (error) {
       logger.error('Failed to update notification channel', error as Error, {
-        channelId
+        channelId,
       })
       throw error
     }
   }
 
-  async createNotificationChannel(channel: Omit<NotificationChannel, 'id' | 'createdAt' | 'updatedAt'>): Promise<NotificationChannel> {
+  async createNotificationChannel(
+    channel: Omit<NotificationChannel, 'id' | 'createdAt' | 'updatedAt'>
+  ): Promise<NotificationChannel> {
     try {
       const created = await this.prisma.notificationChannel.create({
         data: {
           type: channel.type,
           name: channel.name,
           enabled: channel.enabled,
-          configuration: JSON.stringify(channel.configuration)
-        }
+          configuration: JSON.stringify(channel.configuration),
+        },
       })
 
       return {
         ...created,
-        configuration: JSON.parse(created.configuration)
+        configuration: JSON.parse(created.configuration),
       }
     } catch (error) {
       logger.error('Failed to create notification channel', error as Error, {
         type: channel.type,
-        name: channel.name
+        name: channel.name,
       })
       throw error
     }
@@ -203,9 +237,9 @@ export class NotificationPreferencesService {
         where: {
           userId_eventType: {
             userId,
-            eventType
-          }
-        }
+            eventType,
+          },
+        },
       })
 
       if (!preference || !preference.enabled) {
@@ -216,9 +250,9 @@ export class NotificationPreferencesService {
     } catch (error) {
       logger.error('Failed to get user preferences for event', error as Error, {
         userId,
-        eventType
+        eventType,
       })
-      
+
       // Return default channels on error
       const defaults = await this.getDefaultPreferences()
       return defaults[eventType] || [NotificationChannelType.IN_APP]
@@ -235,26 +269,26 @@ export class NotificationPreferencesService {
     }>
   ): Promise<void> {
     try {
-      const operations = preferences.map(pref => 
+      const operations = preferences.map(pref =>
         this.prisma.notificationPreference.upsert({
           where: {
             userId_eventType: {
               userId,
-              eventType: pref.eventType
-            }
+              eventType: pref.eventType,
+            },
           },
           update: {
             channels: JSON.stringify(pref.channels),
             enabled: pref.enabled,
-            escalationDelay: pref.escalationDelay
+            escalationDelay: pref.escalationDelay,
           },
           create: {
             userId,
             eventType: pref.eventType,
             channels: JSON.stringify(pref.channels),
             enabled: pref.enabled,
-            escalationDelay: pref.escalationDelay
-          }
+            escalationDelay: pref.escalationDelay,
+          },
         })
       )
 
@@ -262,12 +296,12 @@ export class NotificationPreferencesService {
 
       logger.info('Bulk updated user preferences', {
         userId,
-        count: preferences.length
+        count: preferences.length,
       })
     } catch (error) {
       logger.error('Failed to bulk update preferences', error as Error, {
         userId,
-        count: preferences.length
+        count: preferences.length,
       })
       throw error
     }
@@ -275,4 +309,5 @@ export class NotificationPreferencesService {
 }
 
 // Export singleton instance
-export const notificationPreferencesService = new NotificationPreferencesService(new PrismaClient())
+export const notificationPreferencesService =
+  new NotificationPreferencesService(new PrismaClient())

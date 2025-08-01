@@ -1,21 +1,27 @@
-"use client"
+'use client'
 
 import React, { useState, useEffect, useCallback } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Skeleton } from '@/components/ui/skeleton'
-import { 
-  TrendingUp, 
-  AlertTriangle, 
-  RefreshCw, 
+import {
+  TrendingUp,
+  AlertTriangle,
+  RefreshCw,
   AlertCircle,
   Clock,
   Users,
   Lightbulb,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
 } from 'lucide-react'
 import { ErrorPattern } from '@/types/error'
 import { format } from 'date-fns'
@@ -29,14 +35,14 @@ const SEVERITY_COLORS = {
   LOW: 'bg-green-100 text-green-800 border-green-200',
   MEDIUM: 'bg-yellow-100 text-yellow-800 border-yellow-200',
   HIGH: 'bg-orange-100 text-orange-800 border-orange-200',
-  CRITICAL: 'bg-red-100 text-red-800 border-red-200'
+  CRITICAL: 'bg-red-100 text-red-800 border-red-200',
 }
 
 const SEVERITY_ICONS = {
   LOW: AlertCircle,
   MEDIUM: AlertTriangle,
   HIGH: AlertTriangle,
-  CRITICAL: AlertTriangle
+  CRITICAL: AlertTriangle,
 }
 
 export function ErrorPatterns({ className, timeRange }: ErrorPatternsProps) {
@@ -44,12 +50,14 @@ export function ErrorPatterns({ className, timeRange }: ErrorPatternsProps) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [refreshing, setRefreshing] = useState(false)
-  const [expandedPatterns, setExpandedPatterns] = useState<Set<string>>(new Set())
+  const [expandedPatterns, setExpandedPatterns] = useState<Set<string>>(
+    new Set()
+  )
 
   // Default time range (last 24 hours)
   const defaultTimeRange = {
     from: new Date(Date.now() - 24 * 60 * 60 * 1000),
-    to: new Date()
+    to: new Date(),
   }
 
   const effectiveTimeRange = timeRange || defaultTimeRange
@@ -59,10 +67,10 @@ export function ErrorPatterns({ className, timeRange }: ErrorPatternsProps) {
     try {
       setLoading(true)
       setRefreshing(true)
-      
+
       const params = new URLSearchParams({
         from: effectiveTimeRange.from.toISOString(),
-        to: effectiveTimeRange.to.toISOString()
+        to: effectiveTimeRange.to.toISOString(),
       })
 
       const response = await fetch(`/api/cubcen/v1/errors/patterns?${params}`)
@@ -74,7 +82,9 @@ export function ErrorPatterns({ className, timeRange }: ErrorPatternsProps) {
       setPatterns(data.patterns || [])
       setError(null)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch error patterns')
+      setError(
+        err instanceof Error ? err.message : 'Failed to fetch error patterns'
+      )
     } finally {
       setLoading(false)
       setRefreshing(false)
@@ -169,13 +179,20 @@ export function ErrorPatterns({ className, timeRange }: ErrorPatternsProps) {
             disabled={refreshing}
             className="border-[#3F51B5] text-[#3F51B5] hover:bg-[#3F51B5] hover:text-white"
           >
-            <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`}
+            />
             Refresh
           </Button>
         </CardTitle>
         <CardDescription>
           Detected error patterns and recurring issues in the last{' '}
-          {Math.round((effectiveTimeRange.to.getTime() - effectiveTimeRange.from.getTime()) / (1000 * 60 * 60))} hours
+          {Math.round(
+            (effectiveTimeRange.to.getTime() -
+              effectiveTimeRange.from.getTime()) /
+              (1000 * 60 * 60)
+          )}{' '}
+          hours
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -189,27 +206,32 @@ export function ErrorPatterns({ className, timeRange }: ErrorPatternsProps) {
         {patterns.length === 0 ? (
           <div className="text-center py-8">
             <TrendingUp className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-600 mb-2">No Error Patterns Detected</h3>
+            <h3 className="text-lg font-medium text-gray-600 mb-2">
+              No Error Patterns Detected
+            </h3>
             <p className="text-gray-500">
               No recurring error patterns found in the selected time range.
             </p>
           </div>
         ) : (
           <div className="space-y-4">
-            {patterns.map((pattern) => {
+            {patterns.map(pattern => {
               const isExpanded = expandedPatterns.has(pattern.id)
-              
+
               return (
-                <div key={pattern.id} className="border rounded-lg overflow-hidden">
-                  <div 
+                <div
+                  key={pattern.id}
+                  className="border rounded-lg overflow-hidden"
+                >
+                  <div
                     className="p-4 cursor-pointer hover:bg-gray-50 transition-colors"
                     onClick={() => togglePattern(pattern.id)}
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-2">
-                          <Badge 
-                            variant="outline" 
+                          <Badge
+                            variant="outline"
                             className={`${SEVERITY_COLORS[pattern.severity]} flex items-center gap-1`}
                           >
                             {getSeverityIcon(pattern.severity)}
@@ -222,7 +244,8 @@ export function ErrorPatterns({ className, timeRange }: ErrorPatternsProps) {
                           {pattern.affectedAgents.length > 0 && (
                             <span className="text-sm text-gray-600 flex items-center gap-1">
                               <Users className="h-3 w-3" />
-                              {pattern.affectedAgents.length} agent{pattern.affectedAgents.length !== 1 ? 's' : ''}
+                              {pattern.affectedAgents.length} agent
+                              {pattern.affectedAgents.length !== 1 ? 's' : ''}
                             </span>
                           )}
                         </div>
@@ -233,7 +256,13 @@ export function ErrorPatterns({ className, timeRange }: ErrorPatternsProps) {
                           {pattern.pattern}
                         </p>
                         <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
-                          <span>Last seen: {format(new Date(pattern.lastOccurrence), 'MMM dd, HH:mm')}</span>
+                          <span>
+                            Last seen:{' '}
+                            {format(
+                              new Date(pattern.lastOccurrence),
+                              'MMM dd, HH:mm'
+                            )}
+                          </span>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 ml-4">
@@ -268,13 +297,22 @@ export function ErrorPatterns({ className, timeRange }: ErrorPatternsProps) {
                               Affected Agents ({pattern.affectedAgents.length})
                             </label>
                             <div className="flex flex-wrap gap-2">
-                              {pattern.affectedAgents.slice(0, 10).map((agentId) => (
-                                <Badge key={agentId} variant="outline" className="text-xs">
-                                  {agentId.slice(0, 8)}...
-                                </Badge>
-                              ))}
+                              {pattern.affectedAgents
+                                .slice(0, 10)
+                                .map(agentId => (
+                                  <Badge
+                                    key={agentId}
+                                    variant="outline"
+                                    className="text-xs"
+                                  >
+                                    {agentId.slice(0, 8)}...
+                                  </Badge>
+                                ))}
                               {pattern.affectedAgents.length > 10 && (
-                                <Badge variant="outline" className="text-xs text-gray-500">
+                                <Badge
+                                  variant="outline"
+                                  className="text-xs text-gray-500"
+                                >
                                   +{pattern.affectedAgents.length - 10} more
                                 </Badge>
                               )}
@@ -303,7 +341,9 @@ export function ErrorPatterns({ className, timeRange }: ErrorPatternsProps) {
                             <div className="text-lg font-semibold text-[#3F51B5]">
                               {pattern.frequency}
                             </div>
-                            <div className="text-xs text-gray-500">Occurrences</div>
+                            <div className="text-xs text-gray-500">
+                              Occurrences
+                            </div>
                           </div>
                           <div className="text-center">
                             <div className="text-lg font-semibold text-[#B19ADA]">
@@ -315,13 +355,20 @@ export function ErrorPatterns({ className, timeRange }: ErrorPatternsProps) {
                             <div className="text-lg font-semibold text-orange-600">
                               {pattern.severity}
                             </div>
-                            <div className="text-xs text-gray-500">Severity</div>
+                            <div className="text-xs text-gray-500">
+                              Severity
+                            </div>
                           </div>
                           <div className="text-center">
                             <div className="text-lg font-semibold text-gray-600">
-                              {format(new Date(pattern.lastOccurrence), 'HH:mm')}
+                              {format(
+                                new Date(pattern.lastOccurrence),
+                                'HH:mm'
+                              )}
                             </div>
-                            <div className="text-xs text-gray-500">Last Seen</div>
+                            <div className="text-xs text-gray-500">
+                              Last Seen
+                            </div>
                           </div>
                         </div>
                       </div>

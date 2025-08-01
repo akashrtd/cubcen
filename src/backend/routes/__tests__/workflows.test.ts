@@ -17,7 +17,7 @@ import {
   WorkflowUpdateData,
   WorkflowValidationResult,
   WorkflowExecution,
-  WorkflowProgress
+  WorkflowProgress,
 } from '@/types/workflow'
 
 // Mock dependencies
@@ -30,12 +30,16 @@ jest.mock('@/lib/logger', () => ({
     info: jest.fn(),
     error: jest.fn(),
     warn: jest.fn(),
-    debug: jest.fn()
-  }
+    debug: jest.fn(),
+  },
 }))
 
-const MockWorkflowService = WorkflowService as jest.MockedClass<typeof WorkflowService>
-const mockAuthenticateToken = authenticateToken as jest.MockedFunction<typeof authenticateToken>
+const MockWorkflowService = WorkflowService as jest.MockedClass<
+  typeof WorkflowService
+>
+const mockAuthenticateToken = authenticateToken as jest.MockedFunction<
+  typeof authenticateToken
+>
 
 describe('Workflow API Routes', () => {
   let app: express.Application
@@ -56,7 +60,7 @@ describe('Workflow API Routes', () => {
       getWorkflowExecution: jest.fn(),
       cancelWorkflowExecution: jest.fn(),
       getWorkflowProgress: jest.fn(),
-      cleanup: jest.fn()
+      cleanup: jest.fn(),
     } as any
 
     // Setup Express app
@@ -64,21 +68,26 @@ describe('Workflow API Routes', () => {
     app.use(express.json())
 
     // Mock authentication middleware
-    mockAuthenticateToken.mockImplementation((req: any, res: any, next: any) => {
-      req.user = { id: 'user-1', email: 'test@example.com', role: 'ADMIN' }
-      next()
-    })
+    mockAuthenticateToken.mockImplementation(
+      (req: any, res: any, next: any) => {
+        req.user = { id: 'user-1', email: 'test@example.com', role: 'ADMIN' }
+        next()
+      }
+    )
 
     // Setup routes
-    app.use('/api/cubcen/v1/workflows', createWorkflowRoutes(mockWorkflowService))
+    app.use(
+      '/api/cubcen/v1/workflows',
+      createWorkflowRoutes(mockWorkflowService)
+    )
 
     // Error handling middleware
     app.use((error: any, req: any, res: any, next: any) => {
       res.status(500).json({
         error: {
           code: 'INTERNAL_ERROR',
-          message: error.message
-        }
+          message: error.message,
+        },
       })
     })
   })
@@ -94,9 +103,9 @@ describe('Workflow API Routes', () => {
             stepOrder: 0,
             name: 'First Step',
             parameters: { input: 'test' },
-            conditions: [{ type: 'always' }]
-          }
-        ]
+            conditions: [{ type: 'always' }],
+          },
+        ],
       }
 
       const mockWorkflow: WorkflowDefinition = {
@@ -112,12 +121,12 @@ describe('Workflow API Routes', () => {
             stepOrder: 0,
             name: 'First Step',
             parameters: { input: 'test' },
-            conditions: [{ type: 'always' }]
-          }
+            conditions: [{ type: 'always' }],
+          },
         ],
         createdBy: 'user-1',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       }
 
       mockWorkflowService.createWorkflow.mockResolvedValue(mockWorkflow)
@@ -132,8 +141,8 @@ describe('Workflow API Routes', () => {
         data: expect.objectContaining({
           id: 'workflow-1',
           name: 'Test Workflow',
-          status: 'DRAFT'
-        })
+          status: 'DRAFT',
+        }),
       })
 
       expect(mockWorkflowService.createWorkflow).toHaveBeenCalledWith(
@@ -143,10 +152,10 @@ describe('Workflow API Routes', () => {
           steps: expect.arrayContaining([
             expect.objectContaining({
               agentId: 'agent-1',
-              name: 'First Step'
-            })
+              name: 'First Step',
+            }),
           ]),
-          createdBy: 'user-1'
+          createdBy: 'user-1',
         })
       )
 
@@ -155,7 +164,7 @@ describe('Workflow API Routes', () => {
         expect.objectContaining({
           workflowId: 'workflow-1',
           name: 'Test Workflow',
-          userId: 'user-1'
+          userId: 'user-1',
         })
       )
     })
@@ -163,7 +172,7 @@ describe('Workflow API Routes', () => {
     it('should validate required fields', async () => {
       const invalidData = {
         name: '', // Empty name
-        steps: [] // Empty steps
+        steps: [], // Empty steps
       }
 
       const response = await request(app)
@@ -183,9 +192,9 @@ describe('Workflow API Routes', () => {
             agentId: 'agent-1',
             stepOrder: 0,
             name: 'First Step',
-            parameters: {}
-          }
-        ]
+            parameters: {},
+          },
+        ],
       }
 
       mockWorkflowService.createWorkflow.mockRejectedValue(
@@ -202,7 +211,7 @@ describe('Workflow API Routes', () => {
         'Failed to create workflow via API',
         expect.any(Error),
         expect.objectContaining({
-          userId: 'user-1'
+          userId: 'user-1',
         })
       )
     })
@@ -219,7 +228,7 @@ describe('Workflow API Routes', () => {
             steps: [],
             createdBy: 'user-1',
             createdAt: new Date(),
-            updatedAt: new Date()
+            updatedAt: new Date(),
           },
           {
             id: 'workflow-2',
@@ -228,13 +237,13 @@ describe('Workflow API Routes', () => {
             steps: [],
             createdBy: 'user-1',
             createdAt: new Date(),
-            updatedAt: new Date()
-          }
+            updatedAt: new Date(),
+          },
         ] as WorkflowDefinition[],
         total: 2,
         page: 1,
         limit: 10,
-        totalPages: 1
+        totalPages: 1,
       }
 
       mockWorkflowService.getWorkflows.mockResolvedValue(mockResult)
@@ -245,7 +254,7 @@ describe('Workflow API Routes', () => {
           page: '1',
           limit: '10',
           status: 'ACTIVE',
-          search: 'test'
+          search: 'test',
         })
         .expect(200)
 
@@ -254,13 +263,13 @@ describe('Workflow API Routes', () => {
         data: {
           workflows: expect.arrayContaining([
             expect.objectContaining({ name: 'Workflow 1' }),
-            expect.objectContaining({ name: 'Workflow 2' })
+            expect.objectContaining({ name: 'Workflow 2' }),
           ]),
           total: 2,
           page: 1,
           limit: 10,
-          totalPages: 1
-        }
+          totalPages: 1,
+        },
       })
 
       expect(mockWorkflowService.getWorkflows).toHaveBeenCalledWith(
@@ -268,7 +277,7 @@ describe('Workflow API Routes', () => {
           page: 1,
           limit: 10,
           status: 'ACTIVE',
-          search: 'test'
+          search: 'test',
         })
       )
     })
@@ -279,21 +288,19 @@ describe('Workflow API Routes', () => {
         total: 0,
         page: 1,
         limit: 10,
-        totalPages: 0
+        totalPages: 0,
       }
 
       mockWorkflowService.getWorkflows.mockResolvedValue(mockResult)
 
-      await request(app)
-        .get('/api/cubcen/v1/workflows')
-        .expect(200)
+      await request(app).get('/api/cubcen/v1/workflows').expect(200)
 
       expect(mockWorkflowService.getWorkflows).toHaveBeenCalledWith(
         expect.objectContaining({
           page: 1,
           limit: 10,
           sortBy: 'createdAt',
-          sortOrder: 'desc'
+          sortOrder: 'desc',
         })
       )
     })
@@ -326,12 +333,12 @@ describe('Workflow API Routes', () => {
             stepOrder: 0,
             name: 'Test Step',
             parameters: { input: 'test' },
-            conditions: [{ type: 'always' }]
-          }
+            conditions: [{ type: 'always' }],
+          },
         ],
         createdBy: 'user-1',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       }
 
       mockWorkflowService.getWorkflow.mockResolvedValue(mockWorkflow)
@@ -345,8 +352,8 @@ describe('Workflow API Routes', () => {
         data: expect.objectContaining({
           id: 'workflow-1',
           name: 'Test Workflow',
-          status: 'ACTIVE'
-        })
+          status: 'ACTIVE',
+        }),
       })
 
       expect(mockWorkflowService.getWorkflow).toHaveBeenCalledWith('workflow-1')
@@ -361,7 +368,7 @@ describe('Workflow API Routes', () => {
 
       expect(response.body.error).toMatchObject({
         code: 'WORKFLOW_NOT_FOUND',
-        message: 'Workflow with ID non-existent not found'
+        message: 'Workflow with ID non-existent not found',
       })
     })
   })
@@ -371,7 +378,7 @@ describe('Workflow API Routes', () => {
       const updateData = {
         name: 'Updated Workflow',
         description: 'Updated description',
-        status: 'ACTIVE'
+        status: 'ACTIVE',
       }
 
       const mockUpdatedWorkflow: WorkflowDefinition = {
@@ -382,7 +389,7 @@ describe('Workflow API Routes', () => {
         steps: [],
         createdBy: 'user-1',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       }
 
       mockWorkflowService.updateWorkflow.mockResolvedValue(mockUpdatedWorkflow)
@@ -397,8 +404,8 @@ describe('Workflow API Routes', () => {
         data: expect.objectContaining({
           id: 'workflow-1',
           name: 'Updated Workflow',
-          status: 'ACTIVE'
-        })
+          status: 'ACTIVE',
+        }),
       })
 
       expect(mockWorkflowService.updateWorkflow).toHaveBeenCalledWith(
@@ -410,7 +417,7 @@ describe('Workflow API Routes', () => {
         'Workflow updated via API',
         expect.objectContaining({
           workflowId: 'workflow-1',
-          userId: 'user-1'
+          userId: 'user-1',
         })
       )
     })
@@ -418,7 +425,7 @@ describe('Workflow API Routes', () => {
     it('should validate update data', async () => {
       const invalidData = {
         name: '', // Empty name
-        status: 'INVALID_STATUS'
+        status: 'INVALID_STATUS',
       }
 
       const response = await request(app)
@@ -441,16 +448,18 @@ describe('Workflow API Routes', () => {
 
       expect(response.body).toMatchObject({
         success: true,
-        message: 'Workflow deleted successfully'
+        message: 'Workflow deleted successfully',
       })
 
-      expect(mockWorkflowService.deleteWorkflow).toHaveBeenCalledWith('workflow-1')
+      expect(mockWorkflowService.deleteWorkflow).toHaveBeenCalledWith(
+        'workflow-1'
+      )
 
       expect(logger.info).toHaveBeenCalledWith(
         'Workflow deleted via API',
         expect.objectContaining({
           workflowId: 'workflow-1',
-          userId: 'user-1'
+          userId: 'user-1',
         })
       )
     })
@@ -478,17 +487,19 @@ describe('Workflow API Routes', () => {
         steps: [],
         createdBy: 'user-1',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       }
 
       const mockValidation: WorkflowValidationResult = {
         valid: true,
         errors: [],
-        warnings: []
+        warnings: [],
       }
 
       mockWorkflowService.getWorkflow.mockResolvedValue(mockWorkflow)
-      mockWorkflowService.validateWorkflowDefinition.mockResolvedValue(mockValidation)
+      mockWorkflowService.validateWorkflowDefinition.mockResolvedValue(
+        mockValidation
+      )
 
       const response = await request(app)
         .post('/api/cubcen/v1/workflows/workflow-1/validate')
@@ -499,11 +510,13 @@ describe('Workflow API Routes', () => {
         data: {
           valid: true,
           errors: [],
-          warnings: []
-        }
+          warnings: [],
+        },
       })
 
-      expect(mockWorkflowService.validateWorkflowDefinition).toHaveBeenCalledWith(mockWorkflow)
+      expect(
+        mockWorkflowService.validateWorkflowDefinition
+      ).toHaveBeenCalledWith(mockWorkflow)
     })
 
     it('should return validation errors', async () => {
@@ -515,7 +528,7 @@ describe('Workflow API Routes', () => {
         steps: [],
         createdBy: 'user-1',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       }
 
       const mockValidation: WorkflowValidationResult = {
@@ -524,14 +537,16 @@ describe('Workflow API Routes', () => {
           {
             type: 'missing_agent',
             stepId: 'step-1',
-            message: 'Agent not found'
-          }
+            message: 'Agent not found',
+          },
         ],
-        warnings: []
+        warnings: [],
       }
 
       mockWorkflowService.getWorkflow.mockResolvedValue(mockWorkflow)
-      mockWorkflowService.validateWorkflowDefinition.mockResolvedValue(mockValidation)
+      mockWorkflowService.validateWorkflowDefinition.mockResolvedValue(
+        mockValidation
+      )
 
       const response = await request(app)
         .post('/api/cubcen/v1/workflows/workflow-1/validate')
@@ -557,7 +572,7 @@ describe('Workflow API Routes', () => {
       const executionOptions = {
         variables: { testVar: 'testValue' },
         metadata: { source: 'api' },
-        dryRun: false
+        dryRun: false,
       }
 
       mockWorkflowService.executeWorkflow.mockResolvedValue('exec-123')
@@ -572,8 +587,8 @@ describe('Workflow API Routes', () => {
         data: {
           executionId: 'exec-123',
           workflowId: 'workflow-1',
-          status: 'PENDING'
-        }
+          status: 'PENDING',
+        },
       })
 
       expect(mockWorkflowService.executeWorkflow).toHaveBeenCalledWith(
@@ -587,7 +602,7 @@ describe('Workflow API Routes', () => {
         expect.objectContaining({
           workflowId: 'workflow-1',
           executionId: 'exec-123',
-          userId: 'user-1'
+          userId: 'user-1',
         })
       )
     })
@@ -621,7 +636,7 @@ describe('Workflow API Routes', () => {
         expect.objectContaining({
           variables: {},
           metadata: {},
-          dryRun: false
+          dryRun: false,
         }),
         'user-1'
       )
@@ -651,10 +666,10 @@ describe('Workflow API Routes', () => {
         context: {
           variables: {},
           stepOutputs: {},
-          metadata: {}
+          metadata: {},
         },
         stepExecutions: [],
-        createdBy: 'user-1'
+        createdBy: 'user-1',
       }
 
       mockWorkflowService.getWorkflowExecution.mockReturnValue(mockExecution)
@@ -668,11 +683,13 @@ describe('Workflow API Routes', () => {
         data: expect.objectContaining({
           id: 'exec-123',
           workflowId: 'workflow-1',
-          status: 'RUNNING'
-        })
+          status: 'RUNNING',
+        }),
       })
 
-      expect(mockWorkflowService.getWorkflowExecution).toHaveBeenCalledWith('exec-123')
+      expect(mockWorkflowService.getWorkflowExecution).toHaveBeenCalledWith(
+        'exec-123'
+      )
     })
 
     it('should return 404 for non-existent execution', async () => {
@@ -696,16 +713,18 @@ describe('Workflow API Routes', () => {
 
       expect(response.body).toMatchObject({
         success: true,
-        message: 'Workflow execution cancelled successfully'
+        message: 'Workflow execution cancelled successfully',
       })
 
-      expect(mockWorkflowService.cancelWorkflowExecution).toHaveBeenCalledWith('exec-123')
+      expect(mockWorkflowService.cancelWorkflowExecution).toHaveBeenCalledWith(
+        'exec-123'
+      )
 
       expect(logger.info).toHaveBeenCalledWith(
         'Workflow execution cancelled via API',
         expect.objectContaining({
           executionId: 'exec-123',
-          userId: 'user-1'
+          userId: 'user-1',
         })
       )
     })
@@ -731,7 +750,7 @@ describe('Workflow API Routes', () => {
         completedSteps: 1,
         failedSteps: 0,
         currentStep: 'step-2',
-        progress: 33
+        progress: 33,
       }
 
       mockWorkflowService.getWorkflowProgress.mockReturnValue(mockProgress)
@@ -748,11 +767,13 @@ describe('Workflow API Routes', () => {
           completedSteps: 1,
           failedSteps: 0,
           currentStep: 'step-2',
-          progress: 33
-        }
+          progress: 33,
+        },
       })
 
-      expect(mockWorkflowService.getWorkflowProgress).toHaveBeenCalledWith('exec-123')
+      expect(mockWorkflowService.getWorkflowProgress).toHaveBeenCalledWith(
+        'exec-123'
+      )
     })
 
     it('should return 404 for non-existent execution', async () => {
@@ -769,14 +790,16 @@ describe('Workflow API Routes', () => {
   describe('Authentication', () => {
     it('should require authentication for all endpoints', async () => {
       // Mock authentication to fail
-      mockAuthenticateToken.mockImplementation((req: any, res: any, next: any) => {
-        res.status(401).json({
-          error: {
-            code: 'UNAUTHORIZED',
-            message: 'Authentication required'
-          }
-        })
-      })
+      mockAuthenticateToken.mockImplementation(
+        (req: any, res: any, next: any) => {
+          res.status(401).json({
+            error: {
+              code: 'UNAUTHORIZED',
+              message: 'Authentication required',
+            },
+          })
+        }
+      )
 
       const endpoints = [
         { method: 'post', path: '/api/cubcen/v1/workflows' },
@@ -784,15 +807,26 @@ describe('Workflow API Routes', () => {
         { method: 'get', path: '/api/cubcen/v1/workflows/workflow-1' },
         { method: 'put', path: '/api/cubcen/v1/workflows/workflow-1' },
         { method: 'delete', path: '/api/cubcen/v1/workflows/workflow-1' },
-        { method: 'post', path: '/api/cubcen/v1/workflows/workflow-1/validate' },
+        {
+          method: 'post',
+          path: '/api/cubcen/v1/workflows/workflow-1/validate',
+        },
         { method: 'post', path: '/api/cubcen/v1/workflows/workflow-1/execute' },
         { method: 'get', path: '/api/cubcen/v1/workflows/executions/exec-123' },
-        { method: 'post', path: '/api/cubcen/v1/workflows/executions/exec-123/cancel' },
-        { method: 'get', path: '/api/cubcen/v1/workflows/executions/exec-123/progress' }
+        {
+          method: 'post',
+          path: '/api/cubcen/v1/workflows/executions/exec-123/cancel',
+        },
+        {
+          method: 'get',
+          path: '/api/cubcen/v1/workflows/executions/exec-123/progress',
+        },
       ]
 
       for (const endpoint of endpoints) {
-        const response = await request(app)[endpoint.method as keyof typeof request](endpoint.path)
+        const response = await request(app)[
+          endpoint.method as keyof typeof request
+        ](endpoint.path)
         expect(response.status).toBe(401)
         expect(response.body.error.code).toBe('UNAUTHORIZED')
       }

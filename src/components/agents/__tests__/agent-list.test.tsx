@@ -10,20 +10,20 @@ const mockAgents: Agent[] = [
     platform: {
       id: 'platform-1',
       name: 'n8n Instance',
-      type: 'N8N'
+      type: 'N8N',
     },
     status: 'ACTIVE',
     healthStatus: {
       status: 'healthy',
       lastCheck: new Date('2024-01-01T10:00:00Z'),
       responseTime: 150,
-      details: {}
+      details: {},
     },
     capabilities: ['webhook', 'http-request', 'data-transformation'],
     configuration: { timeout: 30000 },
     description: 'Main automation agent',
     createdAt: new Date('2024-01-01T09:00:00Z'),
-    updatedAt: new Date('2024-01-01T10:00:00Z')
+    updatedAt: new Date('2024-01-01T10:00:00Z'),
   },
   {
     id: 'agent-2',
@@ -32,7 +32,7 @@ const mockAgents: Agent[] = [
     platform: {
       id: 'platform-2',
       name: 'Make Scenario',
-      type: 'MAKE'
+      type: 'MAKE',
     },
     status: 'ERROR',
     healthStatus: {
@@ -40,12 +40,12 @@ const mockAgents: Agent[] = [
       lastCheck: new Date('2024-01-01T09:30:00Z'),
       responseTime: 5000,
       error: 'Connection timeout',
-      details: {}
+      details: {},
     },
     capabilities: ['api-integration'],
     configuration: {},
     createdAt: new Date('2024-01-01T08:00:00Z'),
-    updatedAt: new Date('2024-01-01T09:30:00Z')
+    updatedAt: new Date('2024-01-01T09:30:00Z'),
   },
   {
     id: 'agent-3',
@@ -54,21 +54,21 @@ const mockAgents: Agent[] = [
     platform: {
       id: 'platform-3',
       name: 'Zapier Zap',
-      type: 'ZAPIER'
+      type: 'ZAPIER',
     },
     status: 'MAINTENANCE',
     healthStatus: {
       status: 'degraded',
       lastCheck: new Date('2024-01-01T09:45:00Z'),
       responseTime: 800,
-      details: {}
+      details: {},
     },
     capabilities: ['email', 'calendar'],
     configuration: { retries: 3 },
     description: 'Email automation agent',
     createdAt: new Date('2024-01-01T07:00:00Z'),
-    updatedAt: new Date('2024-01-01T09:45:00Z')
-  }
+    updatedAt: new Date('2024-01-01T09:45:00Z'),
+  },
 ]
 
 describe('AgentList', () => {
@@ -261,7 +261,7 @@ describe('AgentList', () => {
     // The agents should be sorted by name by default (ascending)
     // Check that the sort indicator is present
     expect(screen.getByText('Agent Name')).toBeInTheDocument()
-    
+
     // Check that agents are displayed (sorting logic is tested in the component)
     expect(screen.getByText('Test Agent 1')).toBeInTheDocument()
     expect(screen.getByText('Test Agent 2')).toBeInTheDocument()
@@ -294,10 +294,12 @@ describe('AgentList', () => {
       />
     )
 
-    const viewButtons = screen.getAllByRole('button').filter(button => 
-      button.querySelector('svg')?.classList.contains('lucide-eye')
-    )
-    
+    const viewButtons = screen
+      .getAllByRole('button')
+      .filter(button =>
+        button.querySelector('svg')?.classList.contains('lucide-eye')
+      )
+
     if (viewButtons.length > 0) {
       fireEvent.click(viewButtons[0])
       expect(mockOnViewAgent).toHaveBeenCalledWith(mockAgents[0])
@@ -314,10 +316,12 @@ describe('AgentList', () => {
       />
     )
 
-    const configureButtons = screen.getAllByRole('button').filter(button => 
-      button.querySelector('svg')?.classList.contains('lucide-settings')
-    )
-    
+    const configureButtons = screen
+      .getAllByRole('button')
+      .filter(button =>
+        button.querySelector('svg')?.classList.contains('lucide-settings')
+      )
+
     if (configureButtons.length > 0) {
       fireEvent.click(configureButtons[0])
       expect(mockOnConfigureAgent).toHaveBeenCalledWith(mockAgents[0])
@@ -390,7 +394,9 @@ describe('AgentList', () => {
     fireEvent.change(searchInput, { target: { value: 'nonexistent agent' } })
 
     await waitFor(() => {
-      expect(screen.getByText('No agents match your filters')).toBeInTheDocument()
+      expect(
+        screen.getByText('No agents match your filters')
+      ).toBeInTheDocument()
     })
   })
 })

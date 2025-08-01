@@ -1,6 +1,12 @@
 'use client'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
@@ -159,7 +165,7 @@ export default function DashboardPage() {
           </div>
           <Skeleton className="h-10 w-24" />
         </div>
-        
+
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => (
             <Card key={i}>
@@ -188,12 +194,14 @@ export default function DashboardPage() {
             Welcome back! Here&apos;s what&apos;s happening with your AI agents.
           </p>
         </div>
-        <Button 
-          onClick={handleRefresh} 
+        <Button
+          onClick={handleRefresh}
           disabled={refreshing}
           className="bg-cubcen-primary hover:bg-cubcen-primary-hover"
         >
-          <RefreshCw className={`mr-2 h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+          <RefreshCw
+            className={`mr-2 h-4 w-4 ${refreshing ? 'animate-spin' : ''}`}
+          />
           Refresh
         </Button>
       </div>
@@ -208,7 +216,9 @@ export default function DashboardPage() {
           <CardContent>
             <div className="text-2xl font-bold">{mockStats.totalAgents}</div>
             <p className="text-xs text-muted-foreground">
-              <span className="text-green-600">{mockStats.activeAgents} active</span>
+              <span className="text-green-600">
+                {mockStats.activeAgents} active
+              </span>
             </p>
           </CardContent>
         </Card>
@@ -221,7 +231,9 @@ export default function DashboardPage() {
           <CardContent>
             <div className="text-2xl font-bold">{mockStats.totalTasks}</div>
             <p className="text-xs text-muted-foreground">
-              <span className="text-green-600">{mockStats.completedTasks} completed</span>
+              <span className="text-green-600">
+                {mockStats.completedTasks} completed
+              </span>
             </p>
           </CardContent>
         </Card>
@@ -233,10 +245,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{mockStats.successRate}%</div>
-            <Progress 
-              value={mockStats.successRate} 
-              className="mt-2 h-2"
-            />
+            <Progress value={mockStats.successRate} className="mt-2 h-2" />
           </CardContent>
         </Card>
 
@@ -246,7 +255,9 @@ export default function DashboardPage() {
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{mockStats.avgResponseTime}s</div>
+            <div className="text-2xl font-bold">
+              {mockStats.avgResponseTime}s
+            </div>
             <p className="text-xs text-muted-foreground">
               <span className="text-green-600">↓ 0.3s from yesterday</span>
             </p>
@@ -259,8 +270,11 @@ export default function DashboardPage() {
         <Alert>
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>
-            {mockStats.failedTasks} tasks failed in the last hour. 
-            <Button variant="link" className="p-0 ml-1 h-auto text-cubcen-primary">
+            {mockStats.failedTasks} tasks failed in the last hour.
+            <Button
+              variant="link"
+              className="p-0 ml-1 h-auto text-cubcen-primary"
+            >
               View details
             </Button>
           </AlertDescription>
@@ -284,9 +298,11 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {mockRecentTasks.map((task) => (
+              {mockRecentTasks.map(task => (
                 <div key={task.id} className="flex items-center space-x-4">
-                  <div className={`w-2 h-2 rounded-full ${getStatusColor(task.status)}`} />
+                  <div
+                    className={`w-2 h-2 rounded-full ${getStatusColor(task.status)}`}
+                  />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{task.name}</p>
                     <p className="text-xs text-muted-foreground">
@@ -312,16 +328,16 @@ export default function DashboardPage() {
                 Manage
               </Button>
             </CardTitle>
-            <CardDescription>
-              Current status of your AI agents
-            </CardDescription>
+            <CardDescription>Current status of your AI agents</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {mockAgents.map((agent) => (
+              {mockAgents.map(agent => (
                 <div key={agent.id} className="flex items-center space-x-4">
                   <div className="flex items-center space-x-2">
-                    <div className={`w-2 h-2 rounded-full ${getStatusColor(agent.status)}`} />
+                    <div
+                      className={`w-2 h-2 rounded-full ${getStatusColor(agent.status)}`}
+                    />
                     <Badge variant="outline" className="text-xs">
                       {agent.platform}
                     </Badge>

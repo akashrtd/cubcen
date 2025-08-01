@@ -82,7 +82,8 @@ const mockTasks: Task[] = [
     startedAt: new Date(Date.now() - 7200000),
     completedAt: new Date(Date.now() - 6900000), // 1h 55m ago
     result: null,
-    error: '{"message": "Database connection timeout", "code": "DB_TIMEOUT", "timestamp": "2024-01-15T10:30:00Z"}',
+    error:
+      '{"message": "Database connection timeout", "code": "DB_TIMEOUT", "timestamp": "2024-01-15T10:30:00Z"}',
     retryCount: 2,
     maxRetries: 3,
     createdBy: 'user-1',
@@ -105,10 +106,10 @@ export default function TasksPage() {
   const handleTaskUpdate = async (taskId: string, updates: Partial<Task>) => {
     try {
       setIsLoading(true)
-      
+
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 500))
-      
+
       setTasks(prevTasks =>
         prevTasks.map(task =>
           task.id === taskId
@@ -116,7 +117,7 @@ export default function TasksPage() {
             : task
         )
       )
-      
+
       toast.success('Task updated successfully')
     } catch (error) {
       toast.error('Failed to update task')
@@ -138,10 +139,10 @@ export default function TasksPage() {
   }) => {
     try {
       setIsLoading(true)
-      
+
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000))
-      
+
       const newTask: Task = {
         id: `task-${Date.now()}`,
         name: taskData.name,
@@ -162,7 +163,7 @@ export default function TasksPage() {
         createdAt: new Date(),
         updatedAt: new Date(),
       }
-      
+
       setTasks(prevTasks => [newTask, ...prevTasks])
       toast.success('Task created successfully')
     } catch (error) {
@@ -176,10 +177,10 @@ export default function TasksPage() {
   const handleTaskDelete = async (taskId: string) => {
     try {
       setIsLoading(true)
-      
+
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 500))
-      
+
       setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId))
       toast.success('Task deleted successfully')
     } catch (error) {

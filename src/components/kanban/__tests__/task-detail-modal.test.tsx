@@ -47,19 +47,19 @@ describe('TaskDetailModal', () => {
 
   it('does not render when task is null', () => {
     render(<TaskDetailModal {...defaultProps} task={null} />)
-    
+
     expect(screen.queryByText('Test Task')).not.toBeInTheDocument()
   })
 
   it('does not render when modal is closed', () => {
     render(<TaskDetailModal {...defaultProps} isOpen={false} />)
-    
+
     expect(screen.queryByText('Test Task')).not.toBeInTheDocument()
   })
 
   it('renders task name and status in header', () => {
     render(<TaskDetailModal {...defaultProps} />)
-    
+
     expect(screen.getByText('Test Task')).toBeInTheDocument()
     expect(screen.getByText('Pending')).toBeInTheDocument()
     expect(screen.getByText('Medium')).toBeInTheDocument()
@@ -67,7 +67,7 @@ describe('TaskDetailModal', () => {
 
   it('renders all tab options', () => {
     render(<TaskDetailModal {...defaultProps} />)
-    
+
     expect(screen.getByText('Overview')).toBeInTheDocument()
     expect(screen.getByText('Parameters')).toBeInTheDocument()
     expect(screen.getByText('Execution Logs')).toBeInTheDocument()
@@ -76,7 +76,7 @@ describe('TaskDetailModal', () => {
 
   it('displays task information in overview tab', () => {
     render(<TaskDetailModal {...defaultProps} />)
-    
+
     expect(screen.getByText('Test description')).toBeInTheDocument()
     expect(screen.getByText('Test Agent 1')).toBeInTheDocument()
     expect(screen.getByText('n8n')).toBeInTheDocument()
@@ -85,7 +85,7 @@ describe('TaskDetailModal', () => {
   it('shows no description message when description is empty', () => {
     const taskWithoutDesc = createMockTask({ description: undefined })
     render(<TaskDetailModal {...defaultProps} task={taskWithoutDesc} />)
-    
+
     expect(screen.getByText('No description provided')).toBeInTheDocument()
   })
 
@@ -95,29 +95,29 @@ describe('TaskDetailModal', () => {
       startedAt: new Date('2024-01-15T10:00:00Z'),
       retryCount: 1,
     })
-    
+
     render(<TaskDetailModal {...defaultProps} task={runningTask} />)
-    
+
     expect(screen.getByText('1 / 3')).toBeInTheDocument() // retry count
   })
 
   it('shows retry button for failed tasks', () => {
     const failedTask = createMockTask({ status: 'FAILED' })
     render(<TaskDetailModal {...defaultProps} task={failedTask} />)
-    
+
     expect(screen.getByText('Retry')).toBeInTheDocument()
   })
 
   it('shows cancel button for pending/running tasks', () => {
     const runningTask = createMockTask({ status: 'RUNNING' })
     render(<TaskDetailModal {...defaultProps} task={runningTask} />)
-    
+
     expect(screen.getByText('Cancel')).toBeInTheDocument()
   })
 
   it('always shows delete button', () => {
     render(<TaskDetailModal {...defaultProps} />)
-    
+
     expect(screen.getByText('Delete')).toBeInTheDocument()
   })
 
@@ -125,12 +125,18 @@ describe('TaskDetailModal', () => {
     const mockOnUpdate = jest.fn()
     const failedTask = createMockTask({ status: 'FAILED' })
     const user = userEvent.setup()
-    
-    render(<TaskDetailModal {...defaultProps} task={failedTask} onUpdate={mockOnUpdate} />)
-    
+
+    render(
+      <TaskDetailModal
+        {...defaultProps}
+        task={failedTask}
+        onUpdate={mockOnUpdate}
+      />
+    )
+
     const retryButton = screen.getByText('Retry')
     await user.click(retryButton)
-    
+
     expect(mockOnUpdate).toHaveBeenCalledWith('task-1', { status: 'PENDING' })
   })
 
@@ -138,12 +144,18 @@ describe('TaskDetailModal', () => {
     const mockOnUpdate = jest.fn()
     const runningTask = createMockTask({ status: 'RUNNING' })
     const user = userEvent.setup()
-    
-    render(<TaskDetailModal {...defaultProps} task={runningTask} onUpdate={mockOnUpdate} />)
-    
+
+    render(
+      <TaskDetailModal
+        {...defaultProps}
+        task={runningTask}
+        onUpdate={mockOnUpdate}
+      />
+    )
+
     const cancelButton = screen.getByText('Cancel')
     await user.click(cancelButton)
-    
+
     expect(mockOnUpdate).toHaveBeenCalledWith('task-1', { status: 'CANCELLED' })
   })
 
@@ -151,12 +163,18 @@ describe('TaskDetailModal', () => {
     const mockOnDelete = jest.fn()
     const mockOnClose = jest.fn()
     const user = userEvent.setup()
-    
-    render(<TaskDetailModal {...defaultProps} onDelete={mockOnDelete} onClose={mockOnClose} />)
-    
+
+    render(
+      <TaskDetailModal
+        {...defaultProps}
+        onDelete={mockOnDelete}
+        onClose={mockOnClose}
+      />
+    )
+
     const deleteButton = screen.getByText('Delete')
     await user.click(deleteButton)
-    
+
     await waitFor(() => {
       expect(mockOnDelete).toHaveBeenCalledWith('task-1')
       expect(mockOnClose).toHaveBeenCalled()
@@ -166,10 +184,10 @@ describe('TaskDetailModal', () => {
   it('displays parameters in parameters tab', async () => {
     const user = userEvent.setup()
     render(<TaskDetailModal {...defaultProps} />)
-    
+
     const parametersTab = screen.getByText('Parameters')
     await user.click(parametersTab)
-    
+
     expect(screen.getByText(/"test": true/)).toBeInTheDocument()
     expect(screen.getByText(/"value": 123/)).toBeInTheDocument()
   })
@@ -177,12 +195,12 @@ describe('TaskDetailModal', () => {
   it('shows no parameters message when parameters are empty', async () => {
     const taskWithoutParams = createMockTask({ parameters: null })
     const user = userEvent.setup()
-    
+
     render(<TaskDetailModal {...defaultProps} task={taskWithoutParams} />)
-    
+
     const parametersTab = screen.getByText('Parameters')
     await user.click(parametersTab)
-    
+
     expect(screen.getByText('No parameters provided')).toBeInTheDocument()
   })
 
@@ -192,12 +210,12 @@ describe('TaskDetailModal', () => {
       startedAt: new Date('2024-01-15T10:00:00Z'),
     })
     const user = userEvent.setup()
-    
+
     render(<TaskDetailModal {...defaultProps} task={runningTask} />)
-    
+
     const logsTab = screen.getByText('Execution Logs')
     await user.click(logsTab)
-    
+
     expect(screen.getByText('Task execution started')).toBeInTheDocument()
     expect(screen.getByText('Task is currently running...')).toBeInTheDocument()
   })
@@ -209,12 +227,12 @@ describe('TaskDetailModal', () => {
       completedAt: new Date('2024-01-15T10:30:00Z'),
     })
     const user = userEvent.setup()
-    
+
     render(<TaskDetailModal {...defaultProps} task={completedTask} />)
-    
+
     const logsTab = screen.getByText('Execution Logs')
     await user.click(logsTab)
-    
+
     expect(screen.getByText('Task execution started')).toBeInTheDocument()
     expect(screen.getByText('Task completed successfully')).toBeInTheDocument()
   })
@@ -227,12 +245,12 @@ describe('TaskDetailModal', () => {
       error: '{"message": "Database connection failed"}',
     })
     const user = userEvent.setup()
-    
+
     render(<TaskDetailModal {...defaultProps} task={failedTask} />)
-    
+
     const logsTab = screen.getByText('Execution Logs')
     await user.click(logsTab)
-    
+
     expect(screen.getByText('Task execution started')).toBeInTheDocument()
     expect(screen.getByText('Task execution failed')).toBeInTheDocument()
     expect(screen.getByText('Database connection failed')).toBeInTheDocument()
@@ -244,12 +262,12 @@ describe('TaskDetailModal', () => {
       result: '{"success": true, "processed": 100}',
     })
     const user = userEvent.setup()
-    
+
     render(<TaskDetailModal {...defaultProps} task={completedTask} />)
-    
+
     const resultTab = screen.getByText('Result')
     await user.click(resultTab)
-    
+
     expect(screen.getByText(/"success": true/)).toBeInTheDocument()
     expect(screen.getByText(/"processed": 100/)).toBeInTheDocument()
   })
@@ -257,40 +275,40 @@ describe('TaskDetailModal', () => {
   it('shows no result message when result is empty', async () => {
     const user = userEvent.setup()
     render(<TaskDetailModal {...defaultProps} />)
-    
+
     const resultTab = screen.getByText('Result')
     await user.click(resultTab)
-    
+
     expect(screen.getByText('No result data available')).toBeInTheDocument()
   })
 
   it('calls onClose when close button is clicked', async () => {
     const mockOnClose = jest.fn()
     const user = userEvent.setup()
-    
+
     render(<TaskDetailModal {...defaultProps} onClose={mockOnClose} />)
-    
+
     const closeButton = screen.getByText('Close')
     await user.click(closeButton)
-    
+
     expect(mockOnClose).toHaveBeenCalled()
   })
 
   it('handles agent not found gracefully', () => {
     const taskWithMissingAgent = createMockTask({ agentId: 'non-existent' })
     render(<TaskDetailModal {...defaultProps} task={taskWithMissingAgent} />)
-    
+
     expect(screen.getByText('Agent not found')).toBeInTheDocument()
   })
 
   it('displays correct status colors and icons', () => {
-    const criticalTask = createMockTask({ 
+    const criticalTask = createMockTask({
       status: 'FAILED',
-      priority: 'CRITICAL' 
+      priority: 'CRITICAL',
     })
-    
+
     render(<TaskDetailModal {...defaultProps} task={criticalTask} />)
-    
+
     expect(screen.getByText('Failed')).toBeInTheDocument()
     expect(screen.getByText('Critical')).toBeInTheDocument()
   })
@@ -300,9 +318,9 @@ describe('TaskDetailModal', () => {
       createdAt: new Date('2024-01-15T09:00:00Z'),
       scheduledAt: new Date('2024-01-15T10:00:00Z'),
     })
-    
+
     render(<TaskDetailModal {...defaultProps} task={task} />)
-    
+
     // Should show formatted dates
     expect(screen.getByText(/Jan 15, 2024/)).toBeInTheDocument()
   })
@@ -313,35 +331,45 @@ describe('TaskDetailModal', () => {
       startedAt: new Date('2024-01-15T10:00:00Z'),
       completedAt: new Date('2024-01-15T10:02:30Z'), // 2.5 minutes later
     })
-    
+
     render(<TaskDetailModal {...defaultProps} task={completedTask} />)
-    
+
     expect(screen.getByText('150s')).toBeInTheDocument() // 2.5 minutes = 150 seconds
   })
 
   it('disables buttons while updating', async () => {
-    const mockOnUpdate = jest.fn(() => new Promise(resolve => setTimeout(resolve, 100)))
+    const mockOnUpdate = jest.fn(
+      () => new Promise(resolve => setTimeout(resolve, 100))
+    )
     const failedTask = createMockTask({ status: 'FAILED' })
     const user = userEvent.setup()
-    
-    render(<TaskDetailModal {...defaultProps} task={failedTask} onUpdate={mockOnUpdate} />)
-    
+
+    render(
+      <TaskDetailModal
+        {...defaultProps}
+        task={failedTask}
+        onUpdate={mockOnUpdate}
+      />
+    )
+
     const retryButton = screen.getByText('Retry')
     await user.click(retryButton)
-    
+
     // Button should be disabled while updating
     expect(retryButton).toBeDisabled()
   })
 
   it('disables delete button while deleting', async () => {
-    const mockOnDelete = jest.fn(() => new Promise(resolve => setTimeout(resolve, 100)))
+    const mockOnDelete = jest.fn(
+      () => new Promise(resolve => setTimeout(resolve, 100))
+    )
     const user = userEvent.setup()
-    
+
     render(<TaskDetailModal {...defaultProps} onDelete={mockOnDelete} />)
-    
+
     const deleteButton = screen.getByText('Delete')
     await user.click(deleteButton)
-    
+
     // Button should be disabled while deleting
     expect(deleteButton).toBeDisabled()
   })
@@ -349,12 +377,12 @@ describe('TaskDetailModal', () => {
   it('handles malformed JSON in parameters gracefully', async () => {
     const taskWithBadParams = createMockTask({ parameters: 'invalid json' })
     const user = userEvent.setup()
-    
+
     render(<TaskDetailModal {...defaultProps} task={taskWithBadParams} />)
-    
+
     const parametersTab = screen.getByText('Parameters')
     await user.click(parametersTab)
-    
+
     // Should show the raw string instead of crashing
     expect(screen.getByText('invalid json')).toBeInTheDocument()
   })
@@ -362,12 +390,12 @@ describe('TaskDetailModal', () => {
   it('handles malformed JSON in result gracefully', async () => {
     const taskWithBadResult = createMockTask({ result: 'invalid json' })
     const user = userEvent.setup()
-    
+
     render(<TaskDetailModal {...defaultProps} task={taskWithBadResult} />)
-    
+
     const resultTab = screen.getByText('Result')
     await user.click(resultTab)
-    
+
     // Should show the raw string instead of crashing
     expect(screen.getByText('invalid json')).toBeInTheDocument()
   })

@@ -29,9 +29,9 @@ export default async function globalSetup() {
 
     // Create test database
     console.log('🗄️ Setting up test database...')
-    execSync('npx prisma migrate deploy', { 
+    execSync('npx prisma migrate deploy', {
       stdio: 'inherit',
-      env: { ...process.env, DATABASE_URL: 'file:./e2e/temp/test.db' }
+      env: { ...process.env, DATABASE_URL: 'file:./e2e/temp/test.db' },
     })
 
     // Seed test database with initial data

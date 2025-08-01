@@ -49,7 +49,7 @@ class InMemoryCache {
    */
   get<T>(key: string): T | null {
     const entry = this.cache.get(key)
-    
+
     if (!entry) {
       this.stats.misses++
       return null
@@ -111,13 +111,13 @@ class InMemoryCache {
   has(key: string): boolean {
     const entry = this.cache.get(key)
     if (!entry) return false
-    
+
     // Check if expired
     if (Date.now() - entry.timestamp > entry.ttl) {
       this.cache.delete(key)
       return false
     }
-    
+
     return true
   }
 
@@ -126,7 +126,8 @@ class InMemoryCache {
    */
   getStats(): CacheStats {
     const totalRequests = this.stats.hits + this.stats.misses
-    const hitRate = totalRequests > 0 ? (this.stats.hits / totalRequests) * 100 : 0
+    const hitRate =
+      totalRequests > 0 ? (this.stats.hits / totalRequests) * 100 : 0
 
     // Calculate memory usage (approximate)
     const memoryUsage = JSON.stringify(Array.from(this.cache.entries())).length
@@ -162,7 +163,10 @@ class InMemoryCache {
     }
 
     if (cleanedCount > 0) {
-      logger.debug('Cache cleanup completed', { cleanedCount, remainingEntries: this.cache.size })
+      logger.debug('Cache cleanup completed', {
+        cleanedCount,
+        remainingEntries: this.cache.size,
+      })
     }
   }
 
@@ -172,7 +176,7 @@ class InMemoryCache {
   private evictOldest(): void {
     const entries = Array.from(this.cache.entries())
     entries.sort((a, b) => a[1].timestamp - b[1].timestamp)
-    
+
     // Remove oldest 10% of entries
     const toRemove = Math.max(1, Math.floor(entries.length * 0.1))
     for (let i = 0; i < toRemove; i++) {
@@ -193,12 +197,16 @@ class InMemoryCache {
 
 // Cache decorator for methods
 export function cached(ttl = 5 * 60 * 1000) {
-  return function (target: any, propertyName: string, descriptor: PropertyDescriptor) {
+  return function (
+    target: any,
+    propertyName: string,
+    descriptor: PropertyDescriptor
+  ) {
     const method = descriptor.value
 
     descriptor.value = async function (...args: any[]) {
       const cacheKey = `${target.constructor.name}.${propertyName}:${JSON.stringify(args)}`
-      
+
       // Try to get from cache first
       const cached = cache.get(cacheKey)
       if (cached !== null) {
@@ -208,7 +216,7 @@ export function cached(ttl = 5 * 60 * 1000) {
       // Execute method and cache result
       const result = await method.apply(this, args)
       cache.set(cacheKey, result, { ttl })
-      
+
       return result
     }
   }
@@ -217,7 +225,7 @@ export function cached(ttl = 5 * 60 * 1000) {
 // Specific cache implementations for different data types
 export class AnalyticsCache {
   private static readonly CACHE_PREFIX = 'analytics:'
-  
+
   static getCacheKey(method: string, params: Record<string, unknown>): string {
     return `${this.CACHE_PREFIX}${method}:${JSON.stringify(params)}`
   }
@@ -240,9 +248,12 @@ export class AnalyticsCache {
   static invalidatePattern(pattern: string): void {
     const keys = Array.from((cache as any).cache.keys())
     const matchingKeys = keys.filter(key => key.includes(pattern))
-    
+
     matchingKeys.forEach(key => cache.delete(key))
-    logger.debug('Cache invalidation completed', { pattern, invalidatedKeys: matchingKeys.length })
+    logger.debug('Cache invalidation completed', {
+      pattern,
+      invalidatedKeys: matchingKeys.length,
+    })
   }
 }
 
@@ -309,10 +320,10 @@ export class CacheWarmer {
     try {
       // Warm up analytics data
       await this.warmAnalyticsCache()
-      
+
       // Warm up agent data
       await this.warmAgentCache()
-      
+
       // Warm up system health data
       await this.warmHealthCache()
 
@@ -357,7 +368,10 @@ export class CacheWarmer {
     // Pre-load system health data
     try {
       cache.set('health:system-status', { warmed: true, timestamp: Date.now() })
-      cache.set('health:performance-metrics', { warmed: true, timestamp: Date.now() })
+      cache.set('health:performance-metrics', {
+        warmed: true,
+        timestamp: Date.now(),
+      })
     } catch (error) {
       logger.warn('Failed to warm health cache', error)
     }

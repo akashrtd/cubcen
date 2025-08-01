@@ -82,7 +82,9 @@ describe('Performance API Routes', () => {
         agents: { totalCount: 10, activeCount: 8 },
       }
 
-      ;(performanceMonitor.getCurrentStats as jest.Mock).mockResolvedValue(mockStats)
+      ;(performanceMonitor.getCurrentStats as jest.Mock).mockResolvedValue(
+        mockStats
+      )
 
       const response = await request(app)
         .get('/api/performance/metrics')
@@ -138,13 +140,10 @@ describe('Performance API Routes', () => {
         .query({ startDate, endDate })
         .expect(200)
 
-      expect(performanceMonitor.getMetrics).toHaveBeenCalledWith(
-        undefined,
-        {
-          start: new Date(startDate),
-          end: new Date(endDate),
-        }
-      )
+      expect(performanceMonitor.getMetrics).toHaveBeenCalledWith(undefined, {
+        start: new Date(startDate),
+        end: new Date(endDate),
+      })
     })
 
     it('should validate query parameters', async () => {
@@ -172,7 +171,9 @@ describe('Performance API Routes', () => {
         },
       ]
 
-      ;(performanceMonitor.getActiveAlerts as jest.Mock).mockReturnValue(mockAlerts)
+      ;(performanceMonitor.getActiveAlerts as jest.Mock).mockReturnValue(
+        mockAlerts
+      )
 
       const response = await request(app)
         .get('/api/performance/alerts')
@@ -218,7 +219,9 @@ describe('Performance API Routes', () => {
         connectionPoolStats: { active: 2, idle: 3, total: 5 },
       }
 
-      ;(dbPerformanceMonitor.getPerformanceStats as jest.Mock).mockResolvedValue(mockStats)
+      ;(
+        dbPerformanceMonitor.getPerformanceStats as jest.Mock
+      ).mockResolvedValue(mockStats)
 
       const response = await request(app)
         .get('/api/performance/database')
@@ -238,8 +241,12 @@ describe('Performance API Routes', () => {
       }
 
       const { DatabaseOptimizer } = require('@/lib/database-performance')
-      DatabaseOptimizer.createOptimalIndexes = jest.fn().mockResolvedValue(undefined)
-      DatabaseOptimizer.analyzePerformance = jest.fn().mockResolvedValue(mockAnalysis)
+      DatabaseOptimizer.createOptimalIndexes = jest
+        .fn()
+        .mockResolvedValue(undefined)
+      DatabaseOptimizer.analyzePerformance = jest
+        .fn()
+        .mockResolvedValue(mockAnalysis)
 
       const response = await request(app)
         .post('/api/performance/database/optimize')
@@ -265,7 +272,9 @@ describe('Performance API Routes', () => {
         .expect(403)
 
       expect(response.body.success).toBe(false)
-      expect(response.body.error).toBe('Admin role required for database optimization')
+      expect(response.body.error).toBe(
+        'Admin role required for database optimization'
+      )
     })
   })
 
@@ -419,7 +428,9 @@ describe('Performance API Routes', () => {
 
   describe('Monitoring Control', () => {
     it('should start performance monitoring', async () => {
-      ;(performanceMonitor.startMonitoring as jest.Mock).mockReturnValue(undefined)
+      ;(performanceMonitor.startMonitoring as jest.Mock).mockReturnValue(
+        undefined
+      )
 
       const response = await request(app)
         .post('/api/performance/monitoring/start')
@@ -431,7 +442,9 @@ describe('Performance API Routes', () => {
     })
 
     it('should stop performance monitoring', async () => {
-      ;(performanceMonitor.stopMonitoring as jest.Mock).mockReturnValue(undefined)
+      ;(performanceMonitor.stopMonitoring as jest.Mock).mockReturnValue(
+        undefined
+      )
 
       const response = await request(app)
         .post('/api/performance/monitoring/stop')
@@ -459,9 +472,9 @@ describe('Performance API Routes', () => {
 
     it('should handle database optimization errors', async () => {
       const { DatabaseOptimizer } = require('@/lib/database-performance')
-      DatabaseOptimizer.createOptimalIndexes = jest.fn().mockRejectedValue(
-        new Error('Optimization error')
-      )
+      DatabaseOptimizer.createOptimalIndexes = jest
+        .fn()
+        .mockRejectedValue(new Error('Optimization error'))
 
       const response = await request(app)
         .post('/api/performance/database/optimize')
@@ -473,9 +486,9 @@ describe('Performance API Routes', () => {
 
     it('should handle benchmark errors', async () => {
       const { Benchmark } = require('@/lib/benchmark')
-      Benchmark.benchmarkDatabase = jest.fn().mockRejectedValue(
-        new Error('Benchmark error')
-      )
+      Benchmark.benchmarkDatabase = jest
+        .fn()
+        .mockRejectedValue(new Error('Benchmark error'))
 
       const response = await request(app)
         .post('/api/performance/benchmark')

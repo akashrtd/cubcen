@@ -22,7 +22,7 @@ describe('Authentication Flow E2E Tests', () => {
         email: 'newuser@cubcen.test',
         password: 'newpassword123',
         name: 'New Test User',
-        role: 'operator'
+        role: 'operator',
       }
 
       const response = await request(server.getUrl())
@@ -43,7 +43,7 @@ describe('Authentication Flow E2E Tests', () => {
         email: 'admin@cubcen.test', // Existing user
         password: 'password123',
         name: 'Duplicate User',
-        role: 'operator'
+        role: 'operator',
       }
 
       const response = await request(server.getUrl())
@@ -59,7 +59,7 @@ describe('Authentication Flow E2E Tests', () => {
         .post('/api/cubcen/v1/auth/login')
         .send({
           email: 'admin@cubcen.test',
-          password: 'testpassword123'
+          password: 'testpassword123',
         })
         .expect(200)
 
@@ -74,7 +74,7 @@ describe('Authentication Flow E2E Tests', () => {
         .post('/api/cubcen/v1/auth/login')
         .send({
           email: 'admin@cubcen.test',
-          password: 'wrongpassword'
+          password: 'wrongpassword',
         })
         .expect(401)
 
@@ -89,16 +89,16 @@ describe('Authentication Flow E2E Tests', () => {
           email: 'inactive@cubcen.test',
           password: '$2a$10$test.hash', // Dummy hash
           name: 'Inactive User',
-          role: 'viewer',
-          isActive: false
-        }
+          role: 'VIEWER',
+          isActive: false,
+        },
       })
 
       const response = await request(server.getUrl())
         .post('/api/cubcen/v1/auth/login')
         .send({
           email: 'inactive@cubcen.test',
-          password: 'testpassword123'
+          password: 'testpassword123',
         })
         .expect(401)
 

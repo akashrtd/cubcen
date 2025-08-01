@@ -19,7 +19,9 @@ describe('API Documentation', () => {
     })
 
     it('should include required OpenAPI fields', () => {
-      expect(specs.info.description).toContain('Cubcen AI Agent Management Platform')
+      expect(specs.info.description).toContain(
+        'Cubcen AI Agent Management Platform'
+      )
       expect(specs.servers).toBeDefined()
       expect(specs.servers.length).toBeGreaterThan(0)
       expect(specs.components).toBeDefined()
@@ -31,7 +33,9 @@ describe('API Documentation', () => {
       expect(specs.components.securitySchemes.bearerAuth).toBeDefined()
       expect(specs.components.securitySchemes.bearerAuth.type).toBe('http')
       expect(specs.components.securitySchemes.bearerAuth.scheme).toBe('bearer')
-      expect(specs.components.securitySchemes.bearerAuth.bearerFormat).toBe('JWT')
+      expect(specs.components.securitySchemes.bearerAuth.bearerFormat).toBe(
+        'JWT'
+      )
     })
 
     it('should include common schemas', () => {
@@ -47,7 +51,7 @@ describe('API Documentation', () => {
     it('should include API paths', () => {
       expect(specs.paths).toBeDefined()
       expect(Object.keys(specs.paths).length).toBeGreaterThan(0)
-      
+
       // Check for key endpoints
       const paths = Object.keys(specs.paths)
       expect(paths.some(path => path.includes('/auth/login'))).toBe(true)
@@ -58,9 +62,7 @@ describe('API Documentation', () => {
 
   describe('Swagger UI Endpoints', () => {
     it('should serve Swagger UI at /api-docs', async () => {
-      const response = await request(app)
-        .get('/api-docs/')
-        .expect(200)
+      const response = await request(app).get('/api-docs/').expect(200)
 
       expect(response.text).toContain('Swagger UI')
       expect(response.text).toContain('Cubcen API')
@@ -78,9 +80,7 @@ describe('API Documentation', () => {
     })
 
     it('should include custom CSS styling', async () => {
-      const response = await request(app)
-        .get('/api-docs/')
-        .expect(200)
+      const response = await request(app).get('/api-docs/').expect(200)
 
       expect(response.text).toContain('#3F51B5') // Cubcen primary color
     })
@@ -88,12 +88,12 @@ describe('API Documentation', () => {
 
   describe('API Documentation Content', () => {
     it('should document authentication endpoints', () => {
-      const authPaths = Object.keys(specs.paths).filter(path => 
+      const authPaths = Object.keys(specs.paths).filter(path =>
         path.includes('/auth/')
       )
-      
+
       expect(authPaths.length).toBeGreaterThan(0)
-      
+
       // Check login endpoint documentation
       const loginPath = '/api/cubcen/v1/auth/login'
       if (specs.paths[loginPath]) {
@@ -109,12 +109,12 @@ describe('API Documentation', () => {
     })
 
     it('should document agent endpoints', () => {
-      const agentPaths = Object.keys(specs.paths).filter(path => 
+      const agentPaths = Object.keys(specs.paths).filter(path =>
         path.includes('/agents')
       )
-      
+
       expect(agentPaths.length).toBeGreaterThan(0)
-      
+
       // Check agents list endpoint documentation
       const agentsPath = '/api/cubcen/v1/agents'
       if (specs.paths[agentsPath]) {
@@ -133,7 +133,7 @@ describe('API Documentation', () => {
       if (specs.paths[agentsPath] && specs.paths[agentsPath].get) {
         const response200 = specs.paths[agentsPath].get.responses['200']
         expect(response200.content['application/json'].schema).toBeDefined()
-        
+
         const schema = response200.content['application/json'].schema
         expect(schema.properties.success).toBeDefined()
         expect(schema.properties.data).toBeDefined()
@@ -148,10 +148,12 @@ describe('API Documentation', () => {
         expect(responses['400']).toBeDefined()
         expect(responses['401']).toBeDefined()
         expect(responses['429']).toBeDefined()
-        
+
         // Check error schema reference
         const errorResponse = responses['401']
-        expect(errorResponse.content['application/json'].schema.$ref).toBe('#/components/schemas/Error')
+        expect(errorResponse.content['application/json'].schema.$ref).toBe(
+          '#/components/schemas/Error'
+        )
       }
     })
   })
@@ -165,23 +167,35 @@ describe('API Documentation', () => {
 
     it('should validate schema references', () => {
       const schemas = specs.components.schemas
-      
+
       // Check that referenced schemas exist
-      Object.values(specs.paths).forEach((pathItem: Record<string, unknown>) => {
-        Object.values(pathItem).forEach((operation: Record<string, unknown>) => {
-          if (operation.responses) {
-            Object.values(operation.responses as Record<string, unknown>).forEach((response: Record<string, unknown>) => {
-              if (response.content && response.content['application/json']) {
-                const schema = response.content['application/json'].schema
-                if (schema && schema.$ref) {
-                  const schemaName = schema.$ref.replace('#/components/schemas/', '')
-                  expect(schemas[schemaName]).toBeDefined()
-                }
+      Object.values(specs.paths).forEach(
+        (pathItem: Record<string, unknown>) => {
+          Object.values(pathItem).forEach(
+            (operation: Record<string, unknown>) => {
+              if (operation.responses) {
+                Object.values(
+                  operation.responses as Record<string, unknown>
+                ).forEach((response: Record<string, unknown>) => {
+                  if (
+                    response.content &&
+                    response.content['application/json']
+                  ) {
+                    const schema = response.content['application/json'].schema
+                    if (schema && schema.$ref) {
+                      const schemaName = schema.$ref.replace(
+                        '#/components/schemas/',
+                        ''
+                      )
+                      expect(schemas[schemaName]).toBeDefined()
+                    }
+                  }
+                })
               }
-            })
-          }
-        })
-      })
+            }
+          )
+        }
+      )
     })
   })
 
@@ -189,9 +203,9 @@ describe('API Documentation', () => {
     it('should include version in API paths', () => {
       const paths = Object.keys(specs.paths)
       const versionedPaths = paths.filter(path => path.includes('/v1/'))
-      
+
       expect(versionedPaths.length).toBeGreaterThan(0)
-      
+
       // All API paths should include version
       const apiPaths = paths.filter(path => path.startsWith('/api/cubcen/'))
       apiPaths.forEach(path => {
@@ -218,13 +232,17 @@ describe('API Documentation', () => {
     it('should include deprecation warnings for deprecated endpoints', () => {
       // This test would check for deprecated endpoints when they exist
       // For now, we just ensure the structure supports deprecation
-      Object.values(specs.paths).forEach((pathItem: Record<string, unknown>) => {
-        Object.values(pathItem).forEach((operation: Record<string, unknown>) => {
-          if (operation.deprecated) {
-            expect(operation.description).toContain('deprecated')
-          }
-        })
-      })
+      Object.values(specs.paths).forEach(
+        (pathItem: Record<string, unknown>) => {
+          Object.values(pathItem).forEach(
+            (operation: Record<string, unknown>) => {
+              if (operation.deprecated) {
+                expect(operation.description).toContain('deprecated')
+              }
+            }
+          )
+        }
+      )
     })
   })
 })

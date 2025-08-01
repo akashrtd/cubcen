@@ -6,14 +6,14 @@ import { CSS } from '@dnd-kit/utilities'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 // Avatar components not needed for this implementation
-import { 
-  Clock, 
-  AlertTriangle, 
-  CheckCircle, 
-  XCircle, 
+import {
+  Clock,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
   PlayCircle,
   User,
-  Calendar
+  Calendar,
 } from 'lucide-react'
 import { Task, TaskPriority, TaskStatus } from '@/lib/database'
 import { cn } from '@/lib/utils'
@@ -25,11 +25,14 @@ interface TaskCardProps {
   isDragging?: boolean
 }
 
-const PRIORITY_CONFIG: Record<TaskPriority, {
-  color: string
-  bgColor: string
-  icon: React.ReactNode
-}> = {
+const PRIORITY_CONFIG: Record<
+  TaskPriority,
+  {
+    color: string
+    bgColor: string
+    icon: React.ReactNode
+  }
+> = {
   LOW: {
     color: 'text-gray-600 dark:text-gray-400',
     bgColor: 'bg-gray-100 dark:bg-gray-800',
@@ -60,7 +63,12 @@ const STATUS_ICONS: Record<TaskStatus, React.ReactNode> = {
   CANCELLED: <XCircle className="h-4 w-4 text-gray-500" />,
 }
 
-export function TaskCard({ task, onClick, agents, isDragging = false }: TaskCardProps) {
+export function TaskCard({
+  task,
+  onClick,
+  agents,
+  isDragging = false,
+}: TaskCardProps) {
   const {
     attributes,
     listeners,
@@ -75,7 +83,7 @@ export function TaskCard({ task, onClick, agents, isDragging = false }: TaskCard
     transition,
   }
 
-  const agent = agents.find((a) => a.id === task.agentId)
+  const agent = agents.find(a => a.id === task.agentId)
   const priorityConfig = PRIORITY_CONFIG[task.priority]
   const statusIcon = STATUS_ICONS[task.status]
 
@@ -96,7 +104,9 @@ export function TaskCard({ task, onClick, agents, isDragging = false }: TaskCard
       return `${minutes}:${seconds.toString().padStart(2, '0')}`
     }
     if (task.status === 'COMPLETED' && task.startedAt && task.completedAt) {
-      const elapsed = new Date(task.completedAt).getTime() - new Date(task.startedAt).getTime()
+      const elapsed =
+        new Date(task.completedAt).getTime() -
+        new Date(task.startedAt).getTime()
       const minutes = Math.floor(elapsed / 60000)
       const seconds = Math.floor((elapsed % 60000) / 1000)
       return `${minutes}:${seconds.toString().padStart(2, '0')}`

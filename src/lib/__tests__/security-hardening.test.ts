@@ -12,7 +12,7 @@ import {
   securityHeaders,
   suspiciousActivityDetection,
   AdvancedRateLimiter,
-  honeypotProtection
+  honeypotProtection,
 } from '../../backend/middleware/security'
 import { sessionManager, SessionManager } from '../session-manager'
 import { auditLogger, AuditEventType, AuditSeverity } from '../audit-logger'
@@ -24,8 +24,8 @@ jest.mock('../logger', () => ({
     info: jest.fn(),
     warn: jest.fn(),
     error: jest.fn(),
-    debug: jest.fn()
-  }
+    debug: jest.fn(),
+  },
 }))
 
 // Mock audit logger
@@ -33,28 +33,28 @@ jest.mock('../audit-logger', () => ({
   auditLogger: {
     logEvent: jest.fn(),
     logSecurityEvent: jest.fn(),
-    getAuditLogs: jest.fn()
+    getAuditLogs: jest.fn(),
   },
   AuditEventType: {
     SUSPICIOUS_ACTIVITY: 'SUSPICIOUS_ACTIVITY',
     CSRF_ATTACK_BLOCKED: 'CSRF_ATTACK_BLOCKED',
     LOGIN: 'LOGIN',
-    LOGOUT: 'LOGOUT'
+    LOGOUT: 'LOGOUT',
   },
   AuditSeverity: {
     LOW: 'LOW',
     MEDIUM: 'MEDIUM',
     HIGH: 'HIGH',
-    CRITICAL: 'CRITICAL'
-  }
+    CRITICAL: 'CRITICAL',
+  },
 }))
 
 // Mock database
 jest.mock('../database', () => ({
   prisma: {
     $executeRaw: jest.fn(),
-    $queryRawUnsafe: jest.fn()
-  }
+    $queryRawUnsafe: jest.fn(),
+  },
 }))
 
 describe('Security Hardening Tests', () => {
@@ -64,7 +64,7 @@ describe('Security Hardening Tests', () => {
     app = express()
     app.use(express.json())
     app.use(express.urlencoded({ extended: true }))
-    
+
     // Clear all mocks
     jest.clearAllMocks()
   })
@@ -81,7 +81,7 @@ describe('Security Hardening Tests', () => {
       const maliciousPayload = {
         name: '<script>alert("XSS")</script>John',
         description: 'javascript:alert("XSS")',
-        comment: '<iframe src="javascript:alert(\'XSS\')"></iframe>'
+        comment: '<iframe src="javascript:alert(\'XSS\')"></iframe>',
       }
 
       const response = await request(app)
@@ -97,7 +97,7 @@ describe('Security Hardening Tests', () => {
     it('should sanitize SQL injection attempts', async () => {
       const maliciousPayload = {
         username: "admin'; DROP TABLE users; --",
-        query: "1 UNION SELECT * FROM passwords"
+        query: '1 UNION SELECT * FROM passwords',
       }
 
       const response = await request(app)
@@ -113,9 +113,9 @@ describe('Security Hardening Tests', () => {
       const maliciousPayload = {
         user: {
           name: '<script>alert("nested")</script>',
-          preferences: ['<script>alert("array")</script>', 'normal value']
+          preferences: ['<script>alert("array")</script>', 'normal value'],
         },
-        tags: ['<script>alert("tag")</script>', 'safe-tag']
+        tags: ['<script>alert("tag")</script>', 'safe-tag'],
       }
 
       const response = await request(app)
@@ -146,7 +146,11 @@ describe('Security Hardening Tests', () => {
       circularObj.self = circularObj
 
       // Since we can't send circular JSON, test with very deep nesting
-      const deepObj = { level1: { level2: { level3: { level4: { level5: '<script>deep</script>' } } } } }
+      const deepObj = {
+        level1: {
+          level2: { level3: { level4: { level5: '<script>deep</script>' } } },
+        },
+      }
 
       const response = await request(app)
         .post('/test')
@@ -164,7 +168,7 @@ describe('Security Hardening Tests', () => {
         req.session = { csrfToken: 'valid-csrf-token' } as any
         next()
       })
-      
+
       app.use(csrfProtection)
       app.post('/test', (req: Request, res: Response) => {
         res.json({ success: true })
@@ -175,9 +179,7 @@ describe('Security Hardening Tests', () => {
     })
 
     it('should allow GET requests without CSRF token', async () => {
-      await request(app)
-        .get('/test')
-        .expect(200)
+      await request(app).get('/test').expect(200)
     })
 
     it('should allow requests with valid CSRF token in header', async () => {
@@ -206,10 +208,7 @@ describe('Security Hardening Tests', () => {
     })
 
     it('should block requests without CSRF token', async () => {
-      const response = await request(app)
-        .post('/test')
-        .send({})
-        .expect(403)
+      const response = await request(app).post('/test').send({}).expect(403)
 
       expect(response.body.error.code).toBe('CSRF_TOKEN_INVALID')
     })
@@ -220,10 +219,7 @@ describe('Security Hardening Tests', () => {
         next()
       })
 
-      await request(app)
-        .post('/test')
-        .send({})
-        .expect(200)
+      await request(app).post('/test').send({}).expect(200)
     })
   })
 
@@ -236,15 +232,17 @@ describe('Security Hardening Tests', () => {
     })
 
     it('should set comprehensive security headers', async () => {
-      const response = await request(app)
-        .get('/test')
-        .expect(200)
+      const response = await request(app).get('/test').expect(200)
 
-      expect(response.headers['content-security-policy']).toContain("default-src 'self'")
+      expect(response.headers['content-security-policy']).toContain(
+        "default-src 'self'"
+      )
       expect(response.headers['x-content-type-options']).toBe('nosniff')
       expect(response.headers['x-frame-options']).toBe('DENY')
       expect(response.headers['x-xss-protection']).toBe('1; mode=block')
-      expect(response.headers['referrer-policy']).toBe('strict-origin-when-cross-origin')
+      expect(response.headers['referrer-policy']).toBe(
+        'strict-origin-when-cross-origin'
+      )
       expect(response.headers['permissions-policy']).toContain('camera=()')
       expect(response.headers['x-powered-by']).toBeUndefined()
     })
@@ -256,11 +254,11 @@ describe('Security Hardening Tests', () => {
         next()
       })
 
-      const response = await request(app)
-        .get('/test')
-        .expect(200)
+      const response = await request(app).get('/test').expect(200)
 
-      expect(response.headers['strict-transport-security']).toContain('max-age=31536000')
+      expect(response.headers['strict-transport-security']).toContain(
+        'max-age=31536000'
+      )
     })
   })
 
@@ -275,7 +273,7 @@ describe('Security Hardening Tests', () => {
     it('should detect SQL injection patterns', async () => {
       const response = await request(app)
         .post('/test')
-        .send({ query: "1 UNION SELECT * FROM users WHERE 1=1" })
+        .send({ query: '1 UNION SELECT * FROM users WHERE 1=1' })
 
       // In development, should continue with warning
       if (process.env.NODE_ENV !== 'production') {
@@ -328,7 +326,7 @@ describe('Security Hardening Tests', () => {
         maxAttempts: 3,
         windowMs: 60000, // 1 minute
         blockDurationMs: 5000, // 5 seconds
-        progressiveMultiplier: 2
+        progressiveMultiplier: 2,
       })
 
       app.use(rateLimiter.middleware())
@@ -433,7 +431,7 @@ describe('Security Hardening Tests', () => {
     beforeEach(() => {
       testSessionManager = SessionManager.getInstance({
         maxAge: 60000, // 1 minute for testing
-        maxSessionsPerUser: 2
+        maxSessionsPerUser: 2,
       })
     })
 
@@ -444,7 +442,7 @@ describe('Security Hardening Tests', () => {
     it('should create secure sessions', async () => {
       const mockReq = {
         ip: '192.168.1.1',
-        get: jest.fn().mockReturnValue('Mozilla/5.0 Test Browser')
+        get: jest.fn().mockReturnValue('Mozilla/5.0 Test Browser'),
       } as any
 
       const session = await testSessionManager.createSession(
@@ -463,7 +461,7 @@ describe('Security Hardening Tests', () => {
     it('should validate sessions with IP consistency', async () => {
       const mockReq = {
         ip: '192.168.1.1',
-        get: jest.fn().mockReturnValue('Mozilla/5.0 Test Browser')
+        get: jest.fn().mockReturnValue('Mozilla/5.0 Test Browser'),
       } as any
 
       const session = await testSessionManager.createSession(
@@ -474,13 +472,19 @@ describe('Security Hardening Tests', () => {
       )
 
       // Same IP should be valid
-      const validation1 = await testSessionManager.validateSession(session.id, mockReq)
+      const validation1 = await testSessionManager.validateSession(
+        session.id,
+        mockReq
+      )
       expect(validation1.valid).toBe(true)
 
       // Different IP should be invalid if enforcement is enabled
       process.env.ENFORCE_IP_CONSISTENCY = 'true'
       const differentIPReq = { ...mockReq, ip: '192.168.1.2' }
-      const validation2 = await testSessionManager.validateSession(session.id, differentIPReq)
+      const validation2 = await testSessionManager.validateSession(
+        session.id,
+        differentIPReq
+      )
       expect(validation2.valid).toBe(false)
       expect(validation2.reason).toBe('IP address mismatch')
 
@@ -491,15 +495,30 @@ describe('Security Hardening Tests', () => {
     it('should enforce maximum sessions per user', async () => {
       const mockReq = {
         ip: '192.168.1.1',
-        get: jest.fn().mockReturnValue('Mozilla/5.0 Test Browser')
+        get: jest.fn().mockReturnValue('Mozilla/5.0 Test Browser'),
       } as any
 
       // Create maximum allowed sessions
-      const session1 = await testSessionManager.createSession('user123', 'test@example.com', 'USER', mockReq)
-      const session2 = await testSessionManager.createSession('user123', 'test@example.com', 'USER', mockReq)
+      const session1 = await testSessionManager.createSession(
+        'user123',
+        'test@example.com',
+        'USER',
+        mockReq
+      )
+      const session2 = await testSessionManager.createSession(
+        'user123',
+        'test@example.com',
+        'USER',
+        mockReq
+      )
 
       // Third session should remove the oldest
-      const session3 = await testSessionManager.createSession('user123', 'test@example.com', 'USER', mockReq)
+      const session3 = await testSessionManager.createSession(
+        'user123',
+        'test@example.com',
+        'USER',
+        mockReq
+      )
 
       // First session should be invalid now
       const validation1 = await testSessionManager.getSession(session1.id)
@@ -515,7 +534,7 @@ describe('Security Hardening Tests', () => {
     it('should clean up expired sessions', async () => {
       const mockReq = {
         ip: '192.168.1.1',
-        get: jest.fn().mockReturnValue('Mozilla/5.0 Test Browser')
+        get: jest.fn().mockReturnValue('Mozilla/5.0 Test Browser'),
       } as any
 
       const session = await testSessionManager.createSession(
@@ -540,15 +559,16 @@ describe('Security Hardening Tests', () => {
   describe('Audit Log Security', () => {
     beforeEach(() => {
       // Mock prisma responses
-      (prisma.$executeRaw as jest.Mock).mockResolvedValue(1)
-      (prisma.$queryRawUnsafe as jest.Mock).mockResolvedValue([])
+      ;(prisma.$executeRaw as jest.Mock)
+        .mockResolvedValue(1)(prisma.$queryRawUnsafe as jest.Mock)
+        .mockResolvedValue([])
     })
 
     it('should log security events with proper context', async () => {
       const mockReq = {
         ip: '192.168.1.1',
         get: jest.fn().mockReturnValue('Mozilla/5.0 Test Browser'),
-        headers: { 'x-request-id': 'test-request-123' }
+        headers: { 'x-request-id': 'test-request-123' },
       } as any
 
       await auditLogger.logSecurityEvent(
@@ -568,7 +588,7 @@ describe('Security Hardening Tests', () => {
           ipAddress: '192.168.1.1',
           userAgent: 'Mozilla/5.0 Test Browser',
           requestId: 'test-request-123',
-          success: false
+          success: false,
         })
       )
     })
@@ -576,24 +596,24 @@ describe('Security Hardening Tests', () => {
     it('should prevent audit log tampering through proper access controls', async () => {
       // This test would verify that audit logs can only be accessed by authorized users
       // and that the logs themselves are tamper-evident
-      
+
       const filters = {
         eventType: AuditEventType.SUSPICIOUS_ACTIVITY,
         startDate: new Date('2023-01-01'),
-        endDate: new Date('2023-12-31')
-      }
-
-      // Mock successful retrieval
-      (auditLogger.getAuditLogs as jest.Mock).mockResolvedValue({
+        endDate: new Date('2023-12-31'),
+      }(
+        // Mock successful retrieval
+        auditLogger.getAuditLogs as jest.Mock
+      ).mockResolvedValue({
         logs: [
           {
             id: 'log1',
             eventType: AuditEventType.SUSPICIOUS_ACTIVITY,
             timestamp: new Date(),
-            description: 'Test log entry'
-          }
+            description: 'Test log entry',
+          },
         ],
-        total: 1
+        total: 1,
       })
 
       const result = await auditLogger.getAuditLogs(filters)
@@ -605,21 +625,21 @@ describe('Security Hardening Tests', () => {
       const exportFilters = {
         startDate: new Date('2023-01-01'),
         endDate: new Date('2023-12-31'),
-        format: 'json' as const
-      }
-
-      // Mock audit logs for export
-      (auditLogger.getAuditLogs as jest.Mock).mockResolvedValue({
+        format: 'json' as const,
+      }(
+        // Mock audit logs for export
+        auditLogger.getAuditLogs as jest.Mock
+      ).mockResolvedValue({
         logs: [
           {
             id: 'log1',
             eventType: AuditEventType.LOGIN,
             userId: 'user123',
             timestamp: new Date('2023-06-01'),
-            description: 'User login'
-          }
+            description: 'User login',
+          },
         ],
-        total: 1
+        total: 1,
       })
 
       const exportData = await auditLogger.exportAuditLogs(exportFilters)
@@ -639,19 +659,21 @@ describe('Security Hardening Tests', () => {
       })
 
       // Global error handler
-      app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
-        // Simulate production error handling
-        const isDevelopment = process.env.NODE_ENV === 'development'
-        
-        res.status(500).json({
-          error: {
-            code: 'INTERNAL_SERVER_ERROR',
-            message: isDevelopment ? error.message : 'Internal server error',
-            timestamp: new Date().toISOString(),
-            ...(isDevelopment && { stack: error.stack })
-          }
-        })
-      })
+      app.use(
+        (error: Error, req: Request, res: Response, next: NextFunction) => {
+          // Simulate production error handling
+          const isDevelopment = process.env.NODE_ENV === 'development'
+
+          res.status(500).json({
+            error: {
+              code: 'INTERNAL_SERVER_ERROR',
+              message: isDevelopment ? error.message : 'Internal server error',
+              timestamp: new Date().toISOString(),
+              ...(isDevelopment && { stack: error.stack }),
+            },
+          })
+        }
+      )
 
       app.get('/error', (req: Request, res: Response) => {
         res.json({ success: true })
@@ -663,9 +685,7 @@ describe('Security Hardening Tests', () => {
       const originalEnv = process.env.NODE_ENV
       process.env.NODE_ENV = 'production'
 
-      const response = await request(app)
-        .get('/error')
-        .expect(500)
+      const response = await request(app).get('/error').expect(500)
 
       expect(response.body.error.message).toBe('Internal server error')
       expect(response.body.error.message).not.toContain('password123')
@@ -680,11 +700,11 @@ describe('Security Hardening Tests', () => {
       const originalEnv = process.env.NODE_ENV
       process.env.NODE_ENV = 'development'
 
-      const response = await request(app)
-        .get('/error')
-        .expect(500)
+      const response = await request(app).get('/error').expect(500)
 
-      expect(response.body.error.message).toContain('Test error with sensitive data')
+      expect(response.body.error.message).toContain(
+        'Test error with sensitive data'
+      )
       expect(response.body.error.stack).toBeDefined()
 
       // Restore environment

@@ -5,7 +5,13 @@
 
 import { prisma } from '@/lib/database'
 import { logger } from '@/lib/logger'
-import { ErrorLog, ErrorPattern, ErrorFilter, ErrorStats, RetryableTask } from '@/types/error'
+import {
+  ErrorLog,
+  ErrorPattern,
+  ErrorFilter,
+  ErrorStats,
+  RetryableTask,
+} from '@/types/error'
 import { z } from 'zod'
 
 // Validation schemas
@@ -16,20 +22,22 @@ const errorFilterSchema = z.object({
   taskId: z.string().optional(),
   dateFrom: z.date().optional(),
   dateTo: z.date().optional(),
-  search: z.string().optional()
+  search: z.string().optional(),
 })
 
 export class ErrorService {
   /**
    * Get error logs with filtering and pagination
    */
-  async getErrorLogs(options: {
-    filter?: ErrorFilter
-    page?: number
-    limit?: number
-    sortBy?: string
-    sortOrder?: 'asc' | 'desc'
-  } = {}): Promise<{
+  async getErrorLogs(
+    options: {
+      filter?: ErrorFilter
+      page?: number
+      limit?: number
+      sortBy?: string
+      sortOrder?: 'asc' | 'desc'
+    } = {}
+  ): Promise<{
     logs: ErrorLog[]
     total: number
     page: number
@@ -42,7 +50,7 @@ export class ErrorService {
         page = 1,
         limit = 50,
         sortBy = 'timestamp',
-        sortOrder = 'desc'
+        sortOrder = 'desc',
       } = options
 
       // Validate filter
@@ -50,29 +58,35 @@ export class ErrorService {
 
       // Build where clause
       const where: Record<string, unknown> = {}
-      
+
       if (validatedFilter.level) {
         where.level = validatedFilter.level
       }
-      
+
       if (validatedFilter.source) {
         where.source = { contains: validatedFilter.source, mode: 'insensitive' }
       }
-      
+
       if (validatedFilter.dateFrom || validatedFilter.dateTo) {
         where.timestamp = {}
         if (validatedFilter.dateFrom) {
-          (where.timestamp as Record<string, unknown>).gte = validatedFilter.dateFrom
+          ;(where.timestamp as Record<string, unknown>).gte =
+            validatedFilter.dateFrom
         }
         if (validatedFilter.dateTo) {
-          (where.timestamp as Record<string, unknown>).lte = validatedFilter.dateTo
+          ;(where.timestamp as Record<string, unknown>).lte =
+            validatedFilter.dateTo
         }
       }
-      
+
       if (validatedFilter.search) {
         where.OR = [
-          { message: { contains: validatedFilter.search, mode: 'insensitive' } },
-          { context: { contains: validatedFilter.search, mode: 'insensitive' } }
+          {
+            message: { contains: validatedFilter.search, mode: 'insensitive' },
+          },
+          {
+            context: { contains: validatedFilter.search, mode: 'insensitive' },
+          },
         ]
       }
 
@@ -84,7 +98,7 @@ export class ErrorService {
         where,
         orderBy: { [sortBy]: sortOrder },
         skip: (page - 1) * limit,
-        take: limit
+        take: limit,
       })
 
       // Transform to ErrorLog format
@@ -96,11 +110,15 @@ export class ErrorService {
         source: log.source,
         timestamp: log.timestamp,
         // Extract additional fields from context if available
-        stackTrace: log.context ? JSON.parse(log.context)?.stackTrace : undefined,
+        stackTrace: log.context
+          ? JSON.parse(log.context)?.stackTrace
+          : undefined,
         agentId: log.context ? JSON.parse(log.context)?.agentId : undefined,
         taskId: log.context ? JSON.parse(log.context)?.taskId : undefined,
-        platformId: log.context ? JSON.parse(log.context)?.platformId : undefined,
-        userId: log.context ? JSON.parse(log.context)?.userId : undefined
+        platformId: log.context
+          ? JSON.parse(log.context)?.platformId
+          : undefined,
+        userId: log.context ? JSON.parse(log.context)?.userId : undefined,
       }))
 
       return {
@@ -108,13 +126,13 @@ export class ErrorService {
         total,
         page,
         limit,
-        totalPages: Math.ceil(total / limit)
+        totalPages: Math.ceil(total / limit),
       }
     } catch (error) {
-      logger.error('Failed to get error logs', error as Error, { 
-        filter: options.filter, 
-        page: options.page, 
-        limit: options.limit 
+      logger.error('Failed to get error logs', error as Error, {
+        filter: options.filter,
+        page: options.page,
+        limit: options.limit,
       })
       throw error
     }
@@ -123,16 +141,19 @@ export class ErrorService {
   /**
    * Get error statistics
    */
-  async getErrorStats(timeRange: { from: Date; to: Date }): Promise<ErrorStats> {
+  async getErrorStats(timeRange: {
+    from: Date
+    to: Date
+  }): Promise<ErrorStats> {
     try {
       // Get total error count
       const total = await prisma.systemLog.count({
         where: {
           timestamp: {
             gte: timeRange.from,
-            lte: timeRange.to
-          }
-        }
+            lte: timeRange.to,
+          },
+        },
       })
 
       // Get errors by level
@@ -142,15 +163,18 @@ export class ErrorService {
         where: {
           timestamp: {
             gte: timeRange.from,
-            lte: timeRange.to
-          }
-        }
+            lte: timeRange.to,
+          },
+        },
       })
 
-      const byLevel = byLevelRaw.reduce((acc, item) => {
-        acc[item.level] = item._count.level
-        return acc
-      }, {} as Record<string, number>)
+      const byLevel = byLevelRaw.reduce(
+        (acc, item) => {
+          acc[item.level] = item._count.level
+          return acc
+        },
+        {} as Record<string, number>
+      )
 
       // Get errors by source
       const bySourceRaw = await prisma.systemLog.groupBy({
@@ -159,21 +183,24 @@ export class ErrorService {
         where: {
           timestamp: {
             gte: timeRange.from,
-            lte: timeRange.to
-          }
+            lte: timeRange.to,
+          },
         },
         orderBy: {
           _count: {
-            source: 'desc'
-          }
+            source: 'desc',
+          },
         },
-        take: 10
+        take: 10,
       })
 
-      const bySource = bySourceRaw.reduce((acc, item) => {
-        acc[item.source] = item._count.source
-        return acc
-      }, {} as Record<string, number>)
+      const bySource = bySourceRaw.reduce(
+        (acc, item) => {
+          acc[item.source] = item._count.source
+          return acc
+        },
+        {} as Record<string, number>
+      )
 
       // Get top errors
       const topErrorsRaw = await prisma.systemLog.groupBy({
@@ -184,27 +211,30 @@ export class ErrorService {
           level: { in: ['ERROR', 'FATAL'] },
           timestamp: {
             gte: timeRange.from,
-            lte: timeRange.to
-          }
+            lte: timeRange.to,
+          },
         },
         orderBy: {
           _count: {
-            message: 'desc'
-          }
+            message: 'desc',
+          },
         },
-        take: 5
+        take: 5,
       })
 
       const topErrors = topErrorsRaw.map(item => ({
         message: item.message,
         count: item._count.message,
-        lastOccurrence: item._max.timestamp || new Date()
+        lastOccurrence: item._max.timestamp || new Date(),
       }))
 
       // Calculate trend (simplified - compare with previous period)
       const previousPeriod = {
-        from: new Date(timeRange.from.getTime() - (timeRange.to.getTime() - timeRange.from.getTime())),
-        to: timeRange.from
+        from: new Date(
+          timeRange.from.getTime() -
+            (timeRange.to.getTime() - timeRange.from.getTime())
+        ),
+        to: timeRange.from,
       }
 
       const previousTotal = await prisma.systemLog.count({
@@ -212,14 +242,14 @@ export class ErrorService {
           level: { in: ['ERROR', 'FATAL'] },
           timestamp: {
             gte: previousPeriod.from,
-            lte: previousPeriod.to
-          }
-        }
+            lte: previousPeriod.to,
+          },
+        },
       })
 
       const currentErrors = byLevel.ERROR || 0 + byLevel.FATAL || 0
       let recentTrend: 'increasing' | 'stable' | 'decreasing' = 'stable'
-      
+
       if (currentErrors > previousTotal * 1.1) {
         recentTrend = 'increasing'
       } else if (currentErrors < previousTotal * 0.9) {
@@ -231,10 +261,12 @@ export class ErrorService {
         byLevel,
         bySource,
         recentTrend,
-        topErrors
+        topErrors,
       }
     } catch (error) {
-      logger.error('Failed to get error statistics', error as Error, { timeRange })
+      logger.error('Failed to get error statistics', error as Error, {
+        timeRange,
+      })
       throw error
     }
   }
@@ -242,7 +274,10 @@ export class ErrorService {
   /**
    * Detect error patterns
    */
-  async detectErrorPatterns(timeRange: { from: Date; to: Date }): Promise<ErrorPattern[]> {
+  async detectErrorPatterns(timeRange: {
+    from: Date
+    to: Date
+  }): Promise<ErrorPattern[]> {
     try {
       // Get frequent error messages
       const frequentErrors = await prisma.systemLog.groupBy({
@@ -253,27 +288,27 @@ export class ErrorService {
           level: { in: ['ERROR', 'FATAL'] },
           timestamp: {
             gte: timeRange.from,
-            lte: timeRange.to
-          }
+            lte: timeRange.to,
+          },
         },
         having: {
           message: {
             _count: {
-              gt: 2 // At least 3 occurrences
-            }
-          }
+              gt: 2, // At least 3 occurrences
+            },
+          },
         },
         orderBy: {
           _count: {
-            message: 'desc'
-          }
+            message: 'desc',
+          },
         },
-        take: 20
+        take: 20,
       })
 
       // Transform to error patterns
       const patterns: ErrorPattern[] = []
-      
+
       for (const error of frequentErrors) {
         // Get affected agents for this error pattern
         const affectedAgentsRaw = await prisma.systemLog.findMany({
@@ -282,29 +317,31 @@ export class ErrorService {
             source: error.source,
             timestamp: {
               gte: timeRange.from,
-              lte: timeRange.to
+              lte: timeRange.to,
             },
             context: {
-              contains: 'agentId'
-            }
+              contains: 'agentId',
+            },
           },
           select: {
-            context: true
-          }
+            context: true,
+          },
         })
 
-        const affectedAgents = Array.from(new Set(
-          affectedAgentsRaw
-            .map(log => {
-              try {
-                const context = JSON.parse(log.context || '{}')
-                return context.agentId
-              } catch {
-                return null
-              }
-            })
-            .filter(Boolean)
-        ))
+        const affectedAgents = Array.from(
+          new Set(
+            affectedAgentsRaw
+              .map(log => {
+                try {
+                  const context = JSON.parse(log.context || '{}')
+                  return context.agentId
+                } catch {
+                  return null
+                }
+              })
+              .filter(Boolean)
+          )
+        )
 
         // Determine severity based on frequency and affected agents
         let severity: ErrorPattern['severity'] = 'LOW'
@@ -317,7 +354,10 @@ export class ErrorService {
         }
 
         // Generate suggested action based on error pattern
-        const suggestedAction = this.generateSuggestedAction(error.message, error.source)
+        const suggestedAction = this.generateSuggestedAction(
+          error.message,
+          error.source
+        )
 
         patterns.push({
           id: `${error.source}-${Buffer.from(error.message).toString('base64').slice(0, 8)}`,
@@ -327,13 +367,15 @@ export class ErrorService {
           lastOccurrence: error._max.timestamp || new Date(),
           affectedAgents,
           severity,
-          suggestedAction
+          suggestedAction,
         })
       }
 
       return patterns
     } catch (error) {
-      logger.error('Failed to detect error patterns', error as Error, { timeRange })
+      logger.error('Failed to detect error patterns', error as Error, {
+        timeRange,
+      })
       throw error
     }
   }
@@ -347,20 +389,20 @@ export class ErrorService {
         where: {
           status: { in: ['FAILED', 'CANCELLED'] },
           retryCount: {
-            lt: prisma.task.fields.maxRetries
-          }
+            lt: prisma.task.fields.maxRetries,
+          },
         },
         include: {
           agent: {
             select: {
-              name: true
-            }
-          }
+              name: true,
+            },
+          },
         },
         orderBy: {
-          updatedAt: 'desc'
+          updatedAt: 'desc',
         },
-        take: 50
+        take: 50,
       })
 
       return failedTasks.map(task => ({
@@ -374,7 +416,7 @@ export class ErrorService {
         maxRetries: task.maxRetries,
         lastAttempt: task.updatedAt,
         canRetry: task.retryCount < task.maxRetries,
-        parameters: task.parameters ? JSON.parse(task.parameters) : undefined
+        parameters: task.parameters ? JSON.parse(task.parameters) : undefined,
       }))
     } catch (error) {
       logger.error('Failed to get retryable tasks', error as Error)
@@ -388,7 +430,7 @@ export class ErrorService {
   async retryTask(taskId: string): Promise<void> {
     try {
       const task = await prisma.task.findUnique({
-        where: { id: taskId }
+        where: { id: taskId },
       })
 
       if (!task) {
@@ -412,14 +454,14 @@ export class ErrorService {
           error: null,
           startedAt: null,
           completedAt: null,
-          updatedAt: new Date()
-        }
+          updatedAt: new Date(),
+        },
       })
 
       logger.info('Task retry initiated', {
         taskId,
         retryCount: task.retryCount + 1,
-        maxRetries: task.maxRetries
+        maxRetries: task.maxRetries,
       })
     } catch (error) {
       logger.error('Failed to retry task', error as Error, { taskId })
@@ -444,7 +486,7 @@ export class ErrorService {
       } catch (error) {
         failed.push({
           taskId,
-          error: (error as Error).message
+          error: (error as Error).message,
         })
       }
     }
@@ -452,7 +494,7 @@ export class ErrorService {
     logger.info('Bulk task retry completed', {
       total: taskIds.length,
       successful: successful.length,
-      failed: failed.length
+      failed: failed.length,
     })
 
     return { successful, failed }
@@ -463,31 +505,40 @@ export class ErrorService {
    */
   private generateSuggestedAction(message: string, source: string): string {
     const lowerMessage = message.toLowerCase()
-    
-    if (lowerMessage.includes('connection') || lowerMessage.includes('network')) {
+
+    if (
+      lowerMessage.includes('connection') ||
+      lowerMessage.includes('network')
+    ) {
       return 'Check network connectivity and platform API status'
     }
-    
-    if (lowerMessage.includes('authentication') || lowerMessage.includes('unauthorized')) {
+
+    if (
+      lowerMessage.includes('authentication') ||
+      lowerMessage.includes('unauthorized')
+    ) {
       return 'Verify API credentials and refresh authentication tokens'
     }
-    
+
     if (lowerMessage.includes('timeout')) {
       return 'Increase timeout settings or check platform performance'
     }
-    
+
     if (lowerMessage.includes('rate limit') || lowerMessage.includes('quota')) {
       return 'Implement rate limiting or upgrade platform plan'
     }
-    
-    if (lowerMessage.includes('validation') || lowerMessage.includes('invalid')) {
+
+    if (
+      lowerMessage.includes('validation') ||
+      lowerMessage.includes('invalid')
+    ) {
       return 'Review input parameters and data validation rules'
     }
-    
+
     if (source.includes('adapter')) {
       return 'Check platform adapter configuration and connectivity'
     }
-    
+
     return 'Review error details and check platform documentation'
   }
 }

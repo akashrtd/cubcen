@@ -15,7 +15,7 @@ import {
   getTokenRemainingTime,
   shouldRefreshToken,
   validateJWTConfig,
-  getJWTConfig
+  getJWTConfig,
 } from '../jwt'
 import { TokenExpiredError, InvalidTokenError } from '@/types/auth'
 
@@ -29,7 +29,7 @@ beforeAll(() => {
     JWT_REFRESH_SECRET: 'test-refresh-secret',
     JWT_ACCESS_EXPIRY: '15m',
     JWT_REFRESH_EXPIRY: '7d',
-    JWT_ISSUER: 'cubcen-test'
+    JWT_ISSUER: 'cubcen-test',
   }
 })
 
@@ -45,12 +45,16 @@ describe('JWT Utilities', () => {
   describe('createAccessToken', () => {
     it('should create a valid access token', () => {
       const token = createAccessToken(userId, email, role)
-      
+
       expect(typeof token).toBe('string')
       expect(token.length).toBeGreaterThan(0)
-      
+
       // Verify token structure
-      const decoded = jwt.decode(token) as jwt.JwtPayload & { userId: string; email: string; role: string }
+      const decoded = jwt.decode(token) as jwt.JwtPayload & {
+        userId: string
+        email: string
+        role: string
+      }
       expect(decoded.userId).toBe(userId)
       expect(decoded.email).toBe(email)
       expect(decoded.role).toBe(role)
@@ -61,10 +65,10 @@ describe('JWT Utilities', () => {
     it('should create tokens with different expiry times', () => {
       const token1 = createAccessToken(userId, email, role)
       const token2 = createAccessToken(userId, email, role)
-      
+
       const decoded1 = jwt.decode(token1) as jwt.JwtPayload & { exp: number }
       const decoded2 = jwt.decode(token2) as jwt.JwtPayload & { exp: number }
-      
+
       // Tokens should have similar expiry times (within 1 second)
       expect(Math.abs(decoded1.exp - decoded2.exp)).toBeLessThan(2)
     })
@@ -73,12 +77,15 @@ describe('JWT Utilities', () => {
   describe('createRefreshToken', () => {
     it('should create a valid refresh token', () => {
       const token = createRefreshToken(userId)
-      
+
       expect(typeof token).toBe('string')
       expect(token.length).toBeGreaterThan(0)
-      
+
       // Verify token structure
-      const decoded = jwt.decode(token) as jwt.JwtPayload & { userId: string; tokenId: string }
+      const decoded = jwt.decode(token) as jwt.JwtPayload & {
+        userId: string
+        tokenId: string
+      }
       expect(decoded.userId).toBe(userId)
       expect(decoded.tokenId).toBeDefined()
       expect(typeof decoded.tokenId).toBe('string')
@@ -89,10 +96,14 @@ describe('JWT Utilities', () => {
     it('should create unique token IDs', () => {
       const token1 = createRefreshToken(userId)
       const token2 = createRefreshToken(userId)
-      
-      const decoded1 = jwt.decode(token1) as jwt.JwtPayload & { tokenId: string }
-      const decoded2 = jwt.decode(token2) as jwt.JwtPayload & { tokenId: string }
-      
+
+      const decoded1 = jwt.decode(token1) as jwt.JwtPayload & {
+        tokenId: string
+      }
+      const decoded2 = jwt.decode(token2) as jwt.JwtPayload & {
+        tokenId: string
+      }
+
       expect(decoded1.tokenId).not.toBe(decoded2.tokenId)
     })
   })
@@ -100,16 +111,20 @@ describe('JWT Utilities', () => {
   describe('createTokenPair', () => {
     it('should create both access and refresh tokens', () => {
       const tokenPair = createTokenPair(userId, email, role)
-      
+
       expect(tokenPair.accessToken).toBeDefined()
       expect(tokenPair.refreshToken).toBeDefined()
       expect(tokenPair.tokenType).toBe('Bearer')
       expect(tokenPair.expiresIn).toBeGreaterThan(0)
-      
+
       // Verify both tokens are valid
-      const accessDecoded = jwt.decode(tokenPair.accessToken) as jwt.JwtPayload & { userId: string }
-      const refreshDecoded = jwt.decode(tokenPair.refreshToken) as jwt.JwtPayload & { userId: string }
-      
+      const accessDecoded = jwt.decode(
+        tokenPair.accessToken
+      ) as jwt.JwtPayload & { userId: string }
+      const refreshDecoded = jwt.decode(
+        tokenPair.refreshToken
+      ) as jwt.JwtPayload & { userId: string }
+
       expect(accessDecoded.userId).toBe(userId)
       expect(refreshDecoded.userId).toBe(userId)
     })
@@ -119,7 +134,7 @@ describe('JWT Utilities', () => {
     it('should verify valid access token', () => {
       const token = createAccessToken(userId, email, role)
       const payload = verifyAccessToken(token)
-      
+
       expect(payload.userId).toBe(userId)
       expect(payload.email).toBe(email)
       expect(payload.role).toBe(role)
@@ -128,8 +143,9 @@ describe('JWT Utilities', () => {
     })
 
     it('should throw InvalidTokenError for malformed token', () => {
-      expect(() => verifyAccessToken('invalid-token'))
-        .toThrow(InvalidTokenError)
+      expect(() => verifyAccessToken('invalid-token')).toThrow(
+        InvalidTokenError
+      )
     })
 
     it('should throw TokenExpiredError for expired token', () => {
@@ -140,24 +156,22 @@ describe('JWT Utilities', () => {
         config.accessTokenSecret,
         { expiresIn: '1ms', issuer: config.issuer, subject: userId }
       )
-      
+
       // Wait for token to expire
       setTimeout(() => {
-        expect(() => verifyAccessToken(expiredToken))
-          .toThrow(TokenExpiredError)
+        expect(() => verifyAccessToken(expiredToken)).toThrow(TokenExpiredError)
       }, 10)
     })
 
     it('should throw InvalidTokenError for wrong secret', () => {
       const config = getJWTConfig()
-      const token = jwt.sign(
-        { userId, email, role },
-        'wrong-secret',
-        { expiresIn: '15m', issuer: config.issuer, subject: userId }
-      )
-      
-      expect(() => verifyAccessToken(token))
-        .toThrow(InvalidTokenError)
+      const token = jwt.sign({ userId, email, role }, 'wrong-secret', {
+        expiresIn: '15m',
+        issuer: config.issuer,
+        subject: userId,
+      })
+
+      expect(() => verifyAccessToken(token)).toThrow(InvalidTokenError)
     })
   })
 
@@ -165,7 +179,7 @@ describe('JWT Utilities', () => {
     it('should verify valid refresh token', () => {
       const token = createRefreshToken(userId)
       const payload = verifyRefreshToken(token)
-      
+
       expect(payload.userId).toBe(userId)
       expect(payload.tokenId).toBeDefined()
       expect(payload.iat).toBeDefined()
@@ -173,8 +187,9 @@ describe('JWT Utilities', () => {
     })
 
     it('should throw InvalidTokenError for malformed token', () => {
-      expect(() => verifyRefreshToken('invalid-token'))
-        .toThrow(InvalidTokenError)
+      expect(() => verifyRefreshToken('invalid-token')).toThrow(
+        InvalidTokenError
+      )
     })
   })
 
@@ -182,7 +197,7 @@ describe('JWT Utilities', () => {
     it('should extract token from valid Bearer header', () => {
       const token = 'valid-token-123'
       const header = `Bearer ${token}`
-      
+
       const extracted = extractTokenFromHeader(header)
       expect(extracted).toBe(token)
     })
@@ -205,7 +220,7 @@ describe('JWT Utilities', () => {
       const token = createAccessToken(userId, email, role)
       const config = getJWTConfig()
       const expired = isTokenExpired(token, config.accessTokenSecret)
-      
+
       expect(expired).toBe(false)
     })
 
@@ -216,7 +231,7 @@ describe('JWT Utilities', () => {
         config.accessTokenSecret,
         { expiresIn: '1ms', issuer: config.issuer, subject: userId }
       )
-      
+
       setTimeout(() => {
         const expired = isTokenExpired(expiredToken, config.accessTokenSecret)
         expect(expired).toBe(true)
@@ -233,8 +248,12 @@ describe('JWT Utilities', () => {
   describe('decodeTokenUnsafe', () => {
     it('should decode valid token without verification', () => {
       const token = createAccessToken(userId, email, role)
-      const decoded = decodeTokenUnsafe(token) as jwt.JwtPayload & { userId: string; email: string; role: string }
-      
+      const decoded = decodeTokenUnsafe(token) as jwt.JwtPayload & {
+        userId: string
+        email: string
+        role: string
+      }
+
       expect(decoded?.userId).toBe(userId)
       expect(decoded?.email).toBe(email)
       expect(decoded?.role).toBe(role)
@@ -250,7 +269,7 @@ describe('JWT Utilities', () => {
     it('should return remaining time for valid token', () => {
       const token = createAccessToken(userId, email, role)
       const remaining = getTokenRemainingTime(token)
-      
+
       expect(remaining).toBeGreaterThan(0)
       expect(remaining).toBeLessThanOrEqual(15 * 60) // 15 minutes in seconds
     })
@@ -267,7 +286,7 @@ describe('JWT Utilities', () => {
         config.accessTokenSecret,
         { expiresIn: '1ms', issuer: config.issuer, subject: userId }
       )
-      
+
       setTimeout(() => {
         const remaining = getTokenRemainingTime(expiredToken)
         expect(remaining).toBe(0)
@@ -279,7 +298,7 @@ describe('JWT Utilities', () => {
     it('should return false for fresh token', () => {
       const token = createAccessToken(userId, email, role)
       const shouldRefresh = shouldRefreshToken(token, 300) // 5 minutes threshold
-      
+
       expect(shouldRefresh).toBe(false)
     })
 
@@ -291,7 +310,7 @@ describe('JWT Utilities', () => {
         config.accessTokenSecret,
         { expiresIn: '2m', issuer: config.issuer, subject: userId }
       )
-      
+
       const shouldRefresh = shouldRefreshToken(shortToken, 300) // 5 minutes threshold
       expect(shouldRefresh).toBe(true)
     })
@@ -311,54 +330,62 @@ describe('JWT Utilities', () => {
       const consoleSpy = jest.spyOn(console, 'warn').mockImplementation()
       const originalAccessSecret = process.env.JWT_ACCESS_SECRET
       const originalRefreshSecret = process.env.JWT_REFRESH_SECRET
-      
+
       delete process.env.JWT_ACCESS_SECRET
       delete process.env.JWT_REFRESH_SECRET
-      
+
       validateJWTConfig()
-      
+
       expect(consoleSpy).toHaveBeenCalledWith(
         expect.stringContaining('Missing JWT environment variables')
       )
-      
+
       // Restore environment variables
-      if (originalAccessSecret) process.env.JWT_ACCESS_SECRET = originalAccessSecret
-      if (originalRefreshSecret) process.env.JWT_REFRESH_SECRET = originalRefreshSecret
-      
+      if (originalAccessSecret)
+        process.env.JWT_ACCESS_SECRET = originalAccessSecret
+      if (originalRefreshSecret)
+        process.env.JWT_REFRESH_SECRET = originalRefreshSecret
+
       consoleSpy.mockRestore()
     })
 
     it('should throw in production with missing secrets', () => {
       const originalNodeEnv = process.env.NODE_ENV
       const originalAccessSecret = process.env.JWT_ACCESS_SECRET
-      
+
       process.env.NODE_ENV = 'production'
       delete process.env.JWT_ACCESS_SECRET
-      
-      expect(() => validateJWTConfig())
-        .toThrow('JWT secrets must be set in production environment')
-        
+
+      expect(() => validateJWTConfig()).toThrow(
+        'JWT secrets must be set in production environment'
+      )
+
       // Restore environment variables
       process.env.NODE_ENV = originalNodeEnv
-      if (originalAccessSecret) process.env.JWT_ACCESS_SECRET = originalAccessSecret
+      if (originalAccessSecret)
+        process.env.JWT_ACCESS_SECRET = originalAccessSecret
     })
 
     it('should throw in production with default secrets', () => {
       const originalNodeEnv = process.env.NODE_ENV
       const originalAccessSecret = process.env.JWT_ACCESS_SECRET
       const originalRefreshSecret = process.env.JWT_REFRESH_SECRET
-      
+
       process.env.NODE_ENV = 'production'
-      process.env.JWT_ACCESS_SECRET = 'cubcen-access-secret-change-in-production'
+      process.env.JWT_ACCESS_SECRET =
+        'cubcen-access-secret-change-in-production'
       process.env.JWT_REFRESH_SECRET = 'some-other-secret'
-      
-      expect(() => validateJWTConfig())
-        .toThrow('Default JWT secrets detected in production')
-        
+
+      expect(() => validateJWTConfig()).toThrow(
+        'Default JWT secrets detected in production'
+      )
+
       // Restore environment variables
       process.env.NODE_ENV = originalNodeEnv
-      if (originalAccessSecret) process.env.JWT_ACCESS_SECRET = originalAccessSecret
-      if (originalRefreshSecret) process.env.JWT_REFRESH_SECRET = originalRefreshSecret
+      if (originalAccessSecret)
+        process.env.JWT_ACCESS_SECRET = originalAccessSecret
+      if (originalRefreshSecret)
+        process.env.JWT_REFRESH_SECRET = originalRefreshSecret
     })
   })
 })

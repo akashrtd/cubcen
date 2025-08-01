@@ -1,6 +1,12 @@
 'use client'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
@@ -21,7 +27,12 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import { AnalyticsData } from '@/services/analytics'
-import { TrendingUp, BarChart3, PieChart as PieChartIcon, Activity } from 'lucide-react'
+import {
+  TrendingUp,
+  BarChart3,
+  PieChart as PieChartIcon,
+  Activity,
+} from 'lucide-react'
 
 interface PerformanceChartsProps {
   data: AnalyticsData
@@ -105,9 +116,9 @@ export function PerformanceCharts({ data, loading }: PerformanceChartsProps) {
           <ResponsiveContainer width="100%" height={300}>
             <AreaChart data={data.dailyTaskTrends}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis 
-                dataKey="date" 
-                tickFormatter={(value) => new Date(value).toLocaleDateString()}
+              <XAxis
+                dataKey="date"
+                tickFormatter={value => new Date(value).toLocaleDateString()}
               />
               <YAxis />
               <Tooltip content={<CustomTooltip />} />
@@ -155,15 +166,21 @@ export function PerformanceCharts({ data, loading }: PerformanceChartsProps) {
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  label={({ name, percent }) =>
+                    `${name} ${(percent * 100).toFixed(0)}%`
+                  }
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="count"
                 >
                   {data.tasksByStatus.map((entry, index) => (
-                    <Cell 
-                      key={`cell-${index}`} 
-                      fill={STATUS_COLORS[entry.status as keyof typeof STATUS_COLORS] || COLORS.primary} 
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={
+                        STATUS_COLORS[
+                          entry.status as keyof typeof STATUS_COLORS
+                        ] || COLORS.primary
+                      }
                     />
                   ))}
                 </Pie>
@@ -172,12 +189,18 @@ export function PerformanceCharts({ data, loading }: PerformanceChartsProps) {
             </ResponsiveContainer>
             <div className="flex flex-wrap gap-2 mt-4">
               {data.tasksByStatus.map((item, index) => (
-                <Badge 
-                  key={index} 
+                <Badge
+                  key={index}
                   variant="outline"
-                  style={{ 
-                    borderColor: STATUS_COLORS[item.status as keyof typeof STATUS_COLORS] || COLORS.primary,
-                    color: STATUS_COLORS[item.status as keyof typeof STATUS_COLORS] || COLORS.primary
+                  style={{
+                    borderColor:
+                      STATUS_COLORS[
+                        item.status as keyof typeof STATUS_COLORS
+                      ] || COLORS.primary,
+                    color:
+                      STATUS_COLORS[
+                        item.status as keyof typeof STATUS_COLORS
+                      ] || COLORS.primary,
                   }}
                 >
                   {item.status}: {item.count}
@@ -194,9 +217,7 @@ export function PerformanceCharts({ data, loading }: PerformanceChartsProps) {
               <BarChart3 className="mr-2 h-5 w-5 text-cubcen-primary" />
               Task Priority Distribution
             </CardTitle>
-            <CardDescription>
-              Tasks organized by priority level
-            </CardDescription>
+            <CardDescription>Tasks organized by priority level</CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={250}>
@@ -205,15 +226,19 @@ export function PerformanceCharts({ data, loading }: PerformanceChartsProps) {
                 <XAxis dataKey="priority" />
                 <YAxis />
                 <Tooltip content={<CustomTooltip />} />
-                <Bar 
-                  dataKey="count" 
+                <Bar
+                  dataKey="count"
                   fill={COLORS.primary}
                   radius={[4, 4, 0, 0]}
                 >
                   {data.tasksByPriority.map((entry, index) => (
-                    <Cell 
-                      key={`cell-${index}`} 
-                      fill={PRIORITY_COLORS[entry.priority as keyof typeof PRIORITY_COLORS] || COLORS.primary} 
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={
+                        PRIORITY_COLORS[
+                          entry.priority as keyof typeof PRIORITY_COLORS
+                        ] || COLORS.primary
+                      }
                     />
                   ))}
                 </Bar>
@@ -221,12 +246,18 @@ export function PerformanceCharts({ data, loading }: PerformanceChartsProps) {
             </ResponsiveContainer>
             <div className="flex flex-wrap gap-2 mt-4">
               {data.tasksByPriority.map((item, index) => (
-                <Badge 
-                  key={index} 
+                <Badge
+                  key={index}
                   variant="outline"
-                  style={{ 
-                    borderColor: PRIORITY_COLORS[item.priority as keyof typeof PRIORITY_COLORS] || COLORS.primary,
-                    color: PRIORITY_COLORS[item.priority as keyof typeof PRIORITY_COLORS] || COLORS.primary
+                  style={{
+                    borderColor:
+                      PRIORITY_COLORS[
+                        item.priority as keyof typeof PRIORITY_COLORS
+                      ] || COLORS.primary,
+                    color:
+                      PRIORITY_COLORS[
+                        item.priority as keyof typeof PRIORITY_COLORS
+                      ] || COLORS.primary,
                   }}
                 >
                   {item.priority}: {item.count}
@@ -254,8 +285,8 @@ export function PerformanceCharts({ data, loading }: PerformanceChartsProps) {
                 <XAxis type="number" />
                 <YAxis dataKey="platform" type="category" width={100} />
                 <Tooltip content={<CustomTooltip />} />
-                <Bar 
-                  dataKey="count" 
+                <Bar
+                  dataKey="count"
                   fill={COLORS.secondary}
                   radius={[0, 4, 4, 0]}
                 />
@@ -271,9 +302,7 @@ export function PerformanceCharts({ data, loading }: PerformanceChartsProps) {
               <TrendingUp className="mr-2 h-5 w-5 text-cubcen-primary" />
               Top Performing Agents
             </CardTitle>
-            <CardDescription>
-              Agents with highest success rates
-            </CardDescription>
+            <CardDescription>Agents with highest success rates</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -281,16 +310,28 @@ export function PerformanceCharts({ data, loading }: PerformanceChartsProps) {
                 .sort((a, b) => b.successRate - a.successRate)
                 .slice(0, 5)
                 .map((agent, index) => (
-                  <div key={agent.agentId} className="flex items-center justify-between">
+                  <div
+                    key={agent.agentId}
+                    className="flex items-center justify-between"
+                  >
                     <div className="flex-1">
-                      <div className="font-medium text-sm">{agent.agentName}</div>
+                      <div className="font-medium text-sm">
+                        {agent.agentName}
+                      </div>
                       <div className="text-xs text-muted-foreground">
-                        {agent.totalTasks} tasks • {agent.averageResponseTime}ms avg
+                        {agent.totalTasks} tasks • {agent.averageResponseTime}ms
+                        avg
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Badge 
-                        variant={agent.successRate >= 90 ? 'default' : agent.successRate >= 70 ? 'secondary' : 'destructive'}
+                      <Badge
+                        variant={
+                          agent.successRate >= 90
+                            ? 'default'
+                            : agent.successRate >= 70
+                              ? 'secondary'
+                              : 'destructive'
+                        }
                         className="text-xs"
                       >
                         {agent.successRate.toFixed(1)}%

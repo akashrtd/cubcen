@@ -12,10 +12,7 @@ import {
   useSensors,
   closestCorners,
 } from '@dnd-kit/core'
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable'
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -54,19 +51,22 @@ const TASK_COLUMNS: Array<{
     id: 'PENDING',
     title: 'Pending',
     color: 'text-yellow-700 dark:text-yellow-300',
-    bgColor: 'bg-yellow-50 dark:bg-yellow-950/20 border-yellow-200 dark:border-yellow-800',
+    bgColor:
+      'bg-yellow-50 dark:bg-yellow-950/20 border-yellow-200 dark:border-yellow-800',
   },
   {
     id: 'RUNNING',
     title: 'In Progress',
     color: 'text-blue-700 dark:text-blue-300',
-    bgColor: 'bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800',
+    bgColor:
+      'bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800',
   },
   {
     id: 'COMPLETED',
     title: 'Completed',
     color: 'text-green-700 dark:text-green-300',
-    bgColor: 'bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800',
+    bgColor:
+      'bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800',
   },
   {
     id: 'FAILED',
@@ -114,29 +114,29 @@ export function TaskBoard({
     if (filters.search) {
       const searchLower = filters.search.toLowerCase()
       filtered = filtered.filter(
-        (task) =>
+        task =>
           task.name.toLowerCase().includes(searchLower) ||
           task.description?.toLowerCase().includes(searchLower)
       )
     }
 
     if (filters.agentId) {
-      filtered = filtered.filter((task) => task.agentId === filters.agentId)
+      filtered = filtered.filter(task => task.agentId === filters.agentId)
     }
 
     if (filters.priority) {
-      filtered = filtered.filter((task) => task.priority === filters.priority)
+      filtered = filtered.filter(task => task.priority === filters.priority)
     }
 
     if (filters.dateFrom) {
       filtered = filtered.filter(
-        (task) => new Date(task.createdAt) >= filters.dateFrom!
+        task => new Date(task.createdAt) >= filters.dateFrom!
       )
     }
 
     if (filters.dateTo) {
       filtered = filtered.filter(
-        (task) => new Date(task.createdAt) <= filters.dateTo!
+        task => new Date(task.createdAt) <= filters.dateTo!
       )
     }
 
@@ -144,12 +144,12 @@ export function TaskBoard({
   }, [tasks, filters])
 
   const getTasksByStatus = (status: TaskStatus) => {
-    return filteredTasks.filter((task) => task.status === status)
+    return filteredTasks.filter(task => task.status === status)
   }
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event
-    const task = filteredTasks.find((t) => t.id === active.id)
+    const task = filteredTasks.find(t => t.id === active.id)
     setActiveTask(task || null)
   }
 
@@ -167,7 +167,7 @@ export function TaskBoard({
     const newStatus = over.id as TaskStatus
 
     // Find the task being moved
-    const task = filteredTasks.find((t) => t.id === taskId)
+    const task = filteredTasks.find(t => t.id === taskId)
     if (!task || task.status === newStatus) return
 
     try {
@@ -203,7 +203,9 @@ export function TaskBoard({
     const tasks = getTasksByStatus(status)
     return {
       total: tasks.length,
-      high: tasks.filter((t) => t.priority === 'HIGH' || t.priority === 'CRITICAL').length,
+      high: tasks.filter(
+        t => t.priority === 'HIGH' || t.priority === 'CRITICAL'
+      ).length,
     }
   }
 
@@ -256,14 +258,19 @@ export function TaskBoard({
         onDragEnd={handleDragEnd}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {TASK_COLUMNS.map((column) => {
+          {TASK_COLUMNS.map(column => {
             const columnTasks = getTasksByStatus(column.id)
             const stats = getColumnStats(column.id)
 
             return (
-              <Card key={column.id} className={`${column.bgColor} min-h-[600px]`}>
+              <Card
+                key={column.id}
+                className={`${column.bgColor} min-h-[600px]`}
+              >
                 <CardHeader className="pb-4">
-                  <CardTitle className={`flex items-center justify-between ${column.color}`}>
+                  <CardTitle
+                    className={`flex items-center justify-between ${column.color}`}
+                  >
                     <span className="text-sm font-medium">{column.title}</span>
                     <div className="flex items-center gap-2">
                       <Badge variant="secondary" className="text-xs">
@@ -282,10 +289,10 @@ export function TaskBoard({
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <SortableContext
-                    items={columnTasks.map((task) => task.id)}
+                    items={columnTasks.map(task => task.id)}
                     strategy={verticalListSortingStrategy}
                   >
-                    {columnTasks.map((task) => (
+                    {columnTasks.map(task => (
                       <TaskCard
                         key={task.id}
                         task={task}

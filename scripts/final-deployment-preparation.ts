@@ -17,11 +17,12 @@ interface PreparationStep {
 }
 
 class FinalDeploymentPreparation {
-  private results: Array<{ name: string; success: boolean; message: string }> = []
+  private results: Array<{ name: string; success: boolean; message: string }> =
+    []
 
   async prepare(): Promise<void> {
     console.log('🚀 Final Deployment Preparation for Cubcen')
-    console.log('=' .repeat(60))
+    console.log('='.repeat(60))
     console.log('Preparing all systems for production deployment...\n')
 
     const steps: PreparationStep[] = [
@@ -29,50 +30,50 @@ class FinalDeploymentPreparation {
         name: 'Environment Setup',
         description: 'Ensure production environment is properly configured',
         critical: true,
-        execute: () => this.setupEnvironment()
+        execute: () => this.setupEnvironment(),
       },
       {
         name: 'Database Preparation',
         description: 'Setup and validate database configuration',
         critical: true,
-        execute: () => this.prepareDatabase()
+        execute: () => this.prepareDatabase(),
       },
       {
         name: 'Security Configuration',
         description: 'Validate and enhance security settings',
         critical: true,
-        execute: () => this.configureSecurity()
+        execute: () => this.configureSecurity(),
       },
       {
         name: 'Build Optimization',
         description: 'Optimize builds for production deployment',
         critical: true,
-        execute: () => this.optimizeBuilds()
+        execute: () => this.optimizeBuilds(),
       },
       {
         name: 'Health Check Setup',
         description: 'Configure monitoring and health checks',
         critical: false,
-        execute: () => this.setupHealthChecks()
+        execute: () => this.setupHealthChecks(),
       },
       {
         name: 'Documentation Validation',
         description: 'Ensure all documentation is complete',
         critical: false,
-        execute: () => this.validateDocumentation()
+        execute: () => this.validateDocumentation(),
       },
       {
         name: 'Backup Configuration',
         description: 'Setup backup and recovery systems',
         critical: false,
-        execute: () => this.configureBackups()
+        execute: () => this.configureBackups(),
       },
       {
         name: 'Performance Optimization',
         description: 'Apply performance optimizations',
         critical: false,
-        execute: () => this.optimizePerformance()
-      }
+        execute: () => this.optimizePerformance(),
+      },
     ]
 
     // Execute all preparation steps
@@ -85,19 +86,20 @@ class FinalDeploymentPreparation {
         this.results.push({
           name: step.name,
           success,
-          message: success ? 'Completed successfully' : 'Failed or had issues'
+          message: success ? 'Completed successfully' : 'Failed or had issues',
         })
 
-        const status = success ? '✅' : (step.critical ? '❌' : '⚠️')
+        const status = success ? '✅' : step.critical ? '❌' : '⚠️'
         console.log(`   ${status} ${success ? 'Success' : 'Failed'}\n`)
-
       } catch (error) {
         this.results.push({
           name: step.name,
           success: false,
-          message: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`
+          message: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
         })
-        console.log(`   ❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}\n`)
+        console.log(
+          `   ❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}\n`
+        )
       }
     }
 
@@ -105,8 +107,8 @@ class FinalDeploymentPreparation {
     await this.generateFinalReport()
 
     // Determine if deployment is ready
-    const criticalFailures = this.results.filter(r => !r.success && 
-      steps.find(s => s.name === r.name)?.critical
+    const criticalFailures = this.results.filter(
+      r => !r.success && steps.find(s => s.name === r.name)?.critical
     )
 
     if (criticalFailures.length === 0) {
@@ -135,7 +137,9 @@ class FinalDeploymentPreparation {
       const missingVars = requiredVars.filter(varName => !process.env[varName])
 
       if (missingVars.length > 0) {
-        console.log(`   Missing environment variables: ${missingVars.join(', ')}`)
+        console.log(
+          `   Missing environment variables: ${missingVars.join(', ')}`
+        )
         return false
       }
 
@@ -159,9 +163,9 @@ class FinalDeploymentPreparation {
       execSync('npx prisma generate', { stdio: 'pipe' })
 
       // Run database migrations
-      execSync('npx prisma migrate deploy', { 
+      execSync('npx prisma migrate deploy', {
         stdio: 'pipe',
-        env: { ...process.env }
+        env: { ...process.env },
       })
 
       // Validate database connection
@@ -194,7 +198,7 @@ class FinalDeploymentPreparation {
       const securityConfig = {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict' as const
+        sameSite: 'strict' as const,
       }
 
       return true
@@ -232,10 +236,14 @@ class FinalDeploymentPreparation {
 
       // Verify build artifacts exist
       const buildArtifacts = ['.next', 'dist']
-      const missingArtifacts = buildArtifacts.filter(artifact => !existsSync(artifact))
+      const missingArtifacts = buildArtifacts.filter(
+        artifact => !existsSync(artifact)
+      )
 
       if (missingArtifacts.length > 0) {
-        console.log(`   Missing build artifacts: ${missingArtifacts.join(', ')}`)
+        console.log(
+          `   Missing build artifacts: ${missingArtifacts.join(', ')}`
+        )
         return false
       }
 
@@ -249,10 +257,7 @@ class FinalDeploymentPreparation {
   private async setupHealthChecks(): Promise<boolean> {
     try {
       // Verify health check endpoints exist
-      const healthFiles = [
-        'src/backend/routes/health.ts',
-        'src/lib/health.ts'
-      ]
+      const healthFiles = ['src/backend/routes/health.ts', 'src/lib/health.ts']
 
       const missingFiles = healthFiles.filter(file => !existsSync(file))
       if (missingFiles.length > 0) {
@@ -285,7 +290,7 @@ done
       const requiredDocs = [
         'docs/user-guide.md',
         'docs/deployment.md',
-        'README.md'
+        'README.md',
       ]
 
       const missingDocs = requiredDocs.filter(doc => !existsSync(doc))
@@ -349,20 +354,23 @@ echo "Backup created: $BACKUP_FILE"
         monitoring: {
           enabled: true,
           interval: 30000,
-          metrics: ['cpu', 'memory', 'response_time', 'error_rate']
+          metrics: ['cpu', 'memory', 'response_time', 'error_rate'],
         },
         caching: {
           enabled: true,
           ttl: 300000,
-          maxSize: 1000
+          maxSize: 1000,
         },
         rateLimit: {
           windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000'),
-          max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '1000')
-        }
+          max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '1000'),
+        },
       }
 
-      writeFileSync('config/performance.json', JSON.stringify(perfConfig, null, 2))
+      writeFileSync(
+        'config/performance.json',
+        JSON.stringify(perfConfig, null, 2)
+      )
 
       return true
     } catch (error) {
@@ -374,15 +382,20 @@ echo "Backup created: $BACKUP_FILE"
   private async generateFinalReport(): Promise<void> {
     const report = {
       timestamp: new Date().toISOString(),
-      preparation_status: this.results.every(r => r.success) ? 'ready' : 'issues',
+      preparation_status: this.results.every(r => r.success)
+        ? 'ready'
+        : 'issues',
       results: this.results,
-      next_steps: this.generateNextSteps()
+      next_steps: this.generateNextSteps(),
     }
 
-    writeFileSync('deployment-preparation-report.json', JSON.stringify(report, null, 2))
+    writeFileSync(
+      'deployment-preparation-report.json',
+      JSON.stringify(report, null, 2)
+    )
 
     console.log('\n📊 Final Preparation Report')
-    console.log('=' .repeat(40))
+    console.log('='.repeat(40))
     this.results.forEach(result => {
       const status = result.success ? '✅' : '❌'
       console.log(`${status} ${result.name}: ${result.message}`)
@@ -392,20 +405,20 @@ echo "Backup created: $BACKUP_FILE"
 
   private generateNextSteps(): string[] {
     const failedSteps = this.results.filter(r => !r.success)
-    
+
     if (failedSteps.length === 0) {
       return [
         'All preparation steps completed successfully',
         'Run deployment script: ./scripts/deploy-production.sh',
         'Monitor deployment logs and health checks',
-        'Validate post-deployment functionality'
+        'Validate post-deployment functionality',
       ]
     } else {
       return [
         'Fix failed preparation steps listed above',
         'Re-run preparation script after fixes',
         'Do not deploy until all critical issues resolved',
-        'Contact development team if assistance needed'
+        'Contact development team if assistance needed',
       ]
     }
   }

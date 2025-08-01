@@ -10,7 +10,7 @@ import {
   NotificationEventType,
   NotificationChannelType,
   NotificationPriority,
-  NotificationStatus
+  NotificationStatus,
 } from '../../../types/notification'
 
 // Mock services
@@ -26,10 +26,10 @@ jest.mock('../../middleware/auth', () => ({
     req.user = {
       id: 'test-user-id',
       email: 'test@cubcen.com',
-      role: 'ADMIN'
+      role: 'ADMIN',
     }
     next()
-  })
+  }),
 }))
 
 // Mock the notification services
@@ -39,8 +39,8 @@ jest.mock('../../../services/notification', () => ({
     acknowledge: jest.fn(),
     markAsRead: jest.fn(),
     createNotification: jest.fn(),
-    send: jest.fn()
-  }
+    send: jest.fn(),
+  },
 }))
 
 jest.mock('../../../services/notification-preferences', () => ({
@@ -48,8 +48,8 @@ jest.mock('../../../services/notification-preferences', () => ({
     getUserPreferences: jest.fn(),
     updateUserPreference: jest.fn(),
     bulkUpdatePreferences: jest.fn(),
-    getNotificationChannels: jest.fn()
-  }
+    getNotificationChannels: jest.fn(),
+  },
 }))
 
 describe('Notification Routes', () => {
@@ -60,9 +60,9 @@ describe('Notification Routes', () => {
     app = express()
     app.use(express.json())
     app.use('/api/notifications', notificationRoutes)
-    
+
     prisma = new PrismaClient()
-    
+
     // Reset mocks
     jest.clearAllMocks()
   })
@@ -81,16 +81,16 @@ describe('Notification Routes', () => {
           message: 'Test message',
           priority: NotificationPriority.HIGH,
           status: NotificationStatus.SENT,
-          createdAt: new Date()
-        }
+          createdAt: new Date(),
+        },
       ]
 
       // Using imported notificationService
-      ;(notificationService.getNotifications as jest.Mock).mockResolvedValue(mockNotifications)
+      ;(notificationService.getNotifications as jest.Mock).mockResolvedValue(
+        mockNotifications
+      )
 
-      const response = await request(app)
-        .get('/api/notifications')
-        .expect(200)
+      const response = await request(app).get('/api/notifications').expect(200)
 
       expect(response.body).toMatchObject({
         success: true,
@@ -98,14 +98,17 @@ describe('Notification Routes', () => {
         pagination: {
           limit: 50,
           offset: 0,
-          total: 1
-        }
+          total: 1,
+        },
       })
 
-      expect(notificationService.getNotifications).toHaveBeenCalledWith('test-user-id', {
-        limit: 50,
-        offset: 0
-      })
+      expect(notificationService.getNotifications).toHaveBeenCalledWith(
+        'test-user-id',
+        {
+          limit: 50,
+          offset: 0,
+        }
+      )
     })
 
     it('should get notifications with query parameters', async () => {
@@ -119,30 +122,33 @@ describe('Notification Routes', () => {
           eventType: NotificationEventType.TASK_FAILED,
           priority: NotificationPriority.HIGH,
           limit: 10,
-          offset: 20
+          offset: 20,
         })
         .expect(200)
 
-      expect(notificationService.getNotifications).toHaveBeenCalledWith('test-user-id', {
-        status: NotificationStatus.PENDING,
-        eventType: NotificationEventType.TASK_FAILED,
-        priority: NotificationPriority.HIGH,
-        limit: 10,
-        offset: 20
-      })
+      expect(notificationService.getNotifications).toHaveBeenCalledWith(
+        'test-user-id',
+        {
+          status: NotificationStatus.PENDING,
+          eventType: NotificationEventType.TASK_FAILED,
+          priority: NotificationPriority.HIGH,
+          limit: 10,
+          offset: 20,
+        }
+      )
     })
 
     it('should handle service errors', async () => {
       const { notificationService } = require('../../../services/notification')
-      notificationService.getNotifications.mockRejectedValue(new Error('Database error'))
+      notificationService.getNotifications.mockRejectedValue(
+        new Error('Database error')
+      )
 
-      const response = await request(app)
-        .get('/api/notifications')
-        .expect(500)
+      const response = await request(app).get('/api/notifications').expect(500)
 
       expect(response.body).toMatchObject({
         success: false,
-        error: 'Failed to get notifications'
+        error: 'Failed to get notifications',
       })
     })
   })
@@ -159,16 +165,16 @@ describe('Notification Routes', () => {
               message: 'Test message',
               type: 'info',
               read: false,
-              createdAt: new Date()
-            }
+              createdAt: new Date(),
+            },
           ]),
-          count: jest.fn().mockResolvedValue(1)
-        }
+          count: jest.fn().mockResolvedValue(1),
+        },
       }
 
       // Mock the PrismaClient import
       jest.doMock('../../../generated/prisma', () => ({
-        PrismaClient: jest.fn(() => mockPrisma)
+        PrismaClient: jest.fn(() => mockPrisma),
       }))
 
       const response = await request(app)
@@ -178,7 +184,7 @@ describe('Notification Routes', () => {
       expect(response.body).toMatchObject({
         success: true,
         data: expect.any(Array),
-        unreadCount: expect.any(Number)
+        unreadCount: expect.any(Number),
       })
     })
 
@@ -186,12 +192,12 @@ describe('Notification Routes', () => {
       const mockPrisma = {
         inAppNotification: {
           findMany: jest.fn().mockResolvedValue([]),
-          count: jest.fn().mockResolvedValue(0)
-        }
+          count: jest.fn().mockResolvedValue(0),
+        },
       }
 
       jest.doMock('../../../generated/prisma', () => ({
-        PrismaClient: jest.fn(() => mockPrisma)
+        PrismaClient: jest.fn(() => mockPrisma),
       }))
 
       await request(app)
@@ -202,7 +208,7 @@ describe('Notification Routes', () => {
       expect(mockPrisma.inAppNotification.findMany).toHaveBeenCalledWith({
         where: { userId: 'test-user-id', read: false },
         orderBy: { createdAt: 'desc' },
-        take: 20
+        take: 20,
       })
     })
   })
@@ -218,15 +224,20 @@ describe('Notification Routes', () => {
 
       expect(response.body).toMatchObject({
         success: true,
-        message: 'Notification acknowledged successfully'
+        message: 'Notification acknowledged successfully',
       })
 
-      expect(notificationService.acknowledge).toHaveBeenCalledWith('notification-123', 'test-user-id')
+      expect(notificationService.acknowledge).toHaveBeenCalledWith(
+        'notification-123',
+        'test-user-id'
+      )
     })
 
     it('should handle acknowledgment errors', async () => {
       const { notificationService } = require('../../../services/notification')
-      notificationService.acknowledge.mockRejectedValue(new Error('Notification not found'))
+      notificationService.acknowledge.mockRejectedValue(
+        new Error('Notification not found')
+      )
 
       const response = await request(app)
         .post('/api/notifications/non-existent/acknowledge')
@@ -234,7 +245,7 @@ describe('Notification Routes', () => {
 
       expect(response.body).toMatchObject({
         success: false,
-        error: 'Failed to acknowledge notification'
+        error: 'Failed to acknowledge notification',
       })
     })
   })
@@ -250,10 +261,13 @@ describe('Notification Routes', () => {
 
       expect(response.body).toMatchObject({
         success: true,
-        message: 'Notification marked as read'
+        message: 'Notification marked as read',
       })
 
-      expect(notificationService.markAsRead).toHaveBeenCalledWith('notification-123', 'test-user-id')
+      expect(notificationService.markAsRead).toHaveBeenCalledWith(
+        'notification-123',
+        'test-user-id'
+      )
     })
   })
 
@@ -264,7 +278,7 @@ describe('Notification Routes', () => {
         id: 'new-notification',
         eventType: NotificationEventType.SYSTEM_ERROR,
         title: 'Test Alert',
-        message: 'Test message'
+        message: 'Test message',
       }
 
       notificationService.createNotification.mockResolvedValue(mockNotification)
@@ -276,13 +290,13 @@ describe('Notification Routes', () => {
           eventType: NotificationEventType.SYSTEM_ERROR,
           title: 'Test Alert',
           message: 'Test message',
-          priority: NotificationPriority.HIGH
+          priority: NotificationPriority.HIGH,
         })
         .expect(201)
 
       expect(response.body).toMatchObject({
         success: true,
-        data: mockNotification
+        data: mockNotification,
       })
 
       expect(notificationService.createNotification).toHaveBeenCalledWith(
@@ -296,12 +310,14 @@ describe('Notification Routes', () => {
 
     it('should reject non-admin users', async () => {
       // Mock non-admin user
-      const mockAuthMiddleware = authMiddleware as jest.MockedFunction<typeof authMiddleware>
+      const mockAuthMiddleware = authMiddleware as jest.MockedFunction<
+        typeof authMiddleware
+      >
       mockAuthMiddleware.mockImplementationOnce((req, res, next) => {
         req.user = {
           id: 'test-user-id',
           email: 'test@cubcen.com',
-          role: 'VIEWER'
+          role: 'VIEWER',
         }
         next()
       })
@@ -311,13 +327,13 @@ describe('Notification Routes', () => {
         .send({
           eventType: NotificationEventType.SYSTEM_ERROR,
           title: 'Test Alert',
-          message: 'Test message'
+          message: 'Test message',
         })
         .expect(403)
 
       expect(response.body).toMatchObject({
         success: false,
-        error: 'Insufficient permissions'
+        error: 'Insufficient permissions',
       })
     })
 
@@ -326,7 +342,7 @@ describe('Notification Routes', () => {
         .post('/api/notifications')
         .send({
           // Missing required fields
-          title: 'Test Alert'
+          title: 'Test Alert',
         })
         .expect(400)
 
@@ -341,12 +357,16 @@ describe('Notification Routes', () => {
           id: 'pref-1',
           eventType: NotificationEventType.AGENT_DOWN,
           channels: [NotificationChannelType.EMAIL],
-          enabled: true
-        }
+          enabled: true,
+        },
       ]
 
-      const { notificationPreferencesService } = require('../../../services/notification-preferences')
-      notificationPreferencesService.getUserPreferences.mockResolvedValue(mockPreferences)
+      const {
+        notificationPreferencesService,
+      } = require('../../../services/notification-preferences')
+      notificationPreferencesService.getUserPreferences.mockResolvedValue(
+        mockPreferences
+      )
 
       const response = await request(app)
         .get('/api/notifications/preferences')
@@ -354,10 +374,12 @@ describe('Notification Routes', () => {
 
       expect(response.body).toMatchObject({
         success: true,
-        data: mockPreferences
+        data: mockPreferences,
       })
 
-      expect(notificationPreferencesService.getUserPreferences).toHaveBeenCalledWith('test-user-id')
+      expect(
+        notificationPreferencesService.getUserPreferences
+      ).toHaveBeenCalledWith('test-user-id')
     })
   })
 
@@ -366,34 +388,49 @@ describe('Notification Routes', () => {
       const mockPreference = {
         id: 'pref-1',
         eventType: NotificationEventType.TASK_FAILED,
-        channels: [NotificationChannelType.IN_APP, NotificationChannelType.EMAIL],
-        enabled: true
+        channels: [
+          NotificationChannelType.IN_APP,
+          NotificationChannelType.EMAIL,
+        ],
+        enabled: true,
       }
 
-      const { notificationPreferencesService } = require('../../../services/notification-preferences')
-      notificationPreferencesService.updateUserPreference.mockResolvedValue(mockPreference)
+      const {
+        notificationPreferencesService,
+      } = require('../../../services/notification-preferences')
+      notificationPreferencesService.updateUserPreference.mockResolvedValue(
+        mockPreference
+      )
 
       const response = await request(app)
         .put('/api/notifications/preferences/TASK_FAILED')
         .send({
-          channels: [NotificationChannelType.IN_APP, NotificationChannelType.EMAIL],
+          channels: [
+            NotificationChannelType.IN_APP,
+            NotificationChannelType.EMAIL,
+          ],
           enabled: true,
-          escalationDelay: 30
+          escalationDelay: 30,
         })
         .expect(200)
 
       expect(response.body).toMatchObject({
         success: true,
-        data: mockPreference
+        data: mockPreference,
       })
 
-      expect(notificationPreferencesService.updateUserPreference).toHaveBeenCalledWith(
+      expect(
+        notificationPreferencesService.updateUserPreference
+      ).toHaveBeenCalledWith(
         'test-user-id',
         NotificationEventType.TASK_FAILED,
         {
-          channels: [NotificationChannelType.IN_APP, NotificationChannelType.EMAIL],
+          channels: [
+            NotificationChannelType.IN_APP,
+            NotificationChannelType.EMAIL,
+          ],
           enabled: true,
-          escalationDelay: 30
+          escalationDelay: 30,
         }
       )
     })
@@ -403,7 +440,7 @@ describe('Notification Routes', () => {
         .put('/api/notifications/preferences/TASK_FAILED')
         .send({
           // Missing required fields
-          enabled: true
+          enabled: true,
         })
         .expect(400)
 
@@ -413,20 +450,24 @@ describe('Notification Routes', () => {
 
   describe('PUT /api/notifications/preferences', () => {
     it('should bulk update preferences', async () => {
-      const { notificationPreferencesService } = require('../../../services/notification-preferences')
-      notificationPreferencesService.bulkUpdatePreferences.mockResolvedValue(undefined)
+      const {
+        notificationPreferencesService,
+      } = require('../../../services/notification-preferences')
+      notificationPreferencesService.bulkUpdatePreferences.mockResolvedValue(
+        undefined
+      )
 
       const preferences = [
         {
           eventType: NotificationEventType.AGENT_DOWN,
           channels: [NotificationChannelType.EMAIL],
-          enabled: true
+          enabled: true,
         },
         {
           eventType: NotificationEventType.TASK_FAILED,
           channels: [NotificationChannelType.IN_APP],
-          enabled: false
-        }
+          enabled: false,
+        },
       ]
 
       const response = await request(app)
@@ -436,13 +477,12 @@ describe('Notification Routes', () => {
 
       expect(response.body).toMatchObject({
         success: true,
-        message: 'Preferences updated successfully'
+        message: 'Preferences updated successfully',
       })
 
-      expect(notificationPreferencesService.bulkUpdatePreferences).toHaveBeenCalledWith(
-        'test-user-id',
-        preferences
-      )
+      expect(
+        notificationPreferencesService.bulkUpdatePreferences
+      ).toHaveBeenCalledWith('test-user-id', preferences)
     })
   })
 
@@ -453,12 +493,16 @@ describe('Notification Routes', () => {
           id: 'channel-1',
           type: NotificationChannelType.EMAIL,
           name: 'Email Channel',
-          enabled: true
-        }
+          enabled: true,
+        },
       ]
 
-      const { notificationPreferencesService } = require('../../../services/notification-preferences')
-      notificationPreferencesService.getNotificationChannels.mockResolvedValue(mockChannels)
+      const {
+        notificationPreferencesService,
+      } = require('../../../services/notification-preferences')
+      notificationPreferencesService.getNotificationChannels.mockResolvedValue(
+        mockChannels
+      )
 
       const response = await request(app)
         .get('/api/notifications/channels')
@@ -466,17 +510,19 @@ describe('Notification Routes', () => {
 
       expect(response.body).toMatchObject({
         success: true,
-        data: mockChannels
+        data: mockChannels,
       })
     })
 
     it('should reject non-admin users', async () => {
-      const mockAuthMiddleware = authMiddleware as jest.MockedFunction<typeof authMiddleware>
+      const mockAuthMiddleware = authMiddleware as jest.MockedFunction<
+        typeof authMiddleware
+      >
       mockAuthMiddleware.mockImplementationOnce((req, res, next) => {
         req.user = {
           id: 'test-user-id',
           email: 'test@cubcen.com',
-          role: 'VIEWER'
+          role: 'VIEWER',
         }
         next()
       })
@@ -487,7 +533,7 @@ describe('Notification Routes', () => {
 
       expect(response.body).toMatchObject({
         success: false,
-        error: 'Insufficient permissions'
+        error: 'Insufficient permissions',
       })
     })
   })
@@ -498,7 +544,7 @@ describe('Notification Routes', () => {
       const mockNotification = {
         id: 'test-notification',
         title: 'Test Notification',
-        message: 'Test notification from Cubcen'
+        message: 'Test notification from Cubcen',
       }
 
       notificationService.createNotification.mockResolvedValue(mockNotification)
@@ -508,14 +554,14 @@ describe('Notification Routes', () => {
         .post('/api/notifications/test')
         .send({
           channel: NotificationChannelType.EMAIL,
-          message: 'Custom test message'
+          message: 'Custom test message',
         })
         .expect(200)
 
       expect(response.body).toMatchObject({
         success: true,
         message: 'Test notification sent successfully',
-        data: mockNotification
+        data: mockNotification,
       })
 
       expect(notificationService.createNotification).toHaveBeenCalledWith(
@@ -525,7 +571,7 @@ describe('Notification Routes', () => {
         {
           priority: NotificationPriority.LOW,
           userId: 'test-user-id',
-          channels: [NotificationChannelType.EMAIL]
+          channels: [NotificationChannelType.EMAIL],
         }
       )
     })
@@ -535,10 +581,7 @@ describe('Notification Routes', () => {
       notificationService.createNotification.mockResolvedValue({})
       notificationService.send.mockResolvedValue(undefined)
 
-      await request(app)
-        .post('/api/notifications/test')
-        .send({})
-        .expect(200)
+      await request(app).post('/api/notifications/test').send({}).expect(200)
 
       expect(notificationService.createNotification).toHaveBeenCalledWith(
         NotificationEventType.SYSTEM_ERROR,
@@ -561,15 +604,15 @@ describe('Notification Routes', () => {
 
     it('should handle service unavailable errors', async () => {
       const { notificationService } = require('../../../services/notification')
-      notificationService.getNotifications.mockRejectedValue(new Error('Service unavailable'))
+      notificationService.getNotifications.mockRejectedValue(
+        new Error('Service unavailable')
+      )
 
-      const response = await request(app)
-        .get('/api/notifications')
-        .expect(500)
+      const response = await request(app).get('/api/notifications').expect(500)
 
       expect(response.body).toMatchObject({
         success: false,
-        error: 'Failed to get notifications'
+        error: 'Failed to get notifications',
       })
     })
   })

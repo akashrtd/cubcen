@@ -51,13 +51,13 @@ export async function checkDatabaseHealth(): Promise<{
   try {
     // Test database connection with a simple query
     await prisma.$queryRaw`SELECT 1`
-    
+
     // Get database statistics
     const userCount = await prisma.user.count()
     const agentCount = await prisma.agent.count()
     const taskCount = await prisma.task.count()
     const platformCount = await prisma.platform.count()
-    
+
     return {
       status: 'healthy',
       details: {
@@ -99,7 +99,12 @@ export async function disconnectDatabase(): Promise<void> {
  * Database transaction wrapper with error handling
  */
 export async function withTransaction<T>(
-  callback: (tx: Omit<PrismaClient, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'>) => Promise<T>
+  callback: (
+    tx: Omit<
+      PrismaClient,
+      '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
+    >
+  ) => Promise<T>
 ): Promise<T> {
   try {
     return await prisma.$transaction(callback)

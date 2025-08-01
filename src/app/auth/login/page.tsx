@@ -6,7 +6,13 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Loader2, Eye, EyeOff } from 'lucide-react'
 
@@ -39,7 +45,7 @@ export default function LoginPage() {
     try {
       // TODO: Implement actual authentication
       await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate API call
-      
+
       // For now, just redirect to dashboard
       router.push('/dashboard')
     } catch {
@@ -77,7 +83,7 @@ export default function LoginPage() {
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
-              
+
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -85,12 +91,12 @@ export default function LoginPage() {
                   type="email"
                   placeholder="Enter your email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={e => setEmail(e.target.value)}
                   disabled={isLoading}
                   className="w-full"
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <div className="relative">
@@ -99,7 +105,7 @@ export default function LoginPage() {
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Enter your password"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={e => setPassword(e.target.value)}
                     disabled={isLoading}
                     className="w-full pr-10"
                   />
@@ -120,8 +126,8 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full bg-cubcen-primary hover:bg-cubcen-primary-hover"
                 disabled={isLoading}
               >
@@ -137,9 +143,11 @@ export default function LoginPage() {
             </form>
 
             <div className="mt-6 text-center text-sm">
-              <span className="text-muted-foreground">Don&apos;t have an account? </span>
-              <Link 
-                href="/auth/register" 
+              <span className="text-muted-foreground">
+                Don&apos;t have an account?{' '}
+              </span>
+              <Link
+                href="/auth/register"
                 className="text-cubcen-primary hover:text-cubcen-primary-hover font-medium"
               >
                 Sign up

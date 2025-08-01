@@ -7,7 +7,7 @@ export interface ServerToClientEvents {
   'agent:health': (data: AgentHealthUpdate) => void
   'agent:connected': (data: AgentConnectedEvent) => void
   'agent:disconnected': (data: AgentDisconnectedEvent) => void
-  
+
   // Task progress and completion
   'task:created': (data: TaskCreatedEvent) => void
   'task:started': (data: TaskStartedEvent) => void
@@ -15,7 +15,7 @@ export interface ServerToClientEvents {
   'task:completed': (data: TaskCompletedEvent) => void
   'task:failed': (data: TaskFailedEvent) => void
   'task:cancelled': (data: TaskCancelledEvent) => void
-  
+
   // Error and alert notifications
   'error:agent': (data: AgentErrorEvent) => void
   'error:task': (data: TaskErrorEvent) => void
@@ -23,11 +23,11 @@ export interface ServerToClientEvents {
   'alert:critical': (data: CriticalAlertEvent) => void
   'alert:warning': (data: WarningAlertEvent) => void
   'alert:info': (data: InfoAlertEvent) => void
-  
+
   // System notifications
   'system:maintenance': (data: MaintenanceEvent) => void
   'system:health': (data: SystemHealthEvent) => void
-  
+
   // Authentication events
   'auth:token_expired': () => void
   'auth:session_invalid': () => void
@@ -35,8 +35,11 @@ export interface ServerToClientEvents {
 
 export interface ClientToServerEvents {
   // Authentication
-  'auth:authenticate': (token: string, callback: (success: boolean, error?: string) => void) => void
-  
+  'auth:authenticate': (
+    token: string,
+    callback: (success: boolean, error?: string) => void
+  ) => void
+
   // Subscriptions
   'subscribe:agents': (agentIds?: string[]) => void
   'subscribe:tasks': (taskIds?: string[]) => void
@@ -44,9 +47,9 @@ export interface ClientToServerEvents {
   'unsubscribe:agents': (agentIds?: string[]) => void
   'unsubscribe:tasks': (taskIds?: string[]) => void
   'unsubscribe:platforms': (platformIds?: string[]) => void
-  
+
   // Heartbeat
-  'ping': (callback: (timestamp: number) => void) => void
+  ping: (callback: (timestamp: number) => void) => void
 }
 
 export interface InterServerEvents {

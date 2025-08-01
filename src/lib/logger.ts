@@ -49,14 +49,14 @@ export const logger = winston.createLogger({
         winston.format.simple()
       ),
     }),
-    
+
     // File transport for all logs
     new winston.transports.File({
       filename: path.join(logsDir, 'cubcen.log'),
       maxsize: 5242880, // 5MB
       maxFiles: 5,
     }),
-    
+
     // Separate file for errors
     new winston.transports.File({
       filename: path.join(logsDir, 'error.log'),
@@ -65,14 +65,14 @@ export const logger = winston.createLogger({
       maxFiles: 5,
     }),
   ],
-  
+
   // Handle uncaught exceptions and rejections
   exceptionHandlers: [
     new winston.transports.File({
       filename: path.join(logsDir, 'exceptions.log'),
     }),
   ],
-  
+
   rejectionHandlers: [
     new winston.transports.File({
       filename: path.join(logsDir, 'rejections.log'),
@@ -98,15 +98,15 @@ export const structuredLogger: Logger = {
   debug(message: string, context?: LogContext): void {
     logger.debug(message, context)
   },
-  
+
   info(message: string, context?: LogContext): void {
     logger.info(message, context)
   },
-  
+
   warn(message: string, context?: LogContext): void {
     logger.warn(message, context)
   },
-  
+
   error(message: string, error?: Error, context?: LogContext): void {
     const logData = {
       ...context,
@@ -120,7 +120,7 @@ export const structuredLogger: Logger = {
     }
     logger.error(message, logData)
   },
-  
+
   fatal(message: string, error?: Error, context?: LogContext): void {
     const logData = {
       ...context,

@@ -9,14 +9,14 @@ import morgan from 'morgan'
 import rateLimit from 'express-rate-limit'
 import session from 'express-session'
 import { logger } from '@/lib/logger'
-import { 
-  sanitizeInput, 
-  securityHeaders, 
-  csrfProtection, 
+import {
+  sanitizeInput,
+  securityHeaders,
+  csrfProtection,
   generateCsrfToken,
   suspiciousActivityDetection,
   AdvancedRateLimiter,
-  honeypotProtection
+  honeypotProtection,
 } from '@/backend/middleware/security'
 import { sessionManager } from '@/lib/session-manager'
 import { auditLogger, AuditEventType } from '@/lib/audit-logger'
@@ -36,7 +36,10 @@ import backupRoutes from '@/backend/routes/backup'
 import performanceRoutes from '@/backend/routes/performance'
 import { createWorkflowRoutes } from '@/backend/routes/workflows'
 import { setupSwagger } from '@/lib/swagger'
-import { validateApiVersion, handleVersionTransforms } from '@/lib/api-versioning'
+import {
+  validateApiVersion,
+  handleVersionTransforms,
+} from '@/lib/api-versioning'
 import { performanceMonitor } from '@/lib/performance-monitor'
 import { CacheWarmer } from '@/lib/cache'
 
@@ -68,35 +71,44 @@ const app = express()
 app.set('trust proxy', 1)
 
 // Session configuration
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'cubcen-session-secret-change-in-production',
-  name: 'cubcen.sid',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    sameSite: 'strict'
-  }
-}))
+app.use(
+  session({
+    secret:
+      process.env.SESSION_SECRET ||
+      'cubcen-session-secret-change-in-production',
+    name: 'cubcen.sid',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      sameSite: 'strict',
+    },
+  })
+)
 
 // Enhanced security middleware
 app.use(securityHeaders)
-app.use(helmet({
-  contentSecurityPolicy: false, // We handle CSP in securityHeaders
-  crossOriginEmbedderPolicy: false
-}))
+app.use(
+  helmet({
+    contentSecurityPolicy: false, // We handle CSP in securityHeaders
+    crossOriginEmbedderPolicy: false,
+  })
+)
 
 // CORS configuration
-app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? process.env.ALLOWED_ORIGINS?.split(',') || ['https://cubcen.com']
-    : ['http://localhost:3000', 'http://localhost:3001'],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-}))
+app.use(
+  cors({
+    origin:
+      process.env.NODE_ENV === 'production'
+        ? process.env.ALLOWED_ORIGINS?.split(',') || ['https://cubcen.com']
+        : ['http://localhost:3000', 'http://localhost:3001'],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  })
+)
 
 // Compression middleware
 app.use(compression())
@@ -116,22 +128,22 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 // Performance monitoring middleware
 app.use((req: Request, res: Response, next: NextFunction) => {
   const startTime = Date.now()
-  
+
   res.on('finish', () => {
     const responseTime = Date.now() - startTime
     const isError = res.statusCode >= 400
-    
+
     // Record API request metrics
     performanceMonitor.recordAPIRequest(responseTime, isError)
   })
-  
+
   next()
 })
 
 // Audit logging middleware for API requests
 app.use('/api', async (req: Request, res: Response, next: NextFunction) => {
   const startTime = Date.now()
-  
+
   // Log API access
   if (req.user) {
     await auditLogger.logEvent({
@@ -144,25 +156,25 @@ app.use('/api', async (req: Request, res: Response, next: NextFunction) => {
       metadata: {
         query: req.query,
         userAgent: req.get('User-Agent'),
-        requestId: req.headers['x-request-id']
+        requestId: req.headers['x-request-id'],
       },
       ipAddress: req.ip,
       userAgent: req.get('User-Agent'),
       requestId: req.headers['x-request-id'] as string,
       timestamp: new Date(),
-      success: true
+      success: true,
     })
   }
 
   // Track response time and status
   res.on('finish', async () => {
     const duration = Date.now() - startTime
-    
+
     // Log failed requests
     if (res.statusCode >= 400) {
       await auditLogger.logEvent({
         eventType: AuditEventType.SUSPICIOUS_ACTIVITY,
-        severity: res.statusCode >= 500 ? 'HIGH' as any : 'MEDIUM' as any,
+        severity: res.statusCode >= 500 ? ('HIGH' as any) : ('MEDIUM' as any),
         userId: req.user?.id,
         userEmail: req.user?.email,
         action: `${req.method} ${req.path}`,
@@ -172,13 +184,13 @@ app.use('/api', async (req: Request, res: Response, next: NextFunction) => {
           duration,
           query: req.query,
           body: req.body,
-          userAgent: req.get('User-Agent')
+          userAgent: req.get('User-Agent'),
         },
         ipAddress: req.ip,
         userAgent: req.get('User-Agent'),
         requestId: req.headers['x-request-id'] as string,
         timestamp: new Date(),
-        success: false
+        success: false,
       })
     }
   })
@@ -187,13 +199,15 @@ app.use('/api', async (req: Request, res: Response, next: NextFunction) => {
 })
 
 // Logging middleware
-app.use(morgan('combined', {
-  stream: {
-    write: (message: string) => {
-      logger.info(message.trim(), { source: 'http' })
-    }
-  }
-}))
+app.use(
+  morgan('combined', {
+    stream: {
+      write: (message: string) => {
+        logger.info(message.trim(), { source: 'http' })
+      },
+    },
+  })
+)
 
 // Rate limiting middleware
 const limiter = rateLimit({
@@ -203,8 +217,8 @@ const limiter = rateLimit({
     error: {
       code: 'RATE_LIMIT_EXCEEDED',
       message: 'Too many requests from this IP, please try again later.',
-      timestamp: new Date().toISOString()
-    }
+      timestamp: new Date().toISOString(),
+    },
   },
   standardHeaders: true,
   legacyHeaders: false,
@@ -213,18 +227,18 @@ const limiter = rateLimit({
       ip: req.ip,
       userAgent: req.get('User-Agent'),
       path: req.path,
-      method: req.method
+      method: req.method,
     })
-    
+
     res.status(429).json({
       error: {
         code: 'RATE_LIMIT_EXCEEDED',
         message: 'Too many requests from this IP, please try again later.',
         timestamp: new Date().toISOString(),
-        requestId: req.headers['x-request-id']
-      }
+        requestId: req.headers['x-request-id'],
+      },
     })
-  }
+  },
 })
 
 // Apply rate limiting to all API routes
@@ -244,18 +258,18 @@ const authLimiter = rateLimit({
       ip: req.ip,
       userAgent: req.get('User-Agent'),
       path: req.path,
-      method: req.method
+      method: req.method,
     })
-    
+
     res.status(429).json({
       error: {
         code: 'AUTH_RATE_LIMIT_EXCEEDED',
         message: 'Too many authentication attempts, please try again later.',
         timestamp: new Date().toISOString(),
-        requestId: req.headers['x-request-id']
-      }
+        requestId: req.headers['x-request-id'],
+      },
     })
-  }
+  },
 })
 
 // Security middleware
@@ -268,7 +282,7 @@ const authRateLimiter = new AdvancedRateLimiter({
   maxAttempts: 5,
   windowMs: 15 * 60 * 1000, // 15 minutes
   blockDurationMs: 60 * 1000, // 1 minute initial block
-  progressiveMultiplier: 2
+  progressiveMultiplier: 2,
 })
 
 // Setup API documentation
@@ -281,7 +295,12 @@ app.use('/health', healthRoutes)
 app.get('/api/cubcen/v1/csrf-token', generateCsrfToken)
 
 // API routes with enhanced security
-app.use('/api/cubcen/v1/auth', authLimiter, authRateLimiter.middleware(), authRoutes)
+app.use(
+  '/api/cubcen/v1/auth',
+  authLimiter,
+  authRateLimiter.middleware(),
+  authRoutes
+)
 app.use('/api/cubcen/v1/agents', agentRoutes)
 app.use('/api/cubcen/v1/tasks', taskRoutes)
 app.use('/api/cubcen/v1/platforms', platformRoutes)
@@ -303,16 +322,16 @@ app.use((req: Request, res: Response, next: NextFunction) => {
       path: req.path,
       method: req.method,
       ip: req.ip,
-      userAgent: req.get('User-Agent')
+      userAgent: req.get('User-Agent'),
     })
-    
+
     res.status(404).json({
       error: {
         code: 'ENDPOINT_NOT_FOUND',
         message: `API endpoint ${req.method} ${req.path} not found`,
         timestamp: new Date().toISOString(),
-        requestId: req.headers['x-request-id']
-      }
+        requestId: req.headers['x-request-id'],
+      },
     })
   } else {
     next()
@@ -320,68 +339,71 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 })
 
 // Global error handling middleware
-app.use((error: CustomError, req: Request, res: Response, next: NextFunction) => {
-  const requestId = req.headers['x-request-id'] as string || generateRequestId()
-  
-  // Log the error with context
-  logger.error('Unhandled server error', error, {
-    requestId,
-    path: req.path,
-    method: req.method,
-    ip: req.ip,
-    userAgent: req.get('User-Agent'),
-    body: req.body,
-    query: req.query,
-    params: req.params
-  })
-  
-  // Determine status code
-  let statusCode = error.statusCode || 500
-  let errorCode = error.code || 'INTERNAL_SERVER_ERROR'
-  let message = error.message || 'Internal server error'
-  
-  // Handle specific error types
-  if (error.name === 'ValidationError') {
-    statusCode = 400
-    errorCode = 'VALIDATION_ERROR'
-  } else if (error.name === 'UnauthorizedError') {
-    statusCode = 401
-    errorCode = 'UNAUTHORIZED'
-  } else if (error.name === 'ForbiddenError') {
-    statusCode = 403
-    errorCode = 'FORBIDDEN'
-  } else if (error.name === 'NotFoundError') {
-    statusCode = 404
-    errorCode = 'NOT_FOUND'
-  } else if (error.name === 'ConflictError') {
-    statusCode = 409
-    errorCode = 'CONFLICT'
-  }
-  
-  // Don't expose internal error details in production
-  if (process.env.NODE_ENV === 'production' && statusCode === 500) {
-    message = 'Internal server error'
-  }
-  
-  const errorResponse: ErrorResponse = {
-    error: {
-      code: errorCode,
-      message,
-      timestamp: new Date().toISOString(),
-      requestId
+app.use(
+  (error: CustomError, req: Request, res: Response, next: NextFunction) => {
+    const requestId =
+      (req.headers['x-request-id'] as string) || generateRequestId()
+
+    // Log the error with context
+    logger.error('Unhandled server error', error, {
+      requestId,
+      path: req.path,
+      method: req.method,
+      ip: req.ip,
+      userAgent: req.get('User-Agent'),
+      body: req.body,
+      query: req.query,
+      params: req.params,
+    })
+
+    // Determine status code
+    let statusCode = error.statusCode || 500
+    let errorCode = error.code || 'INTERNAL_SERVER_ERROR'
+    let message = error.message || 'Internal server error'
+
+    // Handle specific error types
+    if (error.name === 'ValidationError') {
+      statusCode = 400
+      errorCode = 'VALIDATION_ERROR'
+    } else if (error.name === 'UnauthorizedError') {
+      statusCode = 401
+      errorCode = 'UNAUTHORIZED'
+    } else if (error.name === 'ForbiddenError') {
+      statusCode = 403
+      errorCode = 'FORBIDDEN'
+    } else if (error.name === 'NotFoundError') {
+      statusCode = 404
+      errorCode = 'NOT_FOUND'
+    } else if (error.name === 'ConflictError') {
+      statusCode = 409
+      errorCode = 'CONFLICT'
     }
-  }
-  
-  // Include error details in development
-  if (process.env.NODE_ENV === 'development' && error.stack) {
-    errorResponse.error.details = {
-      stack: error.stack,
-      name: error.name
+
+    // Don't expose internal error details in production
+    if (process.env.NODE_ENV === 'production' && statusCode === 500) {
+      message = 'Internal server error'
     }
+
+    const errorResponse: ErrorResponse = {
+      error: {
+        code: errorCode,
+        message,
+        timestamp: new Date().toISOString(),
+        requestId,
+      },
+    }
+
+    // Include error details in development
+    if (process.env.NODE_ENV === 'development' && error.stack) {
+      errorResponse.error.details = {
+        stack: error.stack,
+        name: error.name,
+      }
+    }
+
+    res.status(statusCode).json(errorResponse)
   }
-  
-  res.status(statusCode).json(errorResponse)
-})
+)
 
 // Initialize cache warming on startup
 if (process.env.NODE_ENV === 'production') {
@@ -404,11 +426,14 @@ process.on('SIGINT', () => {
 })
 
 // Unhandled promise rejection handler
-process.on('unhandledRejection', (reason: unknown, promise: Promise<unknown>) => {
-  logger.error('Unhandled promise rejection', new Error(String(reason)), {
-    promise: promise.toString()
-  })
-})
+process.on(
+  'unhandledRejection',
+  (reason: unknown, promise: Promise<unknown>) => {
+    logger.error('Unhandled promise rejection', new Error(String(reason)), {
+      promise: promise.toString(),
+    })
+  }
+)
 
 // Uncaught exception handler
 process.on('uncaughtException', (error: Error) => {

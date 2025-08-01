@@ -11,16 +11,19 @@ import { existsSync, writeFileSync, mkdirSync } from 'fs'
 class TestDeploymentSetup {
   async validateDeployment(): Promise<void> {
     console.log('🚀 Testing Deployment Setup for Cubcen')
-    console.log('=' .repeat(50))
+    console.log('='.repeat(50))
     console.log('Validating essential deployment components...\n')
 
     const validations = [
-      { name: 'Environment Configuration', test: () => this.validateEnvironment() },
+      {
+        name: 'Environment Configuration',
+        test: () => this.validateEnvironment(),
+      },
       { name: 'Database Setup', test: () => this.validateDatabase() },
       { name: 'Essential Files', test: () => this.validateEssentialFiles() },
       { name: 'Docker Configuration', test: () => this.validateDocker() },
       { name: 'Health Endpoints', test: () => this.validateHealthEndpoints() },
-      { name: 'Documentation', test: () => this.validateDocumentation() }
+      { name: 'Documentation', test: () => this.validateDocumentation() },
     ]
 
     let allPassed = true
@@ -29,10 +32,14 @@ class TestDeploymentSetup {
       try {
         console.log(`🔍 ${validation.name}...`)
         const passed = await validation.test()
-        console.log(`   ${passed ? '✅' : '❌'} ${passed ? 'Valid' : 'Issues found'}`)
+        console.log(
+          `   ${passed ? '✅' : '❌'} ${passed ? 'Valid' : 'Issues found'}`
+        )
         if (!passed) allPassed = false
       } catch (error) {
-        console.log(`   ❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`)
+        console.log(
+          `   ❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`
+        )
         allPassed = false
       }
       console.log('')
@@ -48,7 +55,9 @@ class TestDeploymentSetup {
       console.log('4. Test core functionality')
     } else {
       console.log('⚠️ DEPLOYMENT VALIDATION HAD ISSUES')
-      console.log('🔧 Some components need attention but deployment may still be possible')
+      console.log(
+        '🔧 Some components need attention but deployment may still be possible'
+      )
       console.log('\n📋 Recommended Actions:')
       console.log('1. Review failed validations above')
       console.log('2. Fix critical issues if any')
@@ -111,11 +120,11 @@ HOST=0.0.0.0
       'src/server.ts',
       'src/index.ts',
       'Dockerfile',
-      'docker-compose.yml'
+      'docker-compose.yml',
     ]
 
     const missingFiles = essentialFiles.filter(file => !existsSync(file))
-    
+
     if (missingFiles.length > 0) {
       console.log(`   Missing files: ${missingFiles.join(', ')}`)
       return false
@@ -139,13 +148,10 @@ HOST=0.0.0.0
   }
 
   private async validateHealthEndpoints(): Promise<boolean> {
-    const healthFiles = [
-      'src/backend/routes/health.ts',
-      'src/lib/health.ts'
-    ]
+    const healthFiles = ['src/backend/routes/health.ts', 'src/lib/health.ts']
 
     const existingFiles = healthFiles.filter(file => existsSync(file))
-    
+
     if (existingFiles.length === 0) {
       console.log('   No health check files found')
       return false
@@ -155,16 +161,14 @@ HOST=0.0.0.0
   }
 
   private async validateDocumentation(): Promise<boolean> {
-    const docFiles = [
-      'README.md',
-      'docs/user-guide.md',
-      'docs/deployment.md'
-    ]
+    const docFiles = ['README.md', 'docs/user-guide.md', 'docs/deployment.md']
 
     const existingDocs = docFiles.filter(file => existsSync(file))
-    
+
     if (existingDocs.length < 2) {
-      console.log(`   Limited documentation: ${existingDocs.length}/3 files found`)
+      console.log(
+        `   Limited documentation: ${existingDocs.length}/3 files found`
+      )
       return false
     }
 

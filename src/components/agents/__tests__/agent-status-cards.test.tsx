@@ -11,20 +11,20 @@ const mockAgents: Agent[] = [
     platform: {
       id: 'platform-1',
       name: 'n8n Instance',
-      type: 'N8N'
+      type: 'N8N',
     },
     status: 'ACTIVE',
     healthStatus: {
       status: 'healthy',
       lastCheck: new Date('2024-01-01T10:00:00Z'),
       responseTime: 150,
-      details: {}
+      details: {},
     },
     capabilities: ['webhook', 'http-request', 'data-transformation'],
     configuration: { timeout: 30000 },
     description: 'Main automation agent',
     createdAt: new Date('2024-01-01T09:00:00Z'),
-    updatedAt: new Date('2024-01-01T10:00:00Z')
+    updatedAt: new Date('2024-01-01T10:00:00Z'),
   },
   {
     id: 'agent-2',
@@ -33,7 +33,7 @@ const mockAgents: Agent[] = [
     platform: {
       id: 'platform-2',
       name: 'Make Scenario',
-      type: 'MAKE'
+      type: 'MAKE',
     },
     status: 'ERROR',
     healthStatus: {
@@ -41,13 +41,13 @@ const mockAgents: Agent[] = [
       lastCheck: new Date('2024-01-01T09:30:00Z'),
       responseTime: 5000,
       error: 'Connection timeout',
-      details: { errorCode: 'TIMEOUT' }
+      details: { errorCode: 'TIMEOUT' },
     },
     capabilities: ['api-integration'],
     configuration: {},
     createdAt: new Date('2024-01-01T08:00:00Z'),
-    updatedAt: new Date('2024-01-01T09:30:00Z')
-  }
+    updatedAt: new Date('2024-01-01T09:30:00Z'),
+  },
 ]
 
 describe('AgentStatusCards', () => {
@@ -98,9 +98,9 @@ describe('AgentStatusCards', () => {
     )
 
     // Should show loading cards (6 skeleton cards)
-    const loadingCards = screen.getAllByRole('generic').filter(el => 
-      el.className.includes('overflow-hidden')
-    )
+    const loadingCards = screen
+      .getAllByRole('generic')
+      .filter(el => el.className.includes('overflow-hidden'))
     expect(loadingCards.length).toBeGreaterThan(0)
   })
 
@@ -115,7 +115,11 @@ describe('AgentStatusCards', () => {
     )
 
     expect(screen.getByText('No Agents Found')).toBeInTheDocument()
-    expect(screen.getByText('Connect to a platform to start monitoring your AI agents.')).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        'Connect to a platform to start monitoring your AI agents.'
+      )
+    ).toBeInTheDocument()
   })
 
   it('shows real-time pulse indicator for healthy active agents', () => {
@@ -129,9 +133,9 @@ describe('AgentStatusCards', () => {
     )
 
     // The pulse indicator should be present for the healthy active agent
-    const pulseIndicators = screen.getAllByRole('generic').filter(el => 
-      el.className.includes('animate-pulse')
-    )
+    const pulseIndicators = screen
+      .getAllByRole('generic')
+      .filter(el => el.className.includes('animate-pulse'))
     expect(pulseIndicators.length).toBeGreaterThan(0)
   })
 
@@ -261,10 +265,12 @@ describe('AgentStatusCards', () => {
       />
     )
 
-    const refreshButtons = screen.getAllByRole('button').filter(button => 
-      button.querySelector('svg')?.classList.contains('lucide-refresh-cw')
-    )
-    
+    const refreshButtons = screen
+      .getAllByRole('button')
+      .filter(button =>
+        button.querySelector('svg')?.classList.contains('lucide-refresh-cw')
+      )
+
     fireEvent.click(refreshButtons[0])
 
     expect(mockOnRefreshAgent).toHaveBeenCalledWith('agent-1')
@@ -272,8 +278,8 @@ describe('AgentStatusCards', () => {
 
   it('shows loading state on refresh button during refresh', async () => {
     // Mock a delayed response
-    mockOnRefreshAgent.mockImplementation(() => 
-      new Promise(resolve => setTimeout(resolve, 100))
+    mockOnRefreshAgent.mockImplementation(
+      () => new Promise(resolve => setTimeout(resolve, 100))
     )
 
     render(
@@ -285,10 +291,12 @@ describe('AgentStatusCards', () => {
       />
     )
 
-    const refreshButtons = screen.getAllByRole('button').filter(button => 
-      button.querySelector('svg')?.classList.contains('lucide-refresh-cw')
-    )
-    
+    const refreshButtons = screen
+      .getAllByRole('button')
+      .filter(button =>
+        button.querySelector('svg')?.classList.contains('lucide-refresh-cw')
+      )
+
     fireEvent.click(refreshButtons[0])
 
     // Button should be disabled during refresh
@@ -311,10 +319,10 @@ describe('AgentStatusCards', () => {
     )
 
     // Check if cards have appropriate styling classes
-    const cards = screen.getAllByRole('generic').filter(el => 
-      el.className.includes('border-l-4')
-    )
-    
+    const cards = screen
+      .getAllByRole('generic')
+      .filter(el => el.className.includes('border-l-4'))
+
     expect(cards.length).toBeGreaterThan(0)
   })
 
@@ -337,7 +345,7 @@ describe('AgentStatusCards', () => {
     const agentWithNoCapabilities: Agent = {
       ...mockAgents[0],
       id: 'agent-no-caps',
-      capabilities: []
+      capabilities: [],
     }
 
     render(
@@ -359,8 +367,8 @@ describe('AgentStatusCards', () => {
       id: 'agent-no-response-time',
       healthStatus: {
         ...mockAgents[0].healthStatus,
-        responseTime: undefined
-      }
+        responseTime: undefined,
+      },
     }
 
     render(

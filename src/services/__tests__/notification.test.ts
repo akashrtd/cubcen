@@ -7,23 +7,23 @@ import {
   NotificationEventType,
   NotificationPriority,
   NotificationStatus,
-  NotificationChannelType
+  NotificationChannelType,
 } from '../../types/notification'
 
 // Mock nodemailer
 jest.mock('nodemailer', () => ({
   createTransporter: jest.fn(() => ({
-    sendMail: jest.fn().mockResolvedValue({ messageId: 'test-message-id' })
-  }))
+    sendMail: jest.fn().mockResolvedValue({ messageId: 'test-message-id' }),
+  })),
 }))
 
 // Mock Slack WebClient
 jest.mock('@slack/web-api', () => ({
   WebClient: jest.fn(() => ({
     chat: {
-      postMessage: jest.fn().mockResolvedValue({ ts: '1234567890.123456' })
-    }
-  }))
+      postMessage: jest.fn().mockResolvedValue({ ts: '1234567890.123456' }),
+    },
+  })),
 }))
 
 // Mock environment variables
@@ -38,7 +38,7 @@ beforeAll(() => {
     SMTP_PASS: 'testpass',
     SMTP_FROM: 'noreply@cubcen.com',
     SLACK_BOT_TOKEN: 'xoxb-test-token',
-    SLACK_DEFAULT_CHANNEL: '#test-alerts'
+    SLACK_DEFAULT_CHANNEL: '#test-alerts',
   }
 })
 
@@ -69,8 +69,8 @@ describe('CubcenNotificationService', () => {
         email: uniqueEmail,
         password: 'hashedpassword',
         role: 'ADMIN',
-        name: 'Test User'
-      }
+        name: 'Test User',
+      },
     })
 
     // Create test notification
@@ -82,11 +82,14 @@ describe('CubcenNotificationService', () => {
       title: 'Test Notification',
       message: 'This is a test notification',
       userId: mockUser.id,
-      channels: JSON.stringify([NotificationChannelType.EMAIL, NotificationChannelType.IN_APP]),
+      channels: JSON.stringify([
+        NotificationChannelType.EMAIL,
+        NotificationChannelType.IN_APP,
+      ]),
       retryCount: 0,
       maxRetries: 3,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     }
   })
 
@@ -117,7 +120,7 @@ describe('CubcenNotificationService', () => {
         message: 'A task has failed to complete',
         priority: NotificationPriority.MEDIUM,
         status: NotificationStatus.PENDING,
-        channels: [NotificationChannelType.IN_APP]
+        channels: [NotificationChannelType.IN_APP],
       })
     })
 
@@ -129,8 +132,11 @@ describe('CubcenNotificationService', () => {
         {
           priority: NotificationPriority.CRITICAL,
           userId: mockUser.id,
-          channels: [NotificationChannelType.EMAIL, NotificationChannelType.SLACK],
-          data: { agentId: 'agent-123', agentName: 'Test Agent' }
+          channels: [
+            NotificationChannelType.EMAIL,
+            NotificationChannelType.SLACK,
+          ],
+          data: { agentId: 'agent-123', agentName: 'Test Agent' },
         }
       )
 
@@ -140,8 +146,11 @@ describe('CubcenNotificationService', () => {
         message: 'An agent has gone offline',
         priority: NotificationPriority.CRITICAL,
         userId: mockUser.id,
-        channels: [NotificationChannelType.EMAIL, NotificationChannelType.SLACK],
-        data: { agentId: 'agent-123', agentName: 'Test Agent' }
+        channels: [
+          NotificationChannelType.EMAIL,
+          NotificationChannelType.SLACK,
+        ],
+        data: { agentId: 'agent-123', agentName: 'Test Agent' },
       })
     })
   })
@@ -152,27 +161,33 @@ describe('CubcenNotificationService', () => {
         to: ['test@example.com'],
         subject: 'Test Email',
         html: '<p>Test message</p>',
-        text: 'Test message'
+        text: 'Test message',
       }
 
-      await expect(notificationService.sendEmail(emailNotification)).resolves.not.toThrow()
+      await expect(
+        notificationService.sendEmail(emailNotification)
+      ).resolves.not.toThrow()
     })
 
     it('should handle email sending errors', async () => {
       // Mock email transporter to throw error
       const nodemailer = require('nodemailer')
       nodemailer.createTransporter.mockReturnValueOnce({
-        sendMail: jest.fn().mockRejectedValue(new Error('SMTP connection failed'))
+        sendMail: jest
+          .fn()
+          .mockRejectedValue(new Error('SMTP connection failed')),
       })
 
       const service = new CubcenNotificationService(prisma)
       const emailNotification = {
         to: ['test@example.com'],
         subject: 'Test Email',
-        html: '<p>Test message</p>'
+        html: '<p>Test message</p>',
       }
 
-      await expect(service.sendEmail(emailNotification)).rejects.toThrow('SMTP connection failed')
+      await expect(service.sendEmail(emailNotification)).rejects.toThrow(
+        'SMTP connection failed'
+      )
     })
   })
 
@@ -181,14 +196,18 @@ describe('CubcenNotificationService', () => {
       const slackNotification = {
         channel: '#test',
         text: 'Test message',
-        attachments: [{
-          color: '#ff0000',
-          title: 'Test Alert',
-          text: 'This is a test alert'
-        }]
+        attachments: [
+          {
+            color: '#ff0000',
+            title: 'Test Alert',
+            text: 'This is a test alert',
+          },
+        ],
       }
 
-      await expect(notificationService.sendSlack(slackNotification)).resolves.not.toThrow()
+      await expect(
+        notificationService.sendSlack(slackNotification)
+      ).resolves.not.toThrow()
     })
 
     it('should handle Slack API errors', async () => {
@@ -196,17 +215,21 @@ describe('CubcenNotificationService', () => {
       const { WebClient } = require('@slack/web-api')
       WebClient.mockImplementationOnce(() => ({
         chat: {
-          postMessage: jest.fn().mockRejectedValue(new Error('Slack API error'))
-        }
+          postMessage: jest
+            .fn()
+            .mockRejectedValue(new Error('Slack API error')),
+        },
       }))
 
       const service = new CubcenNotificationService(prisma)
       const slackNotification = {
         channel: '#test',
-        text: 'Test message'
+        text: 'Test message',
       }
 
-      await expect(service.sendSlack(slackNotification)).rejects.toThrow('Slack API error')
+      await expect(service.sendSlack(slackNotification)).rejects.toThrow(
+        'Slack API error'
+      )
     })
   })
 
@@ -219,13 +242,13 @@ describe('CubcenNotificationService', () => {
         message: 'This is a test in-app notification',
         type: 'info' as const,
         read: false,
-        createdAt: new Date()
+        createdAt: new Date(),
       }
 
       await notificationService.sendInApp(inAppNotification)
 
       const created = await prisma.inAppNotification.findUnique({
-        where: { id: 'in-app-test-1' }
+        where: { id: 'in-app-test-1' },
       })
 
       expect(created).toMatchObject({
@@ -234,7 +257,7 @@ describe('CubcenNotificationService', () => {
         title: 'Test In-App',
         message: 'This is a test in-app notification',
         type: 'info',
-        read: false
+        read: false,
       })
     })
 
@@ -246,23 +269,25 @@ describe('CubcenNotificationService', () => {
         message: 'This is a test in-app notification',
         type: 'info' as const,
         read: false,
-        createdAt: new Date()
+        createdAt: new Date(),
       }
 
-      await expect(notificationService.sendInApp(inAppNotification)).rejects.toThrow()
+      await expect(
+        notificationService.sendInApp(inAppNotification)
+      ).rejects.toThrow()
     })
   })
 
   describe('acknowledge', () => {
     it('should acknowledge notification successfully', async () => {
       const notification = await prisma.notification.create({
-        data: mockNotification
+        data: mockNotification,
       })
 
       await notificationService.acknowledge(notification.id, mockUser.id)
 
       const updated = await prisma.notification.findUnique({
-        where: { id: notification.id }
+        where: { id: notification.id },
       })
 
       expect(updated?.status).toBe(NotificationStatus.ACKNOWLEDGED)
@@ -285,56 +310,64 @@ describe('CubcenNotificationService', () => {
           email: 'admin@cubcen.com',
           password: 'hashedpassword',
           role: 'ADMIN',
-          name: 'Admin User'
-        }
+          name: 'Admin User',
+        },
       })
 
       const notification = await prisma.notification.create({
-        data: mockNotification
+        data: mockNotification,
       })
 
       await notificationService.escalate(notification.id)
 
       const escalation = await prisma.alertEscalation.findFirst({
-        where: { notificationId: notification.id }
+        where: { notificationId: notification.id },
       })
 
       expect(escalation).toBeDefined()
       expect(escalation?.level).toBe(1)
-      expect(JSON.parse(escalation?.escalatedTo || '[]')).toContain(adminUser.id)
+      expect(JSON.parse(escalation?.escalatedTo || '[]')).toContain(
+        adminUser.id
+      )
     })
 
     it('should handle escalation when no admin users exist', async () => {
       const notification = await prisma.notification.create({
-        data: mockNotification
+        data: mockNotification,
       })
 
       // No admin users exist, should not throw but log warning
-      await expect(notificationService.escalate(notification.id)).resolves.not.toThrow()
+      await expect(
+        notificationService.escalate(notification.id)
+      ).resolves.not.toThrow()
     })
   })
 
   describe('getNotifications', () => {
     it('should retrieve user notifications with filters', async () => {
       await prisma.notification.create({
-        data: mockNotification
+        data: mockNotification,
       })
 
-      const notifications = await notificationService.getNotifications(mockUser.id, {
-        status: NotificationStatus.PENDING,
-        limit: 10
-      })
+      const notifications = await notificationService.getNotifications(
+        mockUser.id,
+        {
+          status: NotificationStatus.PENDING,
+          limit: 10,
+        }
+      )
 
       expect(notifications).toHaveLength(1)
       expect(notifications[0]).toMatchObject({
         eventType: NotificationEventType.AGENT_ERROR,
         title: 'Test Notification',
-        status: NotificationStatus.PENDING
+        status: NotificationStatus.PENDING,
       })
     })
 
     it('should handle empty results', async () => {
-      const notifications = await notificationService.getNotifications('non-existent-user')
+      const notifications =
+        await notificationService.getNotifications('non-existent-user')
       expect(notifications).toHaveLength(0)
     })
   })
@@ -348,14 +381,14 @@ describe('CubcenNotificationService', () => {
           title: 'Test',
           message: 'Test message',
           type: 'info',
-          read: false
-        }
+          read: false,
+        },
       })
 
       await notificationService.markAsRead('in-app-test-1', mockUser.id)
 
       const updated = await prisma.inAppNotification.findUnique({
-        where: { id: 'in-app-test-1' }
+        where: { id: 'in-app-test-1' },
       })
 
       expect(updated?.read).toBe(true)
@@ -368,15 +401,18 @@ describe('CubcenNotificationService', () => {
       const notifications = Array.from({ length: 100 }, (_, i) => ({
         ...mockNotification,
         id: `notification-${i}`,
-        title: `Notification ${i}`
+        title: `Notification ${i}`,
       }))
 
       await prisma.notification.createMany({
-        data: notifications
+        data: notifications,
       })
 
       // Should handle large number of notifications gracefully
-      const retrieved = await notificationService.getNotifications(mockUser.id, { limit: 50 })
+      const retrieved = await notificationService.getNotifications(
+        mockUser.id,
+        { limit: 50 }
+      )
       expect(retrieved.length).toBeLessThanOrEqual(50)
     })
 
@@ -384,37 +420,41 @@ describe('CubcenNotificationService', () => {
       // Test with invalid channel type
       const invalidNotification = {
         ...mockNotification,
-        channels: JSON.stringify(['INVALID_CHANNEL'])
+        channels: JSON.stringify(['INVALID_CHANNEL']),
       }
 
       const notification = await prisma.notification.create({
-        data: invalidNotification
+        data: invalidNotification,
       })
 
       // Should handle invalid channels gracefully
-      await expect(notificationService.send(notification)).resolves.not.toThrow()
+      await expect(
+        notificationService.send(notification)
+      ).resolves.not.toThrow()
     })
 
     it('should handle email delivery failures', async () => {
       // Mock email transporter to fail
       const nodemailer = require('nodemailer')
       nodemailer.createTransporter.mockReturnValueOnce({
-        sendMail: jest.fn().mockRejectedValue(new Error('Email delivery failed'))
+        sendMail: jest
+          .fn()
+          .mockRejectedValue(new Error('Email delivery failed')),
       })
 
       const service = new CubcenNotificationService(prisma)
       const notification = await prisma.notification.create({
         data: {
           ...mockNotification,
-          channels: JSON.stringify([NotificationChannelType.EMAIL])
-        }
+          channels: JSON.stringify([NotificationChannelType.EMAIL]),
+        },
       })
 
       await expect(service.send(notification)).rejects.toThrow()
 
       // Check that notification status was updated to failed
       const updated = await prisma.notification.findUnique({
-        where: { id: notification.id }
+        where: { id: notification.id },
       })
       expect(updated?.status).toBe(NotificationStatus.FAILED)
       expect(updated?.retryCount).toBe(1)
@@ -425,16 +465,18 @@ describe('CubcenNotificationService', () => {
       const { WebClient } = require('@slack/web-api')
       WebClient.mockImplementationOnce(() => ({
         chat: {
-          postMessage: jest.fn().mockRejectedValue(new Error('Slack API error'))
-        }
+          postMessage: jest
+            .fn()
+            .mockRejectedValue(new Error('Slack API error')),
+        },
       }))
 
       const service = new CubcenNotificationService(prisma)
       const notification = await prisma.notification.create({
         data: {
           ...mockNotification,
-          channels: JSON.stringify([NotificationChannelType.SLACK])
-        }
+          channels: JSON.stringify([NotificationChannelType.SLACK]),
+        },
       })
 
       await expect(service.send(notification)).rejects.toThrow()
@@ -449,22 +491,22 @@ describe('CubcenNotificationService', () => {
           channels: JSON.stringify([
             NotificationChannelType.EMAIL,
             NotificationChannelType.SLACK,
-            NotificationChannelType.IN_APP
-          ])
-        }
+            NotificationChannelType.IN_APP,
+          ]),
+        },
       })
 
       await notificationService.send(notification)
 
       const updated = await prisma.notification.findUnique({
-        where: { id: notification.id }
+        where: { id: notification.id },
       })
       expect(updated?.status).toBe(NotificationStatus.SENT)
       expect(updated?.sentAt).toBeDefined()
 
       // Check in-app notification was created
       const inAppNotification = await prisma.inAppNotification.findFirst({
-        where: { userId: mockUser.id }
+        where: { userId: mockUser.id },
       })
       expect(inAppNotification).toBeDefined()
     })
@@ -473,7 +515,7 @@ describe('CubcenNotificationService', () => {
       // Mock email to fail but Slack to succeed
       const nodemailer = require('nodemailer')
       nodemailer.createTransporter.mockReturnValueOnce({
-        sendMail: jest.fn().mockRejectedValue(new Error('Email failed'))
+        sendMail: jest.fn().mockRejectedValue(new Error('Email failed')),
       })
 
       const service = new CubcenNotificationService(prisma)
@@ -482,9 +524,9 @@ describe('CubcenNotificationService', () => {
           ...mockNotification,
           channels: JSON.stringify([
             NotificationChannelType.EMAIL,
-            NotificationChannelType.SLACK
-          ])
-        }
+            NotificationChannelType.SLACK,
+          ]),
+        },
       })
 
       // Should handle partial failures gracefully

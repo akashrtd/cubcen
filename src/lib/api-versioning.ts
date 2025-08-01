@@ -15,10 +15,10 @@ export interface ApiVersion {
 }
 
 export const API_VERSIONS: Record<string, ApiVersion> = {
-  'v1': {
+  v1: {
     version: '1.0.0',
-    description: 'Initial API version with core functionality'
-  }
+    description: 'Initial API version with core functionality',
+  },
   // Future versions can be added here
   // 'v2': {
   //   version: '2.0.0',
@@ -32,9 +32,13 @@ export const SUPPORTED_VERSIONS = Object.keys(API_VERSIONS)
 /**
  * Middleware to validate API version
  */
-export function validateApiVersion(req: Request, res: Response, next: NextFunction): void {
+export function validateApiVersion(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
   const versionMatch = req.path.match(/\/api\/cubcen\/(v\d+)\//)
-  
+
   if (!versionMatch) {
     res.status(400).json({
       error: {
@@ -42,14 +46,14 @@ export function validateApiVersion(req: Request, res: Response, next: NextFuncti
         message: 'API version is required in the URL path',
         supportedVersions: SUPPORTED_VERSIONS,
         timestamp: new Date().toISOString(),
-        requestId: req.headers['x-request-id']
-      }
+        requestId: req.headers['x-request-id'],
+      },
     })
     return
   }
 
   const requestedVersion = versionMatch[1]
-  
+
   if (!SUPPORTED_VERSIONS.includes(requestedVersion)) {
     res.status(400).json({
       error: {
@@ -57,18 +61,18 @@ export function validateApiVersion(req: Request, res: Response, next: NextFuncti
         message: `API version ${requestedVersion} is not supported`,
         supportedVersions: SUPPORTED_VERSIONS,
         timestamp: new Date().toISOString(),
-        requestId: req.headers['x-request-id']
-      }
+        requestId: req.headers['x-request-id'],
+      },
     })
     return
   }
 
   const versionInfo = API_VERSIONS[requestedVersion]
-  
+
   // Add version info to request
   req.apiVersion = {
     version: requestedVersion,
-    info: versionInfo
+    info: versionInfo,
   }
 
   // Add version headers to response
@@ -78,11 +82,14 @@ export function validateApiVersion(req: Request, res: Response, next: NextFuncti
   // Check for deprecated version
   if (versionInfo.deprecated) {
     res.setHeader('API-Deprecated', 'true')
-    
+
     if (versionInfo.deprecationDate) {
-      res.setHeader('API-Deprecation-Date', versionInfo.deprecationDate.toISOString())
+      res.setHeader(
+        'API-Deprecation-Date',
+        versionInfo.deprecationDate.toISOString()
+      )
     }
-    
+
     if (versionInfo.sunsetDate) {
       res.setHeader('API-Sunset-Date', versionInfo.sunsetDate.toISOString())
     }
@@ -93,7 +100,7 @@ export function validateApiVersion(req: Request, res: Response, next: NextFuncti
       userAgent: req.get('User-Agent'),
       ip: req.ip,
       deprecationDate: versionInfo.deprecationDate,
-      sunsetDate: versionInfo.sunsetDate
+      sunsetDate: versionInfo.sunsetDate,
     })
   }
 
@@ -103,7 +110,11 @@ export function validateApiVersion(req: Request, res: Response, next: NextFuncti
 /**
  * Middleware to handle version-specific transformations
  */
-export function handleVersionTransforms(req: Request, res: Response, next: NextFunction): void {
+export function handleVersionTransforms(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
   const version = req.apiVersion?.version
 
   if (!version) {
@@ -115,7 +126,7 @@ export function handleVersionTransforms(req: Request, res: Response, next: NextF
   const originalJson = res.json
 
   // Override json method to apply version-specific transformations
-  res.json = function(data: unknown) {
+  res.json = function (data: unknown) {
     const transformedData = applyVersionTransforms(data, version)
     return originalJson.call(this, transformedData)
   }
@@ -154,7 +165,7 @@ export function getApiVersionInfo(version?: string): ApiVersion | null {
   if (!version) {
     return API_VERSIONS[CURRENT_VERSION]
   }
-  
+
   return API_VERSIONS[version] || null
 }
 
@@ -178,44 +189,53 @@ export function isVersionDeprecated(version: string): boolean {
  */
 export function getDeprecationWarning(version: string): string | null {
   const versionInfo = API_VERSIONS[version]
-  
+
   if (!versionInfo?.deprecated) {
     return null
   }
 
   let warning = `API version ${version} is deprecated.`
-  
+
   if (versionInfo.deprecationDate) {
     warning += ` Deprecated since ${versionInfo.deprecationDate.toISOString().split('T')[0]}.`
   }
-  
+
   if (versionInfo.sunsetDate) {
     warning += ` Will be removed on ${versionInfo.sunsetDate.toISOString().split('T')[0]}.`
   }
-  
+
   warning += ` Please migrate to version ${CURRENT_VERSION}.`
-  
+
   return warning
 }
 
 /**
  * Middleware to add API version info to OpenAPI spec
  */
-export function addVersionInfoToSpec(spec: Record<string, unknown>): Record<string, unknown> {
+export function addVersionInfoToSpec(
+  spec: Record<string, unknown>
+): Record<string, unknown> {
   // Add version information to OpenAPI spec
   spec.info.version = API_VERSIONS[CURRENT_VERSION].version
-  
+
   // Add supported versions to info
-  spec.info['x-api-versions'] = Object.entries(API_VERSIONS).map(([key, value]) => ({
-    version: key,
-    info: value
-  }))
+  spec.info['x-api-versions'] = Object.entries(API_VERSIONS).map(
+    ([key, value]) => ({
+      version: key,
+      info: value,
+    })
+  )
 
   // Add version-specific servers
-  spec.servers = (spec.servers as Array<Record<string, unknown>>).map((server) => ({
-    ...server,
-    url: server.url.replace('/api/cubcen/', `/api/cubcen/${CURRENT_VERSION}/`)
-  }))
+  spec.servers = (spec.servers as Array<Record<string, unknown>>).map(
+    server => ({
+      ...server,
+      url: server.url.replace(
+        '/api/cubcen/',
+        `/api/cubcen/${CURRENT_VERSION}/`
+      ),
+    })
+  )
 
   return spec
 }

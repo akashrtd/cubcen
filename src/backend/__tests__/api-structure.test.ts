@@ -9,7 +9,7 @@ jest.mock('../../lib/database', () => ({
   prisma: {
     $connect: jest.fn(),
     $disconnect: jest.fn(),
-  }
+  },
 }))
 
 jest.mock('../../services/auth', () => ({
@@ -18,9 +18,9 @@ jest.mock('../../services/auth', () => ({
       id: 'user_1',
       email: 'test@example.com',
       name: 'Test User',
-      role: 'ADMIN'
-    })
-  }))
+      role: 'ADMIN',
+    }),
+  })),
 }))
 
 describe('API Structure Tests', () => {
@@ -28,15 +28,13 @@ describe('API Structure Tests', () => {
 
   describe('Health Check', () => {
     it('should return health status', async () => {
-      const response = await request(app)
-        .get('/health')
-        .expect(200)
+      const response = await request(app).get('/health').expect(200)
 
       expect(response.body).toMatchObject({
         status: 'healthy',
         timestamp: expect.any(String),
         version: expect.any(String),
-        environment: expect.any(String)
+        environment: expect.any(String),
       })
     })
   })
@@ -109,8 +107,8 @@ describe('API Structure Tests', () => {
         error: {
           code: 'ENDPOINT_NOT_FOUND',
           message: expect.stringContaining('not found'),
-          timestamp: expect.any(String)
-        }
+          timestamp: expect.any(String),
+        },
       })
     })
 
@@ -125,26 +123,22 @@ describe('API Structure Tests', () => {
         error: {
           code: 'VALIDATION_ERROR',
           message: 'Request validation failed',
-          details: expect.any(Array)
-        }
+          details: expect.any(Array),
+        },
       })
     })
   })
 
   describe('Security Headers', () => {
     it('should include security headers', async () => {
-      const response = await request(app)
-        .get('/health')
-        .expect(200)
+      const response = await request(app).get('/health').expect(200)
 
       expect(response.headers).toHaveProperty('x-content-type-options')
       expect(response.headers).toHaveProperty('x-frame-options')
     })
 
     it('should include request ID', async () => {
-      const response = await request(app)
-        .get('/health')
-        .expect(200)
+      const response = await request(app).get('/health').expect(200)
 
       expect(response.headers).toHaveProperty('x-request-id')
       expect(response.headers['x-request-id']).toMatch(/^req_\d+_[a-z0-9]+$/)

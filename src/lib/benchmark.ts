@@ -66,7 +66,7 @@ export class Benchmark {
 
     const memoryBefore = process.memoryUsage()
     const times: number[] = []
-    
+
     // Warmup runs
     for (let i = 0; i < Math.min(10, iterations); i++) {
       await operation()
@@ -74,19 +74,20 @@ export class Benchmark {
 
     // Actual benchmark
     const startTime = Date.now()
-    
+
     for (let i = 0; i < iterations; i++) {
       const opStart = Date.now()
       await operation()
       const opEnd = Date.now()
       times.push(opEnd - opStart)
     }
-    
+
     const endTime = Date.now()
     const memoryAfter = process.memoryUsage()
 
     const duration = endTime - startTime
-    const averageTime = times.reduce((sum, time) => sum + time, 0) / times.length
+    const averageTime =
+      times.reduce((sum, time) => sum + time, 0) / times.length
     const minTime = Math.min(...times)
     const maxTime = Math.max(...times)
     const opsPerSecond = (iterations / duration) * 1000
@@ -118,42 +119,66 @@ export class Benchmark {
     const results: BenchmarkResult[] = []
 
     // Simple select benchmark
-    results.push(await this.run('Database: Simple Select', async () => {
-      await prisma.user.findFirst()
-    }, 100))
+    results.push(
+      await this.run(
+        'Database: Simple Select',
+        async () => {
+          await prisma.user.findFirst()
+        },
+        100
+      )
+    )
 
     // Complex query benchmark
-    results.push(await this.run('Database: Complex Query', async () => {
-      await prisma.agent.findMany({
-        include: {
-          platform: true,
-          tasks: {
-            take: 5,
-            orderBy: { createdAt: 'desc' },
-          },
+    results.push(
+      await this.run(
+        'Database: Complex Query',
+        async () => {
+          await prisma.agent.findMany({
+            include: {
+              platform: true,
+              tasks: {
+                take: 5,
+                orderBy: { createdAt: 'desc' },
+              },
+            },
+            take: 10,
+          })
         },
-        take: 10,
-      })
-    }, 50))
+        50
+      )
+    )
 
     // Insert benchmark
-    results.push(await this.run('Database: Insert', async () => {
-      await prisma.systemLog.create({
-        data: {
-          level: 'INFO',
-          message: 'Benchmark test log',
-          source: 'benchmark',
+    results.push(
+      await this.run(
+        'Database: Insert',
+        async () => {
+          await prisma.systemLog.create({
+            data: {
+              level: 'INFO',
+              message: 'Benchmark test log',
+              source: 'benchmark',
+            },
+          })
         },
-      })
-    }, 100))
+        100
+      )
+    )
 
     // Aggregation benchmark
-    results.push(await this.run('Database: Aggregation', async () => {
-      await prisma.task.groupBy({
-        by: ['status'],
-        _count: { status: true },
-      })
-    }, 50))
+    results.push(
+      await this.run(
+        'Database: Aggregation',
+        async () => {
+          await prisma.task.groupBy({
+            by: ['status'],
+            _count: { status: true },
+          })
+        },
+        50
+      )
+    )
 
     return results
   }
@@ -165,24 +190,42 @@ export class Benchmark {
     const results: BenchmarkResult[] = []
 
     // Cache write benchmark
-    results.push(await this.run('Cache: Write', async () => {
-      const key = `benchmark-${Math.random()}`
-      const data = { test: 'data', timestamp: Date.now() }
-      cache.set(key, data)
-    }, 1000))
+    results.push(
+      await this.run(
+        'Cache: Write',
+        async () => {
+          const key = `benchmark-${Math.random()}`
+          const data = { test: 'data', timestamp: Date.now() }
+          cache.set(key, data)
+        },
+        1000
+      )
+    )
 
     // Cache read benchmark (with existing data)
     const testKey = 'benchmark-read-test'
     cache.set(testKey, { test: 'data' })
-    
-    results.push(await this.run('Cache: Read Hit', async () => {
-      cache.get(testKey)
-    }, 1000))
+
+    results.push(
+      await this.run(
+        'Cache: Read Hit',
+        async () => {
+          cache.get(testKey)
+        },
+        1000
+      )
+    )
 
     // Cache read miss benchmark
-    results.push(await this.run('Cache: Read Miss', async () => {
-      cache.get(`nonexistent-${Math.random()}`)
-    }, 1000))
+    results.push(
+      await this.run(
+        'Cache: Read Miss',
+        async () => {
+          cache.get(`nonexistent-${Math.random()}`)
+        },
+        1000
+      )
+    )
 
     return results
   }
@@ -196,19 +239,31 @@ export class Benchmark {
     // This would require actual HTTP requests in a real implementation
     // For now, we'll simulate API operations
 
-    results.push(await this.run('API: Agent List', async () => {
-      // Simulate agent list API call
-      await prisma.agent.findMany({ take: 20 })
-    }, 100))
+    results.push(
+      await this.run(
+        'API: Agent List',
+        async () => {
+          // Simulate agent list API call
+          await prisma.agent.findMany({ take: 20 })
+        },
+        100
+      )
+    )
 
-    results.push(await this.run('API: Task Statistics', async () => {
-      // Simulate task statistics API call
-      await Promise.all([
-        prisma.task.count(),
-        prisma.task.count({ where: { status: 'COMPLETED' } }),
-        prisma.task.count({ where: { status: 'FAILED' } }),
-      ])
-    }, 100))
+    results.push(
+      await this.run(
+        'API: Task Statistics',
+        async () => {
+          // Simulate task statistics API call
+          await Promise.all([
+            prisma.task.count(),
+            prisma.task.count({ where: { status: 'COMPLETED' } }),
+            prisma.task.count({ where: { status: 'FAILED' } }),
+          ])
+        },
+        100
+      )
+    )
 
     return results
   }
@@ -262,7 +317,7 @@ export class LoadTester {
     // Main load test loop
     while (Date.now() < endTime) {
       const now = Date.now()
-      
+
       // Calculate current concurrency based on ramp-up
       let currentConcurrency = config.concurrency
       if (rampUpTime > 0 && now < rampUpEnd) {
@@ -271,7 +326,10 @@ export class LoadTester {
       }
 
       // Start new operations if under concurrency limit
-      while (activeOperations.size < currentConcurrency && Date.now() < endTime) {
+      while (
+        activeOperations.size < currentConcurrency &&
+        Date.now() < endTime
+      ) {
         const operationPromise = this.runSingleOperation(
           config.operation,
           responseTimes,
@@ -304,13 +362,18 @@ export class LoadTester {
 
     const totalOperations = successfulOperations + failedOperations
     const actualDuration = Date.now() - startTime
-    const averageResponseTime = responseTimes.length > 0 
-      ? responseTimes.reduce((sum, time) => sum + time, 0) / responseTimes.length 
-      : 0
-    const minResponseTime = responseTimes.length > 0 ? Math.min(...responseTimes) : 0
-    const maxResponseTime = responseTimes.length > 0 ? Math.max(...responseTimes) : 0
+    const averageResponseTime =
+      responseTimes.length > 0
+        ? responseTimes.reduce((sum, time) => sum + time, 0) /
+          responseTimes.length
+        : 0
+    const minResponseTime =
+      responseTimes.length > 0 ? Math.min(...responseTimes) : 0
+    const maxResponseTime =
+      responseTimes.length > 0 ? Math.max(...responseTimes) : 0
     const operationsPerSecond = (totalOperations / actualDuration) * 1000
-    const errorRate = totalOperations > 0 ? (failedOperations / totalOperations) * 100 : 0
+    const errorRate =
+      totalOperations > 0 ? (failedOperations / totalOperations) * 100 : 0
 
     const result: LoadTestResult = {
       config,
@@ -322,7 +385,10 @@ export class LoadTester {
       maxResponseTime,
       operationsPerSecond: Math.round(operationsPerSecond * 100) / 100,
       errorRate: Math.round(errorRate * 100) / 100,
-      errors: Array.from(errors.entries()).map(([error, count]) => ({ error, count })),
+      errors: Array.from(errors.entries()).map(([error, count]) => ({
+        error,
+        count,
+      })),
       memoryUsage: {
         initial: initialMemory,
         peak: peakMemory,
@@ -345,13 +411,14 @@ export class LoadTester {
     errors: Map<string, number>
   ): Promise<void> {
     const startTime = Date.now()
-    
+
     try {
       await operation()
       const responseTime = Date.now() - startTime
       responseTimes.push(responseTime)
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error'
       const currentCount = errors.get(errorMessage) || 0
       errors.set(errorMessage, currentCount + 1)
       throw error
@@ -361,7 +428,10 @@ export class LoadTester {
   /**
    * Run database load test
    */
-  static async testDatabase(duration = 30000, concurrency = 10): Promise<LoadTestResult> {
+  static async testDatabase(
+    duration = 30000,
+    concurrency = 10
+  ): Promise<LoadTestResult> {
     return this.run({
       name: 'Database Load Test',
       duration,
@@ -373,17 +443,19 @@ export class LoadTester {
         const operations = [
           () => prisma.agent.findMany({ take: 10 }),
           () => prisma.task.count(),
-          () => prisma.systemLog.create({
-            data: {
-              level: 'INFO',
-              message: 'Load test log',
-              source: 'load-test',
-            },
-          }),
+          () =>
+            prisma.systemLog.create({
+              data: {
+                level: 'INFO',
+                message: 'Load test log',
+                source: 'load-test',
+              },
+            }),
           () => prisma.user.findFirst(),
         ]
 
-        const randomOperation = operations[Math.floor(Math.random() * operations.length)]
+        const randomOperation =
+          operations[Math.floor(Math.random() * operations.length)]
         await randomOperation()
       },
     })
@@ -392,7 +464,10 @@ export class LoadTester {
   /**
    * Run cache load test
    */
-  static async testCache(duration = 30000, concurrency = 50): Promise<LoadTestResult> {
+  static async testCache(
+    duration = 30000,
+    concurrency = 50
+  ): Promise<LoadTestResult> {
     return this.run({
       name: 'Cache Load Test',
       duration,
@@ -400,7 +475,7 @@ export class LoadTester {
       rampUpTime: 2000,
       operation: async () => {
         const key = `load-test-${Math.floor(Math.random() * 1000)}`
-        
+
         if (Math.random() > 0.3) {
           // 70% reads
           cache.get(key)
@@ -415,7 +490,10 @@ export class LoadTester {
   /**
    * Run memory stress test
    */
-  static async testMemory(duration = 60000, concurrency = 5): Promise<LoadTestResult> {
+  static async testMemory(
+    duration = 60000,
+    concurrency = 5
+  ): Promise<LoadTestResult> {
     return this.run({
       name: 'Memory Stress Test',
       duration,
@@ -435,7 +513,7 @@ export class LoadTester {
         // Perform operations on the array
         largeArray.sort((a, b) => a.nested.value - b.nested.value)
         largeArray.filter(item => item.nested.value > 0.5)
-        
+
         // Force garbage collection opportunity
         await new Promise(resolve => setTimeout(resolve, 10))
       },
@@ -469,13 +547,13 @@ export class PerformanceTestSuite {
     try {
       // Run benchmarks
       logger.info('Running database benchmarks')
-      benchmarks.push(...await Benchmark.benchmarkDatabase())
+      benchmarks.push(...(await Benchmark.benchmarkDatabase()))
 
       logger.info('Running cache benchmarks')
-      benchmarks.push(...await Benchmark.benchmarkCache())
+      benchmarks.push(...(await Benchmark.benchmarkCache()))
 
       logger.info('Running API benchmarks')
-      benchmarks.push(...await Benchmark.benchmarkAPI())
+      benchmarks.push(...(await Benchmark.benchmarkAPI()))
 
       // Run load tests
       logger.info('Running database load test')
@@ -488,8 +566,12 @@ export class PerformanceTestSuite {
       loadTests.push(await LoadTester.testMemory(60000, 5))
 
       // Analyze results
-      this.analyzeResults(benchmarks, loadTests, criticalIssues, recommendations)
-
+      this.analyzeResults(
+        benchmarks,
+        loadTests,
+        criticalIssues,
+        recommendations
+      )
     } catch (error) {
       logger.error('Performance test suite failed', error)
       criticalIssues.push(`Test suite execution failed: ${error}`)
@@ -525,49 +607,79 @@ export class PerformanceTestSuite {
     // Analyze benchmarks
     benchmarks.forEach(benchmark => {
       if (benchmark.averageTime > 1000) {
-        criticalIssues.push(`Slow operation: ${benchmark.name} (${benchmark.averageTime}ms average)`)
-      }
-      
-      if (benchmark.opsPerSecond < 10) {
-        recommendations.push(`Consider optimizing ${benchmark.name} - only ${benchmark.opsPerSecond} ops/sec`)
+        criticalIssues.push(
+          `Slow operation: ${benchmark.name} (${benchmark.averageTime}ms average)`
+        )
       }
 
-      if (benchmark.memoryUsage.delta > 50 * 1024 * 1024) { // 50MB
-        recommendations.push(`High memory usage in ${benchmark.name} - ${Math.round(benchmark.memoryUsage.delta / 1024 / 1024)}MB`)
+      if (benchmark.opsPerSecond < 10) {
+        recommendations.push(
+          `Consider optimizing ${benchmark.name} - only ${benchmark.opsPerSecond} ops/sec`
+        )
+      }
+
+      if (benchmark.memoryUsage.delta > 50 * 1024 * 1024) {
+        // 50MB
+        recommendations.push(
+          `High memory usage in ${benchmark.name} - ${Math.round(benchmark.memoryUsage.delta / 1024 / 1024)}MB`
+        )
       }
     })
 
     // Analyze load tests
     loadTests.forEach(loadTest => {
       if (loadTest.errorRate > 5) {
-        criticalIssues.push(`High error rate in ${loadTest.config.name}: ${loadTest.errorRate}%`)
+        criticalIssues.push(
+          `High error rate in ${loadTest.config.name}: ${loadTest.errorRate}%`
+        )
       }
 
       if (loadTest.averageResponseTime > 2000) {
-        criticalIssues.push(`Slow response time in ${loadTest.config.name}: ${loadTest.averageResponseTime}ms`)
+        criticalIssues.push(
+          `Slow response time in ${loadTest.config.name}: ${loadTest.averageResponseTime}ms`
+        )
       }
 
       if (loadTest.operationsPerSecond < 10) {
-        recommendations.push(`Low throughput in ${loadTest.config.name}: ${loadTest.operationsPerSecond} ops/sec`)
+        recommendations.push(
+          `Low throughput in ${loadTest.config.name}: ${loadTest.operationsPerSecond} ops/sec`
+        )
       }
 
-      const memoryGrowth = loadTest.memoryUsage.final.heapUsed - loadTest.memoryUsage.initial.heapUsed
-      if (memoryGrowth > 100 * 1024 * 1024) { // 100MB
-        recommendations.push(`Potential memory leak in ${loadTest.config.name}: ${Math.round(memoryGrowth / 1024 / 1024)}MB growth`)
+      const memoryGrowth =
+        loadTest.memoryUsage.final.heapUsed -
+        loadTest.memoryUsage.initial.heapUsed
+      if (memoryGrowth > 100 * 1024 * 1024) {
+        // 100MB
+        recommendations.push(
+          `Potential memory leak in ${loadTest.config.name}: ${Math.round(memoryGrowth / 1024 / 1024)}MB growth`
+        )
       }
     })
 
     // General recommendations
     if (criticalIssues.length === 0) {
-      recommendations.push('Performance looks good! Consider monitoring in production.')
+      recommendations.push(
+        'Performance looks good! Consider monitoring in production.'
+      )
     }
 
-    if (benchmarks.some(b => b.name.includes('Database') && b.averageTime > 100)) {
-      recommendations.push('Consider adding database indexes for frequently queried fields')
+    if (
+      benchmarks.some(b => b.name.includes('Database') && b.averageTime > 100)
+    ) {
+      recommendations.push(
+        'Consider adding database indexes for frequently queried fields'
+      )
     }
 
-    if (loadTests.some(t => t.config.name.includes('Cache') && t.averageResponseTime > 10)) {
-      recommendations.push('Cache performance could be improved - consider Redis for production')
+    if (
+      loadTests.some(
+        t => t.config.name.includes('Cache') && t.averageResponseTime > 10
+      )
+    ) {
+      recommendations.push(
+        'Cache performance could be improved - consider Redis for production'
+      )
     }
   }
 }

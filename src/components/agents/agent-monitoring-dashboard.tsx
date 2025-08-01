@@ -6,18 +6,18 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { 
-  Bot, 
-  LayoutGrid, 
-  List, 
-  Eye, 
-  Settings, 
+import {
+  Bot,
+  LayoutGrid,
+  List,
+  Eye,
+  Settings,
   RefreshCw,
   Wifi,
   WifiOff,
   AlertTriangle,
   CheckCircle,
-  Activity
+  Activity,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -42,7 +42,9 @@ interface AgentStats {
   unhealthy: number
 }
 
-export function AgentMonitoringDashboard({ className }: AgentMonitoringDashboardProps) {
+export function AgentMonitoringDashboard({
+  className,
+}: AgentMonitoringDashboardProps) {
   const [agents, setAgents] = useState<Agent[]>([])
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null)
   const [loading, setLoading] = useState(true)
@@ -55,205 +57,229 @@ export function AgentMonitoringDashboard({ className }: AgentMonitoringDashboard
     connected: wsConnected,
     connecting: wsConnecting,
     error: wsError,
-    reconnect: wsReconnect
+    reconnect: wsReconnect,
   } = useWebSocketAgents({
     subscribeToAll: true,
-    onStatusUpdate: (update) => {
-      setAgents(prev => prev.map(agent => 
-        agent.id === update.agentId 
-          ? { 
-              ...agent, 
-              status: update.status.toUpperCase() as Agent['status'],
-              updatedAt: new Date()
-            }
-          : agent
-      ))
-    },
-    onHealthUpdate: (update) => {
-      setAgents(prev => prev.map(agent => 
-        agent.id === update.agentId 
-          ? { 
-              ...agent, 
-              healthStatus: {
-                ...agent.healthStatus,
-                ...update.health,
-                lastCheck: new Date(update.health.lastCheck)
+    onStatusUpdate: update => {
+      setAgents(prev =>
+        prev.map(agent =>
+          agent.id === update.agentId
+            ? {
+                ...agent,
+                status: update.status.toUpperCase() as Agent['status'],
+                updatedAt: new Date(),
               }
-            }
-          : agent
-      ))
+            : agent
+        )
+      )
     },
-    onAgentError: (event) => {
+    onHealthUpdate: update => {
+      setAgents(prev =>
+        prev.map(agent =>
+          agent.id === update.agentId
+            ? {
+                ...agent,
+                healthStatus: {
+                  ...agent.healthStatus,
+                  ...update.health,
+                  lastCheck: new Date(update.health.lastCheck),
+                },
+              }
+            : agent
+        )
+      )
+    },
+    onAgentError: event => {
       // Update agent with error status
-      setAgents(prev => prev.map(agent => 
-        agent.id === event.agentId 
-          ? { 
-              ...agent, 
-              status: 'ERROR',
-              healthStatus: {
-                ...agent.healthStatus,
-                status: 'unhealthy',
-                error: event.error.message,
-                lastCheck: new Date()
+      setAgents(prev =>
+        prev.map(agent =>
+          agent.id === event.agentId
+            ? {
+                ...agent,
+                status: 'ERROR',
+                healthStatus: {
+                  ...agent.healthStatus,
+                  status: 'unhealthy',
+                  error: event.error.message,
+                  lastCheck: new Date(),
+                },
               }
-            }
-          : agent
-      ))
+            : agent
+        )
+      )
     },
     showToasts: true,
-    autoReconnect: true
+    autoReconnect: true,
   })
 
   // Fetch agents from API
-  const fetchAgents = useCallback(async (showLoading = true) => {
-    try {
-      if (showLoading) {
-        setLoading(true)
-      } else {
-        setRefreshing(true)
-      }
-      setError(null)
-
-      const token = localStorage.getItem('auth_token')
-      const response = await fetch('/api/cubcen/v1/agents', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+  const fetchAgents = useCallback(
+    async (showLoading = true) => {
+      try {
+        if (showLoading) {
+          setLoading(true)
+        } else {
+          setRefreshing(true)
         }
-      })
+        setError(null)
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch agents: ${response.statusText}`)
-      }
+        const token = localStorage.getItem('auth_token')
+        const response = await fetch('/api/cubcen/v1/agents', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        })
 
-      const data = await response.json()
-      
-      if (data.success) {
-        const agentsData = data.data.agents.map((agent: any) => ({
-          ...agent,
-          capabilities: JSON.parse(agent.capabilities || '[]'),
-          configuration: JSON.parse(agent.configuration || '{}'),
-          healthStatus: JSON.parse(agent.healthStatus || '{"status":"unknown","lastCheck":null}'),
-          createdAt: new Date(agent.createdAt),
-          updatedAt: new Date(agent.updatedAt)
-        }))
-        
-        setAgents(agentsData)
-        
-        // Update selected agent if it exists
-        if (selectedAgent) {
-          const updatedSelectedAgent = agentsData.find((a: Agent) => a.id === selectedAgent.id)
-          if (updatedSelectedAgent) {
-            setSelectedAgent(updatedSelectedAgent)
+        if (!response.ok) {
+          throw new Error(`Failed to fetch agents: ${response.statusText}`)
+        }
+
+        const data = await response.json()
+
+        if (data.success) {
+          const agentsData = data.data.agents.map((agent: any) => ({
+            ...agent,
+            capabilities: JSON.parse(agent.capabilities || '[]'),
+            configuration: JSON.parse(agent.configuration || '{}'),
+            healthStatus: JSON.parse(
+              agent.healthStatus || '{"status":"unknown","lastCheck":null}'
+            ),
+            createdAt: new Date(agent.createdAt),
+            updatedAt: new Date(agent.updatedAt),
+          }))
+
+          setAgents(agentsData)
+
+          // Update selected agent if it exists
+          if (selectedAgent) {
+            const updatedSelectedAgent = agentsData.find(
+              (a: Agent) => a.id === selectedAgent.id
+            )
+            if (updatedSelectedAgent) {
+              setSelectedAgent(updatedSelectedAgent)
+            }
           }
+        } else {
+          throw new Error(data.error?.message || 'Failed to fetch agents')
         }
-      } else {
-        throw new Error(data.error?.message || 'Failed to fetch agents')
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Unknown error occurred'
+        setError(errorMessage)
+        toast.error('Failed to fetch agents', {
+          description: errorMessage,
+        })
+      } finally {
+        setLoading(false)
+        setRefreshing(false)
       }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred'
-      setError(errorMessage)
-      toast.error('Failed to fetch agents', {
-        description: errorMessage
-      })
-    } finally {
-      setLoading(false)
-      setRefreshing(false)
-    }
-  }, [selectedAgent])
+    },
+    [selectedAgent]
+  )
 
   // Refresh single agent
-  const refreshAgent = useCallback(async (agentId: string) => {
-    try {
-      const token = localStorage.getItem('auth_token')
-      const response = await fetch(`/api/cubcen/v1/agents/${agentId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      })
+  const refreshAgent = useCallback(
+    async (agentId: string) => {
+      try {
+        const token = localStorage.getItem('auth_token')
+        const response = await fetch(`/api/cubcen/v1/agents/${agentId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        })
 
-      if (!response.ok) {
-        throw new Error(`Failed to refresh agent: ${response.statusText}`)
-      }
+        if (!response.ok) {
+          throw new Error(`Failed to refresh agent: ${response.statusText}`)
+        }
 
-      const data = await response.json()
-      
-      if (data.success) {
-        const agentData = {
-          ...data.data.agent,
-          capabilities: JSON.parse(data.data.agent.capabilities || '[]'),
-          configuration: JSON.parse(data.data.agent.configuration || '{}'),
-          healthStatus: JSON.parse(data.data.agent.healthStatus || '{"status":"unknown","lastCheck":null}'),
-          createdAt: new Date(data.data.agent.createdAt),
-          updatedAt: new Date(data.data.agent.updatedAt)
+        const data = await response.json()
+
+        if (data.success) {
+          const agentData = {
+            ...data.data.agent,
+            capabilities: JSON.parse(data.data.agent.capabilities || '[]'),
+            configuration: JSON.parse(data.data.agent.configuration || '{}'),
+            healthStatus: JSON.parse(
+              data.data.agent.healthStatus ||
+                '{"status":"unknown","lastCheck":null}'
+            ),
+            createdAt: new Date(data.data.agent.createdAt),
+            updatedAt: new Date(data.data.agent.updatedAt),
+          }
+
+          setAgents(prev =>
+            prev.map(agent => (agent.id === agentId ? agentData : agent))
+          )
+
+          if (selectedAgent?.id === agentId) {
+            setSelectedAgent(agentData)
+          }
+
+          toast.success('Agent refreshed successfully')
+        } else {
+          throw new Error(data.error?.message || 'Failed to refresh agent')
         }
-        
-        setAgents(prev => prev.map(agent => 
-          agent.id === agentId ? agentData : agent
-        ))
-        
-        if (selectedAgent?.id === agentId) {
-          setSelectedAgent(agentData)
-        }
-        
-        toast.success('Agent refreshed successfully')
-      } else {
-        throw new Error(data.error?.message || 'Failed to refresh agent')
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : 'Unknown error occurred'
+        toast.error('Failed to refresh agent', {
+          description: errorMessage,
+        })
       }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred'
-      toast.error('Failed to refresh agent', {
-        description: errorMessage
-      })
-    }
-  }, [selectedAgent])
+    },
+    [selectedAgent]
+  )
 
   // Calculate agent statistics
   const calculateStats = useCallback((): AgentStats => {
-    return agents.reduce((stats, agent) => {
-      stats.total++
-      
-      // Status counts
-      switch (agent.status) {
-        case 'ACTIVE':
-          stats.active++
-          break
-        case 'INACTIVE':
-          stats.inactive++
-          break
-        case 'ERROR':
-          stats.error++
-          break
-        case 'MAINTENANCE':
-          stats.maintenance++
-          break
+    return agents.reduce(
+      (stats, agent) => {
+        stats.total++
+
+        // Status counts
+        switch (agent.status) {
+          case 'ACTIVE':
+            stats.active++
+            break
+          case 'INACTIVE':
+            stats.inactive++
+            break
+          case 'ERROR':
+            stats.error++
+            break
+          case 'MAINTENANCE':
+            stats.maintenance++
+            break
+        }
+
+        // Health counts
+        switch (agent.healthStatus.status) {
+          case 'healthy':
+            stats.healthy++
+            break
+          case 'degraded':
+            stats.degraded++
+            break
+          case 'unhealthy':
+            stats.unhealthy++
+            break
+        }
+
+        return stats
+      },
+      {
+        total: 0,
+        active: 0,
+        inactive: 0,
+        error: 0,
+        maintenance: 0,
+        healthy: 0,
+        degraded: 0,
+        unhealthy: 0,
       }
-      
-      // Health counts
-      switch (agent.healthStatus.status) {
-        case 'healthy':
-          stats.healthy++
-          break
-        case 'degraded':
-          stats.degraded++
-          break
-        case 'unhealthy':
-          stats.unhealthy++
-          break
-      }
-      
-      return stats
-    }, {
-      total: 0,
-      active: 0,
-      inactive: 0,
-      error: 0,
-      maintenance: 0,
-      healthy: 0,
-      degraded: 0,
-      unhealthy: 0
-    })
+    )
   }, [agents])
 
   const stats = calculateStats()
@@ -267,7 +293,7 @@ export function AgentMonitoringDashboard({ className }: AgentMonitoringDashboard
   const handleConfigureAgent = useCallback((agent: Agent) => {
     // This would open a configuration modal or navigate to config page
     toast.info('Configuration', {
-      description: `Opening configuration for ${agent.name}`
+      description: `Opening configuration for ${agent.name}`,
     })
   }, [])
 
@@ -281,22 +307,28 @@ export function AgentMonitoringDashboard({ className }: AgentMonitoringDashboard
   }, [fetchAgents])
 
   return (
-    <div className={cn("space-y-6", className)}>
+    <div className={cn('space-y-6', className)}>
       {/* Header with Stats */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Agent Monitoring</h1>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Agent Monitoring
+            </h1>
             <p className="text-muted-foreground">
-              Monitor and manage your AI agents across all platforms in real-time.
+              Monitor and manage your AI agents across all platforms in
+              real-time.
             </p>
           </div>
-          
+
           <div className="flex items-center space-x-2">
             {/* WebSocket Status */}
             <div className="flex items-center space-x-2">
               {wsConnecting ? (
-                <Badge variant="outline" className="text-yellow-600 border-yellow-600">
+                <Badge
+                  variant="outline"
+                  className="text-yellow-600 border-yellow-600"
+                >
                   <RefreshCw className="h-3 w-3 mr-1 animate-spin" />
                   Connecting
                 </Badge>
@@ -306,12 +338,15 @@ export function AgentMonitoringDashboard({ className }: AgentMonitoringDashboard
                   Live Updates
                 </Badge>
               ) : (
-                <Badge variant="outline" className="text-red-600 border-red-600">
+                <Badge
+                  variant="outline"
+                  className="text-red-600 border-red-600"
+                >
                   <WifiOff className="h-3 w-3 mr-1" />
                   Offline
                 </Badge>
               )}
-              
+
               {wsError && !wsConnected && (
                 <Button
                   variant="outline"
@@ -324,17 +359,19 @@ export function AgentMonitoringDashboard({ className }: AgentMonitoringDashboard
                 </Button>
               )}
             </div>
-            
+
             <Button
               variant="outline"
               onClick={handleRefresh}
               disabled={loading || refreshing}
               className="hover:bg-cubcen-primary hover:text-white"
             >
-              <RefreshCw className={cn(
-                "h-4 w-4 mr-2",
-                (loading || refreshing) && "animate-spin"
-              )} />
+              <RefreshCw
+                className={cn(
+                  'h-4 w-4 mr-2',
+                  (loading || refreshing) && 'animate-spin'
+                )}
+              />
               Refresh
             </Button>
           </div>
@@ -353,85 +390,101 @@ export function AgentMonitoringDashboard({ className }: AgentMonitoringDashboard
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center space-x-2">
                 <CheckCircle className="h-4 w-4 text-green-600" />
                 <div>
-                  <div className="text-2xl font-bold text-green-600">{stats.active}</div>
+                  <div className="text-2xl font-bold text-green-600">
+                    {stats.active}
+                  </div>
                   <div className="text-xs text-muted-foreground">Active</div>
                 </div>
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center space-x-2">
                 <Activity className="h-4 w-4 text-gray-600" />
                 <div>
-                  <div className="text-2xl font-bold text-gray-600">{stats.inactive}</div>
+                  <div className="text-2xl font-bold text-gray-600">
+                    {stats.inactive}
+                  </div>
                   <div className="text-xs text-muted-foreground">Inactive</div>
                 </div>
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center space-x-2">
                 <AlertTriangle className="h-4 w-4 text-red-600" />
                 <div>
-                  <div className="text-2xl font-bold text-red-600">{stats.error}</div>
+                  <div className="text-2xl font-bold text-red-600">
+                    {stats.error}
+                  </div>
                   <div className="text-xs text-muted-foreground">Error</div>
                 </div>
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center space-x-2">
                 <Settings className="h-4 w-4 text-yellow-600" />
                 <div>
-                  <div className="text-2xl font-bold text-yellow-600">{stats.maintenance}</div>
-                  <div className="text-xs text-muted-foreground">Maintenance</div>
+                  <div className="text-2xl font-bold text-yellow-600">
+                    {stats.maintenance}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    Maintenance
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center space-x-2">
                 <div className="h-4 w-4 rounded-full bg-cubcen-primary" />
                 <div>
-                  <div className="text-2xl font-bold text-cubcen-primary">{stats.healthy}</div>
+                  <div className="text-2xl font-bold text-cubcen-primary">
+                    {stats.healthy}
+                  </div>
                   <div className="text-xs text-muted-foreground">Healthy</div>
                 </div>
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center space-x-2">
                 <div className="h-4 w-4 rounded-full bg-cubcen-secondary" />
                 <div>
-                  <div className="text-2xl font-bold text-cubcen-secondary">{stats.degraded}</div>
+                  <div className="text-2xl font-bold text-cubcen-secondary">
+                    {stats.degraded}
+                  </div>
                   <div className="text-xs text-muted-foreground">Degraded</div>
                 </div>
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center space-x-2">
                 <div className="h-4 w-4 rounded-full bg-red-500" />
                 <div>
-                  <div className="text-2xl font-bold text-red-500">{stats.unhealthy}</div>
+                  <div className="text-2xl font-bold text-red-500">
+                    {stats.unhealthy}
+                  </div>
                   <div className="text-xs text-muted-foreground">Unhealthy</div>
                 </div>
               </div>
@@ -444,9 +497,7 @@ export function AgentMonitoringDashboard({ className }: AgentMonitoringDashboard
       {error && (
         <Alert className="border-red-200 bg-red-50">
           <AlertTriangle className="h-4 w-4 text-red-600" />
-          <AlertDescription className="text-red-800">
-            {error}
-          </AlertDescription>
+          <AlertDescription className="text-red-800">{error}</AlertDescription>
         </Alert>
       )}
 
@@ -469,7 +520,10 @@ export function AgentMonitoringDashboard({ className }: AgentMonitoringDashboard
       )}
 
       {/* Main Content */}
-      <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as typeof viewMode)}>
+      <Tabs
+        value={viewMode}
+        onValueChange={value => setViewMode(value as typeof viewMode)}
+      >
         <div className="flex items-center justify-between">
           <TabsList className="grid w-fit grid-cols-3">
             <TabsTrigger value="cards" className="flex items-center space-x-2">
@@ -485,10 +539,13 @@ export function AgentMonitoringDashboard({ className }: AgentMonitoringDashboard
               <span>Detail</span>
             </TabsTrigger>
           </TabsList>
-          
+
           {viewMode === 'detail' && selectedAgent && (
             <div className="flex items-center space-x-2">
-              <Badge variant="outline" className="bg-cubcen-primary-light text-cubcen-primary">
+              <Badge
+                variant="outline"
+                className="bg-cubcen-primary-light text-cubcen-primary"
+              >
                 Viewing: {selectedAgent.name}
               </Badge>
               <Button

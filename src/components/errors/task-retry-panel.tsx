@@ -1,24 +1,44 @@
-"use client"
+'use client'
 
 import React, { useState, useEffect, useCallback } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { 
-  RotateCcw, 
-  RefreshCw, 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import {
+  RotateCcw,
+  RefreshCw,
   AlertCircle,
   CheckCircle,
   XCircle,
   Clock,
   User,
   Zap,
-  AlertTriangle
+  AlertTriangle,
 } from 'lucide-react'
 import { RetryableTask } from '@/types/error'
 import { format } from 'date-fns'
@@ -45,7 +65,7 @@ export function TaskRetryPanel({ className }: TaskRetryPanelProps) {
     try {
       setLoading(true)
       setRefreshing(true)
-      
+
       const response = await fetch('/api/cubcen/v1/errors/retryable-tasks')
       if (!response.ok) {
         throw new Error('Failed to fetch retryable tasks')
@@ -55,7 +75,9 @@ export function TaskRetryPanel({ className }: TaskRetryPanelProps) {
       setTasks(data.tasks || [])
       setError(null)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch retryable tasks')
+      setError(
+        err instanceof Error ? err.message : 'Failed to fetch retryable tasks'
+      )
     } finally {
       setLoading(false)
       setRefreshing(false)
@@ -73,86 +95,103 @@ export function TaskRetryPanel({ className }: TaskRetryPanelProps) {
   }, [fetchTasks])
 
   // Handle task selection
-  const handleTaskSelection = useCallback((taskId: string, checked: boolean) => {
-    setSelectedTasks(prev => {
-      const newSet = new Set(prev)
-      if (checked) {
-        newSet.add(taskId)
-      } else {
-        newSet.delete(taskId)
-      }
-      return newSet
-    })
-  }, [])
-
-  // Handle select all
-  const handleSelectAll = useCallback((checked: boolean) => {
-    if (checked) {
-      setSelectedTasks(new Set(tasks.filter(t => t.canRetry).map(t => t.id)))
-    } else {
-      setSelectedTasks(new Set())
-    }
-  }, [tasks])
-
-  // Handle single task retry
-  const handleSingleRetry = useCallback(async (taskId: string) => {
-    try {
-      setRetryingTasks(prev => new Set(prev).add(taskId))
-      
-      const response = await fetch(`/api/cubcen/v1/errors/retry-task/${taskId}`, {
-        method: 'POST'
-      })
-      
-      if (!response.ok) {
-        throw new Error('Failed to retry task')
-      }
-      
-      // Refresh the task list
-      await fetchTasks()
-      
-      // Show success message
-      setRetryResults({
-        successful: [taskId],
-        failed: []
-      })
-    } catch (err) {
-      setRetryResults({
-        successful: [],
-        failed: [{ taskId, error: err instanceof Error ? err.message : 'Unknown error' }]
-      })
-    } finally {
-      setRetryingTasks(prev => {
+  const handleTaskSelection = useCallback(
+    (taskId: string, checked: boolean) => {
+      setSelectedTasks(prev => {
         const newSet = new Set(prev)
-        newSet.delete(taskId)
+        if (checked) {
+          newSet.add(taskId)
+        } else {
+          newSet.delete(taskId)
+        }
         return newSet
       })
-    }
-  }, [fetchTasks])
+    },
+    []
+  )
+
+  // Handle select all
+  const handleSelectAll = useCallback(
+    (checked: boolean) => {
+      if (checked) {
+        setSelectedTasks(new Set(tasks.filter(t => t.canRetry).map(t => t.id)))
+      } else {
+        setSelectedTasks(new Set())
+      }
+    },
+    [tasks]
+  )
+
+  // Handle single task retry
+  const handleSingleRetry = useCallback(
+    async (taskId: string) => {
+      try {
+        setRetryingTasks(prev => new Set(prev).add(taskId))
+
+        const response = await fetch(
+          `/api/cubcen/v1/errors/retry-task/${taskId}`,
+          {
+            method: 'POST',
+          }
+        )
+
+        if (!response.ok) {
+          throw new Error('Failed to retry task')
+        }
+
+        // Refresh the task list
+        await fetchTasks()
+
+        // Show success message
+        setRetryResults({
+          successful: [taskId],
+          failed: [],
+        })
+      } catch (err) {
+        setRetryResults({
+          successful: [],
+          failed: [
+            {
+              taskId,
+              error: err instanceof Error ? err.message : 'Unknown error',
+            },
+          ],
+        })
+      } finally {
+        setRetryingTasks(prev => {
+          const newSet = new Set(prev)
+          newSet.delete(taskId)
+          return newSet
+        })
+      }
+    },
+    [fetchTasks]
+  )
 
   // Handle bulk retry
   const handleBulkRetry = useCallback(async () => {
     if (selectedTasks.size === 0) return
-    
+
     try {
       setRetryingTasks(new Set(selectedTasks))
-      
+
       const response = await fetch('/api/cubcen/v1/errors/bulk-retry-tasks', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          taskIds: Array.from(selectedTasks)
-        })
+          taskIds: Array.from(selectedTasks),
+        }),
       })
-      
+
       if (!response.ok) {
         throw new Error('Failed to retry tasks')
       }
-      
+
       const results = await response.json()
       setRetryResults(results)
-      
+
       // Clear selection and refresh
       setSelectedTasks(new Set())
       await fetchTasks()
@@ -161,8 +200,8 @@ export function TaskRetryPanel({ className }: TaskRetryPanelProps) {
         successful: [],
         failed: Array.from(selectedTasks).map(taskId => ({
           taskId,
-          error: err instanceof Error ? err.message : 'Unknown error'
-        }))
+          error: err instanceof Error ? err.message : 'Unknown error',
+        })),
       })
     } finally {
       setRetryingTasks(new Set())
@@ -173,12 +212,18 @@ export function TaskRetryPanel({ className }: TaskRetryPanelProps) {
   // Get status badge
   const getStatusBadge = (status: RetryableTask['status']) => {
     const config = {
-      FAILED: { color: 'bg-red-100 text-red-800 border-red-200', icon: XCircle },
-      CANCELLED: { color: 'bg-gray-100 text-gray-800 border-gray-200', icon: XCircle }
+      FAILED: {
+        color: 'bg-red-100 text-red-800 border-red-200',
+        icon: XCircle,
+      },
+      CANCELLED: {
+        color: 'bg-gray-100 text-gray-800 border-gray-200',
+        icon: XCircle,
+      },
     }
-    
+
     const { color, icon: Icon } = config[status]
-    
+
     return (
       <Badge variant="outline" className={`${color} flex items-center gap-1`}>
         <Icon className="h-3 w-3" />
@@ -200,9 +245,7 @@ export function TaskRetryPanel({ className }: TaskRetryPanelProps) {
             <RotateCcw className="h-5 w-5 text-[#3F51B5]" />
             Failed Tasks
           </CardTitle>
-          <CardDescription>
-            Tasks that can be retried manually
-          </CardDescription>
+          <CardDescription>Tasks that can be retried manually</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -253,7 +296,9 @@ export function TaskRetryPanel({ className }: TaskRetryPanelProps) {
                 disabled={refreshing}
                 className="border-[#3F51B5] text-[#3F51B5] hover:bg-[#3F51B5] hover:text-white"
               >
-                <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+                <RefreshCw
+                  className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`}
+                />
                 Refresh
               </Button>
             </div>
@@ -274,10 +319,14 @@ export function TaskRetryPanel({ className }: TaskRetryPanelProps) {
             <Alert className="mb-4">
               <CheckCircle className="h-4 w-4" />
               <AlertDescription>
-                Retry completed: {retryResults.successful.length} successful, {retryResults.failed.length} failed
+                Retry completed: {retryResults.successful.length} successful,{' '}
+                {retryResults.failed.length} failed
                 {retryResults.failed.length > 0 && (
                   <div className="mt-2 text-sm">
-                    Failed tasks: {retryResults.failed.map(f => f.taskId.slice(0, 8)).join(', ')}
+                    Failed tasks:{' '}
+                    {retryResults.failed
+                      .map(f => f.taskId.slice(0, 8))
+                      .join(', ')}
                   </div>
                 )}
               </AlertDescription>
@@ -287,7 +336,9 @@ export function TaskRetryPanel({ className }: TaskRetryPanelProps) {
           {tasks.length === 0 ? (
             <div className="text-center py-8">
               <CheckCircle className="h-12 w-12 text-green-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-600 mb-2">No Failed Tasks</h3>
+              <h3 className="text-lg font-medium text-gray-600 mb-2">
+                No Failed Tasks
+              </h3>
               <p className="text-gray-500">
                 All tasks are running successfully. No manual retries needed.
               </p>
@@ -297,12 +348,17 @@ export function TaskRetryPanel({ className }: TaskRetryPanelProps) {
               {/* Bulk Actions */}
               <div className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
                 <Checkbox
-                  checked={selectedTasks.size === tasks.filter(t => t.canRetry).length && tasks.filter(t => t.canRetry).length > 0}
+                  checked={
+                    selectedTasks.size ===
+                      tasks.filter(t => t.canRetry).length &&
+                    tasks.filter(t => t.canRetry).length > 0
+                  }
                   onCheckedChange={handleSelectAll}
                   disabled={retryingTasks.size > 0}
                 />
                 <span className="text-sm text-gray-600">
-                  Select all retryable tasks ({tasks.filter(t => t.canRetry).length} available)
+                  Select all retryable tasks (
+                  {tasks.filter(t => t.canRetry).length} available)
                 </span>
               </div>
 
@@ -322,18 +378,22 @@ export function TaskRetryPanel({ className }: TaskRetryPanelProps) {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {tasks.map((task) => (
+                    {tasks.map(task => (
                       <TableRow key={task.id} className="hover:bg-gray-50">
                         <TableCell>
                           <Checkbox
                             checked={selectedTasks.has(task.id)}
-                            onCheckedChange={(checked) => handleTaskSelection(task.id, checked as boolean)}
+                            onCheckedChange={checked =>
+                              handleTaskSelection(task.id, checked as boolean)
+                            }
                             disabled={!task.canRetry || retryingTasks.size > 0}
                           />
                         </TableCell>
                         <TableCell>
                           <div className="space-y-1">
-                            <div className="font-medium text-sm">{task.name}</div>
+                            <div className="font-medium text-sm">
+                              {task.name}
+                            </div>
                             <div className="text-xs text-gray-500 flex items-center gap-1">
                               <Zap className="h-3 w-3" />
                               {task.id.slice(0, 8)}...
@@ -346,14 +406,17 @@ export function TaskRetryPanel({ className }: TaskRetryPanelProps) {
                             <span className="text-sm">{task.agentName}</span>
                           </div>
                         </TableCell>
-                        <TableCell>
-                          {getStatusBadge(task.status)}
-                        </TableCell>
+                        <TableCell>{getStatusBadge(task.status)}</TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
-                            <span className="text-sm">{formatRetryInfo(task)}</span>
+                            <span className="text-sm">
+                              {formatRetryInfo(task)}
+                            </span>
                             {!task.canRetry && (
-                              <Badge variant="outline" className="text-xs text-red-600 border-red-200">
+                              <Badge
+                                variant="outline"
+                                className="text-xs text-red-600 border-red-200"
+                              >
                                 Max reached
                               </Badge>
                             )}
@@ -362,7 +425,10 @@ export function TaskRetryPanel({ className }: TaskRetryPanelProps) {
                         <TableCell>
                           <div className="flex items-center gap-1 text-sm text-gray-600">
                             <Clock className="h-3 w-3" />
-                            {format(new Date(task.lastAttempt), 'MMM dd, HH:mm')}
+                            {format(
+                              new Date(task.lastAttempt),
+                              'MMM dd, HH:mm'
+                            )}
                           </div>
                         </TableCell>
                         <TableCell>
@@ -375,7 +441,9 @@ export function TaskRetryPanel({ className }: TaskRetryPanelProps) {
                             variant="ghost"
                             size="sm"
                             onClick={() => handleSingleRetry(task.id)}
-                            disabled={!task.canRetry || retryingTasks.has(task.id)}
+                            disabled={
+                              !task.canRetry || retryingTasks.has(task.id)
+                            }
                             className="text-[#3F51B5] hover:bg-[#3F51B5] hover:text-white"
                           >
                             {retryingTasks.has(task.id) ? (
@@ -404,8 +472,9 @@ export function TaskRetryPanel({ className }: TaskRetryPanelProps) {
               Confirm Bulk Retry
             </DialogTitle>
             <DialogDescription>
-              Are you sure you want to retry {selectedTasks.size} selected task{selectedTasks.size !== 1 ? 's' : ''}?
-              This will reset their status and attempt execution again.
+              Are you sure you want to retry {selectedTasks.size} selected task
+              {selectedTasks.size !== 1 ? 's' : ''}? This will reset their
+              status and attempt execution again.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

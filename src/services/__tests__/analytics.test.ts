@@ -96,9 +96,7 @@ describe('AnalyticsService', () => {
           { completedAt: new Date('2024-01-01') },
           { completedAt: new Date('2024-01-02') },
         ])
-        .mockResolvedValueOnce([
-          { completedAt: new Date('2024-01-01') },
-        ])
+        .mockResolvedValueOnce([{ completedAt: new Date('2024-01-01') }])
         .mockResolvedValueOnce([
           { error: '{"message": "Connection timeout"}' },
           { error: '{"message": "Invalid credentials"}' },
@@ -198,13 +196,13 @@ describe('AnalyticsService', () => {
 
     it('should export data as JSON', async () => {
       const result = await analyticsService.exportData(testData, 'json')
-      
+
       expect(result).toBe(JSON.stringify(testData, null, 2))
     })
 
     it('should export data as CSV', async () => {
       const result = await analyticsService.exportData(testData, 'csv')
-      
+
       expect(result).toContain('name,tasks,success')
       expect(result).toContain('"Agent 1",10,90')
       expect(result).toContain('"Agent 2",5,80')
@@ -212,14 +210,14 @@ describe('AnalyticsService', () => {
 
     it('should handle empty arrays', async () => {
       const result = await analyticsService.exportData([], 'csv')
-      
+
       expect(result).toBe('')
     })
 
     it('should handle object data for CSV', async () => {
       const objectData = { totalAgents: 10, activeAgents: 8 }
       const result = await analyticsService.exportData(objectData, 'csv')
-      
+
       expect(result).toContain('Key,Value')
       expect(result).toContain('"totalAgents",10')
       expect(result).toContain('"activeAgents",8')
@@ -228,7 +226,7 @@ describe('AnalyticsService', () => {
     it('should handle strings with quotes in CSV', async () => {
       const dataWithQuotes = [{ name: 'Agent "Test"', tasks: 5 }]
       const result = await analyticsService.exportData(dataWithQuotes, 'csv')
-      
+
       expect(result).toContain('"Agent ""Test""",5')
     })
 
@@ -250,7 +248,9 @@ describe('AnalyticsService', () => {
       mockPrisma.agent.count.mockResolvedValue(0)
       mockPrisma.task.count.mockResolvedValue(0)
       mockPrisma.task.groupBy.mockResolvedValue([])
-      mockPrisma.agentHealth.aggregate.mockResolvedValue({ _avg: { responseTime: 0 } })
+      mockPrisma.agentHealth.aggregate.mockResolvedValue({
+        _avg: { responseTime: 0 },
+      })
 
       const result = await analyticsService.getAnalyticsData()
 
@@ -269,7 +269,9 @@ describe('AnalyticsService', () => {
       // Mock other required calls
       mockPrisma.agent.count.mockResolvedValue(0)
       mockPrisma.task.count.mockResolvedValue(0)
-      mockPrisma.agentHealth.aggregate.mockResolvedValue({ _avg: { responseTime: 0 } })
+      mockPrisma.agentHealth.aggregate.mockResolvedValue({
+        _avg: { responseTime: 0 },
+      })
       mockPrisma.agentHealth.groupBy.mockResolvedValue([])
 
       const result = await analyticsService.getAnalyticsData()
@@ -289,7 +291,9 @@ describe('AnalyticsService', () => {
 
       // Mock other required calls
       mockPrisma.task.groupBy.mockResolvedValue([])
-      mockPrisma.agentHealth.aggregate.mockResolvedValue({ _avg: { responseTime: 0 } })
+      mockPrisma.agentHealth.aggregate.mockResolvedValue({
+        _avg: { responseTime: 0 },
+      })
       mockPrisma.task.findMany.mockResolvedValue([])
 
       const result = await analyticsService.getAnalyticsData()

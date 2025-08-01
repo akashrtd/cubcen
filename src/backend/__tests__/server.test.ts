@@ -16,9 +16,9 @@ jest.mock('../../lib/database', () => ({
       create: jest.fn(),
       findMany: jest.fn(),
       update: jest.fn(),
-      delete: jest.fn()
-    }
-  }
+      delete: jest.fn(),
+    },
+  },
 }))
 
 // Mock the auth service
@@ -31,14 +31,14 @@ describe('Cubcen Server Integration Tests', () => {
   beforeAll(async () => {
     // Create a mock auth token for testing
     authToken = 'Bearer mock-jwt-token'
-    
+
     // Mock auth service
     mockAuthService = new AuthService(prisma) as jest.Mocked<AuthService>
     mockAuthService.validateAuthHeader = jest.fn().mockResolvedValue({
       id: 'user_1',
       email: 'test@example.com',
       name: 'Test User',
-      role: 'ADMIN'
+      role: 'ADMIN',
     })
   })
 
@@ -48,24 +48,20 @@ describe('Cubcen Server Integration Tests', () => {
 
   describe('Health Check', () => {
     it('should return health status', async () => {
-      const response = await request(app)
-        .get('/health')
-        .expect(200)
+      const response = await request(app).get('/health').expect(200)
 
       expect(response.body).toMatchObject({
         status: 'healthy',
         timestamp: expect.any(String),
         version: expect.any(String),
-        environment: expect.any(String)
+        environment: expect.any(String),
       })
     })
   })
 
   describe('Security Headers', () => {
     it('should include security headers', async () => {
-      const response = await request(app)
-        .get('/health')
-        .expect(200)
+      const response = await request(app).get('/health').expect(200)
 
       expect(response.headers).toHaveProperty('x-content-type-options')
       expect(response.headers).toHaveProperty('x-frame-options')
@@ -73,9 +69,7 @@ describe('Cubcen Server Integration Tests', () => {
     })
 
     it('should include request ID header', async () => {
-      const response = await request(app)
-        .get('/health')
-        .expect(200)
+      const response = await request(app).get('/health').expect(200)
 
       expect(response.headers).toHaveProperty('x-request-id')
       expect(response.headers['x-request-id']).toMatch(/^req_\d+_[a-z0-9]+$/)
@@ -85,14 +79,16 @@ describe('Cubcen Server Integration Tests', () => {
   describe('Rate Limiting', () => {
     it('should apply rate limiting to API routes', async () => {
       // Make multiple requests quickly
-      const requests = Array(10).fill(null).map(() =>
-        request(app)
-          .get('/api/cubcen/v1/agents')
-          .set('Authorization', authToken)
-      )
+      const requests = Array(10)
+        .fill(null)
+        .map(() =>
+          request(app)
+            .get('/api/cubcen/v1/agents')
+            .set('Authorization', authToken)
+        )
 
       const responses = await Promise.all(requests)
-      
+
       // All requests should succeed (within rate limit)
       responses.forEach(response => {
         expect([200, 401, 403]).toContain(response.status) // 401/403 for auth, but not 429
@@ -106,7 +102,7 @@ describe('Cubcen Server Integration Tests', () => {
         .post('/api/cubcen/v1/auth/login')
         .send({
           email: 'test@example.com',
-          password: 'password'
+          password: 'password',
         })
 
       // Should get validation error or auth error, not rate limit error
@@ -122,7 +118,7 @@ describe('Cubcen Server Integration Tests', () => {
         .send({
           // Missing required fields
           name: '',
-          platformType: 'invalid'
+          platformType: 'invalid',
         })
         .expect(400)
 
@@ -130,8 +126,8 @@ describe('Cubcen Server Integration Tests', () => {
         error: {
           code: 'VALIDATION_ERROR',
           message: 'Request validation failed',
-          details: expect.any(Array)
-        }
+          details: expect.any(Array),
+        },
       })
     })
 
@@ -144,8 +140,8 @@ describe('Cubcen Server Integration Tests', () => {
       expect(response.body).toMatchObject({
         error: {
           code: 'VALIDATION_ERROR',
-          message: 'Request validation failed'
-        }
+          message: 'Request validation failed',
+        },
       })
     })
 
@@ -157,8 +153,8 @@ describe('Cubcen Server Integration Tests', () => {
 
       expect(response.body).toMatchObject({
         error: {
-          code: 'ENDPOINT_NOT_FOUND'
-        }
+          code: 'ENDPOINT_NOT_FOUND',
+        },
       })
     })
   })
@@ -172,8 +168,8 @@ describe('Cubcen Server Integration Tests', () => {
         capabilities: ['<script>alert("xss")</script>'],
         configuration: {
           key: 'javascript:alert("xss")',
-          onclick: 'alert("xss")'
-        }
+          onclick: 'alert("xss")',
+        },
       }
 
       const response = await request(app)
@@ -207,8 +203,8 @@ describe('Cubcen Server Integration Tests', () => {
         error: {
           code: expect.any(String),
           message: expect.any(String),
-          timestamp: expect.any(String)
-        }
+          timestamp: expect.any(String),
+        },
       })
     })
 
@@ -222,14 +218,16 @@ describe('Cubcen Server Integration Tests', () => {
         error: {
           code: expect.any(String),
           message: expect.any(String),
-          timestamp: expect.any(String)
-        }
+          timestamp: expect.any(String),
+        },
       })
     })
 
     it('should handle server errors gracefully', async () => {
       // Mock a server error
-      mockAuthService.validateAuthHeader.mockRejectedValueOnce(new Error('Database connection failed'))
+      mockAuthService.validateAuthHeader.mockRejectedValueOnce(
+        new Error('Database connection failed')
+      )
 
       const response = await request(app)
         .get('/api/cubcen/v1/agents')
@@ -253,9 +251,9 @@ describe('Cubcen Server Integration Tests', () => {
           success: true,
           data: {
             agents: expect.any(Array),
-            pagination: expect.any(Object)
+            pagination: expect.any(Object),
           },
-          message: expect.any(String)
+          message: expect.any(String),
         })
       })
 
@@ -268,9 +266,9 @@ describe('Cubcen Server Integration Tests', () => {
         expect(response.body).toMatchObject({
           success: true,
           data: {
-            agent: expect.any(Object)
+            agent: expect.any(Object),
           },
-          message: expect.any(String)
+          message: expect.any(String),
         })
       })
 
@@ -280,7 +278,7 @@ describe('Cubcen Server Integration Tests', () => {
           platformType: 'n8n',
           platformId: 'platform_1',
           capabilities: ['test'],
-          configuration: { test: true }
+          configuration: { test: true },
         }
 
         const response = await request(app)
@@ -294,10 +292,10 @@ describe('Cubcen Server Integration Tests', () => {
           data: {
             agent: expect.objectContaining({
               name: agentData.name,
-              platformType: agentData.platformType
-            })
+              platformType: agentData.platformType,
+            }),
           },
-          message: expect.any(String)
+          message: expect.any(String),
         })
       })
     })
@@ -313,9 +311,9 @@ describe('Cubcen Server Integration Tests', () => {
           success: true,
           data: {
             tasks: expect.any(Array),
-            pagination: expect.any(Object)
+            pagination: expect.any(Object),
           },
-          message: expect.any(String)
+          message: expect.any(String),
         })
       })
 
@@ -323,7 +321,7 @@ describe('Cubcen Server Integration Tests', () => {
         const taskData = {
           agentId: 'agent_1',
           priority: 'medium',
-          parameters: { test: true }
+          parameters: { test: true },
         }
 
         const response = await request(app)
@@ -337,10 +335,10 @@ describe('Cubcen Server Integration Tests', () => {
           data: {
             task: expect.objectContaining({
               agentId: taskData.agentId,
-              priority: taskData.priority
-            })
+              priority: taskData.priority,
+            }),
           },
-          message: expect.any(String)
+          message: expect.any(String),
         })
       })
     })
@@ -356,9 +354,9 @@ describe('Cubcen Server Integration Tests', () => {
           success: true,
           data: {
             platforms: expect.any(Array),
-            pagination: expect.any(Object)
+            pagination: expect.any(Object),
           },
-          message: expect.any(String)
+          message: expect.any(String),
         })
       })
 
@@ -367,8 +365,8 @@ describe('Cubcen Server Integration Tests', () => {
           baseUrl: 'https://test.example.com',
           authConfig: {
             type: 'api_key',
-            credentials: { apiKey: 'test-key' }
-          }
+            credentials: { apiKey: 'test-key' },
+          },
         }
 
         const response = await request(app)
@@ -380,9 +378,9 @@ describe('Cubcen Server Integration Tests', () => {
         expect(response.body).toMatchObject({
           success: true,
           data: {
-            connectionTest: expect.any(Object)
+            connectionTest: expect.any(Object),
           },
-          message: expect.any(String)
+          message: expect.any(String),
         })
       })
     })
@@ -398,9 +396,9 @@ describe('Cubcen Server Integration Tests', () => {
           success: true,
           data: {
             users: expect.any(Array),
-            pagination: expect.any(Object)
+            pagination: expect.any(Object),
           },
-          message: expect.any(String)
+          message: expect.any(String),
         })
       })
     })
@@ -417,8 +415,8 @@ describe('Cubcen Server Integration Tests', () => {
         error: {
           code: 'ENDPOINT_NOT_FOUND',
           message: expect.stringContaining('not found'),
-          timestamp: expect.any(String)
-        }
+          timestamp: expect.any(String),
+        },
       })
     })
   })

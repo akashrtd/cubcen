@@ -22,25 +22,21 @@ export async function resetDatabase(): Promise<void> {
     'Agent',
     'Platform',
     'User',
-  ];
+  ]
 
   for (const tableName of tableNames) {
-    const model =
-      tableName.charAt(0).toLowerCase() +
-      tableName.slice(1);
+    const model = tableName.charAt(0).toLowerCase() + tableName.slice(1)
     if ((prisma as any)[model]) {
       try {
-        await (prisma as any)[model].deleteMany({});
+        await (prisma as any)[model].deleteMany({})
       } catch (error) {
         logger.warn(
-          `Could not delete from ${model}: ${
-            (error as Error).message
-          }`,
-        );
+          `Could not delete from ${model}: ${(error as Error).message}`
+        )
       }
     }
   }
-  logger.info('Database reset completed');
+  logger.info('Database reset completed')
 }
 
 /**
@@ -55,14 +51,15 @@ export async function getDatabaseStats(): Promise<{
   systemLogs: number
 }> {
   try {
-    const [users, platforms, agents, tasks, workflows, systemLogs] = await Promise.all([
-      prisma.user.count(),
-      prisma.platform.count(),
-      prisma.agent.count(),
-      prisma.task.count(),
-      prisma.workflow.count(),
-      prisma.systemLog.count(),
-    ])
+    const [users, platforms, agents, tasks, workflows, systemLogs] =
+      await Promise.all([
+        prisma.user.count(),
+        prisma.platform.count(),
+        prisma.agent.count(),
+        prisma.task.count(),
+        prisma.workflow.count(),
+        prisma.systemLog.count(),
+      ])
 
     return {
       users,
@@ -97,21 +94,22 @@ export async function validateDatabaseSchema(): Promise<{
 
     // Test relationships
     await prisma.user.findFirst({
-      include: { createdWorkflows: true }
+      include: { createdWorkflows: true },
     })
 
     await prisma.agent.findFirst({
-      include: { tasks: true }
+      include: { tasks: true },
     })
 
     await prisma.platform.findFirst({
-      include: { agents: true }
+      include: { agents: true },
     })
 
     logger.info('Database schema validation completed successfully')
     return { isValid: true, errors: [] }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error'
     errors.push(errorMessage)
     logger.error('Database schema validation failed', error as Error)
     return { isValid: false, errors }
@@ -152,7 +150,12 @@ export async function createTestData(): Promise<void> {
 
     // Create test agent
     await prisma.agent.upsert({
-      where: { platformId_externalId: { platformId: testPlatform.id, externalId: 'test-agent-001' } },
+      where: {
+        platformId_externalId: {
+          platformId: testPlatform.id,
+          externalId: 'test-agent-001',
+        },
+      },
       update: {},
       create: {
         name: 'Test Agent',

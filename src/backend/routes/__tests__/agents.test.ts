@@ -28,8 +28,8 @@ describe('Agent Routes', () => {
         email: 'admin@cubcen.com',
         password: 'admin123',
         role: 'ADMIN',
-        name: 'Admin User'
-      }
+        name: 'Admin User',
+      },
     })
 
     const operatorUser = await prisma.user.create({
@@ -37,8 +37,8 @@ describe('Agent Routes', () => {
         email: 'operator@cubcen.com',
         password: 'operator123',
         role: 'OPERATOR',
-        name: 'Operator User'
-      }
+        name: 'Operator User',
+      },
     })
 
     const viewerUser = await prisma.user.create({
@@ -46,8 +46,8 @@ describe('Agent Routes', () => {
         email: 'viewer@cubcen.com',
         password: 'viewer123',
         role: 'VIEWER',
-        name: 'Viewer User'
-      }
+        name: 'Viewer User',
+      },
     })
 
     testUserId = viewerUser.id
@@ -64,8 +64,8 @@ describe('Agent Routes', () => {
         type: 'N8N',
         baseUrl: 'http://localhost:5678',
         status: 'CONNECTED',
-        authConfig: JSON.stringify({ apiKey: 'test-key' })
-      }
+        authConfig: JSON.stringify({ apiKey: 'test-key' }),
+      },
     })
     testPlatformId = testPlatform.id
   })
@@ -92,7 +92,7 @@ describe('Agent Routes', () => {
             status: 'ACTIVE',
             capabilities: JSON.stringify(['email', 'automation']),
             configuration: JSON.stringify({ emailProvider: 'smtp' }),
-            healthStatus: JSON.stringify({ status: 'healthy' })
+            healthStatus: JSON.stringify({ status: 'healthy' }),
           },
           {
             name: 'Test Agent 2',
@@ -100,10 +100,12 @@ describe('Agent Routes', () => {
             externalId: 'test-agent-002',
             status: 'INACTIVE',
             capabilities: JSON.stringify(['webhook']),
-            configuration: JSON.stringify({ webhookUrl: 'https://example.com' }),
-            healthStatus: JSON.stringify({ status: 'unknown' })
-          }
-        ]
+            configuration: JSON.stringify({
+              webhookUrl: 'https://example.com',
+            }),
+            healthStatus: JSON.stringify({ status: 'unknown' }),
+          },
+        ],
       })
     })
 
@@ -152,9 +154,7 @@ describe('Agent Routes', () => {
     })
 
     it('should require authentication', async () => {
-      await request(app)
-        .get('/api/cubcen/v1/agents')
-        .expect(401)
+      await request(app).get('/api/cubcen/v1/agents').expect(401)
     })
 
     it('should handle invalid query parameters', async () => {
@@ -180,8 +180,8 @@ describe('Agent Routes', () => {
           status: 'ACTIVE',
           capabilities: JSON.stringify(['test']),
           configuration: JSON.stringify({ testMode: true }),
-          healthStatus: JSON.stringify({ status: 'healthy' })
-        }
+          healthStatus: JSON.stringify({ status: 'healthy' }),
+        },
       })
       testAgentId = agent.id
     })
@@ -210,9 +210,7 @@ describe('Agent Routes', () => {
     })
 
     it('should require authentication', async () => {
-      await request(app)
-        .get(`/api/cubcen/v1/agents/${testAgentId}`)
-        .expect(401)
+      await request(app).get(`/api/cubcen/v1/agents/${testAgentId}`).expect(401)
     })
   })
 
@@ -223,7 +221,7 @@ describe('Agent Routes', () => {
       externalId: 'new-test-agent-001',
       capabilities: ['test', 'automation'],
       configuration: { testMode: true },
-      description: 'A new test agent'
+      description: 'A new test agent',
     }
 
     beforeEach(() => {
@@ -239,7 +237,9 @@ describe('Agent Routes', () => {
 
       expect(response.body.success).toBe(true)
       expect(response.body.data.agent.name).toBe(validAgentData.name)
-      expect(response.body.data.agent.externalId).toBe(validAgentData.externalId)
+      expect(response.body.data.agent.externalId).toBe(
+        validAgentData.externalId
+      )
       expect(response.body.data.agent.status).toBe('INACTIVE')
     })
 
@@ -266,7 +266,7 @@ describe('Agent Routes', () => {
       const invalidData = {
         name: '', // Invalid: empty name
         platformId: testPlatformId,
-        externalId: 'test-agent-001'
+        externalId: 'test-agent-001',
       }
 
       const response = await request(app)
@@ -301,7 +301,7 @@ describe('Agent Routes', () => {
     it('should handle invalid platform ID', async () => {
       const invalidData = {
         ...validAgentData,
-        platformId: 'invalid-platform-id'
+        platformId: 'invalid-platform-id',
       }
 
       const response = await request(app)
@@ -334,8 +334,8 @@ describe('Agent Routes', () => {
           status: 'INACTIVE',
           capabilities: JSON.stringify(['test']),
           configuration: JSON.stringify({ testMode: true }),
-          healthStatus: JSON.stringify({ status: 'unknown' })
-        }
+          healthStatus: JSON.stringify({ status: 'unknown' }),
+        },
       })
       testAgentId = agent.id
     })
@@ -346,7 +346,7 @@ describe('Agent Routes', () => {
         capabilities: ['test', 'automation', 'updated'],
         configuration: { testMode: false, newFeature: true },
         description: 'Updated description',
-        status: 'ACTIVE'
+        status: 'ACTIVE',
       }
 
       const response = await request(app)
@@ -362,7 +362,7 @@ describe('Agent Routes', () => {
 
     it('should update agent successfully with admin role', async () => {
       const updateData = {
-        name: 'Updated by Admin'
+        name: 'Updated by Admin',
       }
 
       const response = await request(app)
@@ -377,7 +377,7 @@ describe('Agent Routes', () => {
 
     it('should reject update with viewer role', async () => {
       const updateData = {
-        name: 'Should not update'
+        name: 'Should not update',
       }
 
       await request(app)
@@ -389,7 +389,7 @@ describe('Agent Routes', () => {
 
     it('should return 404 for non-existent agent', async () => {
       const updateData = {
-        name: 'Updated Name'
+        name: 'Updated Name',
       }
 
       const response = await request(app)
@@ -405,7 +405,7 @@ describe('Agent Routes', () => {
     it('should validate update data', async () => {
       const invalidData = {
         name: '', // Invalid: empty name
-        status: 'INVALID_STATUS'
+        status: 'INVALID_STATUS',
       }
 
       const response = await request(app)
@@ -438,8 +438,8 @@ describe('Agent Routes', () => {
           status: 'INACTIVE',
           capabilities: JSON.stringify(['test']),
           configuration: JSON.stringify({ testMode: true }),
-          healthStatus: JSON.stringify({ status: 'unknown' })
-        }
+          healthStatus: JSON.stringify({ status: 'unknown' }),
+        },
       })
       testAgentId = agent.id
     })
@@ -454,7 +454,7 @@ describe('Agent Routes', () => {
 
       // Verify agent was deleted
       const agent = await prisma.agent.findUnique({
-        where: { id: testAgentId }
+        where: { id: testAgentId },
       })
       expect(agent).toBeNull()
     })
@@ -502,8 +502,8 @@ describe('Agent Routes', () => {
           status: 'ACTIVE',
           capabilities: JSON.stringify(['test']),
           configuration: JSON.stringify({ testMode: true }),
-          healthStatus: JSON.stringify({ status: 'healthy' })
-        }
+          healthStatus: JSON.stringify({ status: 'healthy' }),
+        },
       })
       testAgentId = agent.id
 
@@ -514,11 +514,11 @@ describe('Agent Routes', () => {
           status: JSON.stringify({
             status: 'healthy',
             lastCheck: new Date(),
-            responseTime: 150
+            responseTime: 150,
           }),
           responseTime: 150,
-          lastCheckAt: new Date()
-        }
+          lastCheckAt: new Date(),
+        },
       })
     })
 
@@ -552,8 +552,8 @@ describe('Agent Routes', () => {
           status: 'ACTIVE',
           capabilities: JSON.stringify(['test']),
           configuration: JSON.stringify({ testMode: true }),
-          healthStatus: JSON.stringify({ status: 'unknown' })
-        }
+          healthStatus: JSON.stringify({ status: 'unknown' }),
+        },
       })
       testAgentId = agent.id
     })
@@ -604,8 +604,8 @@ describe('Agent Routes', () => {
           status: 'ACTIVE',
           capabilities: JSON.stringify(['test']),
           configuration: JSON.stringify({ testMode: true }),
-          healthStatus: JSON.stringify({ status: 'unknown' })
-        }
+          healthStatus: JSON.stringify({ status: 'unknown' }),
+        },
       })
       testAgentId = agent.id
     })
@@ -615,7 +615,7 @@ describe('Agent Routes', () => {
         interval: 60000,
         timeout: 15000,
         retries: 3,
-        enabled: true
+        enabled: true,
       }
 
       const response = await request(app)
@@ -631,8 +631,8 @@ describe('Agent Routes', () => {
       const invalidConfig = {
         interval: 500, // Too low
         timeout: 70000, // Too high
-        retries: 10,    // Too high
-        enabled: true
+        retries: 10, // Too high
+        enabled: true,
       }
 
       const response = await request(app)
@@ -648,7 +648,7 @@ describe('Agent Routes', () => {
     it('should reject configuration with viewer role', async () => {
       const config = {
         interval: 60000,
-        enabled: true
+        enabled: true,
       }
 
       await request(app)

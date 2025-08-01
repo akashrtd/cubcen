@@ -1,8 +1,14 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ThemeToggle } from "@/components/theme-toggle";
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 export default function Home() {
   return (
@@ -18,7 +24,10 @@ export default function Home() {
               <h1 className="text-2xl font-bold text-foreground">Cubcen</h1>
             </div>
             <div className="flex items-center space-x-4">
-              <Badge variant="secondary" className="bg-cubcen-secondary text-white">
+              <Badge
+                variant="secondary"
+                className="bg-cubcen-secondary text-white"
+              >
                 MVP
               </Badge>
               <ThemeToggle />
@@ -34,7 +43,8 @@ export default function Home() {
             AI Agent Management Platform
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Centralized platform to manage, monitor, and orchestrate AI agents from various automation platforms including n8n, Make.com, and more.
+            Centralized platform to manage, monitor, and orchestrate AI agents
+            from various automation platforms including n8n, Make.com, and more.
           </p>
         </div>
 
@@ -47,7 +57,8 @@ export default function Home() {
                 <span>Multi-Platform Integration</span>
               </CardTitle>
               <CardDescription>
-                Connect and manage AI agents from n8n, Make.com, Zapier, and other automation platforms
+                Connect and manage AI agents from n8n, Make.com, Zapier, and
+                other automation platforms
               </CardDescription>
             </CardHeader>
           </Card>
@@ -59,7 +70,8 @@ export default function Home() {
                 <span>Real-time Monitoring</span>
               </CardTitle>
               <CardDescription>
-                Monitor agent status, track progress, and receive instant alerts for critical events
+                Monitor agent status, track progress, and receive instant alerts
+                for critical events
               </CardDescription>
             </CardHeader>
           </Card>
@@ -71,7 +83,8 @@ export default function Home() {
                 <span>Task Scheduling</span>
               </CardTitle>
               <CardDescription>
-                Schedule and automate workflows with advanced retry logic and error handling
+                Schedule and automate workflows with advanced retry logic and
+                error handling
               </CardDescription>
             </CardHeader>
           </Card>
@@ -113,5 +126,5 @@ export default function Home() {
         </div>
       </footer>
     </div>
-  );
+  )
 }

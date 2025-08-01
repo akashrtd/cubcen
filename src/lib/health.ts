@@ -66,15 +66,15 @@ class HealthMonitoringService {
     try {
       // Test database connection with a simple query
       await database.user.findFirst({
-        select: { id: true }
+        select: { id: true },
       })
-      
+
       const responseTime = Date.now() - startTime
       check.responseTime = responseTime
       check.details = {
         connectionStatus: 'connected',
         queryTime: responseTime,
-        testQuery: 'SELECT id FROM User LIMIT 1'
+        testQuery: 'SELECT id FROM User LIMIT 1',
       }
 
       // Check if response time is acceptable
@@ -82,17 +82,17 @@ class HealthMonitoringService {
         check.status = 'degraded'
         check.details.warning = 'Database response time is slow'
       }
-
     } catch (error) {
       check.status = 'unhealthy'
-      check.error = error instanceof Error ? error.message : 'Unknown database error'
+      check.error =
+        error instanceof Error ? error.message : 'Unknown database error'
       check.details = {
         connectionStatus: 'failed',
-        error: check.error
+        error: check.error,
       }
-      
+
       structuredLogger.error('Database health check failed', error as Error, {
-        healthCheck: 'database'
+        healthCheck: 'database',
       })
     }
 
@@ -114,24 +114,26 @@ class HealthMonitoringService {
       const memoryUsage = process.memoryUsage()
       const systemMemory = {
         free: os.freemem(),
-        total: os.totalmem()
+        total: os.totalmem(),
       }
 
-      const heapUsagePercent = (memoryUsage.heapUsed / memoryUsage.heapTotal) * 100
-      const systemUsagePercent = ((systemMemory.total - systemMemory.free) / systemMemory.total) * 100
+      const heapUsagePercent =
+        (memoryUsage.heapUsed / memoryUsage.heapTotal) * 100
+      const systemUsagePercent =
+        ((systemMemory.total - systemMemory.free) / systemMemory.total) * 100
 
       check.details = {
         heap: {
           used: Math.round(memoryUsage.heapUsed / 1024 / 1024), // MB
           total: Math.round(memoryUsage.heapTotal / 1024 / 1024), // MB
-          usagePercent: Math.round(heapUsagePercent)
+          usagePercent: Math.round(heapUsagePercent),
         },
         system: {
           free: Math.round(systemMemory.free / 1024 / 1024), // MB
           total: Math.round(systemMemory.total / 1024 / 1024), // MB
-          usagePercent: Math.round(systemUsagePercent)
+          usagePercent: Math.round(systemUsagePercent),
         },
-        external: Math.round(memoryUsage.external / 1024 / 1024) // MB
+        external: Math.round(memoryUsage.external / 1024 / 1024), // MB
       }
 
       // Determine status based on usage
@@ -142,13 +144,13 @@ class HealthMonitoringService {
         check.status = 'degraded'
         check.details.warning = 'Memory usage is high'
       }
-
     } catch (error) {
       check.status = 'unhealthy'
-      check.error = error instanceof Error ? error.message : 'Memory check failed'
-      
+      check.error =
+        error instanceof Error ? error.message : 'Memory check failed'
+
       structuredLogger.error('Memory health check failed', error as Error, {
-        healthCheck: 'memory'
+        healthCheck: 'memory',
       })
     }
 
@@ -175,7 +177,7 @@ class HealthMonitoringService {
       check.details = {
         free: Math.round(free / 1024 / 1024 / 1024), // GB
         total: Math.round(total / 1024 / 1024 / 1024), // GB
-        usagePercent: Math.round(usagePercent)
+        usagePercent: Math.round(usagePercent),
       }
 
       if (usagePercent > 95) {
@@ -185,13 +187,12 @@ class HealthMonitoringService {
         check.status = 'degraded'
         check.details.warning = 'Disk space is running low'
       }
-
     } catch (error) {
       check.status = 'unhealthy'
       check.error = error instanceof Error ? error.message : 'Disk check failed'
-      
+
       structuredLogger.error('Disk health check failed', error as Error, {
-        healthCheck: 'disk'
+        healthCheck: 'disk',
       })
     }
 
@@ -221,7 +222,7 @@ class HealthMonitoringService {
         cpuCount,
         nodeVersion: process.version,
         platform: process.platform,
-        arch: process.arch
+        arch: process.arch,
       }
 
       // Check if load average is too high
@@ -233,14 +234,18 @@ class HealthMonitoringService {
         check.status = 'degraded'
         check.details.warning = 'System load is high'
       }
-
     } catch (error) {
       check.status = 'unhealthy'
-      check.error = error instanceof Error ? error.message : 'Application check failed'
-      
-      structuredLogger.error('Application health check failed', error as Error, {
-        healthCheck: 'application'
-      })
+      check.error =
+        error instanceof Error ? error.message : 'Application check failed'
+
+      structuredLogger.error(
+        'Application health check failed',
+        error as Error,
+        {
+          healthCheck: 'application',
+        }
+      )
     }
 
     this.healthChecks.set('application', check)
@@ -255,7 +260,7 @@ class HealthMonitoringService {
       const memoryUsage = process.memoryUsage()
       const systemMemory = {
         free: os.freemem(),
-        total: os.totalmem()
+        total: os.totalmem(),
       }
 
       let diskStats = { free: 0, total: 0 }
@@ -263,7 +268,7 @@ class HealthMonitoringService {
         const stats = await fs.statfs(process.cwd())
         diskStats = {
           free: stats.bavail * stats.bsize,
-          total: stats.blocks * stats.bsize
+          total: stats.blocks * stats.bsize,
         }
       } catch (error) {
         structuredLogger.warn('Failed to get disk stats', { error })
@@ -273,7 +278,7 @@ class HealthMonitoringService {
         timestamp: new Date(),
         cpu: {
           usage: await this.getCPUUsage(),
-          loadAverage: os.loadavg()
+          loadAverage: os.loadavg(),
         },
         memory: {
           used: systemMemory.total - systemMemory.free,
@@ -281,10 +286,10 @@ class HealthMonitoringService {
           total: systemMemory.total,
           heapUsed: memoryUsage.heapUsed,
           heapTotal: memoryUsage.heapTotal,
-          external: memoryUsage.external
+          external: memoryUsage.external,
         },
         disk: diskStats,
-        uptime: process.uptime()
+        uptime: process.uptime(),
       }
 
       // Store metrics in history
@@ -305,15 +310,16 @@ class HealthMonitoringService {
    */
   async runAllHealthChecks(): Promise<HealthStatus> {
     const startTime = Date.now()
-    
+
     try {
       // Run all health checks in parallel
-      const [databaseCheck, memoryCheck, diskCheck, applicationCheck] = await Promise.all([
-        this.checkDatabase(),
-        this.checkMemory(),
-        this.checkDiskSpace(),
-        this.checkApplication()
-      ])
+      const [databaseCheck, memoryCheck, diskCheck, applicationCheck] =
+        await Promise.all([
+          this.checkDatabase(),
+          this.checkMemory(),
+          this.checkDiskSpace(),
+          this.checkApplication(),
+        ])
 
       const checks = [databaseCheck, memoryCheck, diskCheck, applicationCheck]
       const metrics = await this.collectSystemMetrics()
@@ -321,7 +327,7 @@ class HealthMonitoringService {
       // Determine overall status
       const hasUnhealthy = checks.some(check => check.status === 'unhealthy')
       const hasDegraded = checks.some(check => check.status === 'degraded')
-      
+
       let overallStatus: 'healthy' | 'unhealthy' | 'degraded' = 'healthy'
       if (hasUnhealthy) {
         overallStatus = 'unhealthy'
@@ -334,14 +340,14 @@ class HealthMonitoringService {
         timestamp: new Date(),
         checks,
         metrics,
-        version: process.env.npm_package_version || '0.1.0'
+        version: process.env.npm_package_version || '0.1.0',
       }
 
       const duration = Date.now() - startTime
       structuredLogger.info('Health check completed', {
         status: overallStatus,
         duration,
-        checksCount: checks.length
+        checksCount: checks.length,
       })
 
       return healthStatus
@@ -377,7 +383,7 @@ class HealthMonitoringService {
    * Calculate CPU usage percentage
    */
   private async getCPUUsage(): Promise<number> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const startUsage = process.cpuUsage()
       const startTime = Date.now()
 

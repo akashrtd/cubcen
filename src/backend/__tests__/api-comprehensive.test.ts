@@ -7,9 +7,6 @@ import request from 'supertest'
 import app from '@/server'
 import { prisma } from '@/lib/database'
 import { AuthService } from '@/services/auth'
-import { AgentService } from '@/services/agent'
-import { TaskService } from '@/services/task'
-import { AdapterManager } from '@/backend/adapters/adapter-factory'
 
 describe('Comprehensive API Tests', () => {
   let authService: AuthService
@@ -28,7 +25,7 @@ describe('Comprehensive API Tests', () => {
       email: 'admin@test.com',
       password: 'password123',
       name: 'Admin User',
-      role: 'admin'
+      role: 'admin',
     })
     adminToken = adminUser.tokens.accessToken
 
@@ -36,7 +33,7 @@ describe('Comprehensive API Tests', () => {
       email: 'operator@test.com',
       password: 'password123',
       name: 'Operator User',
-      role: 'operator'
+      role: 'operator',
     })
     operatorToken = operatorUser.tokens.accessToken
 
@@ -44,7 +41,7 @@ describe('Comprehensive API Tests', () => {
       email: 'viewer@test.com',
       password: 'password123',
       name: 'Viewer User',
-      role: 'viewer'
+      role: 'viewer',
     })
     viewerToken = viewerUser.tokens.accessToken
   })
@@ -54,9 +51,9 @@ describe('Comprehensive API Tests', () => {
     await prisma.user.deleteMany({
       where: {
         email: {
-          in: ['admin@test.com', 'operator@test.com', 'viewer@test.com']
-        }
-      }
+          in: ['admin@test.com', 'operator@test.com', 'viewer@test.com'],
+        },
+      },
     })
     await prisma.$disconnect()
   })
@@ -68,7 +65,7 @@ describe('Comprehensive API Tests', () => {
           .post('/api/cubcen/v1/auth/login')
           .send({
             email: 'admin@test.com',
-            password: 'password123'
+            password: 'password123',
           })
           .expect(200)
 
@@ -84,7 +81,7 @@ describe('Comprehensive API Tests', () => {
           .post('/api/cubcen/v1/auth/login')
           .send({
             email: 'admin@test.com',
-            password: 'wrongpassword'
+            password: 'wrongpassword',
           })
           .expect(401)
 
@@ -97,7 +94,7 @@ describe('Comprehensive API Tests', () => {
           .post('/api/cubcen/v1/auth/login')
           .send({
             email: 'invalid-email',
-            password: '123' // too short
+            password: '123', // too short
           })
           .expect(400)
 
@@ -107,14 +104,14 @@ describe('Comprehensive API Tests', () => {
 
       it('should handle rate limiting', async () => {
         // Make multiple rapid requests to trigger rate limiting
-        const promises = Array(10).fill(null).map(() =>
-          request(app)
-            .post('/api/cubcen/v1/auth/login')
-            .send({
+        const promises = Array(10)
+          .fill(null)
+          .map(() =>
+            request(app).post('/api/cubcen/v1/auth/login').send({
               email: 'admin@test.com',
-              password: 'wrongpassword'
+              password: 'wrongpassword',
             })
-        )
+          )
 
         const responses = await Promise.all(promises)
         const rateLimitedResponses = responses.filter(r => r.status === 429)
@@ -162,8 +159,8 @@ describe('Comprehensive API Tests', () => {
           name: 'Test Platform',
           type: 'N8N',
           baseUrl: 'http://localhost:5678',
-          status: 'CONNECTED'
-        }
+          status: 'CONNECTED',
+        },
       })
 
       // Create a test agent
@@ -175,8 +172,8 @@ describe('Comprehensive API Tests', () => {
           externalId: 'ext-123',
           status: 'ACTIVE',
           capabilities: ['test'],
-          configuration: {}
-        }
+          configuration: {},
+        },
       })
       testAgentId = agent.id
     })
@@ -288,7 +285,7 @@ describe('Comprehensive API Tests', () => {
           externalId: 'ext-456',
           capabilities: ['email', 'api'],
           configuration: { timeout: 30000 },
-          description: 'Test agent description'
+          description: 'Test agent description',
         }
 
         const response = await request(app)
@@ -302,14 +299,16 @@ describe('Comprehensive API Tests', () => {
         expect(response.body.data.agent.platformId).toBe(agentData.platformId)
 
         // Clean up
-        await prisma.agent.delete({ where: { id: response.body.data.agent.id } })
+        await prisma.agent.delete({
+          where: { id: response.body.data.agent.id },
+        })
       })
 
       it('should reject creation with viewer role', async () => {
         const agentData = {
           name: 'Unauthorized Agent',
           platformId: 'test-platform',
-          externalId: 'ext-789'
+          externalId: 'ext-789',
         }
 
         const response = await request(app)
@@ -327,7 +326,7 @@ describe('Comprehensive API Tests', () => {
           .set('Authorization', `Bearer ${operatorToken}`)
           .send({
             name: '', // Invalid empty name
-            platformId: 'test-platform'
+            platformId: 'test-platform',
             // Missing externalId
           })
           .expect(400)
@@ -346,8 +345,8 @@ describe('Comprehensive API Tests', () => {
           agentId: testAgentId,
           status: 'PENDING',
           priority: 'MEDIUM',
-          parameters: { test: true }
-        }
+          parameters: { test: true },
+        },
       })
       testTaskId = task.id
     })
@@ -398,7 +397,7 @@ describe('Comprehensive API Tests', () => {
         const taskData = {
           agentId: testAgentId,
           priority: 'HIGH',
-          parameters: { test: 'data' }
+          parameters: { test: 'data' },
         }
 
         const response = await request(app)
@@ -418,7 +417,7 @@ describe('Comprehensive API Tests', () => {
       it('should reject creation with viewer role', async () => {
         const taskData = {
           agentId: testAgentId,
-          priority: 'LOW'
+          priority: 'LOW',
         }
 
         const response = await request(app)
@@ -435,9 +434,7 @@ describe('Comprehensive API Tests', () => {
   describe('Health API', () => {
     describe('GET /health', () => {
       it('should return system health status', async () => {
-        const response = await request(app)
-          .get('/health')
-          .expect(200)
+        const response = await request(app).get('/health').expect(200)
 
         expect(response.body.status).toBeDefined()
         expect(response.body.checks).toBeDefined()
@@ -447,9 +444,7 @@ describe('Comprehensive API Tests', () => {
 
       it('should not require authentication', async () => {
         // Health endpoint should be accessible without authentication
-        const response = await request(app)
-          .get('/health')
-          .expect(200)
+        const response = await request(app).get('/health').expect(200)
 
         expect(response.body.status).toBeDefined()
       })
@@ -518,11 +513,13 @@ describe('Comprehensive API Tests', () => {
   describe('Rate Limiting', () => {
     it('should apply general rate limiting to API endpoints', async () => {
       // Make many requests to trigger rate limiting
-      const promises = Array(150).fill(null).map(() =>
-        request(app)
-          .get('/api/cubcen/v1/auth/me')
-          .set('Authorization', `Bearer ${adminToken}`)
-      )
+      const promises = Array(150)
+        .fill(null)
+        .map(() =>
+          request(app)
+            .get('/api/cubcen/v1/auth/me')
+            .set('Authorization', `Bearer ${adminToken}`)
+        )
 
       const responses = await Promise.all(promises)
       const rateLimitedResponses = responses.filter(r => r.status === 429)

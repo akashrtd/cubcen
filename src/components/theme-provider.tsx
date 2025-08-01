@@ -29,14 +29,12 @@ export function ThemeProvider({
   storageKey = 'cubcen-ui-theme',
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(
-    () => {
-      if (typeof window !== 'undefined') {
-        return (localStorage?.getItem(storageKey) as Theme) || defaultTheme
-      }
-      return defaultTheme
+  const [theme, setTheme] = useState<Theme>(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage?.getItem(storageKey) as Theme) || defaultTheme
     }
-  )
+    return defaultTheme
+  })
 
   useEffect(() => {
     const root = window.document.documentElement

@@ -15,7 +15,7 @@
       "notes": "Environment variables configured, directories created"
     },
     "database_preparation": {
-      "status": "ready", 
+      "status": "ready",
       "score": 95,
       "notes": "Prisma client generated, migrations applied successfully"
     },

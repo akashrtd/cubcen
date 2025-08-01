@@ -39,12 +39,15 @@ interface TaskDetailModalProps {
   agents: Array<{ id: string; name: string; platformId: string }>
 }
 
-const STATUS_CONFIG: Record<TaskStatus, {
-  color: string
-  bgColor: string
-  icon: React.ReactNode
-  label: string
-}> = {
+const STATUS_CONFIG: Record<
+  TaskStatus,
+  {
+    color: string
+    bgColor: string
+    icon: React.ReactNode
+    label: string
+  }
+> = {
   PENDING: {
     color: 'text-yellow-700 dark:text-yellow-300',
     bgColor: 'bg-yellow-100 dark:bg-yellow-900/30',
@@ -77,11 +80,14 @@ const STATUS_CONFIG: Record<TaskStatus, {
   },
 }
 
-const PRIORITY_CONFIG: Record<TaskPriority, {
-  color: string
-  bgColor: string
-  label: string
-}> = {
+const PRIORITY_CONFIG: Record<
+  TaskPriority,
+  {
+    color: string
+    bgColor: string
+    label: string
+  }
+> = {
   LOW: {
     color: 'text-gray-600 dark:text-gray-400',
     bgColor: 'bg-gray-100 dark:bg-gray-800',
@@ -117,7 +123,7 @@ export function TaskDetailModal({
 
   if (!task) return null
 
-  const agent = agents.find((a) => a.id === task.agentId)
+  const agent = agents.find(a => a.id === task.agentId)
   const statusConfig = STATUS_CONFIG[task.status]
   const priorityConfig = PRIORITY_CONFIG[task.priority]
 
@@ -139,7 +145,9 @@ export function TaskDetailModal({
       return Math.floor(elapsed / 1000)
     }
     if (task.status === 'COMPLETED' && task.startedAt && task.completedAt) {
-      const elapsed = new Date(task.completedAt).getTime() - new Date(task.startedAt).getTime()
+      const elapsed =
+        new Date(task.completedAt).getTime() -
+        new Date(task.startedAt).getTime()
       return Math.floor(elapsed / 1000)
     }
     return null
@@ -332,7 +340,9 @@ export function TaskDetailModal({
                       <label className="font-medium text-muted-foreground">
                         Retry Count
                       </label>
-                      <p className="mt-1">{task.retryCount} / {task.maxRetries}</p>
+                      <p className="mt-1">
+                        {task.retryCount} / {task.maxRetries}
+                      </p>
                     </div>
                     {executionTime !== null && (
                       <div>
@@ -368,7 +378,8 @@ export function TaskDetailModal({
                         Retry
                       </Button>
                     )}
-                    {(task.status === 'PENDING' || task.status === 'RUNNING') && (
+                    {(task.status === 'PENDING' ||
+                      task.status === 'RUNNING') && (
                       <Button
                         size="sm"
                         variant="outline"

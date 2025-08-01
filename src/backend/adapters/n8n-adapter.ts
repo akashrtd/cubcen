@@ -3,9 +3,12 @@
  * Provides integration with n8n automation platform
  */
 
-import axios from 'axios';
-import { BasePlatformAdapter } from './base-adapter';
-import { CircuitBreaker, createPlatformCircuitBreaker } from '../../lib/circuit-breaker';
+import axios from 'axios'
+import { BasePlatformAdapter } from './base-adapter'
+import {
+  CircuitBreaker,
+  createPlatformCircuitBreaker,
+} from '../../lib/circuit-breaker'
 import {
   Agent,
   AgentStatus,
@@ -18,102 +21,110 @@ import {
   PlatformConfig,
   PlatformCredentials,
   PlatformEvent,
-  PlatformType
-} from '../../types/platform';
+  PlatformType,
+} from '../../types/platform'
 
 // n8n specific types
 interface N8nWorkflow {
-  id: string;
-  name: string;
-  active: boolean;
-  tags: string[];
-  createdAt: string;
-  updatedAt: string;
-  versionId: string;
-  nodes: N8nNode[];
-  connections: Record<string, unknown>;
-  settings?: Record<string, unknown>;
+  id: string
+  name: string
+  active: boolean
+  tags: string[]
+  createdAt: string
+  updatedAt: string
+  versionId: string
+  nodes: N8nNode[]
+  connections: Record<string, unknown>
+  settings?: Record<string, unknown>
 }
 
 interface N8nNode {
-  id: string;
-  name: string;
-  type: string;
-  typeVersion: number;
-  position: [number, number];
-  parameters: Record<string, unknown>;
+  id: string
+  name: string
+  type: string
+  typeVersion: number
+  position: [number, number]
+  parameters: Record<string, unknown>
 }
 
 interface N8nExecution {
-  id: string;
-  workflowId: string;
-  mode: string;
-  retryOf?: string;
-  status: 'new' | 'running' | 'success' | 'error' | 'canceled' | 'crashed' | 'waiting';
-  startedAt: string;
-  stoppedAt?: string;
-  workflowData: N8nWorkflow;
-  data?: Record<string, unknown>;
-  error?: string;
+  id: string
+  workflowId: string
+  mode: string
+  retryOf?: string
+  status:
+    | 'new'
+    | 'running'
+    | 'success'
+    | 'error'
+    | 'canceled'
+    | 'crashed'
+    | 'waiting'
+  startedAt: string
+  stoppedAt?: string
+  workflowData: N8nWorkflow
+  data?: Record<string, unknown>
+  error?: string
 }
 
 interface N8nCredentials {
-  apiKey?: string;
-  email?: string;
-  password?: string;
-  token?: string;
+  apiKey?: string
+  email?: string
+  password?: string
+  token?: string
 }
 
 export class N8nPlatformAdapter extends BasePlatformAdapter {
-  private httpClient: ReturnType<typeof axios.create>;
-  private circuitBreaker: CircuitBreaker;
-  private authToken?: string;
-  private tokenExpiresAt?: Date;
+  private httpClient: ReturnType<typeof axios.create>
+  private circuitBreaker: CircuitBreaker
+  private authToken?: string
+  private tokenExpiresAt?: Date
 
   constructor(config: PlatformConfig) {
-    super(config);
-    this.validateConfig();
-    
+    super(config)
+    this.validateConfig()
+
     this.httpClient = axios.create({
       baseURL: this.config.baseUrl,
       timeout: this.config.timeout || 30000,
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'Cubcen/1.0.0'
-      }
-    });
+        'User-Agent': 'Cubcen/1.0.0',
+      },
+    })
 
     this.circuitBreaker = createPlatformCircuitBreaker({
       failureThreshold: this.config.circuitBreakerThreshold || 3,
       recoveryTimeout: 30000,
-      monitoringPeriod: 5000
-    });
+      monitoringPeriod: 5000,
+    })
 
-    this.setupHttpInterceptors();
+    this.setupHttpInterceptors()
   }
 
   getPlatformType(): PlatformType {
-    return 'n8n';
+    return 'n8n'
   }
 
   async authenticate(credentials: PlatformCredentials): Promise<AuthResult> {
     try {
-      const n8nCreds = credentials as N8nCredentials;
-      
+      const n8nCreds = credentials as N8nCredentials
+
       // Handle API key authentication
       if (n8nCreds.apiKey) {
-        this.httpClient.defaults.headers.common['X-N8N-API-KEY'] = n8nCreds.apiKey;
-        
+        this.httpClient.defaults.headers.common['X-N8N-API-KEY'] =
+          n8nCreds.apiKey
+
         // Test the API key by making a simple request
         await this.circuitBreaker.execute(async () => {
-          const response = await this.httpClient.get('/workflows');
-          return response.data;
-        });
+          const response = await this.httpClient.get('/workflows')
+          return response.data
+        })
 
         return {
           success: true,
-          token: n8nCreds.apiKey
-        };
+          token: n8nCreds.apiKey,
+        }
       }
 
       // Handle email/password authentication
@@ -121,57 +132,68 @@ export class N8nPlatformAdapter extends BasePlatformAdapter {
         const response = await this.circuitBreaker.execute(async () => {
           return await this.httpClient.post('/login', {
             email: n8nCreds.email,
-            password: n8nCreds.password
-          });
-        });
+            password: n8nCreds.password,
+          })
+        })
 
-        if (response.data && (response.data as { token?: string; expiresIn?: number }).token) {
-          const authData = response.data as { token: string; expiresIn?: number };
-          this.authToken = authData.token;
-          this.tokenExpiresAt = new Date(Date.now() + (authData.expiresIn || 3600) * 1000);
-          
-          this.httpClient.defaults.headers.common['Authorization'] = `Bearer ${this.authToken}`;
-          
+        if (
+          response.data &&
+          (response.data as { token?: string; expiresIn?: number }).token
+        ) {
+          const authData = response.data as {
+            token: string
+            expiresIn?: number
+          }
+          this.authToken = authData.token
+          this.tokenExpiresAt = new Date(
+            Date.now() + (authData.expiresIn || 3600) * 1000
+          )
+
+          this.httpClient.defaults.headers.common['Authorization'] =
+            `Bearer ${this.authToken}`
+
           return {
             success: true,
             token: this.authToken,
-            expiresAt: this.tokenExpiresAt
-          };
+            expiresAt: this.tokenExpiresAt,
+          }
         }
       }
 
-      throw new Error('Invalid credentials provided');
+      throw new Error('Invalid credentials provided')
     } catch (error) {
-      const errorMessage = this.extractErrorMessage(error);
-      this.setLastError(new Error(`Authentication failed: ${errorMessage}`));
-      
+      const errorMessage = this.extractErrorMessage(error)
+      this.setLastError(new Error(`Authentication failed: ${errorMessage}`))
+
       return {
         success: false,
-        error: errorMessage
-      };
+        error: errorMessage,
+      }
     }
   }
 
   async discoverAgents(): Promise<Agent[]> {
     try {
       const workflows = await this.circuitBreaker.execute(async () => {
-        const response = await this.httpClient.get('/workflows');
-        const data = response.data as { data?: N8nWorkflow[] } | N8nWorkflow[];
-        return Array.isArray(data) ? data : (data as { data: N8nWorkflow[] }).data || [];
-      });
+        const response = await this.httpClient.get('/workflows')
+        const data = response.data as { data?: N8nWorkflow[] } | N8nWorkflow[]
+        return Array.isArray(data)
+          ? data
+          : (data as { data: N8nWorkflow[] }).data || []
+      })
 
-      const agents: Agent[] = [];
+      const agents: Agent[] = []
 
       for (const workflow of workflows) {
-        const agent = await this.convertWorkflowToAgent(workflow);
-        agents.push(agent);
+        const agent = await this.convertWorkflowToAgent(workflow)
+        agents.push(agent)
       }
 
-      return agents;
+      return agents
     } catch (error) {
-      const errorMessage = this.extractErrorMessage(error);
-      this.setLastError(new Error(`Failed to discover agents: ${errorMessage}`));
-      throw error;
+      const errorMessage = this.extractErrorMessage(error)
+      this.setLastError(new Error(`Failed to discover agents: ${errorMessage}`))
+      throw error
     }
   }
 
@@ -179,10 +201,10 @@ export class N8nPlatformAdapter extends BasePlatformAdapter {
     try {
       // Get workflow details
       const workflow = await this.circuitBreaker.execute(async () => {
-        const response = await this.httpClient.get(`/workflows/${agentId}`);
-        const data = response.data as { data?: N8nWorkflow } | N8nWorkflow;
-        return (data as { data: N8nWorkflow }).data || (data as N8nWorkflow);
-      });
+        const response = await this.httpClient.get(`/workflows/${agentId}`)
+        const data = response.data as { data?: N8nWorkflow } | N8nWorkflow
+        return (data as { data: N8nWorkflow }).data || (data as N8nWorkflow)
+      })
 
       // Get recent executions to determine status and metrics
       const executions = await this.circuitBreaker.execute(async () => {
@@ -190,27 +212,31 @@ export class N8nPlatformAdapter extends BasePlatformAdapter {
           params: {
             filter: JSON.stringify({ workflowId: agentId }),
             limit: 10,
-            includeData: false
-          }
-        });
-        const data = response.data as { data?: N8nExecution[] } | N8nExecution[];
-        return Array.isArray(data) ? data : (data as { data: N8nExecution[] }).data || [];
-      });
+            includeData: false,
+          },
+        })
+        const data = response.data as { data?: N8nExecution[] } | N8nExecution[]
+        return Array.isArray(data)
+          ? data
+          : (data as { data: N8nExecution[] }).data || []
+      })
 
-      const metrics = this.calculateAgentMetrics(executions);
-      const status = this.determineAgentStatus(workflow, executions);
+      const metrics = this.calculateAgentMetrics(executions)
+      const status = this.determineAgentStatus(workflow, executions)
 
       return {
         id: agentId,
         status,
         lastSeen: new Date(),
         currentTask: this.getCurrentTask(executions),
-        metrics
-      };
+        metrics,
+      }
     } catch (error) {
-      const errorMessage = this.extractErrorMessage(error);
-      this.setLastError(new Error(`Failed to get agent status: ${errorMessage}`));
-      
+      const errorMessage = this.extractErrorMessage(error)
+      this.setLastError(
+        new Error(`Failed to get agent status: ${errorMessage}`)
+      )
+
       return {
         id: agentId,
         status: 'error',
@@ -218,90 +244,98 @@ export class N8nPlatformAdapter extends BasePlatformAdapter {
         metrics: {
           tasksCompleted: 0,
           averageExecutionTime: 0,
-          errorRate: 1
-        }
-      };
+          errorRate: 1,
+        },
+      }
     }
   }
 
-  async executeAgent(agentId: string, params: ExecutionParams): Promise<ExecutionResult> {
-    const startTime = Date.now();
-    
+  async executeAgent(
+    agentId: string,
+    params: ExecutionParams
+  ): Promise<ExecutionResult> {
+    const startTime = Date.now()
+
     try {
       const execution = await this.circuitBreaker.execute(async () => {
-        const response = await this.httpClient.post(`/workflows/${agentId}/execute`, {
-          data: params
-        });
-        const data = response.data as { data?: N8nExecution } | N8nExecution;
-        return (data as { data: N8nExecution }).data || (data as N8nExecution);
-      });
+        const response = await this.httpClient.post(
+          `/workflows/${agentId}/execute`,
+          {
+            data: params,
+          }
+        )
+        const data = response.data as { data?: N8nExecution } | N8nExecution
+        return (data as { data: N8nExecution }).data || (data as N8nExecution)
+      })
 
       // Poll for execution completion
-      const result = await this.waitForExecutionCompletion(execution.id);
-      
+      const result = await this.waitForExecutionCompletion(execution.id)
+
       return {
         success: result.status === 'success',
         data: result.data,
         error: result.status === 'error' ? result.error : undefined,
         executionTime: Date.now() - startTime,
-        timestamp: new Date()
-      };
+        timestamp: new Date(),
+      }
     } catch (error) {
-      const errorMessage = this.extractErrorMessage(error);
-      this.setLastError(new Error(`Failed to execute agent: ${errorMessage}`));
-      
+      const errorMessage = this.extractErrorMessage(error)
+      this.setLastError(new Error(`Failed to execute agent: ${errorMessage}`))
+
       return {
         success: false,
         error: errorMessage,
         executionTime: Date.now() - startTime,
-        timestamp: new Date()
-      };
+        timestamp: new Date(),
+      }
     }
   }
 
   async subscribeToEvents(callback: EventCallback): Promise<void> {
-    this.addEventCallback(callback);
-    
+    this.addEventCallback(callback)
+
     // Start polling for events (n8n doesn't have native webhooks in community edition)
-    this.startEventPolling();
+    this.startEventPolling()
   }
 
   async unsubscribeFromEvents(callback: EventCallback): Promise<void> {
-    this.removeEventCallback(callback);
+    this.removeEventCallback(callback)
   }
 
   async healthCheck(): Promise<HealthStatus> {
-    const startTime = Date.now();
-    
+    const startTime = Date.now()
+
     try {
       await this.circuitBreaker.execute(async () => {
-        const response = await this.httpClient.get('/healthz');
-        return response.data as { status: string };
-      });
+        const response = await this.httpClient.get('/healthz')
+        return response.data as { status: string }
+      })
 
-      const responseTime = Date.now() - startTime;
-      
+      const responseTime = Date.now() - startTime
+
       return {
         status: 'healthy',
         lastCheck: new Date(),
         responseTime,
         details: {
           circuitBreakerState: this.circuitBreaker.getStats().state,
-          authenticated: !!this.authToken || !!this.httpClient.defaults.headers.common['X-N8N-API-KEY']
-        }
-      };
+          authenticated:
+            !!this.authToken ||
+            !!this.httpClient.defaults.headers.common['X-N8N-API-KEY'],
+        },
+      }
     } catch (error) {
-      const errorMessage = this.extractErrorMessage(error);
-      
+      const errorMessage = this.extractErrorMessage(error)
+
       return {
         status: 'unhealthy',
         lastCheck: new Date(),
         responseTime: Date.now() - startTime,
         error: errorMessage,
         details: {
-          circuitBreakerState: this.circuitBreaker.getStats().state
-        }
-      };
+          circuitBreakerState: this.circuitBreaker.getStats().state,
+        },
+      }
     }
   }
 
@@ -309,76 +343,78 @@ export class N8nPlatformAdapter extends BasePlatformAdapter {
     try {
       // Authenticate if credentials are provided
       if (this.config.credentials) {
-        const authResult = await this.authenticate(this.config.credentials);
+        const authResult = await this.authenticate(this.config.credentials)
         if (!authResult.success) {
-          throw new Error(authResult.error || 'Authentication failed');
+          throw new Error(authResult.error || 'Authentication failed')
         }
       }
 
       // Perform health check
-      const health = await this.healthCheck();
+      const health = await this.healthCheck()
       if (health.status !== 'healthy') {
-        throw new Error(health.error || 'Health check failed');
+        throw new Error(health.error || 'Health check failed')
       }
 
-      this.setConnected(true);
-      
+      this.setConnected(true)
+
       return {
         connected: true,
-        lastConnected: new Date()
-      };
+        lastConnected: new Date(),
+      }
     } catch (error) {
-      const errorMessage = this.extractErrorMessage(error);
-      this.setLastError(new Error(`Connection failed: ${errorMessage}`));
-      this.setConnected(false);
-      
+      const errorMessage = this.extractErrorMessage(error)
+      this.setLastError(new Error(`Connection failed: ${errorMessage}`))
+      this.setConnected(false)
+
       return {
         connected: false,
-        error: errorMessage
-      };
+        error: errorMessage,
+      }
     }
   }
 
   async disconnect(): Promise<void> {
-    this.setConnected(false);
-    this.authToken = undefined;
-    this.tokenExpiresAt = undefined;
-    
+    this.setConnected(false)
+    this.authToken = undefined
+    this.tokenExpiresAt = undefined
+
     // Clear authentication headers
-    delete this.httpClient.defaults.headers.common['Authorization'];
-    delete this.httpClient.defaults.headers.common['X-N8N-API-KEY'];
+    delete this.httpClient.defaults.headers.common['Authorization']
+    delete this.httpClient.defaults.headers.common['X-N8N-API-KEY']
   }
 
   private setupHttpInterceptors(): void {
     // Request interceptor for retry logic
     this.httpClient.interceptors.request.use(
-      (config) => {
+      config => {
         // Add request timestamp for timeout tracking
-        (config as unknown as Record<string, unknown>).metadata = { startTime: Date.now() };
-        return config;
+        ;(config as unknown as Record<string, unknown>).metadata = {
+          startTime: Date.now(),
+        }
+        return config
       },
       (error: unknown) => Promise.reject(error)
-    );
+    )
 
     // Response interceptor for error handling
     this.httpClient.interceptors.response.use(
-      (response) => response,
+      response => response,
       async (error: Error & { response?: { status?: number } }) => {
         // Handle token expiration
         if (error.response?.status === 401 && this.authToken) {
-          this.authToken = undefined;
-          this.tokenExpiresAt = undefined;
-          delete this.httpClient.defaults.headers.common['Authorization'];
+          this.authToken = undefined
+          this.tokenExpiresAt = undefined
+          delete this.httpClient.defaults.headers.common['Authorization']
         }
 
-        return Promise.reject(error);
+        return Promise.reject(error)
       }
-    );
+    )
   }
 
   private async convertWorkflowToAgent(workflow: N8nWorkflow): Promise<Agent> {
-    const capabilities = this.extractCapabilities(workflow);
-    
+    const capabilities = this.extractCapabilities(workflow)
+
     return {
       id: workflow.id,
       name: workflow.name,
@@ -390,30 +426,30 @@ export class N8nPlatformAdapter extends BasePlatformAdapter {
         tags: workflow.tags || [],
         nodeCount: workflow.nodes?.length || 0,
         versionId: workflow.versionId,
-        settings: workflow.settings || {}
+        settings: workflow.settings || {},
       },
       healthStatus: {
         status: 'healthy',
-        lastCheck: new Date()
+        lastCheck: new Date(),
       },
       createdAt: new Date(workflow.createdAt),
-      updatedAt: new Date(workflow.updatedAt)
-    };
+      updatedAt: new Date(workflow.updatedAt),
+    }
   }
 
   private extractCapabilities(workflow: N8nWorkflow): string[] {
-    const capabilities: string[] = [];
-    
+    const capabilities: string[] = []
+
     if (workflow.nodes) {
-      const nodeTypes = new Set(workflow.nodes.map(node => node.type));
-      capabilities.push(...Array.from(nodeTypes));
+      const nodeTypes = new Set(workflow.nodes.map(node => node.type))
+      capabilities.push(...Array.from(nodeTypes))
     }
 
     if (workflow.tags) {
-      capabilities.push(...workflow.tags.map(tag => `tag:${tag}`));
+      capabilities.push(...workflow.tags.map(tag => `tag:${tag}`))
     }
 
-    return capabilities;
+    return capabilities
   }
 
   private calculateAgentMetrics(executions: N8nExecution[]) {
@@ -421,75 +457,91 @@ export class N8nPlatformAdapter extends BasePlatformAdapter {
       return {
         tasksCompleted: 0,
         averageExecutionTime: 0,
-        errorRate: 0
-      };
+        errorRate: 0,
+      }
     }
 
-    const completedExecutions = executions.filter(e => e.stoppedAt);
-    const errorExecutions = executions.filter(e => e.status === 'error' || e.status === 'crashed');
-    
+    const completedExecutions = executions.filter(e => e.stoppedAt)
+    const errorExecutions = executions.filter(
+      e => e.status === 'error' || e.status === 'crashed'
+    )
+
     const totalExecutionTime = completedExecutions.reduce((sum, execution) => {
-      const start = new Date(execution.startedAt).getTime();
-      const end = new Date(execution.stoppedAt!).getTime();
-      return sum + (end - start);
-    }, 0);
+      const start = new Date(execution.startedAt).getTime()
+      const end = new Date(execution.stoppedAt!).getTime()
+      return sum + (end - start)
+    }, 0)
 
     return {
       tasksCompleted: completedExecutions.length,
-      averageExecutionTime: completedExecutions.length > 0 ? totalExecutionTime / completedExecutions.length : 0,
-      errorRate: executions.length > 0 ? errorExecutions.length / executions.length : 0
-    };
+      averageExecutionTime:
+        completedExecutions.length > 0
+          ? totalExecutionTime / completedExecutions.length
+          : 0,
+      errorRate:
+        executions.length > 0 ? errorExecutions.length / executions.length : 0,
+    }
   }
 
-  private determineAgentStatus(workflow: N8nWorkflow, executions: N8nExecution[]): 'active' | 'inactive' | 'error' | 'maintenance' {
+  private determineAgentStatus(
+    workflow: N8nWorkflow,
+    executions: N8nExecution[]
+  ): 'active' | 'inactive' | 'error' | 'maintenance' {
     if (!workflow.active) {
-      return 'inactive';
+      return 'inactive'
     }
 
-    const recentExecutions = executions.slice(0, 5);
-    const recentErrors = recentExecutions.filter(e => e.status === 'error' || e.status === 'crashed');
-    
+    const recentExecutions = executions.slice(0, 5)
+    const recentErrors = recentExecutions.filter(
+      e => e.status === 'error' || e.status === 'crashed'
+    )
+
     if (recentErrors.length >= 3) {
-      return 'error';
+      return 'error'
     }
 
-    const runningExecutions = executions.filter(e => e.status === 'running');
+    const runningExecutions = executions.filter(e => e.status === 'running')
     if (runningExecutions.length > 0) {
-      return 'active';
+      return 'active'
     }
 
-    return 'active';
+    return 'active'
   }
 
   private getCurrentTask(executions: N8nExecution[]): string | undefined {
-    const runningExecution = executions.find(e => e.status === 'running');
-    return runningExecution ? `Execution ${runningExecution.id}` : undefined;
+    const runningExecution = executions.find(e => e.status === 'running')
+    return runningExecution ? `Execution ${runningExecution.id}` : undefined
   }
 
-  private async waitForExecutionCompletion(executionId: string, maxWaitTime = 300000): Promise<N8nExecution> {
-    const startTime = Date.now();
-    const pollInterval = 2000; // 2 seconds
+  private async waitForExecutionCompletion(
+    executionId: string,
+    maxWaitTime = 300000
+  ): Promise<N8nExecution> {
+    const startTime = Date.now()
+    const pollInterval = 2000 // 2 seconds
 
     while (Date.now() - startTime < maxWaitTime) {
       try {
         const execution = await this.circuitBreaker.execute(async () => {
-          const response = await this.httpClient.get(`/executions/${executionId}`);
-          const data = response.data as { data?: N8nExecution } | N8nExecution;
-          return (data as { data: N8nExecution }).data || (data as N8nExecution);
-        });
+          const response = await this.httpClient.get(
+            `/executions/${executionId}`
+          )
+          const data = response.data as { data?: N8nExecution } | N8nExecution
+          return (data as { data: N8nExecution }).data || (data as N8nExecution)
+        })
 
         if (execution.status !== 'running' && execution.status !== 'new') {
-          return execution;
+          return execution
         }
 
-        await new Promise(resolve => setTimeout(resolve, pollInterval));
+        await new Promise(resolve => setTimeout(resolve, pollInterval))
       } catch (error) {
         // If we can't get execution status, assume it failed
-        throw error;
+        throw error
       }
     }
 
-    throw new Error(`Execution ${executionId} timed out after ${maxWaitTime}ms`);
+    throw new Error(`Execution ${executionId} timed out after ${maxWaitTime}ms`)
   }
 
   private startEventPolling(): void {
@@ -501,75 +553,87 @@ export class N8nPlatformAdapter extends BasePlatformAdapter {
           const response = await this.httpClient.get('/executions', {
             params: {
               limit: 10,
-              includeData: false
-            }
-          });
-          const data = response.data as { data?: N8nExecution[] } | N8nExecution[];
-          return Array.isArray(data) ? data : (data as { data: N8nExecution[] }).data || [];
-        });
+              includeData: false,
+            },
+          })
+          const data = response.data as
+            | { data?: N8nExecution[] }
+            | N8nExecution[]
+          return Array.isArray(data)
+            ? data
+            : (data as { data: N8nExecution[] }).data || []
+        })
 
         // Emit events for completed executions
         executions.forEach((execution: N8nExecution) => {
           if (execution.status === 'success' || execution.status === 'error') {
             const event: PlatformEvent = {
-              type: execution.status === 'success' ? 'task_completed' : 'error_occurred',
+              type:
+                execution.status === 'success'
+                  ? 'task_completed'
+                  : 'error_occurred',
               agentId: execution.workflowId,
               data: execution,
-              timestamp: new Date(execution.stoppedAt || execution.startedAt)
-            };
-            
-            this.emitEvent(event);
+              timestamp: new Date(execution.stoppedAt || execution.startedAt),
+            }
+
+            this.emitEvent(event)
           }
-        });
+        })
       } catch (error) {
         // Log error but don't throw to avoid breaking the polling loop
-        console.error('Error polling n8n executions:', error);
+        console.error('Error polling n8n executions:', error)
       }
-    }, 30000); // Poll every 30 seconds
+    }, 30000) // Poll every 30 seconds
   }
 
   private extractErrorMessage(error: unknown): string {
     if (error && typeof error === 'object') {
-      const axiosError = error as Record<string, unknown>;
-      
+      const axiosError = error as Record<string, unknown>
+
       // Handle axios errors
       if (axiosError.response && typeof axiosError.response === 'object') {
-        const response = axiosError.response as Record<string, unknown>;
+        const response = axiosError.response as Record<string, unknown>
         if (response.data && typeof response.data === 'object') {
-          const data = response.data as Record<string, unknown>;
+          const data = response.data as Record<string, unknown>
           if (typeof data.message === 'string') {
-            return data.message;
+            return data.message
           }
         }
-        if (typeof response.statusText === 'string' && typeof response.status === 'number') {
-          return `HTTP ${response.status}: ${response.statusText}`;
+        if (
+          typeof response.statusText === 'string' &&
+          typeof response.status === 'number'
+        ) {
+          return `HTTP ${response.status}: ${response.statusText}`
         }
       }
       if (typeof axiosError.code === 'string') {
-        return `Network error: ${axiosError.code}`;
+        return `Network error: ${axiosError.code}`
       }
       if (typeof axiosError.message === 'string') {
-        return axiosError.message;
+        return axiosError.message
       }
     }
-    
+
     if (error instanceof Error) {
-      return error.message;
+      return error.message
     }
-    
-    return 'Unknown error occurred';
+
+    return 'Unknown error occurred'
   }
 
   protected validateConfig(): void {
-    super.validateConfig();
-    
+    super.validateConfig()
+
     if (!this.config.credentials) {
-      throw new Error('n8n adapter requires credentials configuration');
+      throw new Error('n8n adapter requires credentials configuration')
     }
 
-    const creds = this.config.credentials as N8nCredentials;
+    const creds = this.config.credentials as N8nCredentials
     if (!creds.apiKey && !(creds.email && creds.password)) {
-      throw new Error('n8n adapter requires either apiKey or email/password credentials');
+      throw new Error(
+        'n8n adapter requires either apiKey or email/password credentials'
+      )
     }
   }
 }

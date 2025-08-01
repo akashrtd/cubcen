@@ -93,7 +93,12 @@ async function main() {
 
   // Create sample agents for n8n
   const n8nAgent1 = await prisma.agent.upsert({
-    where: { platformId_externalId: { platformId: n8nPlatform.id, externalId: 'n8n-workflow-001' } },
+    where: {
+      platformId_externalId: {
+        platformId: n8nPlatform.id,
+        externalId: 'n8n-workflow-001',
+      },
+    },
     update: {},
     create: {
       name: 'Email Notification Agent',
@@ -116,14 +121,23 @@ async function main() {
   })
 
   const n8nAgent2 = await prisma.agent.upsert({
-    where: { platformId_externalId: { platformId: n8nPlatform.id, externalId: 'n8n-workflow-002' } },
+    where: {
+      platformId_externalId: {
+        platformId: n8nPlatform.id,
+        externalId: 'n8n-workflow-002',
+      },
+    },
     update: {},
     create: {
       name: 'Data Sync Agent',
       platformId: n8nPlatform.id,
       externalId: 'n8n-workflow-002',
       status: 'ACTIVE',
-      capabilities: JSON.stringify(['data-sync', 'api-integration', 'transformation']),
+      capabilities: JSON.stringify([
+        'data-sync',
+        'api-integration',
+        'transformation',
+      ]),
       configuration: JSON.stringify({
         sourceApi: 'https://api.source.com',
         targetApi: 'https://api.target.com',
@@ -140,7 +154,12 @@ async function main() {
 
   // Create sample agents for Make.com
   const makeAgent1 = await prisma.agent.upsert({
-    where: { platformId_externalId: { platformId: makePlatform.id, externalId: 'make-scenario-001' } },
+    where: {
+      platformId_externalId: {
+        platformId: makePlatform.id,
+        externalId: 'make-scenario-001',
+      },
+    },
     update: {},
     create: {
       name: 'Social Media Monitor',
@@ -166,7 +185,7 @@ async function main() {
 
   // Create a sample workflow
   const existingWorkflow = await prisma.workflow.findFirst({
-    where: { name: 'Customer Onboarding Flow' }
+    where: { name: 'Customer Onboarding Flow' },
   })
 
   let sampleWorkflow
@@ -377,9 +396,9 @@ async function main() {
         host: process.env.SMTP_HOST || 'localhost',
         port: parseInt(process.env.SMTP_PORT || '587'),
         secure: process.env.SMTP_SECURE === 'true',
-        from: process.env.SMTP_FROM || 'noreply@cubcen.com'
-      })
-    }
+        from: process.env.SMTP_FROM || 'noreply@cubcen.com',
+      }),
+    },
   })
 
   const slackChannel = await prisma.notificationChannel.upsert({
@@ -393,9 +412,9 @@ async function main() {
       configuration: JSON.stringify({
         defaultChannel: '#alerts',
         username: 'Cubcen Bot',
-        iconEmoji: ':robot_face:'
-      })
-    }
+        iconEmoji: ':robot_face:',
+      }),
+    },
   })
 
   const inAppChannel = await prisma.notificationChannel.upsert({
@@ -408,9 +427,9 @@ async function main() {
       enabled: true,
       configuration: JSON.stringify({
         maxNotifications: 100,
-        retentionDays: 30
-      })
-    }
+        retentionDays: 30,
+      }),
+    },
   })
   console.log('✅ Created notification channels')
 
@@ -427,14 +446,15 @@ async function main() {
         <p><strong>Agent ID:</strong> {{agentId}}</p>
         <p>Please check the agent status and take appropriate action.</p>
       `,
-      variables: ['agentName', 'platformName', 'timestamp', 'agentId']
+      variables: ['agentName', 'platformName', 'timestamp', 'agentId'],
     },
     {
       eventType: 'AGENT_DOWN',
       channelType: 'SLACK',
       subject: 'Agent Down Alert',
-      template: ':warning: *Agent Down Alert*\n\nAgent *{{agentName}}* on {{platformName}} is offline.\n\nTime: {{timestamp}}\nAgent ID: `{{agentId}}`',
-      variables: ['agentName', 'platformName', 'timestamp', 'agentId']
+      template:
+        ':warning: *Agent Down Alert*\n\nAgent *{{agentName}}* on {{platformName}} is offline.\n\nTime: {{timestamp}}\nAgent ID: `{{agentId}}`',
+      variables: ['agentName', 'platformName', 'timestamp', 'agentId'],
     },
     {
       eventType: 'TASK_FAILED',
@@ -448,15 +468,16 @@ async function main() {
         <p><strong>Time:</strong> {{timestamp}}</p>
         <p>Please review the task logs for more details.</p>
       `,
-      variables: ['taskName', 'agentName', 'errorMessage', 'timestamp']
+      variables: ['taskName', 'agentName', 'errorMessage', 'timestamp'],
     },
     {
       eventType: 'SYSTEM_ERROR',
       channelType: 'SLACK',
       subject: 'System Error',
-      template: ':rotating_light: *System Error*\n\n{{message}}\n\nTime: {{timestamp}}\nPriority: {{priority}}',
-      variables: ['message', 'timestamp', 'priority']
-    }
+      template:
+        ':rotating_light: *System Error*\n\n{{message}}\n\nTime: {{timestamp}}\nPriority: {{priority}}',
+      variables: ['message', 'timestamp', 'priority'],
+    },
   ]
 
   for (const template of templates) {
@@ -464,8 +485,8 @@ async function main() {
       where: {
         eventType_channelType: {
           eventType: template.eventType as any,
-          channelType: template.channelType as any
-        }
+          channelType: template.channelType as any,
+        },
       },
       update: {},
       create: {
@@ -473,8 +494,8 @@ async function main() {
         channelType: template.channelType as any,
         subject: template.subject,
         template: template.template,
-        variables: JSON.stringify(template.variables)
-      }
+        variables: JSON.stringify(template.variables),
+      },
     })
   }
   console.log('✅ Created notification templates')
@@ -485,11 +506,19 @@ async function main() {
     { eventType: 'AGENT_ERROR', channels: ['IN_APP', 'EMAIL'], enabled: true },
     { eventType: 'TASK_FAILED', channels: ['IN_APP'], enabled: true },
     { eventType: 'TASK_COMPLETED', channels: ['IN_APP'], enabled: false },
-    { eventType: 'WORKFLOW_FAILED', channels: ['EMAIL', 'SLACK'], enabled: true },
+    {
+      eventType: 'WORKFLOW_FAILED',
+      channels: ['EMAIL', 'SLACK'],
+      enabled: true,
+    },
     { eventType: 'WORKFLOW_COMPLETED', channels: ['IN_APP'], enabled: false },
     { eventType: 'SYSTEM_ERROR', channels: ['EMAIL', 'SLACK'], enabled: true },
     { eventType: 'HEALTH_CHECK_FAILED', channels: ['EMAIL'], enabled: true },
-    { eventType: 'PLATFORM_DISCONNECTED', channels: ['EMAIL', 'SLACK'], enabled: true }
+    {
+      eventType: 'PLATFORM_DISCONNECTED',
+      channels: ['EMAIL', 'SLACK'],
+      enabled: true,
+    },
   ]
 
   const users = [adminUser, operatorUser, viewerUser]
@@ -499,8 +528,8 @@ async function main() {
         where: {
           userId_eventType: {
             userId: user.id,
-            eventType: pref.eventType as any
-          }
+            eventType: pref.eventType as any,
+          },
         },
         update: {},
         create: {
@@ -508,8 +537,8 @@ async function main() {
           eventType: pref.eventType as any,
           channels: JSON.stringify(pref.channels),
           enabled: pref.enabled,
-          escalationDelay: pref.eventType === 'AGENT_DOWN' ? 15 : undefined
-        }
+          escalationDelay: pref.eventType === 'AGENT_DOWN' ? 15 : undefined,
+        },
       })
     }
   }
@@ -522,19 +551,20 @@ async function main() {
       priority: 'HIGH',
       status: 'SENT',
       title: 'Agent Error Detected',
-      message: 'The Email Notification Agent encountered an authentication error.',
+      message:
+        'The Email Notification Agent encountered an authentication error.',
       data: JSON.stringify({
         agentId: n8nAgent1.id,
         agentName: n8nAgent1.name,
         errorCode: 'AUTH_FAILED',
-        errorMessage: 'SMTP authentication failed'
+        errorMessage: 'SMTP authentication failed',
       }),
       userId: adminUser.id,
       channels: JSON.stringify(['IN_APP', 'EMAIL']),
       sentAt: new Date(Date.now() - 1800000), // 30 minutes ago
       retryCount: 0,
-      maxRetries: 3
-    }
+      maxRetries: 3,
+    },
   })
 
   await prisma.inAppNotification.create({
@@ -545,8 +575,8 @@ async function main() {
       type: 'success',
       read: false,
       actionUrl: '/dashboard/agents',
-      actionText: 'View Agents'
-    }
+      actionText: 'View Agents',
+    },
   })
 
   console.log('✅ Created sample notifications')
@@ -571,7 +601,7 @@ async function main() {
 }
 
 main()
-  .catch((e) => {
+  .catch(e => {
     console.error('❌ Error during seeding:', e)
     process.exit(1)
   })

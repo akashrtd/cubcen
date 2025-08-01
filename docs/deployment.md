@@ -176,12 +176,14 @@ npm run start:server
 #### Server Specifications
 
 **Minimum Requirements:**
+
 - 2 vCPUs
 - 4GB RAM
 - 50GB SSD storage
 - Ubuntu 20.04 LTS
 
 **Recommended for Production:**
+
 - 4 vCPUs
 - 8GB RAM
 - 100GB SSD storage
@@ -359,15 +361,15 @@ tail -f /opt/cubcen/logs/error.log
 
 while true; do
     echo "=== $(date) ==="
-    
+
     # Health check
     curl -s http://localhost:3000/api/cubcen/v1/health | jq .
-    
+
     # System resources
     echo "CPU: $(top -bn1 | grep "Cpu(s)" | awk '{print $2}' | awk -F'%' '{print $1}')"
     echo "Memory: $(free -m | awk 'NR==2{printf "%.1f%%", $3*100/$2}')"
     echo "Disk: $(df -h / | awk 'NR==2{print $5}')"
-    
+
     echo "---"
     sleep 60
 done
@@ -490,9 +492,9 @@ docker stats cubcen
 
 # Analyze slow queries (PostgreSQL)
 docker-compose exec postgres psql -U cubcen -c "
-  SELECT query, mean_time, calls 
-  FROM pg_stat_statements 
-  ORDER BY mean_time DESC 
+  SELECT query, mean_time, calls
+  FROM pg_stat_statements
+  ORDER BY mean_time DESC
   LIMIT 10;"
 
 # Check application metrics

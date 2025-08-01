@@ -50,7 +50,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const NavItems = ({ mobile = false }: { mobile?: boolean }) => (
     <nav className="space-y-1">
-      {navigation.map((item) => {
+      {navigation.map(item => {
         const isActive = pathname === item.href
         return (
           <Link
@@ -58,9 +58,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             href={item.href}
             className={`
               flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors
-              ${isActive 
-                ? 'bg-cubcen-primary text-white' 
-                : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+              ${
+                isActive
+                  ? 'bg-cubcen-primary text-white'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-accent'
               }
             `}
             onClick={() => mobile && setSidebarOpen(false)}
@@ -86,12 +87,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   <span className="text-white font-bold text-lg">C</span>
                 </div>
                 <span className="text-xl font-bold">Cubcen</span>
-                <Badge variant="secondary" className="bg-cubcen-secondary text-white text-xs">
+                <Badge
+                  variant="secondary"
+                  className="bg-cubcen-secondary text-white text-xs"
+                >
                   MVP
                 </Badge>
               </div>
             </div>
-            
+
             {/* Mobile Navigation */}
             <div className="flex-1 px-4 py-6">
               <NavItems mobile />
@@ -110,12 +114,15 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 <span className="text-white font-bold text-lg">C</span>
               </div>
               <span className="text-xl font-bold">Cubcen</span>
-              <Badge variant="secondary" className="bg-cubcen-secondary text-white text-xs">
+              <Badge
+                variant="secondary"
+                className="bg-cubcen-secondary text-white text-xs"
+              >
                 MVP
               </Badge>
             </div>
           </div>
-          
+
           {/* Navigation */}
           <div className="flex-1 px-4 py-6">
             <NavItems />
@@ -144,7 +151,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
           <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
             <div className="flex flex-1"></div>
-            
+
             {/* Right side items */}
             <div className="flex items-center gap-x-4 lg:gap-x-6">
               {/* Notifications */}
@@ -162,7 +169,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               {/* Profile dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                  <Button
+                    variant="ghost"
+                    className="relative h-8 w-8 rounded-full"
+                  >
                     <Avatar className="h-8 w-8">
                       <AvatarImage src="/avatars/01.png" alt="User" />
                       <AvatarFallback className="bg-cubcen-primary text-white">
@@ -174,7 +184,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 <DropdownMenuContent className="w-56" align="end" forceMount>
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">John Doe</p>
+                      <p className="text-sm font-medium leading-none">
+                        John Doe
+                      </p>
                       <p className="text-xs leading-none text-muted-foreground">
                         john.doe@example.com
                       </p>
@@ -202,9 +214,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
         {/* Page content */}
         <main className="py-6">
-          <div className="px-4 sm:px-6 lg:px-8">
-            {children}
-          </div>
+          <div className="px-4 sm:px-6 lg:px-8">{children}</div>
         </main>
       </div>
     </div>

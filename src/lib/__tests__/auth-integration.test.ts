@@ -14,8 +14,8 @@ const mockPrisma = {
     create: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
-    findMany: jest.fn()
-  }
+    findMany: jest.fn(),
+  },
 } as unknown as PrismaClient
 
 describe('Authentication Integration', () => {
@@ -35,11 +35,12 @@ describe('Authentication Integration', () => {
       name: 'Admin User',
       role: UserRole.ADMIN,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     }
 
     // Mock database responses
-    mockPrisma.user.findUnique = jest.fn()
+    mockPrisma.user.findUnique = jest
+      .fn()
       .mockResolvedValueOnce(null) // For registration check
       .mockResolvedValueOnce(userData) // For login
       .mockResolvedValueOnce(userData) // For token validation
@@ -56,7 +57,7 @@ describe('Authentication Integration', () => {
       email: 'admin@cubcen.com',
       password: 'SecurePassword123!',
       name: 'Admin User',
-      role: UserRole.ADMIN
+      role: UserRole.ADMIN,
     })
 
     expect(registerResult.user.email).toBe('admin@cubcen.com')
@@ -67,14 +68,16 @@ describe('Authentication Integration', () => {
     // 2. Login user
     const loginResult = await authService.login({
       email: 'admin@cubcen.com',
-      password: 'SecurePassword123!'
+      password: 'SecurePassword123!',
     })
 
     expect(loginResult.user.email).toBe('admin@cubcen.com')
     expect(loginResult.tokens.accessToken).toBeDefined()
 
     // 3. Validate token
-    const validatedUser = await authService.validateToken(loginResult.tokens.accessToken)
+    const validatedUser = await authService.validateToken(
+      loginResult.tokens.accessToken
+    )
     expect(validatedUser.email).toBe('admin@cubcen.com')
     expect(validatedUser.role).toBe(UserRole.ADMIN)
 
@@ -86,11 +89,17 @@ describe('Authentication Integration', () => {
 
     // 5. Test RBAC permissions
     expect(hasPermission(UserRole.ADMIN, PERMISSIONS.USER_CREATE)).toBe(true)
-    expect(hasPermission(UserRole.ADMIN, PERMISSIONS.SYSTEM_CONFIGURE)).toBe(true)
+    expect(hasPermission(UserRole.ADMIN, PERMISSIONS.SYSTEM_CONFIGURE)).toBe(
+      true
+    )
     expect(hasPermission(UserRole.VIEWER, PERMISSIONS.USER_CREATE)).toBe(false)
 
     // 6. Test token creation
-    const newTokens = createTokenPair(userData.id, userData.email, userData.role)
+    const newTokens = createTokenPair(
+      userData.id,
+      userData.email,
+      userData.role
+    )
     expect(newTokens.accessToken).toBeDefined()
     expect(newTokens.refreshToken).toBeDefined()
     expect(newTokens.tokenType).toBe('Bearer')
@@ -101,10 +110,12 @@ describe('Authentication Integration', () => {
     // Test invalid login
     mockPrisma.user.findUnique = jest.fn().mockResolvedValue(null)
 
-    await expect(authService.login({
-      email: 'nonexistent@cubcen.com',
-      password: 'password'
-    })).rejects.toThrow('Invalid email or password')
+    await expect(
+      authService.login({
+        email: 'nonexistent@cubcen.com',
+        password: 'password',
+      })
+    ).rejects.toThrow('Invalid email or password')
 
     // Test duplicate registration
     const existingUser = {
@@ -114,28 +125,40 @@ describe('Authentication Integration', () => {
       name: 'Existing User',
       role: UserRole.VIEWER,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     }
 
     mockPrisma.user.findUnique = jest.fn().mockResolvedValue(existingUser)
 
-    await expect(authService.register({
-      email: 'existing@cubcen.com',
-      password: 'password'
-    })).rejects.toThrow('Email already registered')
+    await expect(
+      authService.register({
+        email: 'existing@cubcen.com',
+        password: 'password',
+      })
+    ).rejects.toThrow('Email already registered')
   })
 
   it('should validate role-based permissions correctly', () => {
     // Admin permissions
     expect(hasPermission(UserRole.ADMIN, PERMISSIONS.USER_CREATE)).toBe(true)
     expect(hasPermission(UserRole.ADMIN, PERMISSIONS.USER_DELETE)).toBe(true)
-    expect(hasPermission(UserRole.ADMIN, PERMISSIONS.SYSTEM_CONFIGURE)).toBe(true)
+    expect(hasPermission(UserRole.ADMIN, PERMISSIONS.SYSTEM_CONFIGURE)).toBe(
+      true
+    )
 
     // Operator permissions
-    expect(hasPermission(UserRole.OPERATOR, PERMISSIONS.AGENT_CREATE)).toBe(true)
-    expect(hasPermission(UserRole.OPERATOR, PERMISSIONS.TASK_EXECUTE)).toBe(true)
-    expect(hasPermission(UserRole.OPERATOR, PERMISSIONS.USER_CREATE)).toBe(false)
-    expect(hasPermission(UserRole.OPERATOR, PERMISSIONS.SYSTEM_CONFIGURE)).toBe(false)
+    expect(hasPermission(UserRole.OPERATOR, PERMISSIONS.AGENT_CREATE)).toBe(
+      true
+    )
+    expect(hasPermission(UserRole.OPERATOR, PERMISSIONS.TASK_EXECUTE)).toBe(
+      true
+    )
+    expect(hasPermission(UserRole.OPERATOR, PERMISSIONS.USER_CREATE)).toBe(
+      false
+    )
+    expect(hasPermission(UserRole.OPERATOR, PERMISSIONS.SYSTEM_CONFIGURE)).toBe(
+      false
+    )
 
     // Viewer permissions
     expect(hasPermission(UserRole.VIEWER, PERMISSIONS.USER_READ)).toBe(true)
@@ -148,7 +171,7 @@ describe('Authentication Integration', () => {
 // Mock bcryptjs and jsonwebtoken for integration test
 jest.mock('bcryptjs', () => ({
   hash: jest.fn(),
-  compare: jest.fn()
+  compare: jest.fn(),
 }))
 
 jest.mock('../../lib/logger', () => ({
@@ -156,6 +179,6 @@ jest.mock('../../lib/logger', () => ({
     info: jest.fn(),
     warn: jest.fn(),
     error: jest.fn(),
-    debug: jest.fn()
-  }
+    debug: jest.fn(),
+  },
 }))

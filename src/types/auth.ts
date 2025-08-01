@@ -5,7 +5,7 @@
 export enum UserRole {
   ADMIN = 'ADMIN',
   OPERATOR = 'OPERATOR',
-  VIEWER = 'VIEWER'
+  VIEWER = 'VIEWER',
 }
 
 export interface LoginCredentials {
@@ -78,14 +78,20 @@ export interface JWTConfig {
 
 // Authentication errors
 export class AuthenticationError extends Error {
-  constructor(message: string, public code: string = 'AUTH_ERROR') {
+  constructor(
+    message: string,
+    public code: string = 'AUTH_ERROR'
+  ) {
     super(message)
     this.name = 'AuthenticationError'
   }
 }
 
 export class AuthorizationError extends Error {
-  constructor(message: string, public code: string = 'AUTHZ_ERROR') {
+  constructor(
+    message: string,
+    public code: string = 'AUTHZ_ERROR'
+  ) {
     super(message)
     this.name = 'AuthorizationError'
   }

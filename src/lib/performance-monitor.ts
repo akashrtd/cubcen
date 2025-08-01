@@ -80,13 +80,55 @@ class PerformanceMonitor {
 
   // Default performance thresholds
   private readonly thresholds: PerformanceThreshold[] = [
-    { metric: 'cpu_usage', warning: 70, critical: 90, unit: '%', comparison: 'greater' },
-    { metric: 'memory_usage', warning: 80, critical: 95, unit: '%', comparison: 'greater' },
-    { metric: 'database_query_time', warning: 1000, critical: 5000, unit: 'ms', comparison: 'greater' },
-    { metric: 'api_response_time', warning: 2000, critical: 5000, unit: 'ms', comparison: 'greater' },
-    { metric: 'api_error_rate', warning: 5, critical: 10, unit: '%', comparison: 'greater' },
-    { metric: 'cache_hit_rate', warning: 70, critical: 50, unit: '%', comparison: 'less' },
-    { metric: 'agent_error_rate', warning: 10, critical: 25, unit: '%', comparison: 'greater' },
+    {
+      metric: 'cpu_usage',
+      warning: 70,
+      critical: 90,
+      unit: '%',
+      comparison: 'greater',
+    },
+    {
+      metric: 'memory_usage',
+      warning: 80,
+      critical: 95,
+      unit: '%',
+      comparison: 'greater',
+    },
+    {
+      metric: 'database_query_time',
+      warning: 1000,
+      critical: 5000,
+      unit: 'ms',
+      comparison: 'greater',
+    },
+    {
+      metric: 'api_response_time',
+      warning: 2000,
+      critical: 5000,
+      unit: 'ms',
+      comparison: 'greater',
+    },
+    {
+      metric: 'api_error_rate',
+      warning: 5,
+      critical: 10,
+      unit: '%',
+      comparison: 'greater',
+    },
+    {
+      metric: 'cache_hit_rate',
+      warning: 70,
+      critical: 50,
+      unit: '%',
+      comparison: 'less',
+    },
+    {
+      metric: 'agent_error_rate',
+      warning: 10,
+      critical: 25,
+      unit: '%',
+      comparison: 'greater',
+    },
   ]
 
   private apiMetrics = {
@@ -145,29 +187,66 @@ class PerformanceMonitor {
     const memoryUsage = process.memoryUsage()
     const memoryPercent = (memoryUsage.heapUsed / memoryUsage.heapTotal) * 100
     this.recordMetric('memory_usage', memoryPercent, '%', timestamp)
-    this.recordMetric('heap_used', memoryUsage.heapUsed / 1024 / 1024, 'MB', timestamp)
+    this.recordMetric(
+      'heap_used',
+      memoryUsage.heapUsed / 1024 / 1024,
+      'MB',
+      timestamp
+    )
 
     // Database metrics
     const dbStats = await dbPerformanceMonitor.getPerformanceStats()
-    this.recordMetric('database_query_count', dbStats.totalQueries, 'count', timestamp)
-    this.recordMetric('database_query_time', dbStats.averageQueryTime, 'ms', timestamp)
-    this.recordMetric('database_slow_queries', dbStats.slowQueries.length, 'count', timestamp)
+    this.recordMetric(
+      'database_query_count',
+      dbStats.totalQueries,
+      'count',
+      timestamp
+    )
+    this.recordMetric(
+      'database_query_time',
+      dbStats.averageQueryTime,
+      'ms',
+      timestamp
+    )
+    this.recordMetric(
+      'database_slow_queries',
+      dbStats.slowQueries.length,
+      'count',
+      timestamp
+    )
 
     // Cache metrics
     const cacheStats = cache.getStats()
     this.recordMetric('cache_hit_rate', cacheStats.hitRate, '%', timestamp)
-    this.recordMetric('cache_memory_usage', cacheStats.memoryUsage / 1024 / 1024, 'MB', timestamp)
-    this.recordMetric('cache_entry_count', cacheStats.totalEntries, 'count', timestamp)
+    this.recordMetric(
+      'cache_memory_usage',
+      cacheStats.memoryUsage / 1024 / 1024,
+      'MB',
+      timestamp
+    )
+    this.recordMetric(
+      'cache_entry_count',
+      cacheStats.totalEntries,
+      'count',
+      timestamp
+    )
 
     // API metrics
-    const apiErrorRate = this.apiMetrics.requestCount > 0 
-      ? (this.apiMetrics.errorCount / this.apiMetrics.requestCount) * 100 
-      : 0
-    const avgResponseTime = this.apiMetrics.requestCount > 0 
-      ? this.apiMetrics.totalResponseTime / this.apiMetrics.requestCount 
-      : 0
+    const apiErrorRate =
+      this.apiMetrics.requestCount > 0
+        ? (this.apiMetrics.errorCount / this.apiMetrics.requestCount) * 100
+        : 0
+    const avgResponseTime =
+      this.apiMetrics.requestCount > 0
+        ? this.apiMetrics.totalResponseTime / this.apiMetrics.requestCount
+        : 0
 
-    this.recordMetric('api_request_count', this.apiMetrics.requestCount, 'count', timestamp)
+    this.recordMetric(
+      'api_request_count',
+      this.apiMetrics.requestCount,
+      'count',
+      timestamp
+    )
     this.recordMetric('api_response_time', avgResponseTime, 'ms', timestamp)
     this.recordMetric('api_error_rate', apiErrorRate, '%', timestamp)
 
@@ -183,31 +262,32 @@ class PerformanceMonitor {
    */
   private async collectAgentMetrics(timestamp: Date): Promise<void> {
     try {
-      const [totalAgents, activeAgents, recentErrors, healthMetrics] = await Promise.all([
-        prisma.agent.count(),
-        prisma.agent.count({ where: { status: 'ACTIVE' } }),
-        prisma.task.count({
-          where: {
-            status: 'FAILED',
-            createdAt: {
-              gte: new Date(Date.now() - 3600000), // Last hour
+      const [totalAgents, activeAgents, recentErrors, healthMetrics] =
+        await Promise.all([
+          prisma.agent.count(),
+          prisma.agent.count({ where: { status: 'ACTIVE' } }),
+          prisma.task.count({
+            where: {
+              status: 'FAILED',
+              createdAt: {
+                gte: new Date(Date.now() - 3600000), // Last hour
+              },
             },
-          },
-        }),
-        prisma.agentHealth.aggregate({
-          _avg: { responseTime: true },
-          where: {
-            lastCheckAt: {
-              gte: new Date(Date.now() - 3600000), // Last hour
+          }),
+          prisma.agentHealth.aggregate({
+            _avg: { responseTime: true },
+            where: {
+              lastCheckAt: {
+                gte: new Date(Date.now() - 3600000), // Last hour
+              },
             },
-          },
-        }),
-      ])
+          }),
+        ])
 
       this.recordMetric('agent_total_count', totalAgents, 'count', timestamp)
       this.recordMetric('agent_active_count', activeAgents, 'count', timestamp)
       this.recordMetric('agent_error_count', recentErrors, 'count', timestamp)
-      
+
       const avgResponseTime = healthMetrics._avg.responseTime || 0
       this.recordMetric('agent_response_time', avgResponseTime, 'ms', timestamp)
 
@@ -219,10 +299,10 @@ class PerformanceMonitor {
           },
         },
       })
-      
-      const agentErrorRate = totalTasks > 0 ? (recentErrors / totalTasks) * 100 : 0
-      this.recordMetric('agent_error_rate', agentErrorRate, '%', timestamp)
 
+      const agentErrorRate =
+        totalTasks > 0 ? (recentErrors / totalTasks) * 100 : 0
+      this.recordMetric('agent_error_rate', agentErrorRate, '%', timestamp)
     } catch (error) {
       logger.error('Failed to collect agent metrics', error)
     }
@@ -231,7 +311,13 @@ class PerformanceMonitor {
   /**
    * Record a performance metric
    */
-  private recordMetric(name: string, value: number, unit: string, timestamp: Date, tags?: Record<string, string>): void {
+  private recordMetric(
+    name: string,
+    value: number,
+    unit: string,
+    timestamp: Date,
+    tags?: Record<string, string>
+  ): void {
     const metric: PerformanceMetric = {
       name,
       value,
@@ -251,7 +337,9 @@ class PerformanceMonitor {
   /**
    * Store metric in database
    */
-  private async storeMetricInDatabase(metric: PerformanceMetric): Promise<void> {
+  private async storeMetricInDatabase(
+    metric: PerformanceMetric
+  ): Promise<void> {
     try {
       await prisma.metric.create({
         data: {
@@ -264,7 +352,10 @@ class PerformanceMonitor {
       })
     } catch (error) {
       // Don't throw error to avoid disrupting monitoring
-      logger.warn('Failed to store metric in database', { metric: metric.name, error })
+      logger.warn('Failed to store metric in database', {
+        metric: metric.name,
+        error,
+      })
     }
   }
 
@@ -282,17 +373,33 @@ class PerformanceMonitor {
       if (metricValues.length === 0) continue
 
       // Use average of recent values
-      const avgValue = metricValues.reduce((sum, val) => sum + val, 0) / metricValues.length
+      const avgValue =
+        metricValues.reduce((sum, val) => sum + val, 0) / metricValues.length
 
       // Check if threshold is exceeded
-      const isWarning = this.isThresholdExceeded(avgValue, threshold.warning, threshold.comparison)
-      const isCritical = this.isThresholdExceeded(avgValue, threshold.critical, threshold.comparison)
+      const isWarning = this.isThresholdExceeded(
+        avgValue,
+        threshold.warning,
+        threshold.comparison
+      )
+      const isCritical = this.isThresholdExceeded(
+        avgValue,
+        threshold.critical,
+        threshold.comparison
+      )
 
       if (isCritical || isWarning) {
         const severity = isCritical ? 'critical' : 'warning'
-        const thresholdValue = isCritical ? threshold.critical : threshold.warning
-        
-        await this.generateAlert(threshold.metric, thresholdValue, avgValue, severity)
+        const thresholdValue = isCritical
+          ? threshold.critical
+          : threshold.warning
+
+        await this.generateAlert(
+          threshold.metric,
+          thresholdValue,
+          avgValue,
+          severity
+        )
       }
     }
   }
@@ -300,7 +407,11 @@ class PerformanceMonitor {
   /**
    * Check if a threshold is exceeded
    */
-  private isThresholdExceeded(value: number, threshold: number, comparison: 'greater' | 'less'): boolean {
+  private isThresholdExceeded(
+    value: number,
+    threshold: number,
+    comparison: 'greater' | 'less'
+  ): boolean {
     return comparison === 'greater' ? value > threshold : value < threshold
   }
 
@@ -314,11 +425,13 @@ class PerformanceMonitor {
     severity: 'low' | 'medium' | 'high' | 'critical'
   ): Promise<void> {
     const alertId = `${metric}-${Date.now()}`
-    
+
     // Check if similar alert already exists and is not resolved
     const existingAlert = this.alerts.find(
-      a => a.metric === metric && !a.resolved && 
-      Date.now() - a.timestamp.getTime() < 300000 // 5 minutes
+      a =>
+        a.metric === metric &&
+        !a.resolved &&
+        Date.now() - a.timestamp.getTime() < 300000 // 5 minutes
     )
 
     if (existingAlert) {
@@ -331,7 +444,12 @@ class PerformanceMonitor {
       threshold,
       currentValue,
       severity,
-      message: this.generateAlertMessage(metric, threshold, currentValue, severity),
+      message: this.generateAlertMessage(
+        metric,
+        threshold,
+        currentValue,
+        severity
+      ),
       timestamp: new Date(),
       resolved: false,
     }
@@ -436,7 +554,8 @@ class PerformanceMonitor {
     return {
       cpu: {
         usage: getLatestMetric('cpu_usage'),
-        loadAverage: process.platform !== 'win32' ? require('os').loadavg() : [0, 0, 0],
+        loadAverage:
+          process.platform !== 'win32' ? require('os').loadavg() : [0, 0, 0],
       },
       memory: {
         used: memoryUsage.heapUsed,
@@ -458,12 +577,14 @@ class PerformanceMonitor {
       },
       api: {
         requestCount: this.apiMetrics.requestCount,
-        averageResponseTime: this.apiMetrics.requestCount > 0 
-          ? this.apiMetrics.totalResponseTime / this.apiMetrics.requestCount 
-          : 0,
-        errorRate: this.apiMetrics.requestCount > 0 
-          ? (this.apiMetrics.errorCount / this.apiMetrics.requestCount) * 100 
-          : 0,
+        averageResponseTime:
+          this.apiMetrics.requestCount > 0
+            ? this.apiMetrics.totalResponseTime / this.apiMetrics.requestCount
+            : 0,
+        errorRate:
+          this.apiMetrics.requestCount > 0
+            ? (this.apiMetrics.errorCount / this.apiMetrics.requestCount) * 100
+            : 0,
       },
       agents: {
         totalCount: getLatestMetric('agent_total_count'),
@@ -493,7 +614,9 @@ class PerformanceMonitor {
       )
     }
 
-    return filteredMetrics.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
+    return filteredMetrics.sort(
+      (a, b) => a.timestamp.getTime() - b.timestamp.getTime()
+    )
   }
 
   /**

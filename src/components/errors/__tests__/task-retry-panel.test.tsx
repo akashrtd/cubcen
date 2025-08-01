@@ -16,7 +16,7 @@ jest.mock('date-fns', () => ({
   format: jest.fn((date, formatStr) => {
     if (formatStr === 'MMM dd, HH:mm') return 'Jan 01, 12:00'
     return 'formatted-date'
-  })
+  }),
 }))
 
 const mockRetryableTasks = [
@@ -31,7 +31,7 @@ const mockRetryableTasks = [
     maxRetries: 3,
     lastAttempt: new Date('2024-01-01T12:00:00Z'),
     canRetry: true,
-    parameters: { endpoint: 'https://api.example.com' }
+    parameters: { endpoint: 'https://api.example.com' },
   },
   {
     id: 'task2',
@@ -43,12 +43,12 @@ const mockRetryableTasks = [
     retryCount: 3,
     maxRetries: 3,
     lastAttempt: new Date('2024-01-01T11:30:00Z'),
-    canRetry: false
-  }
+    canRetry: false,
+  },
 ]
 
 const mockApiResponse = {
-  tasks: mockRetryableTasks
+  tasks: mockRetryableTasks,
 }
 
 describe('TaskRetryPanel', () => {
@@ -62,8 +62,10 @@ describe('TaskRetryPanel', () => {
     render(<TaskRetryPanel />)
 
     expect(screen.getByText('Failed Tasks')).toBeInTheDocument()
-    expect(screen.getByText('Tasks that failed and can be retried manually')).toBeInTheDocument()
-    
+    expect(
+      screen.getByText('Tasks that failed and can be retried manually')
+    ).toBeInTheDocument()
+
     // Should show skeleton loading
     expect(screen.getAllByTestId('skeleton')).toHaveLength(3)
   })
@@ -71,7 +73,7 @@ describe('TaskRetryPanel', () => {
   it('should fetch and display retryable tasks', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => mockApiResponse
+      json: async () => mockApiResponse,
     } as Response)
 
     render(<TaskRetryPanel />)
@@ -82,12 +84,16 @@ describe('TaskRetryPanel', () => {
     })
 
     // Check if API was called correctly
-    expect(mockFetch).toHaveBeenCalledWith('/api/cubcen/v1/errors/retryable-tasks')
+    expect(mockFetch).toHaveBeenCalledWith(
+      '/api/cubcen/v1/errors/retryable-tasks'
+    )
 
     // Check task details
     expect(screen.getByText('N8N Workflow Agent')).toBeInTheDocument()
     expect(screen.getByText('Make.com Scenario')).toBeInTheDocument()
-    expect(screen.getByText('Connection timeout to external API')).toBeInTheDocument()
+    expect(
+      screen.getByText('Connection timeout to external API')
+    ).toBeInTheDocument()
     expect(screen.getByText('User cancelled operation')).toBeInTheDocument()
 
     // Check retry counts
@@ -99,13 +105,15 @@ describe('TaskRetryPanel', () => {
   it('should handle API errors', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: false,
-      status: 500
+      status: 500,
     } as Response)
 
     render(<TaskRetryPanel />)
 
     await waitFor(() => {
-      expect(screen.getByText('Failed to fetch retryable tasks')).toBeInTheDocument()
+      expect(
+        screen.getByText('Failed to fetch retryable tasks')
+      ).toBeInTheDocument()
     })
   })
 
@@ -113,15 +121,15 @@ describe('TaskRetryPanel', () => {
     mockFetch
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => mockApiResponse
+        json: async () => mockApiResponse,
       } as Response)
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ message: 'Task retry initiated successfully' })
+        json: async () => ({ message: 'Task retry initiated successfully' }),
       } as Response)
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ tasks: [] }) // Empty after retry
+        json: async () => ({ tasks: [] }), // Empty after retry
       } as Response)
 
     const user = userEvent.setup()
@@ -133,10 +141,11 @@ describe('TaskRetryPanel', () => {
 
     // Click retry button for first task
     const retryButtons = screen.getAllByRole('button', { name: /retry/i })
-    const singleRetryButton = retryButtons.find(button => 
-      button.querySelector('svg') && !button.textContent?.includes('Selected')
+    const singleRetryButton = retryButtons.find(
+      button =>
+        button.querySelector('svg') && !button.textContent?.includes('Selected')
     )
-    
+
     await user.click(singleRetryButton!)
 
     await waitFor(() => {
@@ -148,7 +157,9 @@ describe('TaskRetryPanel', () => {
 
     // Should show success message
     await waitFor(() => {
-      expect(screen.getByText(/Retry completed: 1 successful, 0 failed/)).toBeInTheDocument()
+      expect(
+        screen.getByText(/Retry completed: 1 successful, 0 failed/)
+      ).toBeInTheDocument()
     })
   })
 
@@ -156,11 +167,11 @@ describe('TaskRetryPanel', () => {
     mockFetch
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => mockApiResponse
+        json: async () => mockApiResponse,
       } as Response)
       .mockResolvedValueOnce({
         ok: false,
-        status: 500
+        status: 500,
       } as Response)
 
     const user = userEvent.setup()
@@ -172,21 +183,24 @@ describe('TaskRetryPanel', () => {
 
     // Click retry button for first task
     const retryButtons = screen.getAllByRole('button', { name: /retry/i })
-    const singleRetryButton = retryButtons.find(button => 
-      button.querySelector('svg') && !button.textContent?.includes('Selected')
+    const singleRetryButton = retryButtons.find(
+      button =>
+        button.querySelector('svg') && !button.textContent?.includes('Selected')
     )
-    
+
     await user.click(singleRetryButton!)
 
     await waitFor(() => {
-      expect(screen.getByText(/Retry completed: 0 successful, 1 failed/)).toBeInTheDocument()
+      expect(
+        screen.getByText(/Retry completed: 0 successful, 1 failed/)
+      ).toBeInTheDocument()
     })
   })
 
   it('should handle task selection', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => mockApiResponse
+      json: async () => mockApiResponse,
     } as Response)
 
     const user = userEvent.setup()
@@ -198,10 +212,10 @@ describe('TaskRetryPanel', () => {
 
     // Select first task (only retryable one)
     const checkboxes = screen.getAllByRole('checkbox')
-    const taskCheckbox = checkboxes.find(cb => 
-      cb.getAttribute('aria-label') !== 'Select all retryable tasks'
+    const taskCheckbox = checkboxes.find(
+      cb => cb.getAttribute('aria-label') !== 'Select all retryable tasks'
     )
-    
+
     await user.click(taskCheckbox!)
 
     // Should show bulk retry button
@@ -213,7 +227,7 @@ describe('TaskRetryPanel', () => {
   it('should handle select all functionality', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => mockApiResponse
+      json: async () => mockApiResponse,
     } as Response)
 
     const user = userEvent.setup()
@@ -224,8 +238,8 @@ describe('TaskRetryPanel', () => {
     })
 
     // Click select all checkbox
-    const selectAllCheckbox = screen.getByRole('checkbox', { 
-      name: /select all retryable tasks/i 
+    const selectAllCheckbox = screen.getByRole('checkbox', {
+      name: /select all retryable tasks/i,
     })
     await user.click(selectAllCheckbox)
 
@@ -239,15 +253,15 @@ describe('TaskRetryPanel', () => {
     mockFetch
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => mockApiResponse
+        json: async () => mockApiResponse,
       } as Response)
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ successful: ['task1'], failed: [] })
+        json: async () => ({ successful: ['task1'], failed: [] }),
       } as Response)
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ tasks: [] })
+        json: async () => ({ tasks: [] }),
       } as Response)
 
     const user = userEvent.setup()
@@ -259,8 +273,8 @@ describe('TaskRetryPanel', () => {
 
     // Select first task
     const checkboxes = screen.getAllByRole('checkbox')
-    const taskCheckbox = checkboxes.find(cb => 
-      cb.getAttribute('aria-label') !== 'Select all retryable tasks'
+    const taskCheckbox = checkboxes.find(
+      cb => cb.getAttribute('aria-label') !== 'Select all retryable tasks'
     )
     await user.click(taskCheckbox!)
 
@@ -271,7 +285,9 @@ describe('TaskRetryPanel', () => {
     // Should show confirmation dialog
     await waitFor(() => {
       expect(screen.getByText('Confirm Bulk Retry')).toBeInTheDocument()
-      expect(screen.getByText(/Are you sure you want to retry 1 selected task/)).toBeInTheDocument()
+      expect(
+        screen.getByText(/Are you sure you want to retry 1 selected task/)
+      ).toBeInTheDocument()
     })
 
     // Confirm retry
@@ -284,21 +300,23 @@ describe('TaskRetryPanel', () => {
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ taskIds: ['task1'] })
+          body: JSON.stringify({ taskIds: ['task1'] }),
         }
       )
     })
 
     // Should show success message
     await waitFor(() => {
-      expect(screen.getByText(/Retry completed: 1 successful, 0 failed/)).toBeInTheDocument()
+      expect(
+        screen.getByText(/Retry completed: 1 successful, 0 failed/)
+      ).toBeInTheDocument()
     })
   })
 
   it('should handle bulk retry cancellation', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => mockApiResponse
+      json: async () => mockApiResponse,
     } as Response)
 
     const user = userEvent.setup()
@@ -310,8 +328,8 @@ describe('TaskRetryPanel', () => {
 
     // Select first task
     const checkboxes = screen.getAllByRole('checkbox')
-    const taskCheckbox = checkboxes.find(cb => 
-      cb.getAttribute('aria-label') !== 'Select all retryable tasks'
+    const taskCheckbox = checkboxes.find(
+      cb => cb.getAttribute('aria-label') !== 'Select all retryable tasks'
     )
     await user.click(taskCheckbox!)
 
@@ -337,7 +355,7 @@ describe('TaskRetryPanel', () => {
   it('should handle refresh functionality', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => mockApiResponse
+      json: async () => mockApiResponse,
     } as Response)
 
     const user = userEvent.setup()
@@ -351,7 +369,7 @@ describe('TaskRetryPanel', () => {
     mockFetch.mockClear()
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => mockApiResponse
+      json: async () => mockApiResponse,
     } as Response)
 
     // Click refresh button
@@ -359,28 +377,34 @@ describe('TaskRetryPanel', () => {
     await user.click(refreshButton)
 
     await waitFor(() => {
-      expect(mockFetch).toHaveBeenCalledWith('/api/cubcen/v1/errors/retryable-tasks')
+      expect(mockFetch).toHaveBeenCalledWith(
+        '/api/cubcen/v1/errors/retryable-tasks'
+      )
     })
   })
 
   it('should display empty state when no failed tasks', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ tasks: [] })
+      json: async () => ({ tasks: [] }),
     } as Response)
 
     render(<TaskRetryPanel />)
 
     await waitFor(() => {
       expect(screen.getByText('No Failed Tasks')).toBeInTheDocument()
-      expect(screen.getByText('All tasks are running successfully. No manual retries needed.')).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          'All tasks are running successfully. No manual retries needed.'
+        )
+      ).toBeInTheDocument()
     })
   })
 
   it('should disable retry button for non-retryable tasks', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => mockApiResponse
+      json: async () => mockApiResponse,
     } as Response)
 
     render(<TaskRetryPanel />)
@@ -391,7 +415,9 @@ describe('TaskRetryPanel', () => {
 
     // Find the retry button for the non-retryable task (task2)
     const rows = screen.getAllByRole('row')
-    const task2Row = rows.find(row => row.textContent?.includes('Email Notification'))
+    const task2Row = rows.find(row =>
+      row.textContent?.includes('Email Notification')
+    )
     const retryButton = task2Row?.querySelector('button')
 
     expect(retryButton).toBeDisabled()
@@ -400,17 +426,29 @@ describe('TaskRetryPanel', () => {
   it('should show correct status badges', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => mockApiResponse
+      json: async () => mockApiResponse,
     } as Response)
 
     render(<TaskRetryPanel />)
 
     await waitFor(() => {
-      const failedBadge = screen.getByText('FAILED').closest('[data-slot="badge"]')
-      const cancelledBadge = screen.getByText('CANCELLED').closest('[data-slot="badge"]')
+      const failedBadge = screen
+        .getByText('FAILED')
+        .closest('[data-slot="badge"]')
+      const cancelledBadge = screen
+        .getByText('CANCELLED')
+        .closest('[data-slot="badge"]')
 
-      expect(failedBadge).toHaveClass('bg-red-100', 'text-red-800', 'border-red-200')
-      expect(cancelledBadge).toHaveClass('bg-gray-100', 'text-gray-800', 'border-gray-200')
+      expect(failedBadge).toHaveClass(
+        'bg-red-100',
+        'text-red-800',
+        'border-red-200'
+      )
+      expect(cancelledBadge).toHaveClass(
+        'bg-gray-100',
+        'text-gray-800',
+        'border-gray-200'
+      )
     })
   })
 
@@ -418,7 +456,7 @@ describe('TaskRetryPanel', () => {
     mockFetch
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => mockApiResponse
+        json: async () => mockApiResponse,
       } as Response)
       .mockImplementation(() => new Promise(() => {})) // Never resolves to keep loading
 
@@ -431,15 +469,18 @@ describe('TaskRetryPanel', () => {
 
     // Click retry button
     const retryButtons = screen.getAllByRole('button', { name: /retry/i })
-    const singleRetryButton = retryButtons.find(button => 
-      button.querySelector('svg') && !button.textContent?.includes('Selected')
+    const singleRetryButton = retryButtons.find(
+      button =>
+        button.querySelector('svg') && !button.textContent?.includes('Selected')
     )
-    
+
     await user.click(singleRetryButton!)
 
     // Should show loading spinner
     await waitFor(() => {
-      expect(singleRetryButton?.querySelector('.animate-spin')).toBeInTheDocument()
+      expect(
+        singleRetryButton?.querySelector('.animate-spin')
+      ).toBeInTheDocument()
     })
   })
 })

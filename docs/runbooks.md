@@ -16,6 +16,7 @@ This document contains operational procedures for managing Cubcen in production 
 ### Service Down - Complete Outage
 
 **Symptoms:**
+
 - Health check endpoint returns 5xx errors
 - Users cannot access the application
 - No response from the service
@@ -23,26 +24,29 @@ This document contains operational procedures for managing Cubcen in production 
 **Immediate Actions:**
 
 1. **Check Service Status**
+
    ```bash
    # Docker Compose
    docker-compose ps
    docker-compose logs --tail=50 cubcen
-   
+
    # Systemd
    sudo systemctl status cubcen
    sudo journalctl -u cubcen --lines=50
    ```
 
 2. **Quick Restart**
+
    ```bash
    # Docker Compose
    docker-compose restart cubcen
-   
+
    # Systemd
    sudo systemctl restart cubcen
    ```
 
 3. **Verify Recovery**
+
    ```bash
    # Wait 30 seconds then check
    sleep 30
@@ -50,27 +54,30 @@ This document contains operational procedures for managing Cubcen in production 
    ```
 
 4. **If Still Down - Check Dependencies**
+
    ```bash
    # Database connectivity
    docker-compose exec cubcen npx prisma db pull
-   
+
    # Disk space
    df -h
-   
+
    # Memory usage
    free -m
-   
+
    # Port conflicts
    netstat -tulpn | grep :3000
    ```
 
 **Escalation:**
+
 - If service doesn't recover within 5 minutes, escalate to development team
 - Document all actions taken and error messages
 
 ### Database Connection Issues
 
 **Symptoms:**
+
 - Application starts but returns database errors
 - "Connection refused" or "Connection timeout" errors
 - Prisma client errors in logs
@@ -78,21 +85,24 @@ This document contains operational procedures for managing Cubcen in production 
 **Actions:**
 
 1. **Check Database Status**
+
    ```bash
    # PostgreSQL
    docker-compose exec postgres pg_isready
-   
+
    # SQLite
    ls -la data/cubcen.db
    sqlite3 data/cubcen.db ".tables"
    ```
 
 2. **Restart Database**
+
    ```bash
    docker-compose restart postgres
    ```
 
 3. **Check Connection String**
+
    ```bash
    # Verify DATABASE_URL in environment
    docker-compose exec cubcen printenv DATABASE_URL
@@ -106,6 +116,7 @@ This document contains operational procedures for managing Cubcen in production 
 ### High Memory Usage
 
 **Symptoms:**
+
 - System becomes unresponsive
 - Out of memory errors in logs
 - High swap usage
@@ -113,21 +124,24 @@ This document contains operational procedures for managing Cubcen in production 
 **Actions:**
 
 1. **Check Memory Usage**
+
    ```bash
    free -m
    docker stats cubcen
    ```
 
 2. **Identify Memory Leaks**
+
    ```bash
    # Check application metrics
    curl http://localhost:3000/api/cubcen/v1/metrics
-   
+
    # Check for memory leaks in logs
    docker-compose logs cubcen | grep -i "memory\|heap"
    ```
 
 3. **Restart Service**
+
    ```bash
    docker-compose restart cubcen
    ```
@@ -146,6 +160,7 @@ This document contains operational procedures for managing Cubcen in production 
 ### Platform Integration Failures
 
 **Symptoms:**
+
 - Agent discovery fails
 - Platform connection errors
 - Authentication failures with external platforms
@@ -153,23 +168,26 @@ This document contains operational procedures for managing Cubcen in production 
 **Actions:**
 
 1. **Check Platform Status**
+
    ```bash
    # n8n
    curl -H "X-N8N-API-KEY: $N8N_API_KEY" \
      "$N8N_BASE_URL/api/v1/workflows"
-   
+
    # Make.com
    curl -H "Authorization: Bearer $MAKE_TOKEN" \
      "$MAKE_BASE_URL/api/v2/scenarios"
    ```
 
 2. **Verify Credentials**
+
    ```bash
    # Check environment variables
    docker-compose exec cubcen printenv | grep -E "(N8N|MAKE)_"
    ```
 
 3. **Test Connectivity**
+
    ```bash
    # Network connectivity
    docker-compose exec cubcen ping -c 3 your-n8n-instance.com
@@ -333,12 +351,12 @@ while true; do
                 --data '{"text":"🚨 Cubcen service is down! Investigating..."}' \
                 $SLACK_WEBHOOK
             touch "$ALERT_FILE"
-            
+
             # Attempt automatic recovery
             docker-compose restart cubcen
         fi
     fi
-    
+
     sleep 60
 done
 ```
@@ -406,7 +424,7 @@ NEW_ERRORS=$(awk -v since="$LAST_CHECK" '
             cmd = "date -d \"" timestamp "\" +%s"
             cmd | getline epoch
             close(cmd)
-            
+
             if (epoch > since) {
                 print $0
             }
@@ -443,14 +461,14 @@ BACKUPS=$(curl -s http://localhost:3000/api/cubcen/v1/backup | jq -r '.data[].id
 
 for BACKUP_ID in $BACKUPS; do
     echo "Verifying backup: $BACKUP_ID"
-    
+
     # 2. Get backup metadata
     METADATA=$(curl -s "http://localhost:3000/api/cubcen/v1/backup/$BACKUP_ID")
-    
+
     # 3. Check file exists and size
     BACKUP_PATH=$(echo "$METADATA" | jq -r '.path')
     EXPECTED_SIZE=$(echo "$METADATA" | jq -r '.size')
-    
+
     if [ -f "$BACKUP_PATH" ]; then
         ACTUAL_SIZE=$(stat -c%s "$BACKUP_PATH")
         if [ "$ACTUAL_SIZE" -eq "$EXPECTED_SIZE" ]; then
@@ -538,9 +556,9 @@ echo "=== Database Optimization ==="
 echo "Analyzing slow queries..."
 docker-compose exec postgres psql -U cubcen -c "
     SELECT query, mean_time, calls, total_time
-    FROM pg_stat_statements 
+    FROM pg_stat_statements
     WHERE mean_time > 100
-    ORDER BY mean_time DESC 
+    ORDER BY mean_time DESC
     LIMIT 10;"
 
 # 2. Check index usage
