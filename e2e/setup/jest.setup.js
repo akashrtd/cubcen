@@ -1,4 +1,4 @@
-import { TextEncoder, TextDecoder } from 'util'
+const { TextEncoder, TextDecoder } = require('util')
 
 // Polyfills for Node.js test environment
 global.TextEncoder = TextEncoder

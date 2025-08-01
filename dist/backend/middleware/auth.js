@@ -7,17 +7,15 @@ exports.requireRole = requireRole;
 exports.requirePermission = requirePermission;
 exports.requireResourcePermission = requireResourcePermission;
 exports.requireSelfOrAdmin = requireSelfOrAdmin;
-const prisma_1 = require("@/generated/prisma");
-const auth_1 = require("@/services/auth");
-const auth_2 = require("@/types/auth");
+const auth_1 = require("@/types/auth");
+const auth_2 = require("@/services/auth");
+const auth_3 = require("@/types/auth");
 const rbac_1 = require("@/lib/rbac");
 const logger_1 = require("@/lib/logger");
-const database_1 = require("@/lib/database");
-const authService = new auth_1.AuthService(database_1.prisma);
 async function authenticate(req, res, next) {
     try {
         const authHeader = req.headers.authorization;
-        const user = await authService.validateAuthHeader(authHeader);
+        const user = await auth_2.authService.validateAuthHeader(authHeader);
         req.user = user;
         logger_1.logger.debug('User authenticated', {
             userId: user.id,
@@ -35,7 +33,7 @@ async function authenticate(req, res, next) {
             method: req.method,
             authHeader: req.headers.authorization ? 'present' : 'missing'
         });
-        if (error instanceof auth_2.AuthenticationError) {
+        if (error instanceof auth_3.AuthenticationError) {
             res.status(401).json({
                 error: {
                     code: error.code,
@@ -58,7 +56,7 @@ async function optionalAuthenticate(req, res, next) {
     try {
         const authHeader = req.headers.authorization;
         if (authHeader) {
-            const user = await authService.validateAuthHeader(authHeader);
+            const user = await auth_2.authService.validateAuthHeader(authHeader);
             req.user = user;
             logger_1.logger.debug('Optional authentication successful', {
                 userId: user.id,
@@ -79,7 +77,7 @@ function requireRole(...allowedRoles) {
     return (req, res, next) => {
         try {
             if (!req.user) {
-                throw new auth_2.AuthorizationError('Authentication required', 'NOT_AUTHENTICATED');
+                throw new auth_3.AuthorizationError('Authentication required', 'NOT_AUTHENTICATED');
             }
             if (!allowedRoles.includes(req.user.role)) {
                 logger_1.logger.warn('Authorization failed: Insufficient role', {
@@ -89,7 +87,7 @@ function requireRole(...allowedRoles) {
                     path: req.path,
                     method: req.method
                 });
-                throw new auth_2.AuthorizationError(`Access denied. Required role: ${allowedRoles.join(' or ')}`, 'INSUFFICIENT_ROLE');
+                throw new auth_3.AuthorizationError(`Access denied. Required role: ${allowedRoles.join(' or ')}`, 'INSUFFICIENT_ROLE');
             }
             logger_1.logger.debug('Role authorization successful', {
                 userId: req.user.id,
@@ -99,7 +97,7 @@ function requireRole(...allowedRoles) {
             next();
         }
         catch (error) {
-            if (error instanceof auth_2.AuthorizationError) {
+            if (error instanceof auth_3.AuthorizationError) {
                 res.status(403).json({
                     error: {
                         code: error.code,
@@ -123,7 +121,7 @@ function requirePermission(permission) {
     return (req, res, next) => {
         try {
             if (!req.user) {
-                throw new auth_2.AuthorizationError('Authentication required', 'NOT_AUTHENTICATED');
+                throw new auth_3.AuthorizationError('Authentication required', 'NOT_AUTHENTICATED');
             }
             (0, rbac_1.requirePermission)(req.user.role, permission);
             logger_1.logger.debug('Permission authorization successful', {
@@ -142,7 +140,7 @@ function requirePermission(permission) {
                 path: req.path,
                 method: req.method
             });
-            if (error instanceof auth_2.AuthorizationError) {
+            if (error instanceof auth_3.AuthorizationError) {
                 res.status(403).json({
                     error: {
                         code: error.code,
@@ -166,7 +164,7 @@ function requireResourcePermission(resource, action) {
     return (req, res, next) => {
         try {
             if (!req.user) {
-                throw new auth_2.AuthorizationError('Authentication required', 'NOT_AUTHENTICATED');
+                throw new auth_3.AuthorizationError('Authentication required', 'NOT_AUTHENTICATED');
             }
             (0, rbac_1.requireResourcePermission)(req.user.role, resource, action);
             logger_1.logger.debug('Resource permission authorization successful', {
@@ -187,7 +185,7 @@ function requireResourcePermission(resource, action) {
                 path: req.path,
                 method: req.method
             });
-            if (error instanceof auth_2.AuthorizationError) {
+            if (error instanceof auth_3.AuthorizationError) {
                 res.status(403).json({
                     error: {
                         code: error.code,
@@ -207,17 +205,17 @@ function requireResourcePermission(resource, action) {
         }
     };
 }
-exports.requireAdmin = requireRole(prisma_1.UserRole.ADMIN);
-exports.requireOperator = requireRole(prisma_1.UserRole.ADMIN, prisma_1.UserRole.OPERATOR);
-exports.requireAuth = requireRole(prisma_1.UserRole.ADMIN, prisma_1.UserRole.OPERATOR, prisma_1.UserRole.VIEWER);
+exports.requireAdmin = requireRole(auth_1.UserRole.ADMIN);
+exports.requireOperator = requireRole(auth_1.UserRole.ADMIN, auth_1.UserRole.OPERATOR);
+exports.requireAuth = requireRole(auth_1.UserRole.ADMIN, auth_1.UserRole.OPERATOR, auth_1.UserRole.VIEWER);
 function requireSelfOrAdmin(userIdParam = 'userId') {
     return (req, res, next) => {
         try {
             if (!req.user) {
-                throw new auth_2.AuthorizationError('Authentication required', 'NOT_AUTHENTICATED');
+                throw new auth_3.AuthorizationError('Authentication required', 'NOT_AUTHENTICATED');
             }
             const targetUserId = req.params[userIdParam];
-            const isAdmin = req.user.role === prisma_1.UserRole.ADMIN;
+            const isAdmin = req.user.role === auth_1.UserRole.ADMIN;
             const isSelf = req.user.id === targetUserId;
             if (!isAdmin && !isSelf) {
                 logger_1.logger.warn('Self or admin authorization failed', {
@@ -227,7 +225,7 @@ function requireSelfOrAdmin(userIdParam = 'userId') {
                     path: req.path,
                     method: req.method
                 });
-                throw new auth_2.AuthorizationError('Access denied. You can only access your own resources.', 'INSUFFICIENT_PERMISSIONS');
+                throw new auth_3.AuthorizationError('Access denied. You can only access your own resources.', 'INSUFFICIENT_PERMISSIONS');
             }
             logger_1.logger.debug('Self or admin authorization successful', {
                 userId: req.user.id,
@@ -239,7 +237,7 @@ function requireSelfOrAdmin(userIdParam = 'userId') {
             next();
         }
         catch (error) {
-            if (error instanceof auth_2.AuthorizationError) {
+            if (error instanceof auth_3.AuthorizationError) {
                 res.status(403).json({
                     error: {
                         code: error.code,

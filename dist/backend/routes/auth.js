@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const auth_1 = require("@/services/auth");
-const database_1 = require("@/lib/database");
 const logger_1 = require("@/lib/logger");
 const auth_2 = require("@/backend/middleware/auth");
 const validation_1 = require("@/backend/middleware/validation");
@@ -10,12 +9,11 @@ const auth_3 = require("@/lib/validation/auth");
 const validation_2 = require("@/backend/middleware/validation");
 const auth_4 = require("@/types/auth");
 const router = (0, express_1.Router)();
-const authService = new auth_1.AuthService(database_1.prisma);
 router.post('/login', (0, validation_1.validateBody)(auth_3.loginSchema), async (req, res) => {
     try {
         const { email, password } = req.body;
         logger_1.logger.info('Login attempt', { email });
-        const result = await authService.login({ email, password });
+        const result = await auth_1.authService.login({ email, password });
         logger_1.logger.info('Login successful', {
             userId: result.user.id,
             email: result.user.email,
@@ -52,7 +50,7 @@ router.post('/register', (0, validation_1.validateBody)(auth_3.registerSchema), 
     try {
         const { email, password, name, role } = req.body;
         logger_1.logger.info('Registration attempt', { email });
-        const result = await authService.register({
+        const result = await auth_1.authService.register({
             email,
             password,
             name,
@@ -94,7 +92,7 @@ router.post('/refresh', (0, validation_1.validateBody)(auth_3.refreshTokenSchema
     try {
         const { refreshToken } = req.body;
         logger_1.logger.info('Token refresh attempt');
-        const tokens = await authService.refreshToken(refreshToken);
+        const tokens = await auth_1.authService.refreshToken(refreshToken);
         logger_1.logger.info('Token refresh successful');
         res.status(200).json({
             success: true,
@@ -149,7 +147,7 @@ router.post('/change-password', auth_2.authenticate, (0, validation_1.validateBo
         const { currentPassword, newPassword } = req.body;
         const userId = req.user.id;
         logger_1.logger.info('Password change attempt', { userId });
-        await authService.changePassword(userId, currentPassword, newPassword);
+        await auth_1.authService.changePassword(userId, currentPassword, newPassword);
         logger_1.logger.info('Password change successful', { userId });
         res.status(200).json({
             success: true,
@@ -180,7 +178,7 @@ router.post('/change-password', auth_2.authenticate, (0, validation_1.validateBo
 router.get('/users', auth_2.authenticate, auth_2.requireAdmin, async (req, res) => {
     try {
         logger_1.logger.info('Get all users request', { requestedBy: req.user.id });
-        const users = await authService.getAllUsers();
+        const users = await auth_1.authService.getAllUsers();
         res.status(200).json({
             success: true,
             data: { users },
@@ -202,7 +200,7 @@ router.get('/users/:id', auth_2.authenticate, (0, auth_2.requireSelfOrAdmin)('id
     try {
         const { id } = req.params;
         logger_1.logger.info('Get user by ID request', { userId: id, requestedBy: req.user.id });
-        const user = await authService.getUserById(id);
+        const user = await auth_1.authService.getUserById(id);
         if (!user) {
             res.status(404).json({
                 success: false,
@@ -242,7 +240,7 @@ router.put('/users/:id/role', auth_2.authenticate, auth_2.requireAdmin, (0, vali
             newRole: role,
             requestedBy: req.user.id
         });
-        const updatedUser = await authService.updateUserRole(id, role);
+        const updatedUser = await auth_1.authService.updateUserRole(id, role);
         logger_1.logger.info('User role updated successfully', {
             userId: id,
             newRole: role,
@@ -295,7 +293,7 @@ router.delete('/users/:id', auth_2.authenticate, auth_2.requireAdmin, (0, valida
             userId: id,
             requestedBy: req.user.id
         });
-        await authService.deleteUser(id);
+        await auth_1.authService.deleteUser(id);
         logger_1.logger.info('User deleted successfully', {
             userId: id,
             deletedBy: req.user.id

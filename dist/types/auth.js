@@ -1,7 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.InvalidTokenError = exports.TokenExpiredError = exports.AuthorizationError = exports.AuthenticationError = void 0;
-const prisma_1 = require("@/generated/prisma");
+exports.InvalidTokenError = exports.TokenExpiredError = exports.AuthorizationError = exports.AuthenticationError = exports.UserRole = void 0;
+var UserRole;
+(function (UserRole) {
+    UserRole["ADMIN"] = "ADMIN";
+    UserRole["OPERATOR"] = "OPERATOR";
+    UserRole["VIEWER"] = "VIEWER";
+})(UserRole || (exports.UserRole = UserRole = {}));
 class AuthenticationError extends Error {
     constructor(message, code = 'AUTH_ERROR') {
         super(message);

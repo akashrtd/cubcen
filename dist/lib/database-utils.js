@@ -7,23 +7,32 @@ exports.createTestData = createTestData;
 const database_1 = require("./database");
 const logger_1 = require("./logger");
 async function resetDatabase() {
-    try {
-        logger_1.logger.info('Resetting database...');
-        await database_1.prisma.agentHealth.deleteMany();
-        await database_1.prisma.metric.deleteMany();
-        await database_1.prisma.systemLog.deleteMany();
-        await database_1.prisma.workflowStep.deleteMany();
-        await database_1.prisma.task.deleteMany();
-        await database_1.prisma.workflow.deleteMany();
-        await database_1.prisma.agent.deleteMany();
-        await database_1.prisma.platform.deleteMany();
-        await database_1.prisma.user.deleteMany();
-        logger_1.logger.info('Database reset completed');
+    logger_1.logger.info('Resetting database...');
+    const tableNames = [
+        'AgentHealth',
+        'Metric',
+        'SystemLog',
+        'Notification',
+        'WorkflowStep',
+        'Task',
+        'Workflow',
+        'Agent',
+        'Platform',
+        'User',
+    ];
+    for (const tableName of tableNames) {
+        const model = tableName.charAt(0).toLowerCase() +
+            tableName.slice(1);
+        if (database_1.prisma[model]) {
+            try {
+                await database_1.prisma[model].deleteMany({});
+            }
+            catch (error) {
+                logger_1.logger.warn(`Could not delete from ${model}: ${error.message}`);
+            }
+        }
     }
-    catch (error) {
-        logger_1.logger.error('Failed to reset database', error);
-        throw error;
-    }
+    logger_1.logger.info('Database reset completed');
 }
 async function getDatabaseStats() {
     try {

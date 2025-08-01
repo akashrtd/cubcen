@@ -9,8 +9,8 @@ exports.requireResourcePermission = requireResourcePermission;
 exports.canAccessResource = canAccessResource;
 exports.getAccessibleResources = getAccessibleResources;
 exports.getResourceActions = getResourceActions;
-const prisma_1 = require("@/generated/prisma");
 const auth_1 = require("@/types/auth");
+const auth_2 = require("@/types/auth");
 exports.PERMISSIONS = {
     USER_CREATE: { resource: 'user', action: 'create' },
     USER_READ: { resource: 'user', action: 'read' },
@@ -49,7 +49,7 @@ exports.PERMISSIONS = {
     REPORTS_READ: { resource: 'reports', action: 'read' }
 };
 exports.ROLE_PERMISSIONS = {
-    [prisma_1.UserRole.ADMIN]: [
+    [auth_1.UserRole.ADMIN]: [
         exports.PERMISSIONS.USER_CREATE,
         exports.PERMISSIONS.USER_READ,
         exports.PERMISSIONS.USER_UPDATE,
@@ -86,7 +86,7 @@ exports.ROLE_PERMISSIONS = {
         exports.PERMISSIONS.REPORTS_CREATE,
         exports.PERMISSIONS.REPORTS_READ
     ],
-    [prisma_1.UserRole.OPERATOR]: [
+    [auth_1.UserRole.OPERATOR]: [
         exports.PERMISSIONS.USER_READ,
         exports.PERMISSIONS.AGENT_CREATE,
         exports.PERMISSIONS.AGENT_READ,
@@ -111,7 +111,7 @@ exports.ROLE_PERMISSIONS = {
         exports.PERMISSIONS.ANALYTICS_EXPORT,
         exports.PERMISSIONS.REPORTS_READ
     ],
-    [prisma_1.UserRole.VIEWER]: [
+    [auth_1.UserRole.VIEWER]: [
         exports.PERMISSIONS.USER_READ,
         exports.PERMISSIONS.AGENT_READ,
         exports.PERMISSIONS.PLATFORM_READ,
@@ -135,7 +135,7 @@ function getRolePermissions(userRole) {
 }
 function requirePermission(userRole, permission, errorMessage) {
     if (!hasPermission(userRole, permission)) {
-        throw new auth_1.AuthorizationError(errorMessage || `Access denied. Required permission: ${permission.action} on ${permission.resource}`, 'INSUFFICIENT_PERMISSIONS');
+        throw new auth_2.AuthorizationError(errorMessage || `Access denied. Required permission: ${permission.action} on ${permission.resource}`, 'INSUFFICIENT_PERMISSIONS');
     }
 }
 function requireResourcePermission(userRole, resource, action, errorMessage) {

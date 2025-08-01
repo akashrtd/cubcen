@@ -10,10 +10,7 @@ const customJestConfig = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testEnvironment: 'jsdom',
   moduleNameMapper: {
-    '^@/(.*)
-
-// createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
-module.exports = createJestConfig(customJestConfig): '<rootDir>/src/$1',
+    '^@/(.*)$': '<rootDir>/src/$1',
   },
   collectCoverageFrom: [
     'src/**/*.{js,jsx,ts,tsx}',
@@ -35,5 +32,4 @@ module.exports = createJestConfig(customJestConfig): '<rootDir>/src/$1',
   ],
 }
 
-// createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
 module.exports = createJestConfig(customJestConfig)

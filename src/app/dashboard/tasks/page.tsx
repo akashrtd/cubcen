@@ -5,6 +5,8 @@ import { TaskBoard } from '@/components/kanban/task-board'
 import { Task } from '@/lib/database'
 import { toast } from 'sonner'
 
+type TaskPriority = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW'
+
 // Mock data for development - in real app this would come from API
 const mockTasks: Task[] = [
   {
@@ -143,7 +145,7 @@ export default function TasksPage() {
       const newTask: Task = {
         id: `task-${Date.now()}`,
         name: taskData.name,
-        description: taskData.description,
+        description: taskData.description ?? null,
         agentId: taskData.agentId,
         workflowId: null,
         status: 'PENDING',

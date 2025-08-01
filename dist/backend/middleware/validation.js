@@ -234,39 +234,11 @@ function sanitizeInput(req, res, next) {
                 logger_1.logger.debug('Body sanitization skipped - not modifiable', { path: req.path });
             }
         }
-        if (req.query && typeof req.query === 'object') {
-            try {
-                const sanitizedQuery = sanitizeObject(req.query);
-                Object.keys(req.query).forEach(key => {
-                    try {
-                        if (key in sanitizedQuery) {
-                            req.query[key] = sanitizedQuery[key];
-                        }
-                    }
-                    catch {
-                    }
-                });
-            }
-            catch {
-                logger_1.logger.debug('Query sanitization skipped - not modifiable', { path: req.path });
-            }
+        if (req.query) {
+            req.query = sanitizeObject(req.query);
         }
-        if (req.params && typeof req.params === 'object') {
-            try {
-                const sanitizedParams = sanitizeObject(req.params);
-                Object.keys(req.params).forEach(key => {
-                    try {
-                        if (key in sanitizedParams) {
-                            req.params[key] = sanitizedParams[key];
-                        }
-                    }
-                    catch {
-                    }
-                });
-            }
-            catch {
-                logger_1.logger.debug('Params sanitization skipped - not modifiable', { path: req.path });
-            }
+        if (req.params) {
+            req.params = sanitizeObject(req.params);
         }
         next();
     }

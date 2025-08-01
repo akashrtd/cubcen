@@ -28,7 +28,7 @@ class CubcenNotificationService {
                 from: process.env.SMTP_FROM || 'noreply@cubcen.com'
             };
             if (this.emailConfig.auth.user && this.emailConfig.auth.pass) {
-                this.emailTransporter = nodemailer_1.default.createTransporter({
+                this.emailTransporter = nodemailer_1.default.createTransport({
                     host: this.emailConfig.host,
                     port: this.emailConfig.port,
                     secure: this.emailConfig.secure,

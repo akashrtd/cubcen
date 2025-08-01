@@ -27,16 +27,7 @@ exports.logger = winston_1.default.createLogger({
     level: process.env.LOG_LEVEL || 'info',
     format: winston_1.default.format.combine(winston_1.default.format.timestamp({
         format: 'YYYY-MM-DD HH:mm:ss',
-    }), winston_1.default.format.errors({ stack: true }), winston_1.default.format.json(), winston_1.default.format.printf(({ timestamp, level, message, stack, ...meta }) => {
-        let log = `${timestamp} [${level.toUpperCase()}]: ${message}`;
-        if (stack) {
-            log += `\n${stack}`;
-        }
-        if (Object.keys(meta).length > 0) {
-            log += `\n${JSON.stringify(meta, null, 2)}`;
-        }
-        return log;
-    })),
+    }), winston_1.default.format.errors({ stack: true }), winston_1.default.format.json(), winston_1.default.format.json()),
     transports: [
         new winston_1.default.transports.Console({
             format: winston_1.default.format.combine(winston_1.default.format.colorize(), winston_1.default.format.simple()),

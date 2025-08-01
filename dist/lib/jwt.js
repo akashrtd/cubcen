@@ -10,6 +10,7 @@ exports.createTokenPair = createTokenPair;
 exports.verifyAccessToken = verifyAccessToken;
 exports.verifyRefreshToken = verifyRefreshToken;
 exports.extractTokenFromHeader = extractTokenFromHeader;
+exports.generateToken = generateToken;
 exports.isTokenExpired = isTokenExpired;
 exports.decodeTokenUnsafe = decodeTokenUnsafe;
 exports.getTokenRemainingTime = getTokenRemainingTime;
@@ -19,6 +20,7 @@ exports.getJWTConfig = getJWTConfig;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const crypto_1 = require("crypto");
 const auth_1 = require("@/types/auth");
+const auth_2 = require("@/types/auth");
 function getJWTConfig() {
     return {
         accessTokenSecret: process.env.JWT_ACCESS_SECRET || 'cubcen-access-secret-change-in-production',
@@ -116,6 +118,9 @@ function extractTokenFromHeader(authHeader) {
         return null;
     }
     return parts[1];
+}
+function generateToken(userId, email, role = auth_2.UserRole.VIEWER) {
+    return createAccessToken(userId, email, role);
 }
 function isTokenExpired(token, secret) {
     try {

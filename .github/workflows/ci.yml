@@ -26,30 +26,24 @@ jobs:
       with:
         node-version: ${{ env.NODE_VERSION }}
         cache: 'npm'
-        cache-dependency-path: 'cubcen/package-lock.json'
+        cache-dependency-path: 'package-lock.json'
 
     - name: Install dependencies
-      working-directory: ./cubcen
       run: npm ci
 
     - name: Generate Prisma client
-      working-directory: ./cubcen
       run: npx prisma generate
 
     - name: Run linting
-      working-directory: ./cubcen
       run: npm run lint
 
     - name: Check code formatting
-      working-directory: ./cubcen
       run: npm run format:check
 
     - name: Run type checking
-      working-directory: ./cubcen
       run: npm run type-check
 
     - name: Run tests with coverage
-      working-directory: ./cubcen
       run: npm run test:coverage
       env:
         NODE_ENV: test
@@ -57,20 +51,17 @@ jobs:
     - name: Upload coverage reports
       uses: codecov/codecov-action@v4
       with:
-        file: ./cubcen/coverage/lcov.info
+        file: ./coverage/lcov.info
         flags: unittests
         name: cubcen-coverage
 
     - name: Build application
-      working-directory: ./cubcen
       run: npm run build
 
     - name: Build server
-      working-directory: ./cubcen
       run: npm run build:server
 
     - name: Run security audit
-      working-directory: ./cubcen
       run: npm audit --audit-level=high
 
   # Integration Tests Job
@@ -102,37 +93,31 @@ jobs:
       with:
         node-version: ${{ env.NODE_VERSION }}
         cache: 'npm'
-        cache-dependency-path: 'cubcen/package-lock.json'
+        cache-dependency-path: 'package-lock.json'
 
     - name: Install dependencies
-      working-directory: ./cubcen
       run: npm ci
 
     - name: Generate Prisma client
-      working-directory: ./cubcen
       run: npx prisma generate
 
     - name: Run database migrations
-      working-directory: ./cubcen
       run: npx prisma migrate deploy
       env:
         DATABASE_URL: 'postgresql://postgres:postgres@localhost:5432/cubcen_test'
 
     - name: Run backend integration tests
-      working-directory: ./cubcen
       run: npm run test:backend
       env:
         NODE_ENV: test
         DATABASE_URL: 'postgresql://postgres:postgres@localhost:5432/cubcen_test'
 
     - name: Test platform adapters
-      working-directory: ./cubcen
       run: npx tsx scripts/test-n8n-adapter.ts
       env:
         NODE_ENV: test
 
     - name: Verify health endpoints
-      working-directory: ./cubcen
       run: npx tsx scripts/test-health-endpoints.ts
       env:
         NODE_ENV: test
@@ -152,18 +137,15 @@ jobs:
       with:
         node-version: ${{ env.NODE_VERSION }}
         cache: 'npm'
-        cache-dependency-path: 'cubcen/package-lock.json'
+        cache-dependency-path: 'package-lock.json'
 
     - name: Install dependencies
-      working-directory: ./cubcen
       run: npm ci
 
     - name: Generate Prisma client
-      working-directory: ./cubcen
       run: npx prisma generate
 
     - name: Setup E2E test environment
-      working-directory: ./cubcen
       run: |
         mkdir -p e2e/temp
         npx prisma migrate deploy
@@ -173,7 +155,6 @@ jobs:
         DATABASE_URL: 'file:./e2e/temp/test.db'
 
     - name: Run E2E tests
-      working-directory: ./cubcen
       run: npm run test:e2e
       env:
         NODE_ENV: test
@@ -187,8 +168,8 @@ jobs:
       with:
         name: e2e-test-results
         path: |
-          cubcen/e2e/temp/
-          cubcen/coverage/e2e/
+          e2e/temp/
+          coverage/e2e/
         retention-days: 7
 
   # Performance Tests Job
@@ -206,18 +187,15 @@ jobs:
       with:
         node-version: ${{ env.NODE_VERSION }}
         cache: 'npm'
-        cache-dependency-path: 'cubcen/package-lock.json'
+        cache-dependency-path: 'package-lock.json'
 
     - name: Install dependencies
-      working-directory: ./cubcen
       run: npm ci
 
     - name: Generate Prisma client
-      working-directory: ./cubcen
       run: npx prisma generate
 
     - name: Setup performance test environment
-      working-directory: ./cubcen
       run: |
         mkdir -p e2e/temp
         npx prisma migrate deploy
@@ -227,7 +205,6 @@ jobs:
         DATABASE_URL: 'file:./e2e/temp/test.db'
 
     - name: Run performance tests
-      working-directory: ./cubcen
       run: npm run test:performance
       env:
         NODE_ENV: test
@@ -236,13 +213,11 @@ jobs:
         PORT: '3001'
 
     - name: Run load tests
-      working-directory: ./cubcen
       run: npx tsx scripts/test-performance.ts
       env:
         NODE_ENV: test
 
     - name: Generate performance report
-      working-directory: ./cubcen
       run: |
         echo "# Performance Test Results" > performance-report.md
         echo "Generated on: $(date)" >> performance-report.md
@@ -257,9 +232,9 @@ jobs:
       with:
         name: performance-results
         path: |
-          cubcen/performance-report.md
-          cubcen/performance-results.json
-          cubcen/load-test-results.json
+          performance-report.md
+          performance-results.json
+          load-test-results.json
         retention-days: 30
 
   # Security Scan Job
@@ -276,7 +251,7 @@ jobs:
       uses: aquasecurity/trivy-action@master
       with:
         scan-type: 'fs'
-        scan-ref: './cubcen'
+        scan-ref: '.'
         format: 'sarif'
         output: 'trivy-results.sarif'
 
@@ -301,18 +276,15 @@ jobs:
       with:
         node-version: ${{ env.NODE_VERSION }}
         cache: 'npm'
-        cache-dependency-path: 'cubcen/package-lock.json'
+        cache-dependency-path: 'package-lock.json'
 
     - name: Install dependencies
-      working-directory: ./cubcen
       run: npm ci
 
     - name: Generate Prisma client
-      working-directory: ./cubcen
       run: npx prisma generate
 
     - name: Run comprehensive test suite
-      working-directory: ./cubcen
       run: npx tsx scripts/run-comprehensive-tests.ts
       env:
         NODE_ENV: test
@@ -325,8 +297,8 @@ jobs:
       with:
         name: comprehensive-test-results
         path: |
-          cubcen/test-results/
-          cubcen/coverage/
+          test-results/
+          coverage/
         retention-days: 30
 
     - name: Comment test results on PR
@@ -335,7 +307,7 @@ jobs:
       with:
         script: |
           const fs = require('fs');
-          const path = './cubcen/test-results/comprehensive-test-report.md';
+          const path = './test-results/comprehensive-test-report.md';
           
           if (fs.existsSync(path)) {
             const report = fs.readFileSync(path, 'utf8');
@@ -362,13 +334,11 @@ jobs:
       uses: docker/setup-buildx-action@v3
 
     - name: Build Docker image
-      working-directory: ./cubcen
       run: |
         docker build -t cubcen:${{ github.sha }} .
         docker build -t cubcen:latest .
 
     - name: Test Docker image
-      working-directory: ./cubcen
       run: |
         # Start container in background
         docker run -d --name cubcen-test \
@@ -397,7 +367,6 @@ jobs:
 
     - name: Push to Docker Hub
       if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-      working-directory: ./cubcen
       run: |
         docker tag cubcen:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/cubcen:${{ github.sha }}
         docker tag cubcen:latest ${{ secrets.DOCKER_USERNAME }}/cubcen:latest

@@ -6,12 +6,15 @@ module.exports = {
     '<rootDir>/e2e/**/__tests__/**/*.{js,jsx,ts,tsx}',
     '<rootDir>/e2e/**/*.{test,spec}.{js,jsx,ts,tsx}',
   ],
-  moduleNameMapping: {
+  moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   setupFilesAfterEnv: ['<rootDir>/e2e/setup/jest.setup.js'],
   globalSetup: '<rootDir>/e2e/setup/global-setup.ts',
   globalTeardown: '<rootDir>/e2e/setup/global-teardown.ts',
+  testRunner: 'jest-circus/runner',
+  reporters: ['default'],
+  globalSetup: 'npx prisma migrate dev --name init',
   collectCoverageFrom: [
     'src/**/*.{js,jsx,ts,tsx}',
     '!src/**/*.d.ts',

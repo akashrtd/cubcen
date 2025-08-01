@@ -54,7 +54,6 @@ class TestingSetupValidator {
     })
 
     // Set test environment variables
-    process.env.NODE_ENV = 'test'
     process.env.DATABASE_URL = 'file:./e2e/temp/test.db'
     process.env.JWT_SECRET = 'test-jwt-secret-for-testing-purposes-min-32-chars'
 

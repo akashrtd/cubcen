@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.permissionSchema = exports.authHeaderSchema = exports.refreshTokenPayloadSchema = exports.jwtTokenSchema = exports.updateProfileSchema = exports.updateUserRoleSchema = exports.refreshTokenSchema = exports.changePasswordSchema = exports.registerSchema = exports.loginSchema = void 0;
 const zod_1 = require("zod");
-const prisma_1 = require("@/generated/prisma");
+const auth_1 = require("@/types/auth");
 exports.loginSchema = zod_1.z.object({
     email: zod_1.z
         .string()
@@ -31,7 +31,7 @@ exports.registerSchema = zod_1.z.object({
         .string()
         .max(100, 'Name must be less than 100 characters')
         .optional(),
-    role: zod_1.z.nativeEnum(prisma_1.UserRole).optional()
+    role: zod_1.z.nativeEnum(auth_1.UserRole).optional()
 }).refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords do not match',
     path: ['confirmPassword']
@@ -59,7 +59,7 @@ exports.updateUserRoleSchema = zod_1.z.object({
     userId: zod_1.z
         .string()
         .min(1, 'User ID is required'),
-    role: zod_1.z.nativeEnum(prisma_1.UserRole, {
+    role: zod_1.z.nativeEnum(auth_1.UserRole, {
         message: 'Invalid role. Must be ADMIN, OPERATOR, or VIEWER'
     })
 });
@@ -77,7 +77,7 @@ exports.updateProfileSchema = zod_1.z.object({
 exports.jwtTokenSchema = zod_1.z.object({
     userId: zod_1.z.string(),
     email: zod_1.z.string().email(),
-    role: zod_1.z.nativeEnum(prisma_1.UserRole),
+    role: zod_1.z.nativeEnum(auth_1.UserRole),
     iat: zod_1.z.number(),
     exp: zod_1.z.number()
 });
