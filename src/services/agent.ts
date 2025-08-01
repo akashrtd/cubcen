@@ -6,7 +6,7 @@
 import {
   prisma,
   Agent,
-  AgentStatus,
+  import { AgentStatus } from '@/generated/prisma'
   Platform,
   AgentHealth,
 } from '@/lib/database'

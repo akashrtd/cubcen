@@ -136,7 +136,7 @@ router.post('/export', async (req: Request, res: Response) => {
         error: {
           code: 'VALIDATION_ERROR',
           message: 'Invalid export parameters',
-          details: body.error.errors,
+          details: body.error.issues,
         },
       })
     }

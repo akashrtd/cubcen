@@ -796,7 +796,7 @@ export function requestSignatureValidation(secretKey: string) {
           message: 'Request signature validation failed',
           timestamp: new Date().toISOString(),
         },
-      })
+      }) as unknown as void;
     }
 
     next()

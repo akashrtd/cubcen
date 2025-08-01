@@ -58,7 +58,7 @@ describe('Configuration System', () => {
     })
 
     it('should validate production environment requirements', async () => {
-      process.env.NODE_ENV = 'production'
+      process.env.NODE_ENV = 'production' as const
       process.env.DATABASE_URL = 'file:./test.db'
       process.env.JWT_SECRET =
         'your-super-secret-jwt-key-change-in-production-min-32-chars' // Default value
@@ -157,12 +157,12 @@ describe('Configuration System', () => {
       process.env.SMTP_USER = 'test@test.com'
 
       const { config } = await import('../config')
-      const summary = config.getConfigSummary()
+      const summary = config.getConfigSummary() as { platformsConfigured: unknown, notificationsConfigured: unknown };
 
       expect(summary.nodeEnv).toBe('development')
       expect(summary.databaseType).toBe('SQLite')
       expect(summary.platformsConfigured.n8n).toBe(true)
-      expect(summary.notificationsConfigured.email).toBe(true)
+      expect(summary.notificationsConfigured.email).toBe(true);
     })
   })
 

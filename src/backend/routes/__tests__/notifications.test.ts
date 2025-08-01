@@ -5,7 +5,7 @@ import request from 'supertest'
 import express from 'express'
 import { PrismaClient } from '../../../generated/prisma'
 import notificationRoutes from '../notifications'
-import { authMiddleware } from '../../middleware/auth'
+import { authenticate } from '../../middleware/auth'
 import {
   NotificationEventType,
   NotificationChannelType,
@@ -21,17 +21,6 @@ import { notificationService } from '../../../services/notification'
 import { notificationPreferencesService } from '../../../services/notification-preferences'
 
 // Mock the auth middleware
-jest.mock('../../middleware/auth', () => ({
-  authMiddleware: jest.fn((req, res, next) => {
-    req.user = {
-      id: 'test-user-id',
-      email: 'test@cubcen.com',
-      role: 'ADMIN',
-    }
-    next()
-  }),
-}))
-
 // Mock the notification services
 jest.mock('../../../services/notification', () => ({
   notificationService: {
@@ -310,15 +299,15 @@ describe('Notification Routes', () => {
 
     it('should reject non-admin users', async () => {
       // Mock non-admin user
-      const mockAuthMiddleware = authMiddleware as jest.MockedFunction<
-        typeof authMiddleware
+      const mockAuthMiddleware = authenticate as jest.MockedFunction<
+        typeof authenticate
       >
       mockAuthMiddleware.mockImplementationOnce((req, res, next) => {
         req.user = {
           id: 'test-user-id',
           email: 'test@cubcen.com',
           role: 'VIEWER',
-        }
+        } as any
         next()
       })
 
@@ -515,15 +504,15 @@ describe('Notification Routes', () => {
     })
 
     it('should reject non-admin users', async () => {
-      const mockAuthMiddleware = authMiddleware as jest.MockedFunction<
-        typeof authMiddleware
+      const mockAuthMiddleware = authenticate as jest.MockedFunction<
+        typeof authenticate
       >
       mockAuthMiddleware.mockImplementationOnce((req, res, next) => {
         req.user = {
           id: 'test-user-id',
           email: 'test@cubcen.com',
           role: 'VIEWER',
-        }
+        } as any
         next()
       })
 

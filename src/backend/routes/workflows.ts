@@ -249,7 +249,7 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
    */
   router.post(
     '/',
-    authenticateToken,
+    authenticate,
     validateRequest(createWorkflowSchema),
     async (req: Request, res: Response, next: NextFunction) => {
       try {
@@ -383,17 +383,17 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
    */
   router.get(
     '/',
-    authenticateToken,
+    authenticate,
     validateRequest(getWorkflowsSchema),
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const options: WorkflowListOptions = {
-          page: req.query.page as number,
-          limit: req.query.limit as number,
+          page: parseInt(req.query.page as string),
+          limit: parseInt(req.query.limit as string),
           status: req.query.status as WorkflowStatus,
           createdBy: req.query.createdBy as string,
-          dateFrom: req.query.dateFrom as Date,
-          dateTo: req.query.dateTo as Date,
+          dateFrom: req.query.dateFrom ? new Date(req.query.dateFrom as string) : undefined,
+          dateTo: req.query.dateTo ? new Date(req.query.dateTo as string) : undefined,
           search: req.query.search as string,
           sortBy: req.query.sortBy as string,
           sortOrder: req.query.sortOrder as 'asc' | 'desc',
@@ -450,7 +450,7 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
    */
   router.get(
     '/:id',
-    authenticateToken,
+    authenticate,
     validateRequest(workflowIdSchema),
     async (req: Request, res: Response, next: NextFunction) => {
       try {
@@ -589,7 +589,7 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
    */
   router.put(
     '/:id',
-    authenticateToken,
+    authenticate,
     validateRequest(updateWorkflowSchema),
     async (req: Request, res: Response, next: NextFunction) => {
       try {
@@ -654,7 +654,7 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
    */
   router.delete(
     '/:id',
-    authenticateToken,
+    authenticate,
     validateRequest(workflowIdSchema),
     async (req: Request, res: Response, next: NextFunction) => {
       try {
@@ -741,7 +741,7 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
    */
   router.post(
     '/:id/validate',
-    authenticateToken,
+    authenticate,
     validateRequest(workflowIdSchema),
     async (req: Request, res: Response, next: NextFunction) => {
       try {
@@ -824,6 +824,7 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
    *                       type: string
    *                     status:
    *                       type: string
+   *                       enum: [PENDING, RUNNING, COMPLETED, FAILED, CANCELLED]
    *                     startedAt:
    *                       type: string
    *                       format: date-time
@@ -838,7 +839,7 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
    */
   router.post(
     '/:id/execute',
-    authenticateToken,
+    authenticate,
     validateRequest(executeWorkflowSchema),
     async (req: Request, res: Response, next: NextFunction) => {
       try {
@@ -949,7 +950,7 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
    */
   router.get(
     '/executions/:executionId',
-    authenticateToken,
+    authenticate,
     validateRequest(executionIdSchema),
     async (req: Request, res: Response, next: NextFunction) => {
       try {
@@ -1019,7 +1020,7 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
    */
   router.post(
     '/executions/:executionId/cancel',
-    authenticateToken,
+    authenticate,
     validateRequest(executionIdSchema),
     async (req: Request, res: Response, next: NextFunction) => {
       try {
@@ -1102,7 +1103,7 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
    */
   router.get(
     '/executions/:executionId/progress',
-    authenticateToken,
+    authenticate,
     validateRequest(executionIdSchema),
     async (req: Request, res: Response, next: NextFunction) => {
       try {

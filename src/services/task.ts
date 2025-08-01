@@ -3,7 +3,7 @@
  * Handles task scheduling, execution, retry logic, and status tracking
  */
 
-import { prisma, Task, TaskStatus, TaskPriority, Agent } from '@/lib/database'
+import { PrismaClient, TaskStatus, TaskPriority, Task, Agent } from '@/generated/prisma'
 import { logger } from '@/lib/logger'
 import { AdapterManager } from '@/backend/adapters/adapter-factory'
 import { z } from 'zod'
@@ -456,7 +456,7 @@ export class TaskService extends EventEmitter {
       // Get task from database
       const task = await prisma.task.findUnique({
         where: { id: taskId },
-      })
+      });
 
       if (!task) {
         throw new Error(`Task with ID ${taskId} not found`)
@@ -610,7 +610,7 @@ export class TaskService extends EventEmitter {
       .filter(task => task.scheduledAt <= now)
       .sort((a, b) => {
         // Sort by priority first (CRITICAL > HIGH > MEDIUM > LOW)
-        const priorityOrder = { CRITICAL: 4, HIGH: 3, MEDIUM: 2, LOW: 1 }
+        const priorityOrder: Record<TaskPriority, number> = { CRITICAL: 4, HIGH: 3, MEDIUM: 2, LOW: 1 };
         const priorityDiff =
           priorityOrder[b.priority] - priorityOrder[a.priority]
         if (priorityDiff !== 0) return priorityDiff

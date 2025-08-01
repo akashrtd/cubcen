@@ -389,7 +389,7 @@ class PerformanceMonitor {
       )
 
       if (isCritical || isWarning) {
-        const severity = isCritical ? 'critical' : 'warning'
+        const severity = isCritical ? 'CRITICAL' : 'HIGH'
         const thresholdValue = isCritical
           ? threshold.critical
           : threshold.warning
@@ -464,7 +464,7 @@ class PerformanceMonitor {
       await prisma.notification.create({
         data: {
           eventType: 'SYSTEM_ERROR',
-          priority: severity.toUpperCase() as any,
+          priority: severity as NotificationPriority,
           title: `Performance Alert: ${metric}`,
           message: alert.message,
           data: JSON.stringify({

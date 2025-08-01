@@ -567,7 +567,7 @@ describe('TaskService', () => {
         ...mockTask,
         agent: mockAgent,
       })
-      mockPrisma.task.update.mockResolvedValue(mockTask)
+      (mockPrisma.task.update as jest.Mock).mockResolvedValue(mockTask);
     })
 
     it('should execute a task successfully', async () => {
@@ -847,7 +847,7 @@ describe('TaskService', () => {
 
     it('should handle database errors gracefully', async () => {
       const dbError = new Error('Database connection failed')
-      mockPrisma.task.update.mockRejectedValue(dbError)
+      (mockPrisma.task.update as jest.Mock).mockRejectedValue(dbError);
 
       await expect(
         taskService.updateTask('task_1', { name: 'Updated' })

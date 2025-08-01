@@ -187,7 +187,7 @@ describe('CubcenNotificationService', () => {
 
       await expect(service.sendEmail(emailNotification)).rejects.toThrow(
         'SMTP connection failed'
-      )
+      );
     })
   })
 
@@ -339,7 +339,7 @@ describe('CubcenNotificationService', () => {
       // No admin users exist, should not throw but log warning
       await expect(
         notificationService.escalate(notification.id)
-      ).resolves.not.toThrow()
+      ).resolves.not.toThrow();
     })
   })
 

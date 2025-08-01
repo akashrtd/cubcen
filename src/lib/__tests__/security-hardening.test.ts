@@ -250,7 +250,7 @@ describe('Security Hardening Tests', () => {
     it('should set HSTS header for HTTPS requests', async () => {
       // Mock HTTPS request
       app.use((req: Request, res: Response, next: NextFunction) => {
-        req.secure = true
+        Object.defineProperty(process.env, 'secure', { writable: true, value: true });
         next()
       })
 
@@ -698,7 +698,7 @@ describe('Security Hardening Tests', () => {
     it('should provide detailed errors in development', async () => {
       // Set development environment
       const originalEnv = process.env.NODE_ENV
-      process.env.NODE_ENV = 'development'
+      Object.defineProperty(process.env, 'NODE_ENV', { writable: true, value: 'development' }); as const
 
       const response = await request(app).get('/error').expect(500)
 

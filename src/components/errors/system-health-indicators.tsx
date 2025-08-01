@@ -295,7 +295,7 @@ export function SystemHealthIndicators({
                       {getTrendIcon(indicator.trend)}
                       <Badge
                         variant="outline"
-                        className={`${HEALTH_STATUS_COLORS[indicator.status]} text-xs`}
+                        className={`${HEALTH_STATUS_COLORS[indicator.status as keyof typeof HEALTH_STATUS_COLORS]} text-xs`}
                       >
                         {getStatusIcon(indicator.status)}
                       </Badge>
@@ -388,7 +388,7 @@ export function SystemHealthIndicators({
                   variant="outline"
                   className={`${HEALTH_STATUS_COLORS[overallStatus]} flex items-center gap-1`}
                 >
-                  {getStatusIcon(overallStatus)}
+                  {getStatusIcon(overallStatus as keyof typeof HEALTH_STATUS_ICONS)}
                   {overallStatus.charAt(0).toUpperCase() +
                     overallStatus.slice(1)}
                 </Badge>

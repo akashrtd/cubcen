@@ -329,7 +329,7 @@ describe('AgentService', () => {
           platformId: testPlatformId,
           platformType: 'n8n',
           status: 'active',
-          capabilities: ['email', 'automation'],
+          capabilities: ['test'],
           configuration: { emailProvider: 'smtp' },
           healthStatus: { status: 'healthy', lastCheck: new Date() },
           createdAt: new Date(),

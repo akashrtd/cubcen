@@ -1,7 +1,7 @@
 // Cubcen Authentication Service Tests
 // Comprehensive tests for authentication functionality
 
-import { AuthService } from '../auth'
+import { AuthService, authService } from "../auth"
 import { PrismaClient } from '@/generated/prisma'
 import { UserRole } from '@/types/auth'
 import { AuthenticationError } from '@/types/auth'
@@ -48,7 +48,7 @@ describe('AuthService', () => {
   let authService: AuthService
 
   beforeEach(() => {
-    authService = new AuthService(mockPrisma)
+    mockAuthService = authService as jest.Mocked<typeof authService>
     jest.clearAllMocks()
   })
 
@@ -320,10 +320,10 @@ describe('AuthService', () => {
       mockPrisma.user.findUnique = jest.fn().mockResolvedValue(mockUser)
       mockBcrypt.compare.mockResolvedValue(true)
       mockBcrypt.hash.mockResolvedValue('hashed-new-password')
-      mockPrisma.user.update = jest.fn().mockResolvedValue({
+      (mockPrisma.user.update as jest.Mock).mockResolvedValue({
         ...mockUser,
         password: 'hashed-new-password',
-      })
+      });
 
       await authService.changePassword(userId, currentPassword, newPassword)
 
@@ -485,9 +485,8 @@ describe('AuthService', () => {
     })
 
     it('should handle database errors during deletion', async () => {
-      mockPrisma.user.delete = jest
-        .fn()
-        .mockRejectedValue(new Error('Database error'))
+      (mockPrisma.user.delete as jest.Mock)
+        .mockRejectedValue(new Error('Database error'));
 
       await expect(authService.deleteUser(userId)).rejects.toThrow(
         new AuthenticationError('User deletion failed', 'DELETE_USER_ERROR')

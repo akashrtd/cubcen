@@ -756,7 +756,7 @@ export class WorkflowService extends EventEmitter {
           retryCount: 0,
         })),
         createdBy,
-      }
+      };
 
       // Store execution
       this.runningExecutions.set(executionId, execution)
@@ -1354,11 +1354,11 @@ export class WorkflowService extends EventEmitter {
     const reachable = new Set<string>()
 
     // Find steps with no dependencies (entry points)
-    const entryPoints = steps.filter(step =>
+    const entryPoints: WorkflowStepDefinition[] = steps.filter(step =>
       step.conditions.every(
         condition => !condition.dependsOn || condition.dependsOn.length === 0
       )
-    )
+    );
 
     // If no entry points, first step is reachable
     if (entryPoints.length === 0 && steps.length > 0) {

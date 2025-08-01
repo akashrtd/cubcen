@@ -345,10 +345,10 @@ describe('WorkflowService', () => {
       await workflowService.executeWorkflow('workflow-1', {}, 'user-1')
 
       // Try to update
-      ;(prisma.workflow.findUnique as jest.Mock).mockResolvedValue({
+      (prisma.workflow.findUnique as jest.Mock).mockResolvedValue({
         id: 'workflow-1',
         status: 'ACTIVE',
-      })
+      });
 
       await expect(
         workflowService.updateWorkflow('workflow-1', { name: 'Updated' })
@@ -1243,8 +1243,7 @@ describe('WorkflowService', () => {
         })
 
       // Mock first step to return data
-      mockAdapter.executeAgent = jest
-        .fn()
+      (mockAdapter.executeAgent as jest.Mock)
         .mockResolvedValueOnce({
           success: true,
           data: { result: 'first-step-output' },
@@ -1256,7 +1255,7 @@ describe('WorkflowService', () => {
           data: { result: 'second-step-output' },
           executionTime: 100,
           timestamp: new Date(),
-        })
+        });
 
       jest.spyOn(workflowService, 'getWorkflow').mockResolvedValue(workflow)
 

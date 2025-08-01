@@ -1,37 +1,13 @@
 // Cubcen WebSocket Service
 // Handles real-time communication using Socket.io for agent status, task updates, and alerts
 
-import { Server as SocketIOServer } from 'socket.io'
+import type { ServerToClientEvents, ClientToServerEvents, AgentStatusUpdate, TaskProgressEvent, AgentErrorEvent, CriticalAlertEvent, TaskErrorEvent, PlatformErrorEvent, SystemHealthEvent, WarningAlertEvent, InfoAlertEvent, ConnectionInfo, AuthResult, SocketData, InterServerEvents } from '@/types/websocket'
 import { Server as HTTPServer } from 'http'
 import { logger } from '@/lib/logger'
 import { verifyAccessToken } from '@/lib/jwt'
 import { AgentService } from '@/services/agent'
 import { TaskStatus } from '@/lib/database'
-import type {
-  ServerToClientEvents,
-  ClientToServerEvents,
-  InterServerEvents,
-  SocketData,
-  AuthResult,
-  ConnectionInfo,
-  AgentStatusUpdate,
-  AgentHealthUpdate,
-  AgentConnectedEvent,
-  AgentDisconnectedEvent,
-  TaskCreatedEvent,
-  TaskStartedEvent,
-  TaskProgressEvent,
-  TaskCompletedEvent,
-  TaskFailedEvent,
-  TaskCancelledEvent,
-  AgentErrorEvent,
-  TaskErrorEvent,
-  PlatformErrorEvent,
-  CriticalAlertEvent,
-  WarningAlertEvent,
-  InfoAlertEvent,
-  SystemHealthEvent,
-} from '@/types/websocket'
+import { Server as SocketIOServer } from 'socket.io'
 
 export class WebSocketService {
   private io: SocketIOServer<
@@ -494,17 +470,17 @@ export class WebSocketService {
     // Send system health updates every 30 seconds
     setInterval(() => {
       const healthData: SystemHealthEvent = {
-        timestamp: new Date(),
-        status: 'healthy', // This would be calculated based on actual system metrics
-        metrics: {
-          cpu: process.cpuUsage().user / 1000000, // Convert to percentage
-          memory: process.memoryUsage().heapUsed / 1024 / 1024, // Convert to MB
-          activeConnections: this.connections.size,
-          activeAgents: this.subscriptions.agents.size,
-          runningTasks: this.subscriptions.tasks.size,
-          errorRate: 0, // This would be calculated from actual error metrics
-        },
-      }
+      timestamp: new Date(),
+      status: 'healthy', // This would be calculated based on actual system metrics
+      metrics: {
+        cpu: process.cpuUsage().user / 1000000, // Convert to percentage
+        memory: process.memoryUsage().heapUsed / 1024 / 1024, // Convert to MB
+        activeConnections: this.connections.size,
+        activeAgents: this.subscriptions.agents.size,
+        runningTasks: this.subscriptions.tasks.size,
+        errorRate: 0, // This would be calculated from actual error metrics
+      },
+    };
 
       this.broadcastSystemHealth(healthData)
     }, 30000)
@@ -929,7 +905,7 @@ export class WebSocketService {
         message,
       },
       timestamp: new Date(),
-    }
+    };
 
     this.io.to(`task:${taskId}`).emit('task:progress', event)
     this.io.to('tasks:all').emit('task:progress', event)

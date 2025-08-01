@@ -159,7 +159,7 @@ export function useWebSocketAgents(
 
     // Connection error handling
     newSocket.on('connect_error', err => {
-      setError(`Connection failed: ${err.message}`)
+      setError(`Connection failed: ${(err as Error).message}`)
       setConnecting(false)
       setConnected(false)
 
@@ -187,7 +187,7 @@ export function useWebSocketAgents(
       }
     })
 
-    newSocket.on('disconnect', reason => {
+    newSocket.on('disconnect', (reason: string) => {
       setConnected(false)
       setConnecting(false)
 

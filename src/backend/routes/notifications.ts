@@ -3,7 +3,7 @@
 
 import express from 'express'
 import { z } from 'zod'
-import { authMiddleware } from '../middleware/auth'
+import { authenticate } from "../middleware/auth"
 import { validateRequest } from '../middleware/validation'
 import { notificationService } from '../../services/notification'
 import { notificationPreferencesService } from '../../services/notification-preferences'
@@ -92,13 +92,13 @@ router.get(
         req.query
 
       const options = {
-        status,
-        eventType,
-        priority,
-        limit,
-        offset,
-        startDate: startDate ? new Date(startDate) : undefined,
-        endDate: endDate ? new Date(endDate) : undefined,
+        status: status as NotificationStatus,
+        eventType: eventType as NotificationEventType,
+        priority: priority as NotificationPriority,
+        limit: limit as number,
+        offset: offset as number,
+        startDate: startDate ? new Date(startDate as string) : undefined,
+        endDate: endDate ? new Date(endDate as string) : undefined,
       }
 
       const notifications = await notificationService.getNotifications(
@@ -330,7 +330,7 @@ router.put(
 // Bulk update notification preferences
 router.put(
   '/preferences',
-  authMiddleware,
+  authenticate,
   validateRequest(bulkUpdatePreferencesSchema),
   async (req, res) => {
     try {
@@ -359,7 +359,7 @@ router.put(
 )
 
 // Get notification channels (admin only)
-router.get('/channels', authMiddleware, async (req, res) => {
+router.get('/channels', authenticate, async (req, res) => {
   try {
     if (req.user!.role !== 'ADMIN') {
       return res.status(403).json({
@@ -385,7 +385,7 @@ router.get('/channels', authMiddleware, async (req, res) => {
 })
 
 // Test notification endpoint (admin only)
-router.post('/test', authMiddleware, async (req, res) => {
+router.post('/test', authenticate, async (req, res) => {
   try {
     if (req.user!.role !== 'ADMIN') {
       return res.status(403).json({
@@ -394,7 +394,7 @@ router.post('/test', authMiddleware, async (req, res) => {
       })
     }
 
-    const { channel, message = 'Test notification from Cubcen' } = req.body
+    const { channel, message = 'Test notification from Cubcen' } = req.body;
 
     const notification = await notificationService.createNotification(
       NotificationEventType.SYSTEM_ERROR,

@@ -51,7 +51,7 @@ export class CubcenClient {
     })
 
     // Request interceptor for authentication
-    this.http.interceptors.request.use(config => {
+    this.http.interceptors.request.use((config: AxiosRequestConfig) => {
       if (this.accessToken) {
         config.headers.Authorization = `Bearer ${this.accessToken}`
       }
@@ -60,8 +60,8 @@ export class CubcenClient {
 
     // Response interceptor for error handling
     this.http.interceptors.response.use(
-      response => response,
-      async error => {
+      (response: AxiosResponse) => response,
+      async (error: any) => {
         if (error.code === 'ECONNABORTED') {
           throw new CubcenTimeoutError('Request timeout')
         }

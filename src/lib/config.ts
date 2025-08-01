@@ -119,11 +119,7 @@ const envSchema = z.object({
     .transform(Number)
     .pipe(z.number().min(1))
     .default('24'),
-  BACKUP_RETENTION_DAYS: z
-    .string()
-    .transform(Number)
-    .pipe(z.number().min(1))
-    .default('7'),
+  BACKUP_RETENTION_DAYS: z.coerce.number().min(1).default(7),
   BACKUP_PATH: z.string().default('./backups'),
 })
 
@@ -141,8 +137,8 @@ export interface FeatureFlags {
 // Configuration class
 class ConfigManager {
   private static instance: ConfigManager
-  private config: Config
-  private featureFlags: FeatureFlags
+  private config: Config = {} as Config;
+  private featureFlags: FeatureFlags = {} as FeatureFlags;
 
   private constructor() {
     this.validateAndLoadConfig()
@@ -174,7 +170,7 @@ class ConfigManager {
     } catch (error) {
       if (error instanceof z.ZodError) {
         const errorMessages =
-          error.errors
+          error.issues
             ?.map(err => `${err.path.join('.')}: ${err.message}`)
             .join('\n') || 'Unknown validation error'
         throw new Error(`Configuration validation failed:\n${errorMessages}`)

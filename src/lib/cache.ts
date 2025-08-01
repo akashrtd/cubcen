@@ -208,7 +208,7 @@ export function cached(ttl = 5 * 60 * 1000) {
       const cacheKey = `${target.constructor.name}.${propertyName}:${JSON.stringify(args)}`
 
       // Try to get from cache first
-      const cached = cache.get(cacheKey)
+      const cached = cache.get(cacheKey) as T; as T; as unknown;
       if (cached !== null) {
         return cached
       }

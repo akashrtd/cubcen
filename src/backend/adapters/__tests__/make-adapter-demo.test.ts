@@ -156,7 +156,7 @@ describe('Make.com Platform Adapter Demo', () => {
       const eventCallback = (event: unknown) => {
         receivedEvents.push(event)
         console.log(
-          `   📨 Event received: ${event.type} for agent ${event.agentId}`
+          `   Event received: ${event.type} for agent ${event.agentId}`
         )
       }
 

@@ -457,7 +457,7 @@ export class AuditLogger {
         resourceId: log.resource_id,
         action: log.action,
         description: log.description,
-        metadata: log.metadata ? JSON.parse(log.metadata) : undefined,
+        metadata: log.metadata ? JSON.parse(log.metadata as string) : undefined,
         ipAddress: log.ip_address,
         userAgent: log.user_agent,
         sessionId: log.session_id,

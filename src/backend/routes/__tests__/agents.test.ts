@@ -8,7 +8,7 @@ import { Express } from 'express'
 import { createTestApp } from '@/backend/__tests__/test-helpers'
 import { prisma } from '@/lib/database'
 import { resetDatabase } from '@/lib/database-utils'
-import { generateJWT } from '@/lib/jwt'
+import { createTokenPair } from '@/lib/jwt'
 
 describe('Agent Routes', () => {
   let app: Express
@@ -53,9 +53,9 @@ describe('Agent Routes', () => {
     testUserId = viewerUser.id
 
     // Generate auth tokens
-    authToken = generateJWT({ userId: viewerUser.id, role: 'VIEWER' })
-    operatorToken = generateJWT({ userId: operatorUser.id, role: 'OPERATOR' })
-    adminToken = generateJWT({ userId: adminUser.id, role: 'ADMIN' })
+    authToken = createTokenPair(viewerUser.id, viewerUser.email, viewerUser.role)
+    operatorToken = createTokenPair(operatorUser.id, operatorUser.email, operatorUser.role)
+    adminToken = createTokenPair(adminUser.id, adminUser.email, adminUser.role).accessToken
 
     // Create test platform
     const testPlatform = await prisma.platform.create({

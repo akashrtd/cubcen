@@ -36,9 +36,9 @@ class TestAdapter extends BasePlatformAdapter {
   async subscribeToEvents() {}
   async unsubscribeFromEvents() {}
 
-  async healthCheck() {
-    return { status: 'healthy' as const, lastCheck: new Date() }
-  }
+  async healthCheck(): Promise<HealthStatus> {
+          return { status: 'healthy' as const, lastCheck: new Date() };
+        }
 
   async connect() {
     this.setConnected(true)

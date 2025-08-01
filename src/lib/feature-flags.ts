@@ -119,7 +119,7 @@ export function requireFeature(feature: keyof FeatureFlags) {
  * Express middleware to check feature flags
  */
 export function requireFeatureMiddleware(feature: keyof FeatureFlags) {
-  return (req: unknown, res: unknown, next: unknown) => {
+  return (req: Request, res: Response, next: NextFunction) => {
     if (!featureFlags.isEnabled(feature)) {
       return res.status(404).json({
         error: {

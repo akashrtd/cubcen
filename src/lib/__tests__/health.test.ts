@@ -88,7 +88,7 @@ describe('Health Monitoring Service', () => {
 
     it('should return unhealthy status when database fails', async () => {
       const error = new Error('Database connection failed')
-      mockDatabase.user.findFirst.mockRejectedValue(error)
+          (mockPrisma.user.findUnique as jest.Mock).mockRejectedValue(new Error('Database error'));
 
       const result = await healthMonitoring.checkDatabase()
 

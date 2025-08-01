@@ -2,7 +2,8 @@
 // Tests for WebSocket integration with agent service and real-time updates
 
 import { createServer } from 'http'
-import { io as Client, Socket } from 'socket.io-client'
+import { io as Client } from 'socket.io-client'
+import type { Socket } from 'socket.io-client'
 import { WebSocketService, initializeWebSocketService } from '../websocket'
 import { AgentService } from '../agent'
 import { AdapterManager } from '@/backend/adapters/adapter-factory'
@@ -99,7 +100,7 @@ describe('WebSocket Integration', () => {
       transports: ['websocket'],
       forceNew: true,
       timeout: 5000,
-    })
+    });
 
     clientSocket.on('connect', () => {
       // Authenticate the socket

@@ -239,13 +239,13 @@ export class CubcenNotificationService implements NotificationService {
 
     const inAppNotification: InAppNotification = {
       id: `in_app_${notification.id}`,
-      userId: notification.userId,
+      userId: notification.userId!,
       title: notification.title,
       message: notification.message,
       type: this.getInAppTypeForPriority(notification.priority),
       read: false,
       createdAt: new Date(),
-    }
+    };
 
     await this.sendInApp(inAppNotification)
   }
@@ -613,9 +613,9 @@ export class CubcenNotificationService implements NotificationService {
 
     return {
       ...notification,
-      channels,
-      data,
-    }
+      channels: channels as NotificationChannelType[],
+      data: data as Record<string, unknown>,
+    };
   }
 }
 

@@ -6,7 +6,7 @@
 import request from 'supertest'
 import app from '@/server'
 import { prisma } from '@/lib/database'
-import { AuthService } from '@/services/auth'
+import { authService, type AuthService } from '@/services/auth'
 
 describe('Comprehensive API Tests', () => {
   let authService: AuthService
@@ -18,7 +18,7 @@ describe('Comprehensive API Tests', () => {
   let testTaskId: string
 
   beforeAll(async () => {
-    authService = new AuthService(prisma)
+    // authService = new AuthService(prisma) // No longer needed as we import the instance
 
     // Create test users with different roles
     const adminUser = await authService.register({
@@ -37,7 +37,7 @@ describe('Comprehensive API Tests', () => {
     })
     operatorToken = operatorUser.tokens.accessToken
 
-    const viewerUser = await authService.register({
+    const viewerUser = await authServiceInstance.register({
       email: 'viewer@test.com',
       password: 'password123',
       name: 'Viewer User',
@@ -159,6 +159,7 @@ describe('Comprehensive API Tests', () => {
           name: 'Test Platform',
           type: 'N8N',
           baseUrl: 'http://localhost:5678',
+          authConfig: {},
           status: 'CONNECTED',
         },
       })
@@ -171,8 +172,8 @@ describe('Comprehensive API Tests', () => {
           platformId: 'test-platform',
           externalId: 'ext-123',
           status: 'ACTIVE',
-          capabilities: ['test'],
-          configuration: {},
+          capabilities: '["test"]',
+          configuration: '{}',
         },
       })
       testAgentId = agent.id

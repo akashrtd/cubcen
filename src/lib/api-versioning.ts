@@ -219,23 +219,23 @@ export function addVersionInfoToSpec(
   spec.info.version = API_VERSIONS[CURRENT_VERSION].version
 
   // Add supported versions to info
-  spec.info['x-api-versions'] = Object.entries(API_VERSIONS).map(
+  (specs.info as Record<string, unknown>)['x-api-versions'] = Object.entries(API_VERSIONS).map(
     ([key, value]) => ({
       version: key,
       info: value,
     })
-  )
+  );
 
   // Add version-specific servers
-  spec.servers = (spec.servers as Array<Record<string, unknown>>).map(
+  (spec.servers as Array<Record<string, unknown>>) = (spec.servers as Array<Record<string, unknown>>).map(
     server => ({
       ...server,
-      url: server.url.replace(
+      url: (server.url as string).replace(
         '/api/cubcen/',
         `/api/cubcen/${CURRENT_VERSION}/`
       ),
     })
-  )
+  ); as unknown;
 
   return spec
 }

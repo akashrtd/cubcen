@@ -69,9 +69,10 @@ export class AnalyticsService {
           const completedTasks =
             taskStats.statusStats.find(s => s.status === 'COMPLETED')?._count
               .status || 0
-          const failedTasks =
+          const failedTasks = (
             taskStats.statusStats.find(s => s.status === 'FAILED')?._count
               .status || 0
+          ) as number;
 
           const successRate =
             totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0
@@ -457,14 +458,15 @@ export class AnalyticsService {
       const completedTasksWithTimes = agent.tasks.filter(
         t => t.status === 'COMPLETED' && t.startedAt && t.completedAt
       )
-      const averageResponseTime =
+      const averageResponseTime = (
         completedTasksWithTimes.length > 0
           ? completedTasksWithTimes.reduce((sum, task) => {
               const responseTime =
-                task.completedAt!.getTime() - task.startedAt!.getTime()
-              return sum + responseTime
+                task.completedAt!.getTime() - task.startedAt!.getTime();
+              return sum + responseTime;
             }, 0) / completedTasksWithTimes.length
           : 0
+      ) as number;
 
       return {
         agentId: agent.id,

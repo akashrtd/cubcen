@@ -67,7 +67,7 @@ describe('WebSocketService', () => {
       transports: ['websocket'],
       forceNew: true,
       timeout: 5000,
-    })
+    });
 
     clientSocket.on('connect', done)
   })
@@ -537,7 +537,7 @@ describe('WebSocketService', () => {
       const viewerClient = Client(serverAddress, {
         transports: ['websocket'],
         forceNew: true,
-      })
+      });
 
       viewerClient.on('connect', () => {
         viewerClient.emit('auth:authenticate', 'viewer-token', success => {

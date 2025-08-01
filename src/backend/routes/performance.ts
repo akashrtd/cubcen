@@ -13,13 +13,13 @@ import {
 } from '@/lib/database-performance'
 import { cache } from '@/lib/cache'
 import { Benchmark, LoadTester, PerformanceTestSuite } from '@/lib/benchmark'
-import { authMiddleware } from '@/backend/middleware/auth'
+import { authenticate } from '@/backend/middleware/auth'
 import { validateRequest } from '@/backend/middleware/validation'
 
 const router = Router()
 
 // Apply authentication to all performance routes
-router.use(authMiddleware)
+router.use(authenticate)
 
 // Validation schemas
 const benchmarkSchema = z.object({
@@ -141,7 +141,7 @@ router.get(
           : undefined
 
       const metrics = performanceMonitor.getMetrics(metric, timeRange)
-      const limitedMetrics = limit ? metrics.slice(-limit) : metrics
+      const limitedMetrics = limit ? metrics.slice(-parseInt(limit)) : metrics
 
       res.json({
         success: true,

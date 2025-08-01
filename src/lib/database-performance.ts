@@ -280,8 +280,8 @@ export class OptimizedQueries {
     return prisma.agent.findMany({
       where: {
         OR: [
-          { name: { contains: searchTerm, mode: 'insensitive' } },
-          { description: { contains: searchTerm, mode: 'insensitive' } },
+          { name: { contains: searchTerm } },
+          { description: { contains: searchTerm } },
         ],
       },
       take: limit,
