@@ -39,21 +39,7 @@ export const logger = winston.createLogger({
     }),
     winston.format.errors({ stack: true }),
     winston.format.json(),
-    winston.format.printf(({ timestamp, level, message, stack, ...meta }) => {
-      let log = `${timestamp} [${level.toUpperCase()}]: ${message}`
-      
-      // Add stack trace for errors
-      if (stack) {
-        log += `\n${stack}`
-      }
-      
-      // Add metadata if present
-      if (Object.keys(meta).length > 0) {
-        log += `\n${JSON.stringify(meta, null, 2)}`
-      }
-      
-      return log
-    })
+    winston.format.json()
   ),
   transports: [
     // Console transport for development

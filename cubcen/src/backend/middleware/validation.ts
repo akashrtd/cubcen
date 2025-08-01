@@ -304,43 +304,12 @@ export function sanitizeInput(req: Request, res: Response, next: NextFunction): 
     }
     
     // Sanitize query parameters (create new object to avoid read-only issues)
-    if (req.query && typeof req.query === 'object') {
-      try {
-        const sanitizedQuery = sanitizeObject(req.query) as Record<string, unknown>
-        // Only replace if we can modify it
-        Object.keys(req.query).forEach(key => {
-          try {
-            if (key in sanitizedQuery) {
-              (req.query as Record<string, unknown>)[key] = sanitizedQuery[key]
-            }
-          } catch {
-            // Skip if property is not writable
-          }
-        })
-      } catch {
-        // If query is not modifiable, skip sanitization
-        logger.debug('Query sanitization skipped - not modifiable', { path: req.path })
-      }
+    if (req.query) {
+      req.query = sanitizeObject(req.query) as typeof req.query;
     }
-    
-    // Sanitize params (create new object to avoid read-only issues)
-    if (req.params && typeof req.params === 'object') {
-      try {
-        const sanitizedParams = sanitizeObject(req.params) as Record<string, unknown>
-        // Only replace if we can modify it
-        Object.keys(req.params).forEach(key => {
-          try {
-            if (key in sanitizedParams) {
-              (req.params as Record<string, unknown>)[key] = sanitizedParams[key]
-            }
-          } catch {
-            // Skip if property is not writable
-          }
-        })
-      } catch {
-        // If params is not modifiable, skip sanitization
-        logger.debug('Params sanitization skipped - not modifiable', { path: req.path })
-      }
+
+    if (req.params) {
+      req.params = sanitizeObject(req.params) as typeof req.params;
     }
 
     next()

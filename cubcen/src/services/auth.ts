@@ -21,8 +21,9 @@ import {
   extractTokenFromHeader
 } from '@/lib/jwt'
 import { logger } from '@/lib/logger'
+import { prisma } from '@/lib/database'
 
-export class AuthService {
+class AuthService {
   private prisma: PrismaClient
 
   constructor(prisma: PrismaClient) {
@@ -382,3 +383,7 @@ export class AuthService {
     }
   }
 }
+
+const authService = new AuthService(prisma);
+
+export { authService };

@@ -2,7 +2,7 @@
 // Express routes for authentication endpoints
 
 import { Router, Request, Response } from 'express'
-import { AuthService } from '@/services/auth'
+import { authService } from '@/services/auth'
 import { prisma } from '@/lib/database'
 import { logger } from '@/lib/logger'
 import { 
@@ -22,7 +22,7 @@ import { idParamSchema } from '@/backend/middleware/validation'
 import { AuthenticationError } from '@/types/auth'
 
 const router = Router()
-const authService = new AuthService(prisma)
+
 
 /**
  * @swagger
