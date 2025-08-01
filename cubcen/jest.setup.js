@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom'
+import { TextEncoder, TextDecoder } from 'util'
 
 // Polyfill for setImmediate in test environment
 if (typeof setImmediate === 'undefined') {
@@ -6,6 +7,10 @@ if (typeof setImmediate === 'undefined') {
     return setTimeout(callback, 0, ...args)
   }
 }
+
+// Polyfills for Node.js test environment
+global.TextEncoder = TextEncoder
+global.TextDecoder = TextDecoder
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({

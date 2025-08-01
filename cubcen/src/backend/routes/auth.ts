@@ -25,8 +25,82 @@ const router = Router()
 const authService = new AuthService(prisma)
 
 /**
- * POST /api/auth/login
- * Authenticate user with email and password
+ * @swagger
+ * /api/cubcen/v1/auth/login:
+ *   post:
+ *     summary: Authenticate user
+ *     description: Authenticate user with email and password to obtain JWT tokens
+ *     tags: [Authentication]
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: User email address
+ *                 example: user@company.com
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 description: User password
+ *                 example: securePassword123
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     user:
+ *                       $ref: '#/components/schemas/User'
+ *                     tokens:
+ *                       type: object
+ *                       properties:
+ *                         accessToken:
+ *                           type: string
+ *                           description: JWT access token
+ *                         refreshToken:
+ *                           type: string
+ *                           description: JWT refresh token
+ *                         expiresIn:
+ *                           type: number
+ *                           description: Token expiration time in seconds
+ *                 message:
+ *                   type: string
+ *                   example: Login successful
+ *       401:
+ *         description: Authentication failed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       400:
+ *         description: Invalid request data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       429:
+ *         description: Too many login attempts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.post('/login', validateBody(loginSchema), async (req: Request, res: Response) => {
   try {
@@ -72,8 +146,84 @@ router.post('/login', validateBody(loginSchema), async (req: Request, res: Respo
 })
 
 /**
- * POST /api/auth/register
- * Register a new user account
+ * @swagger
+ * /api/cubcen/v1/auth/register:
+ *   post:
+ *     summary: Register new user
+ *     description: Register a new user account with email, password, and role
+ *     tags: [Authentication]
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *               - name
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: User email address
+ *                 example: newuser@company.com
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 minLength: 8
+ *                 description: User password (minimum 8 characters)
+ *                 example: securePassword123
+ *               name:
+ *                 type: string
+ *                 description: User full name
+ *                 example: John Doe
+ *               role:
+ *                 type: string
+ *                 enum: [admin, operator, viewer]
+ *                 description: User role (defaults to viewer)
+ *                 example: operator
+ *     responses:
+ *       201:
+ *         description: Registration successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     user:
+ *                       $ref: '#/components/schemas/User'
+ *                     tokens:
+ *                       type: object
+ *                       properties:
+ *                         accessToken:
+ *                           type: string
+ *                         refreshToken:
+ *                           type: string
+ *                         expiresIn:
+ *                           type: number
+ *                 message:
+ *                   type: string
+ *                   example: Registration successful
+ *       400:
+ *         description: Invalid request data or user already exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       429:
+ *         description: Too many registration attempts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.post('/register', validateBody(registerSchema), async (req: Request, res: Response) => {
   try {
@@ -167,8 +317,37 @@ router.post('/refresh', validateBody(refreshTokenSchema), async (req: Request, r
 })
 
 /**
- * GET /api/auth/me
- * Get current user information
+ * @swagger
+ * /api/cubcen/v1/auth/me:
+ *   get:
+ *     summary: Get current user
+ *     description: Get information about the currently authenticated user
+ *     tags: [Authentication]
+ *     responses:
+ *       200:
+ *         description: User information retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     user:
+ *                       $ref: '#/components/schemas/User'
+ *                 message:
+ *                   type: string
+ *                   example: User information retrieved successfully
+ *       401:
+ *         description: Unauthorized - invalid or missing token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.get('/me', authenticate, async (req: Request, res: Response) => {
   try {

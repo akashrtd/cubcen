@@ -1,0 +1,137 @@
+2025-08-01 12:39:44 [ERROR]: uncaughtException: Cannot read properties of undefined (reading 'ADMIN')
+TypeError: Cannot read properties of undefined (reading 'ADMIN')
+    at <anonymous> (/Users/akashrathod/cubcen/cubcen/src/lib/rbac.ts:61:13)
+    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/lib/rbac.ts:235:17)
+    at Module._compile (node:internal/modules/cjs/loader:1692:14)
+    at Object.transformer (/Users/akashrathod/cubcen/cubcen/node_modules/tsx/dist/register-D46fvsV_.cjs:3:1104)
+    at Module.load (node:internal/modules/cjs/loader:1427:32)
+    at Module._load (node:internal/modules/cjs/loader:1250:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1449:12)
+    at require (node:internal/modules/helpers:135:16)
+TypeError: Cannot read properties of undefined (reading 'ADMIN')
+    at <anonymous> (/Users/akashrathod/cubcen/cubcen/src/lib/rbac.ts:61:13)
+    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/lib/rbac.ts:235:17)
+    at Module._compile (node:internal/modules/cjs/loader:1692:14)
+    at Object.transformer (/Users/akashrathod/cubcen/cubcen/node_modules/tsx/dist/register-D46fvsV_.cjs:3:1104)
+    at Module.load (node:internal/modules/cjs/loader:1427:32)
+    at Module._load (node:internal/modules/cjs/loader:1250:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.require (node:internal/modules/cjs/loader:1449:12)
+    at require (node:internal/modules/helpers:135:16)
+{
+  "error": {},
+  "exception": true,
+  "date": "Fri Aug 01 2025 12:39:44 GMT+0530 (India Standard Time)",
+  "process": {
+    "pid": 27441,
+    "uid": 501,
+    "gid": 20,
+    "cwd": "/Users/akashrathod/cubcen/cubcen",
+    "execPath": "/opt/homebrew/Cellar/node/24.4.0/bin/node",
+    "version": "v24.4.0",
+    "argv": [
+      "/opt/homebrew/Cellar/node/24.4.0/bin/node",
+      "/Users/akashrathod/cubcen/cubcen/src/index.ts"
+    ],
+    "memoryUsage": {
+      "rss": 143966208,
+      "heapTotal": 33341440,
+      "heapUsed": 16948824,
+      "external": 3578590,
+      "arrayBuffers": 239025
+    }
+  },
+  "os": {
+    "loadavg": [
+      3.8232421875,
+      3.025390625,
+      2.6572265625
+    ],
+    "uptime": 160870
+  },
+  "trace": [
+    {
+      "column": 13,
+      "file": "/Users/akashrathod/cubcen/cubcen/src/lib/rbac.ts",
+      "function": "<anonymous>",
+      "line": 61,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 17,
+      "file": "/Users/akashrathod/cubcen/cubcen/src/lib/rbac.ts",
+      "function": null,
+      "line": 235,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module._compile",
+      "line": 1692,
+      "method": "_compile",
+      "native": false
+    },
+    {
+      "column": 1104,
+      "file": "/Users/akashrathod/cubcen/cubcen/node_modules/tsx/dist/register-D46fvsV_.cjs",
+      "function": "Object.transformer",
+      "line": 3,
+      "method": "transformer",
+      "native": false
+    },
+    {
+      "column": 32,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.load",
+      "line": 1427,
+      "method": "load",
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module._load",
+      "line": 1250,
+      "method": "_load",
+      "native": false
+    },
+    {
+      "column": 14,
+      "file": "node:diagnostics_channel",
+      "function": "TracingChannel.traceSync",
+      "line": 322,
+      "method": "traceSync",
+      "native": false
+    },
+    {
+      "column": 24,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "wrapModuleLoad",
+      "line": 235,
+      "method": null,
+      "native": false
+    },
+    {
+      "column": 12,
+      "file": "node:internal/modules/cjs/loader",
+      "function": "Module.require",
+      "line": 1449,
+      "method": "require",
+      "native": false
+    },
+    {
+      "column": 16,
+      "file": "node:internal/modules/helpers",
+      "function": "require",
+      "line": 135,
+      "method": null,
+      "native": false
+    }
+  ]
+}

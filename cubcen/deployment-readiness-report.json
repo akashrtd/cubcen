@@ -1,0 +1,303 @@
+{
+  "timestamp": "2025-08-01T06:30:37.086Z",
+  "overallStatus": "not-ready",
+  "overallScore": 63,
+  "categories": {
+    "Code Quality": {
+      "passed": 0,
+      "failed": 3,
+      "score": 0,
+      "critical_failures": 3,
+      "total": 3
+    },
+    "Testing": {
+      "passed": 0,
+      "failed": 3,
+      "score": 10,
+      "critical_failures": 2,
+      "total": 3
+    },
+    "Security": {
+      "passed": 1,
+      "failed": 2,
+      "score": 80,
+      "critical_failures": 2,
+      "total": 3
+    },
+    "Infrastructure": {
+      "passed": 1,
+      "failed": 2,
+      "score": 60,
+      "critical_failures": 2,
+      "total": 3
+    },
+    "Monitoring": {
+      "passed": 3,
+      "failed": 0,
+      "score": 100,
+      "critical_failures": 0,
+      "total": 3
+    },
+    "Documentation": {
+      "passed": 3,
+      "failed": 0,
+      "score": 100,
+      "critical_failures": 0,
+      "total": 3
+    },
+    "Performance": {
+      "passed": 2,
+      "failed": 0,
+      "score": 100,
+      "critical_failures": 0,
+      "total": 2
+    }
+  },
+  "results": [
+    {
+      "passed": false,
+      "message": "Linting errors found",
+      "score": 0,
+      "recommendations": [
+        "Fix linting errors: npm run lint --fix"
+      ],
+      "category": "Code Quality",
+      "name": "Linting and Formatting",
+      "critical": true
+    },
+    {
+      "passed": false,
+      "message": "TypeScript compilation errors",
+      "score": 0,
+      "recommendations": [
+        "Fix TypeScript errors before deployment"
+      ],
+      "category": "Code Quality",
+      "name": "Type Safety",
+      "critical": true
+    },
+    {
+      "passed": false,
+      "message": "Build process failed",
+      "score": 0,
+      "recommendations": [
+        "Fix build errors before deployment"
+      ],
+      "category": "Code Quality",
+      "name": "Build Process",
+      "critical": true
+    },
+    {
+      "passed": false,
+      "message": "Unit tests failed",
+      "score": 0,
+      "recommendations": [
+        "Fix failing unit tests before deployment"
+      ],
+      "category": "Testing",
+      "name": "Unit Tests",
+      "critical": true
+    },
+    {
+      "passed": false,
+      "message": "Integration tests failed",
+      "score": 0,
+      "recommendations": [
+        "Fix failing integration tests"
+      ],
+      "category": "Testing",
+      "name": "Integration Tests",
+      "critical": true
+    },
+    {
+      "passed": false,
+      "message": "E2E tests failed or not configured",
+      "score": 30,
+      "recommendations": [
+        "Fix E2E tests or create them if missing"
+      ],
+      "category": "Testing",
+      "name": "End-to-End Tests",
+      "critical": false
+    },
+    {
+      "passed": true,
+      "message": "No critical or high severity vulnerabilities",
+      "score": 100,
+      "category": "Security",
+      "name": "Dependency Vulnerabilities",
+      "critical": true
+    },
+    {
+      "passed": false,
+      "message": "1 security issues found",
+      "score": 80,
+      "details": {
+        "issues": [
+          "NODE_ENV not set to production"
+        ]
+      },
+      "recommendations": [
+        "Fix: NODE_ENV not set to production"
+      ],
+      "category": "Security",
+      "name": "Environment Configuration",
+      "critical": true
+    },
+    {
+      "passed": false,
+      "message": "2 auth security issues",
+      "score": 60,
+      "details": {
+        "authFiles": [
+          "src/lib/jwt.ts",
+          "src/services/auth.ts",
+          "src/backend/middleware/auth.ts"
+        ],
+        "issues": [
+          "src/lib/jwt.ts may not hash passwords",
+          "src/backend/middleware/auth.ts may not hash passwords"
+        ]
+      },
+      "recommendations": [
+        "Review: src/lib/jwt.ts may not hash passwords",
+        "Review: src/backend/middleware/auth.ts may not hash passwords"
+      ],
+      "category": "Security",
+      "name": "Authentication & Authorization",
+      "critical": true
+    },
+    {
+      "passed": true,
+      "message": "Docker configuration ready",
+      "score": 100,
+      "details": {
+        "issues": []
+      },
+      "recommendations": [],
+      "category": "Infrastructure",
+      "name": "Docker Configuration",
+      "critical": true
+    },
+    {
+      "passed": false,
+      "message": "1 database issues found",
+      "score": 70,
+      "details": {
+        "issues": [
+          "DATABASE_URL not configured"
+        ]
+      },
+      "recommendations": [
+        "Fix: DATABASE_URL not configured"
+      ],
+      "category": "Infrastructure",
+      "name": "Database Setup",
+      "critical": true
+    },
+    {
+      "passed": false,
+      "message": "3 required variables missing",
+      "score": 10,
+      "details": {
+        "missingVars": [
+          "NODE_ENV",
+          "DATABASE_URL",
+          "JWT_SECRET"
+        ]
+      },
+      "recommendations": [
+        "Set NODE_ENV environment variable",
+        "Set DATABASE_URL environment variable",
+        "Set JWT_SECRET environment variable"
+      ],
+      "category": "Infrastructure",
+      "name": "Environment Variables",
+      "critical": true
+    },
+    {
+      "passed": true,
+      "message": "Health check endpoints configured",
+      "score": 100,
+      "category": "Monitoring",
+      "name": "Health Checks",
+      "critical": true
+    },
+    {
+      "passed": true,
+      "message": "Logging system configured",
+      "score": 100,
+      "category": "Monitoring",
+      "name": "Logging Configuration",
+      "critical": false
+    },
+    {
+      "passed": true,
+      "message": "Error handling system configured",
+      "score": 100,
+      "category": "Monitoring",
+      "name": "Error Handling",
+      "critical": true
+    },
+    {
+      "passed": true,
+      "message": "API documentation available",
+      "score": 100,
+      "recommendations": [],
+      "category": "Documentation",
+      "name": "API Documentation",
+      "critical": false
+    },
+    {
+      "passed": true,
+      "message": "User documentation available",
+      "score": 100,
+      "recommendations": [],
+      "category": "Documentation",
+      "name": "User Documentation",
+      "critical": false
+    },
+    {
+      "passed": true,
+      "message": "Deployment documentation available",
+      "score": 100,
+      "recommendations": [],
+      "category": "Documentation",
+      "name": "Deployment Documentation",
+      "critical": true
+    },
+    {
+      "passed": true,
+      "message": "Performance tests available",
+      "score": 100,
+      "recommendations": [],
+      "category": "Performance",
+      "name": "Performance Tests",
+      "critical": false
+    },
+    {
+      "passed": true,
+      "message": "Resource monitoring configured",
+      "score": 100,
+      "recommendations": [],
+      "category": "Performance",
+      "name": "Resource Usage",
+      "critical": false
+    }
+  ],
+  "recommendations": [
+    "Fix linting errors: npm run lint --fix",
+    "Fix TypeScript errors before deployment",
+    "Fix build errors before deployment",
+    "Fix failing unit tests before deployment",
+    "Fix failing integration tests",
+    "Fix E2E tests or create them if missing",
+    "Fix: NODE_ENV not set to production",
+    "Review: src/lib/jwt.ts may not hash passwords",
+    "Review: src/backend/middleware/auth.ts may not hash passwords",
+    "Fix: DATABASE_URL not configured",
+    "Set NODE_ENV environment variable",
+    "Set DATABASE_URL environment variable",
+    "Set JWT_SECRET environment variable"
+  ]
+}

@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  cubcen:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=file:/app/data/cubcen.db
+      - JWT_SECRET=${JWT_SECRET:-your-super-secret-jwt-key-change-in-production-min-32-chars}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - BACKUP_ENABLED=${BACKUP_ENABLED:-true}
+    volumes:
+      - cubcen_data:/app/data
+      - cubcen_logs:/app/logs
+      - cubcen_backups:/app/backups
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/cubcen/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - cubcen_network
+
+  # Optional: PostgreSQL for production use
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=cubcen
+      - POSTGRES_USER=cubcen
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-cubcen_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - cubcen_network
+    profiles:
+      - postgres
+
+  # Optional: Redis for caching and queues
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - cubcen_network
+    profiles:
+      - redis
+
+  # Optional: Nginx reverse proxy
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - cubcen
+    restart: unless-stopped
+    networks:
+      - cubcen_network
+    profiles:
+      - nginx
+
+volumes:
+  cubcen_data:
+  cubcen_logs:
+  cubcen_backups:
+  postgres_data:
+  redis_data:
+
+networks:
+  cubcen_network:
+    driver: bridge

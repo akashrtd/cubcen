@@ -12,6 +12,8 @@ import { WorkflowService } from '@/services/workflow'
 import { AdapterManager } from '@/backend/adapters/adapter-factory'
 import { initializeTaskService } from '@/backend/routes/tasks'
 import { createWorkflowRoutes } from '@/backend/routes/workflows'
+import { scheduledBackupService } from '@/lib/backup'
+import config from '@/lib/config'
 
 const PORT = process.env.PORT || 3001
 
@@ -46,11 +48,22 @@ async function startServer() {
     // Initialize workflow routes
     app.use('/api/cubcen/v1/workflows', createWorkflowRoutes(workflowService))
     
+    // Initialize scheduled backup service
+    const backupConfig = config.getBackupConfig()
+    if (backupConfig.enabled) {
+      scheduledBackupService.start()
+      logger.info('Scheduled backup service started', {
+        intervalHours: backupConfig.intervalHours,
+        retentionDays: backupConfig.retentionDays
+      })
+    }
+    
     logger.info('Services initialized', {
       webSocket: true,
       agentService: true,
       taskService: true,
-      workflowService: true
+      workflowService: true,
+      scheduledBackup: backupConfig.enabled
     })
     
     // Start the server
@@ -66,6 +79,14 @@ async function startServer() {
     // Graceful shutdown
     const gracefulShutdown = async (signal: string) => {
       logger.info(`Received ${signal}, shutting down gracefully`)
+      
+      // Stop scheduled backup service
+      try {
+        scheduledBackupService.stop()
+        logger.info('Scheduled backup service stopped')
+      } catch (error) {
+        logger.error('Error stopping scheduled backup service', error as Error)
+      }
       
       // Cleanup workflow service first
       try {

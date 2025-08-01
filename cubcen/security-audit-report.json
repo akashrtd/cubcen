@@ -1,0 +1,176 @@
+{
+  "timestamp": "2025-08-01T06:50:38.369Z",
+  "overallStatus": "fail",
+  "summary": {
+    "total": 15,
+    "passed": 6,
+    "failed": 9,
+    "critical": 3,
+    "high": 3,
+    "medium": 3,
+    "low": 0
+  },
+  "results": [
+    {
+      "passed": false,
+      "message": "Found 2 configuration issues",
+      "details": {
+        "issues": [
+          ".env file is readable by group/others",
+          "NODE_ENV is 'undefined', should be 'production'"
+        ]
+      },
+      "recommendations": [
+        "Set .env file permissions to 600 (owner read/write only)",
+        "Set NODE_ENV=production in environment"
+      ],
+      "name": "Environment Configuration Security",
+      "severity": "critical"
+    },
+    {
+      "passed": false,
+      "message": "JWT_SECRET not configured",
+      "recommendations": [
+        "Set a strong JWT_SECRET in environment variables"
+      ],
+      "name": "JWT Secret Strength",
+      "severity": "critical"
+    },
+    {
+      "passed": false,
+      "message": "DATABASE_URL not configured",
+      "recommendations": [
+        "Configure DATABASE_URL in environment variables"
+      ],
+      "name": "Database Security Configuration",
+      "severity": "high"
+    },
+    {
+      "passed": false,
+      "message": "HTTPS security check failed: ",
+      "recommendations": [
+        "Ensure application is accessible for security testing"
+      ],
+      "name": "HTTPS and TLS Configuration",
+      "severity": "high"
+    },
+    {
+      "passed": false,
+      "message": "Security headers check failed: ",
+      "recommendations": [
+        "Ensure application is accessible for header testing"
+      ],
+      "name": "Security Headers",
+      "severity": "high"
+    },
+    {
+      "passed": false,
+      "message": "Authentication security check failed: ",
+      "recommendations": [
+        "Ensure authentication endpoints are accessible for testing"
+      ],
+      "name": "Authentication Security",
+      "severity": "critical"
+    },
+    {
+      "passed": true,
+      "message": "Input validation appears secure",
+      "details": {
+        "issues": []
+      },
+      "recommendations": [],
+      "name": "Input Validation Security",
+      "severity": "high"
+    },
+    {
+      "passed": false,
+      "message": "Rate limiting may not be implemented",
+      "details": {
+        "totalRequests": 20,
+        "rateLimitedCount": 0
+      },
+      "recommendations": [
+        "Implement rate limiting to prevent abuse"
+      ],
+      "name": "Rate Limiting",
+      "severity": "medium"
+    },
+    {
+      "passed": false,
+      "message": "Found 1 file permission issues",
+      "details": {
+        "issues": [
+          ".env is readable by group/others"
+        ]
+      },
+      "recommendations": [
+        "Set .env permissions to 600"
+      ],
+      "name": "File Permissions",
+      "severity": "medium"
+    },
+    {
+      "passed": true,
+      "message": "No dependency vulnerabilities found",
+      "details": {
+        "vulnerabilityCount": 0,
+        "issues": []
+      },
+      "recommendations": [],
+      "name": "Dependency Vulnerabilities",
+      "severity": "high"
+    },
+    {
+      "passed": false,
+      "message": "Found 1 Docker security issues",
+      "details": {
+        "issues": [
+          "Docker COPY commands should use --chown for security"
+        ]
+      },
+      "recommendations": [
+        "Use COPY --chown=user:group syntax"
+      ],
+      "name": "Docker Security",
+      "severity": "medium"
+    },
+    {
+      "passed": true,
+      "message": "Logging security is acceptable",
+      "details": {
+        "issues": []
+      },
+      "recommendations": [],
+      "name": "Logging Security",
+      "severity": "medium"
+    },
+    {
+      "passed": true,
+      "message": "API security check could not be completed",
+      "details": {
+        "error": ""
+      },
+      "name": "API Security",
+      "severity": "high"
+    },
+    {
+      "passed": true,
+      "message": "Session security check could not be completed",
+      "details": {
+        "error": ""
+      },
+      "name": "Session Security",
+      "severity": "high"
+    },
+    {
+      "passed": true,
+      "message": "No information disclosure vulnerabilities found",
+      "details": {
+        "issues": []
+      },
+      "recommendations": [],
+      "name": "Information Disclosure",
+      "severity": "medium"
+    }
+  ]
+}

@@ -58,8 +58,103 @@ const healthConfigSchema = z.object({
 })
 
 /**
- * GET /api/cubcen/v1/agents
- * Get all agents with filtering and pagination
+ * @swagger
+ * /api/cubcen/v1/agents:
+ *   get:
+ *     summary: Get all agents
+ *     description: Retrieve all agents with optional filtering, sorting, and pagination
+ *     tags: [Agents]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 20
+ *         description: Number of items per page
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [name, createdAt, updatedAt, status]
+ *           default: createdAt
+ *         description: Field to sort by
+ *       - in: query
+ *         name: sortOrder
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *         description: Sort order
+ *       - in: query
+ *         name: platformType
+ *         schema:
+ *           type: string
+ *           enum: [N8N, MAKE, ZAPIER]
+ *         description: Filter by platform type
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [ACTIVE, INACTIVE, ERROR, MAINTENANCE]
+ *         description: Filter by agent status
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search agents by name or description
+ *     responses:
+ *       200:
+ *         description: Agents retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     agents:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Agent'
+ *                     pagination:
+ *                       type: object
+ *                       properties:
+ *                         page:
+ *                           type: integer
+ *                         limit:
+ *                           type: integer
+ *                         total:
+ *                           type: integer
+ *                         totalPages:
+ *                           type: integer
+ *                 message:
+ *                   type: string
+ *                   example: Agents retrieved successfully
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       400:
+ *         description: Invalid query parameters
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.get('/', authenticate, requireAuth, validateQuery(agentQuerySchema), async (req: Request, res: Response) => {
   try {

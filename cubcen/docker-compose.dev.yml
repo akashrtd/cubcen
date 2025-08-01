@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  cubcen-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+      - "3001:3001"  # For development server
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=file:/app/data/dev.db
+      - JWT_SECRET=development-jwt-secret-key-not-for-production
+      - LOG_LEVEL=debug
+      - ENABLE_ANALYTICS=true
+      - ENABLE_KANBAN_BOARD=true
+      - ENABLE_WORKFLOW_ORCHESTRATION=false
+      - ENABLE_ADVANCED_AUTH=false
+      - ENABLE_NOTIFICATIONS=true
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - cubcen_dev_data:/app/data
+      - cubcen_dev_logs:/app/logs
+      - cubcen_dev_backups:/app/backups
+    restart: unless-stopped
+    networks:
+      - cubcen_dev_network
+    command: npm run dev
+
+  # Development database (PostgreSQL)
+  postgres-dev:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=cubcen_dev
+      - POSTGRES_USER=cubcen_dev
+      - POSTGRES_PASSWORD=cubcen_dev_password
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    restart: unless-stopped
+    networks:
+      - cubcen_dev_network
+
+  # Development Redis
+  redis-dev:
+    image: redis:7-alpine
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_dev_data:/data
+    restart: unless-stopped
+    networks:
+      - cubcen_dev_network
+
+volumes:
+  cubcen_dev_data:
+  cubcen_dev_logs:
+  cubcen_dev_backups:
+  postgres_dev_data:
+  redis_dev_data:
+
+networks:
+  cubcen_dev_network:
+    driver: bridge

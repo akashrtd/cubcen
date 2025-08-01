@@ -1,81 +1,81 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.initializeTaskService = initializeTaskService;
 const express_1 = require("express");
 const logger_1 = require("@/lib/logger");
+const task_1 = require("@/services/task");
 const auth_1 = require("@/backend/middleware/auth");
 const validation_1 = require("@/backend/middleware/validation");
 const zod_1 = require("zod");
 const router = (0, express_1.Router)();
+let taskService;
+function initializeTaskService(adapterManager, webSocketService) {
+    taskService = new task_1.TaskService(adapterManager, webSocketService);
+}
 const createTaskSchema = zod_1.z.object({
     agentId: zod_1.z.string().min(1, 'Agent ID is required'),
     workflowId: zod_1.z.string().optional(),
-    priority: zod_1.z.enum(['low', 'medium', 'high', 'critical']).default('medium'),
+    name: zod_1.z.string().min(1, 'Task name is required').max(200),
+    description: zod_1.z.string().optional(),
+    priority: zod_1.z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']).default('MEDIUM'),
     scheduledAt: zod_1.z.string().datetime().optional(),
-    parameters: zod_1.z.record(zod_1.z.string(), zod_1.z.unknown()).default({})
+    parameters: zod_1.z.record(zod_1.z.string(), zod_1.z.unknown()).default({}),
+    maxRetries: zod_1.z.number().min(0).max(10).default(3),
+    timeoutMs: zod_1.z.number().min(1000).max(300000).default(30000)
 });
 const updateTaskSchema = zod_1.z.object({
-    priority: zod_1.z.enum(['low', 'medium', 'high', 'critical']).optional(),
+    name: zod_1.z.string().min(1).max(200).optional(),
+    description: zod_1.z.string().optional(),
+    priority: zod_1.z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']).optional(),
     scheduledAt: zod_1.z.string().datetime().optional(),
     parameters: zod_1.z.record(zod_1.z.string(), zod_1.z.unknown()).optional(),
-    status: zod_1.z.enum(['pending', 'running', 'completed', 'failed', 'cancelled']).optional()
+    maxRetries: zod_1.z.number().min(0).max(10).optional(),
+    timeoutMs: zod_1.z.number().min(1000).max(300000).optional()
 });
 const taskQuerySchema = validation_1.paginationQuerySchema.extend({
     agentId: zod_1.z.string().optional(),
     workflowId: zod_1.z.string().optional(),
-    status: zod_1.z.enum(['pending', 'running', 'completed', 'failed', 'cancelled']).optional(),
-    priority: zod_1.z.enum(['low', 'medium', 'high', 'critical']).optional(),
+    status: zod_1.z.enum(['PENDING', 'RUNNING', 'COMPLETED', 'FAILED', 'CANCELLED']).optional(),
+    priority: zod_1.z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']).optional(),
     dateFrom: zod_1.z.string().datetime().optional(),
-    dateTo: zod_1.z.string().datetime().optional()
+    dateTo: zod_1.z.string().datetime().optional(),
+    search: zod_1.z.string().optional(),
+    createdBy: zod_1.z.string().optional()
 });
 router.get('/', auth_1.authenticate, auth_1.requireAuth, (0, validation_1.validateQuery)(taskQuerySchema), async (req, res) => {
     try {
-        const { page, limit, sortBy, sortOrder, agentId, workflowId, status, priority, dateFrom, dateTo } = req.query;
+        if (!taskService) {
+            throw new Error('Task service not initialized');
+        }
+        const { page = '1', limit = '10', sortBy = 'createdAt', sortOrder = 'desc', agentId, workflowId, status, priority, dateFrom, dateTo, search, createdBy } = req.query;
         logger_1.logger.info('Get tasks request', {
             userId: req.user.id,
-            filters: { agentId, workflowId, status, priority, dateFrom, dateTo },
+            filters: { agentId, workflowId, status, priority, dateFrom, dateTo, search, createdBy },
             pagination: { page, limit, sortBy, sortOrder }
         });
-        const mockTasks = [
-            {
-                id: 'task_1',
-                agentId: 'agent_1',
-                workflowId: 'workflow_1',
-                status: 'completed',
-                priority: 'medium',
-                scheduledAt: new Date(),
-                startedAt: new Date(),
-                completedAt: new Date(),
-                parameters: { email: '[email]' },
-                result: { success: true, message: 'Email sent successfully' },
-                error: null,
-                createdAt: new Date(),
-                updatedAt: new Date()
-            },
-            {
-                id: 'task_2',
-                agentId: 'agent_1',
-                workflowId: null,
-                status: 'running',
-                priority: 'high',
-                scheduledAt: new Date(),
-                startedAt: new Date(),
-                completedAt: null,
-                parameters: { data: 'processing' },
-                result: null,
-                error: null,
-                createdAt: new Date(),
-                updatedAt: new Date()
-            }
-        ];
+        const result = await taskService.getTasks({
+            page: Number(page),
+            limit: Number(limit),
+            sortBy: sortBy,
+            sortOrder: sortOrder,
+            agentId: agentId,
+            workflowId: workflowId,
+            status: status,
+            priority: priority,
+            dateFrom: dateFrom ? new Date(dateFrom) : undefined,
+            dateTo: dateTo ? new Date(dateTo) : undefined,
+            search: search,
+            createdBy: createdBy
+        });
         res.status(200).json({
             success: true,
             data: {
-                tasks: mockTasks,
+                tasks: result.tasks,
                 pagination: {
-                    page: Number(page),
-                    limit: Number(limit),
-                    total: mockTasks.length,
-                    totalPages: Math.ceil(mockTasks.length / Number(limit))
+                    page: result.page,
+                    limit: result.limit,
+                    total: result.total,
+                    totalPages: result.totalPages
                 }
             },
             message: 'Tasks retrieved successfully'
@@ -94,49 +94,27 @@ router.get('/', auth_1.authenticate, auth_1.requireAuth, (0, validation_1.valida
 });
 router.get('/:id', auth_1.authenticate, auth_1.requireAuth, (0, validation_1.validateParams)(validation_1.idParamSchema), async (req, res) => {
     try {
+        if (!taskService) {
+            throw new Error('Task service not initialized');
+        }
         const { id } = req.params;
         logger_1.logger.info('Get task by ID request', {
             userId: req.user.id,
             taskId: id
         });
-        const mockTask = {
-            id,
-            agentId: 'agent_1',
-            workflowId: 'workflow_1',
-            status: 'completed',
-            priority: 'medium',
-            scheduledAt: new Date(),
-            startedAt: new Date(),
-            completedAt: new Date(),
-            parameters: { email: '[email]' },
-            result: { success: true, message: 'Email sent successfully' },
-            error: null,
-            executionLogs: [
-                {
-                    timestamp: new Date(),
-                    level: 'info',
-                    message: 'Task started',
-                    context: {}
-                },
-                {
-                    timestamp: new Date(),
-                    level: 'info',
-                    message: 'Processing email',
-                    context: { recipient: '[email]' }
-                },
-                {
-                    timestamp: new Date(),
-                    level: 'info',
-                    message: 'Task completed successfully',
-                    context: { duration: 1500 }
+        const task = await taskService.getTask(id);
+        if (!task) {
+            return res.status(404).json({
+                success: false,
+                error: {
+                    code: 'TASK_NOT_FOUND',
+                    message: 'Task not found'
                 }
-            ],
-            createdAt: new Date(),
-            updatedAt: new Date()
-        };
+            });
+        }
         res.status(200).json({
             success: true,
-            data: { task: mockTask },
+            data: { task },
             message: 'Task retrieved successfully'
         });
     }
@@ -156,46 +134,47 @@ router.get('/:id', auth_1.authenticate, auth_1.requireAuth, (0, validation_1.val
 });
 router.post('/', auth_1.authenticate, auth_1.requireOperator, (0, validation_1.validateBody)(createTaskSchema), async (req, res) => {
     try {
+        if (!taskService) {
+            throw new Error('Task service not initialized');
+        }
         const taskData = req.body;
         logger_1.logger.info('Create task request', {
             userId: req.user.id,
             taskData: { ...taskData, parameters: '[REDACTED]' }
         });
-        const mockTask = {
-            id: `task_${Date.now()}`,
+        const task = await taskService.createTask({
             ...taskData,
-            status: 'pending',
-            scheduledAt: taskData.scheduledAt ? new Date(taskData.scheduledAt) : new Date(),
-            startedAt: null,
-            completedAt: null,
-            result: null,
-            error: null,
-            createdAt: new Date(),
-            updatedAt: new Date()
-        };
+            scheduledAt: taskData.scheduledAt ? new Date(taskData.scheduledAt) : undefined,
+            createdBy: req.user.id
+        });
         logger_1.logger.info('Task created successfully', {
             userId: req.user.id,
-            taskId: mockTask.id
+            taskId: task.id
         });
         res.status(201).json({
             success: true,
-            data: { task: mockTask },
+            data: { task },
             message: 'Task created successfully'
         });
     }
     catch (error) {
         logger_1.logger.error('Create task failed', error, { userId: req.user?.id });
-        res.status(500).json({
+        const statusCode = error.message.includes('not found') ||
+            error.message.includes('not active') ? 400 : 500;
+        res.status(statusCode).json({
             success: false,
             error: {
-                code: 'INTERNAL_ERROR',
-                message: 'Failed to create task'
+                code: statusCode === 400 ? 'VALIDATION_ERROR' : 'INTERNAL_ERROR',
+                message: error.message
             }
         });
     }
 });
 router.put('/:id', auth_1.authenticate, auth_1.requireOperator, (0, validation_1.validateParams)(validation_1.idParamSchema), (0, validation_1.validateBody)(updateTaskSchema), async (req, res) => {
     try {
+        if (!taskService) {
+            throw new Error('Task service not initialized');
+        }
         const { id } = req.params;
         const updateData = req.body;
         logger_1.logger.info('Update task request', {
@@ -203,28 +182,17 @@ router.put('/:id', auth_1.authenticate, auth_1.requireOperator, (0, validation_1
             taskId: id,
             updateData: { ...updateData, parameters: updateData.parameters ? '[REDACTED]' : undefined }
         });
-        const mockTask = {
-            id,
-            agentId: 'agent_1',
-            workflowId: 'workflow_1',
-            status: updateData.status || 'pending',
-            priority: updateData.priority || 'medium',
-            scheduledAt: updateData.scheduledAt ? new Date(updateData.scheduledAt) : new Date(),
-            startedAt: null,
-            completedAt: null,
-            parameters: updateData.parameters || { email: '[email]' },
-            result: null,
-            error: null,
-            createdAt: new Date('2024-01-01'),
-            updatedAt: new Date()
-        };
+        const task = await taskService.updateTask(id, {
+            ...updateData,
+            scheduledAt: updateData.scheduledAt ? new Date(updateData.scheduledAt) : undefined
+        });
         logger_1.logger.info('Task updated successfully', {
             userId: req.user.id,
             taskId: id
         });
         res.status(200).json({
             success: true,
-            data: { task: mockTask },
+            data: { task },
             message: 'Task updated successfully'
         });
     }
@@ -233,22 +201,28 @@ router.put('/:id', auth_1.authenticate, auth_1.requireOperator, (0, validation_1
             userId: req.user?.id,
             taskId: req.params.id
         });
-        res.status(500).json({
+        const statusCode = error.message.includes('not found') ||
+            error.message.includes('Cannot update') ? 400 : 500;
+        res.status(statusCode).json({
             success: false,
             error: {
-                code: 'INTERNAL_ERROR',
-                message: 'Failed to update task'
+                code: statusCode === 400 ? 'VALIDATION_ERROR' : 'INTERNAL_ERROR',
+                message: error.message
             }
         });
     }
 });
 router.delete('/:id', auth_1.authenticate, auth_1.requireAdmin, (0, validation_1.validateParams)(validation_1.idParamSchema), async (req, res) => {
     try {
+        if (!taskService) {
+            throw new Error('Task service not initialized');
+        }
         const { id } = req.params;
         logger_1.logger.info('Delete task request', {
             userId: req.user.id,
             taskId: id
         });
+        await taskService.deleteTask(id);
         logger_1.logger.info('Task deleted successfully', {
             userId: req.user.id,
             taskId: id
@@ -274,11 +248,15 @@ router.delete('/:id', auth_1.authenticate, auth_1.requireAdmin, (0, validation_1
 });
 router.post('/:id/cancel', auth_1.authenticate, auth_1.requireOperator, (0, validation_1.validateParams)(validation_1.idParamSchema), async (req, res) => {
     try {
+        if (!taskService) {
+            throw new Error('Task service not initialized');
+        }
         const { id } = req.params;
         logger_1.logger.info('Cancel task request', {
             userId: req.user.id,
             taskId: id
         });
+        await taskService.cancelTask(id);
         logger_1.logger.info('Task cancellation initiated', {
             userId: req.user.id,
             taskId: id
@@ -304,11 +282,15 @@ router.post('/:id/cancel', auth_1.authenticate, auth_1.requireOperator, (0, vali
 });
 router.post('/:id/retry', auth_1.authenticate, auth_1.requireOperator, (0, validation_1.validateParams)(validation_1.idParamSchema), async (req, res) => {
     try {
+        if (!taskService) {
+            throw new Error('Task service not initialized');
+        }
         const { id } = req.params;
         logger_1.logger.info('Retry task request', {
             userId: req.user.id,
             taskId: id
         });
+        await taskService.retryTask(id);
         logger_1.logger.info('Task retry initiated', {
             userId: req.user.id,
             taskId: id
@@ -323,11 +305,73 @@ router.post('/:id/retry', auth_1.authenticate, auth_1.requireOperator, (0, valid
             userId: req.user?.id,
             taskId: req.params.id
         });
+        const statusCode = error.message.includes('not found') ||
+            error.message.includes('not in failed state') ? 400 : 500;
+        res.status(statusCode).json({
+            success: false,
+            error: {
+                code: statusCode === 400 ? 'VALIDATION_ERROR' : 'INTERNAL_ERROR',
+                message: error.message
+            }
+        });
+    }
+});
+router.get('/queue/status', auth_1.authenticate, auth_1.requireAuth, async (req, res) => {
+    try {
+        if (!taskService) {
+            throw new Error('Task service not initialized');
+        }
+        logger_1.logger.info('Get queue status request', {
+            userId: req.user.id
+        });
+        const queueStatus = taskService.getQueueStatus();
+        res.status(200).json({
+            success: true,
+            data: { queueStatus },
+            message: 'Queue status retrieved successfully'
+        });
+    }
+    catch (error) {
+        logger_1.logger.error('Get queue status failed', error, {
+            userId: req.user?.id
+        });
         res.status(500).json({
             success: false,
             error: {
                 code: 'INTERNAL_ERROR',
-                message: 'Failed to retry task'
+                message: 'Failed to retrieve queue status'
+            }
+        });
+    }
+});
+router.post('/queue/configure', auth_1.authenticate, auth_1.requireAdmin, async (req, res) => {
+    try {
+        if (!taskService) {
+            throw new Error('Task service not initialized');
+        }
+        const { maxConcurrentTasks, queueProcessingInterval } = req.body;
+        logger_1.logger.info('Configure task execution request', {
+            userId: req.user.id,
+            config: { maxConcurrentTasks, queueProcessingInterval }
+        });
+        taskService.configureExecution({
+            maxConcurrentTasks,
+            queueProcessingInterval
+        });
+        res.status(200).json({
+            success: true,
+            message: 'Task execution configuration updated successfully'
+        });
+    }
+    catch (error) {
+        logger_1.logger.error('Configure task execution failed', error, {
+            userId: req.user?.id
+        });
+        res.status(500).json({
+            success: false,
+            error: {
+                code: 'INTERNAL_ERROR',
+                message: 'Failed to configure task execution'
             }
         });
     }

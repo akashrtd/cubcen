@@ -1,47 +1,201 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { CheckSquare, Plus } from 'lucide-react'
+'use client'
+
+import React, { useState } from 'react'
+import { TaskBoard } from '@/components/kanban/task-board'
+import { Task } from '@/lib/database'
+import { toast } from 'sonner'
+
+// Mock data for development - in real app this would come from API
+const mockTasks: Task[] = [
+  {
+    id: '1',
+    name: 'Process Customer Data',
+    description: 'Extract and process customer information from CRM',
+    agentId: 'agent-1',
+    workflowId: null,
+    status: 'PENDING',
+    priority: 'HIGH',
+    parameters: '{"source": "crm", "limit": 100}',
+    scheduledAt: new Date(),
+    startedAt: null,
+    completedAt: null,
+    result: null,
+    error: null,
+    retryCount: 0,
+    maxRetries: 3,
+    createdBy: 'user-1',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: '2',
+    name: 'Generate Weekly Report',
+    description: 'Create automated weekly performance report',
+    agentId: 'agent-2',
+    workflowId: null,
+    status: 'RUNNING',
+    priority: 'MEDIUM',
+    parameters: '{"period": "weekly", "format": "pdf"}',
+    scheduledAt: new Date(Date.now() - 300000), // 5 minutes ago
+    startedAt: new Date(Date.now() - 120000), // 2 minutes ago
+    completedAt: null,
+    result: null,
+    error: null,
+    retryCount: 0,
+    maxRetries: 3,
+    createdBy: 'user-1',
+    createdAt: new Date(Date.now() - 300000),
+    updatedAt: new Date(Date.now() - 120000),
+  },
+  {
+    id: '3',
+    name: 'Send Email Notifications',
+    description: 'Send automated email notifications to customers',
+    agentId: 'agent-1',
+    workflowId: null,
+    status: 'COMPLETED',
+    priority: 'LOW',
+    parameters: '{"template": "welcome", "recipients": 50}',
+    scheduledAt: new Date(Date.now() - 3600000), // 1 hour ago
+    startedAt: new Date(Date.now() - 3600000),
+    completedAt: new Date(Date.now() - 3300000), // 55 minutes ago
+    result: '{"sent": 50, "failed": 0, "duration": 45}',
+    error: null,
+    retryCount: 0,
+    maxRetries: 3,
+    createdBy: 'user-1',
+    createdAt: new Date(Date.now() - 3600000),
+    updatedAt: new Date(Date.now() - 3300000),
+  },
+  {
+    id: '4',
+    name: 'Data Backup Process',
+    description: 'Backup critical database information',
+    agentId: 'agent-3',
+    workflowId: null,
+    status: 'FAILED',
+    priority: 'CRITICAL',
+    parameters: '{"database": "production", "compression": true}',
+    scheduledAt: new Date(Date.now() - 7200000), // 2 hours ago
+    startedAt: new Date(Date.now() - 7200000),
+    completedAt: new Date(Date.now() - 6900000), // 1h 55m ago
+    result: null,
+    error: '{"message": "Database connection timeout", "code": "DB_TIMEOUT", "timestamp": "2024-01-15T10:30:00Z"}',
+    retryCount: 2,
+    maxRetries: 3,
+    createdBy: 'user-1',
+    createdAt: new Date(Date.now() - 7200000),
+    updatedAt: new Date(Date.now() - 6900000),
+  },
+]
+
+const mockAgents = [
+  { id: 'agent-1', name: 'Email Automation Agent', platformId: 'n8n' },
+  { id: 'agent-2', name: 'Report Generator', platformId: 'make' },
+  { id: 'agent-3', name: 'Database Manager', platformId: 'n8n' },
+  { id: 'agent-4', name: 'Data Processor', platformId: 'make' },
+]
 
 export default function TasksPage() {
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Tasks</h1>
-          <p className="text-muted-foreground">
-            Manage and track task execution across all your agents.
-          </p>
-        </div>
-        <Button className="bg-cubcen-primary hover:bg-cubcen-primary-hover">
-          <Plus className="mr-2 h-4 w-4" />
-          Create Task
-        </Button>
-      </div>
+  const [tasks, setTasks] = useState<Task[]>(mockTasks)
+  const [isLoading, setIsLoading] = useState(false)
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <CheckSquare className="mr-2 h-5 w-5" />
-            Task Management
-          </CardTitle>
-          <CardDescription>
-            This page will contain the kanban board for task visualization as implemented in task 15.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-12">
-            <CheckSquare className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-medium mb-2">Coming Soon</h3>
-            <p className="text-muted-foreground">
-              Kanban board for task management will be implemented in the next task.
-            </p>
-            <Badge variant="secondary" className="mt-4 bg-cubcen-secondary text-white">
-              Task 15
-            </Badge>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+  const handleTaskUpdate = async (taskId: string, updates: Partial<Task>) => {
+    try {
+      setIsLoading(true)
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 500))
+      
+      setTasks(prevTasks =>
+        prevTasks.map(task =>
+          task.id === taskId
+            ? { ...task, ...updates, updatedAt: new Date() }
+            : task
+        )
+      )
+      
+      toast.success('Task updated successfully')
+    } catch (error) {
+      toast.error('Failed to update task')
+      throw error
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleTaskCreate = async (taskData: {
+    name: string
+    description?: string
+    agentId: string
+    priority: TaskPriority
+    scheduledAt: Date
+    maxRetries: number
+    parameters: Record<string, unknown>
+    createdBy: string
+  }) => {
+    try {
+      setIsLoading(true)
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      const newTask: Task = {
+        id: `task-${Date.now()}`,
+        name: taskData.name,
+        description: taskData.description,
+        agentId: taskData.agentId,
+        workflowId: null,
+        status: 'PENDING',
+        priority: taskData.priority,
+        parameters: JSON.stringify(taskData.parameters),
+        scheduledAt: taskData.scheduledAt,
+        startedAt: null,
+        completedAt: null,
+        result: null,
+        error: null,
+        retryCount: 0,
+        maxRetries: taskData.maxRetries,
+        createdBy: taskData.createdBy,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+      
+      setTasks(prevTasks => [newTask, ...prevTasks])
+      toast.success('Task created successfully')
+    } catch (error) {
+      toast.error('Failed to create task')
+      throw error
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleTaskDelete = async (taskId: string) => {
+    try {
+      setIsLoading(true)
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 500))
+      
+      setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId))
+      toast.success('Task deleted successfully')
+    } catch (error) {
+      toast.error('Failed to delete task')
+      throw error
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <TaskBoard
+      tasks={tasks}
+      onTaskUpdate={handleTaskUpdate}
+      onTaskCreate={handleTaskCreate}
+      onTaskDelete={handleTaskDelete}
+      agents={mockAgents}
+      isLoading={isLoading}
+    />
   )
 }

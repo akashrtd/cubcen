@@ -2740,3 +2740,1054 @@ Error: Service down
     at /Users/akashrathod/cubcen/cubcen/node_modules/express-rate-limit/dist/index.cjs:864:7
     at processTicksAndRejections (node:internal/process/task_queues:105:5)
     at /Users/akashrathod/cubcen/cubcen/node_modules/express-rate-limit/dist/index.cjs:747:5
+2025-07-31 16:37:24 [WARN]: Email configuration incomplete, email notifications disabled
+2025-07-31 16:37:24 [WARN]: Slack token not configured, Slack notifications disabled
+2025-07-31 16:37:24 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-07-31 16:37:24 [INFO]: Slack client initialized
+2025-07-31 16:37:24 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-07-31 16:37:24 [INFO]: Slack client initialized
+2025-07-31 16:37:24 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-07-31 16:37:24 [INFO]: Slack client initialized
+2025-07-31 16:37:24 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-07-31 16:37:24 [INFO]: Slack client initialized
+2025-07-31 16:37:24 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-07-31 16:37:24 [INFO]: Slack client initialized
+2025-07-31 16:37:24 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-07-31 16:37:24 [INFO]: Slack client initialized
+2025-07-31 16:37:24 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-07-31 16:37:24 [INFO]: Slack client initialized
+2025-07-31 16:37:24 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-07-31 16:37:24 [INFO]: Slack client initialized
+2025-07-31 16:37:24 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-07-31 16:37:24 [INFO]: Slack client initialized
+2025-07-31 16:37:24 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-07-31 16:37:24 [INFO]: Slack client initialized
+2025-07-31 16:37:24 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-07-31 16:37:24 [INFO]: Slack client initialized
+2025-07-31 16:37:24 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-07-31 16:37:24 [INFO]: Slack client initialized
+2025-07-31 16:37:24 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-07-31 16:37:24 [INFO]: Slack client initialized
+2025-07-31 16:37:24 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-07-31 16:37:24 [INFO]: Slack client initialized
+2025-07-31 16:37:24 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-07-31 16:37:24 [INFO]: Slack client initialized
+2025-07-31 16:37:24 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-07-31 16:37:24 [INFO]: Slack client initialized
+2025-07-31 16:37:24 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-07-31 16:37:24 [INFO]: Slack client initialized
+2025-07-31 16:37:24 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-07-31 16:37:24 [INFO]: Slack client initialized
+2025-07-31 16:37:24 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-07-31 16:37:24 [INFO]: Slack client initialized
+2025-07-31 16:37:24 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-07-31 16:37:24 [INFO]: Slack client initialized
+2025-07-31 16:37:24 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-07-31 16:37:24 [INFO]: Slack client initialized
+2025-07-31 17:22:37 [INFO]: Starting database backup
+{
+  "backupId": "backup_1753962757557_9p42kbsas",
+  "filename": "cubcen-backup-2025-07-31T11-52-37-557Z.gz",
+  "compress": true
+}
+2025-07-31 17:22:37 [ERROR]: Database backup failed ENOENT: no such file or directory, open '/Users/akashrathod/cubcen/cubcen/test.db'
+Error: ENOENT: no such file or directory, open '/Users/akashrathod/cubcen/cubcen/test.db'
+{
+  "errno": -2,
+  "code": "ENOENT",
+  "syscall": "open",
+  "path": "/Users/akashrathod/cubcen/cubcen/test.db"
+}
+2025-08-01 11:15:17 [INFO]: Starting cache warm-up process
+2025-08-01 11:15:17 [INFO]: Cache warm-up completed successfully
+2025-08-01 11:15:17 [INFO]: Starting cache warm-up process
+2025-08-01 11:15:17 [INFO]: Cache warm-up completed successfully
+2025-08-01 12:00:32 [WARN]: Email configuration incomplete, email notifications disabled
+2025-08-01 12:00:32 [WARN]: Slack token not configured, Slack notifications disabled
+2025-08-01 12:00:32 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:00:32 [INFO]: Slack client initialized
+2025-08-01 12:00:32 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:00:32 [INFO]: Slack client initialized
+2025-08-01 12:00:32 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:00:32 [INFO]: Slack client initialized
+2025-08-01 12:00:32 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:00:32 [INFO]: Slack client initialized
+2025-08-01 12:00:32 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:00:32 [INFO]: Slack client initialized
+2025-08-01 12:00:32 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:00:32 [INFO]: Slack client initialized
+2025-08-01 12:00:32 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:00:32 [INFO]: Slack client initialized
+2025-08-01 12:00:32 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:00:32 [INFO]: Slack client initialized
+2025-08-01 12:00:32 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:00:32 [INFO]: Slack client initialized
+2025-08-01 12:00:32 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:00:32 [INFO]: Slack client initialized
+2025-08-01 12:00:32 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:00:32 [INFO]: Slack client initialized
+2025-08-01 12:00:32 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:00:32 [INFO]: Slack client initialized
+2025-08-01 12:00:32 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:00:32 [INFO]: Slack client initialized
+2025-08-01 12:00:32 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:00:32 [INFO]: Slack client initialized
+2025-08-01 12:00:32 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:00:32 [INFO]: Slack client initialized
+2025-08-01 12:00:32 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:00:32 [INFO]: Slack client initialized
+2025-08-01 12:00:32 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:00:32 [INFO]: Slack client initialized
+2025-08-01 12:00:32 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:00:32 [INFO]: Slack client initialized
+2025-08-01 12:00:32 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:00:32 [INFO]: Slack client initialized
+2025-08-01 12:00:32 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:00:32 [INFO]: Slack client initialized
+2025-08-01 12:00:32 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:00:32 [INFO]: Slack client initialized
+2025-08-01 12:00:32 [INFO]: Resetting database...
+2025-08-01 12:00:32 [INFO]: Database reset completed
+2025-08-01 12:00:32 [INFO]: Resetting database...
+2025-08-01 12:00:32 [INFO]: Database reset completed
+2025-08-01 12:00:33 [WARN]: Email configuration incomplete, email notifications disabled
+2025-08-01 12:00:33 [WARN]: Slack token not configured, Slack notifications disabled
+2025-08-01 12:00:33 [INFO]: Audit logs table initialized successfully
+2025-08-01 12:00:34 [ERROR]: Failed to get notifications Database error
+Error: Database error
+    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/routes/__tests__/notifications.test.ts:130:62)
+    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)
+    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)
+    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)
+    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)
+    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)
+2025-08-01 12:00:34 [ERROR]: Failed to acknowledge notification Notification not found
+Error: Notification not found
+    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/routes/__tests__/notifications.test.ts:222:57)
+    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)
+    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)
+    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)
+    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)
+    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)
+2025-08-01 12:00:34 [ERROR]: Failed to reset database 
+Invalid `prisma.agentHealth.deleteMany()` invocation in
+/Users/akashrathod/cubcen/cubcen/src/lib/database-utils.ts:17:30
+
+  14 logger.info('Resetting database...')
+  15 
+  16 // Delete in reverse dependency order to avoid foreign key constraints
+→ 17 await prisma.agentHealth.deleteMany(
+The table `main.cubcen_agent_health` does not exist in the current database.
+PrismaClientKnownRequestError: 
+Invalid `prisma.agentHealth.deleteMany()` invocation in
+/Users/akashrathod/cubcen/cubcen/src/lib/database-utils.ts:17:30
+
+  14 logger.info('Resetting database...')
+  15 
+  16 // Delete in reverse dependency order to avoid foreign key constraints
+→ 17 await prisma.agentHealth.deleteMany(
+The table `main.cubcen_agent_health` does not exist in the current database.
+    at ri.handleRequestError (/Users/akashrathod/cubcen/cubcen/src/generated/prisma/runtime/library.js:124:7459)
+    at ri.handleAndLogRequestError (/Users/akashrathod/cubcen/cubcen/src/generated/prisma/runtime/library.js:124:6784)
+    at ri.request (/Users/akashrathod/cubcen/cubcen/src/generated/prisma/runtime/library.js:124:6491)
+    at l (/Users/akashrathod/cubcen/cubcen/src/generated/prisma/runtime/library.js:133:9812)
+    at resetDatabase (/Users/akashrathod/cubcen/cubcen/src/lib/database-utils.ts:17:5)
+    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/routes/__tests__/agents.test.ts:23:5)
+{
+  "code": "P2021",
+  "meta": {
+    "modelName": "AgentHealth",
+    "table": "main.cubcen_agent_health"
+  },
+  "clientVersion": "6.12.0",
+  "name": "PrismaClientKnownRequestError"
+}
+2025-08-01 12:00:34 [ERROR]: Failed to reset database 
+Invalid `prisma.agentHealth.deleteMany()` invocation in
+/Users/akashrathod/cubcen/cubcen/src/lib/database-utils.ts:17:30
+
+  14 logger.info('Resetting database...')
+  15 
+  16 // Delete in reverse dependency order to avoid foreign key constraints
+→ 17 await prisma.agentHealth.deleteMany(
+The table `main.cubcen_agent_health` does not exist in the current database.
+PrismaClientKnownRequestError: 
+Invalid `prisma.agentHealth.deleteMany()` invocation in
+/Users/akashrathod/cubcen/cubcen/src/lib/database-utils.ts:17:30
+
+  14 logger.info('Resetting database...')
+  15 
+  16 // Delete in reverse dependency order to avoid foreign key constraints
+→ 17 await prisma.agentHealth.deleteMany(
+The table `main.cubcen_agent_health` does not exist in the current database.
+    at ri.handleRequestError (/Users/akashrathod/cubcen/cubcen/src/generated/prisma/runtime/library.js:124:7459)
+    at ri.handleAndLogRequestError (/Users/akashrathod/cubcen/cubcen/src/generated/prisma/runtime/library.js:124:6784)
+    at ri.request (/Users/akashrathod/cubcen/cubcen/src/generated/prisma/runtime/library.js:124:6491)
+    at l (/Users/akashrathod/cubcen/cubcen/src/generated/prisma/runtime/library.js:133:9812)
+    at resetDatabase (/Users/akashrathod/cubcen/cubcen/src/lib/database-utils.ts:17:5)
+    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/routes/__tests__/agents.test.ts:80:5)
+{
+  "code": "P2021",
+  "meta": {
+    "modelName": "AgentHealth",
+    "table": "main.cubcen_agent_health"
+  },
+  "clientVersion": "6.12.0",
+  "name": "PrismaClientKnownRequestError"
+}
+2025-08-01 12:00:34 [ERROR]: Failed to get notifications Database error
+Error: Database error
+    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/routes/__tests__/notifications.test.ts:130:62)
+    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)
+    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)
+    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)
+    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)
+    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)
+2025-08-01 12:00:34 [ERROR]: Failed to get notifications Service unavailable
+Error: Service unavailable
+    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/routes/__tests__/notifications.test.ts:557:62)
+    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)
+    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)
+    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)
+    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)
+    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)
+2025-08-01 12:00:34 [ERROR]: Failed to get performance metrics Metrics error
+Error: Metrics error
+    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/routes/__tests__/performance.test.ts:98:9)
+    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)
+    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)
+    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)
+    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)
+    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)
+2025-08-01 12:00:34 [ERROR]: Failed to get performance metrics Monitor error
+Error: Monitor error
+    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/routes/__tests__/performance.test.ts:449:9)
+    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)
+    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)
+    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)
+    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)
+    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)
+2025-08-01 12:00:34 [ERROR]: Failed to optimize database Optimization error
+Error: Optimization error
+    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/routes/__tests__/performance.test.ts:463:9)
+    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)
+    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)
+    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)
+    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)
+    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)
+2025-08-01 12:00:34 [ERROR]: Failed to run benchmark Benchmark error
+Error: Benchmark error
+    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/routes/__tests__/performance.test.ts:477:9)
+    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)
+    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)
+    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)
+    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)
+    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)
+2025-08-01 12:00:34 [ERROR]: Failed to get performance metrics Monitor error
+Error: Monitor error
+    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/routes/__tests__/performance.test.ts:449:9)
+    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)
+    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)
+    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)
+    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)
+    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)
+2025-08-01 12:00:34 [ERROR]: Failed to get performance metrics Monitor error
+Error: Monitor error
+    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/routes/__tests__/performance.test.ts:449:9)
+    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)
+    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)
+    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)
+    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)
+    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)
+2025-08-01 12:00:34 [ERROR]: Health check endpoint failed
+{
+  "endpoint": "/health",
+  "error": {
+    "name": "Error",
+    "message": "Health check failed",
+    "stack": "Error: Health check failed\n    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/__tests__/health-api.test.ts:146:65)\n    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)\n    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)\n    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)\n    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)\n    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)\n    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)\n    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)\n    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)"
+  }
+}
+2025-08-01 12:00:34 [ERROR]: Readiness check failed
+{
+  "endpoint": "/health/ready",
+  "error": {
+    "name": "Error",
+    "message": "Database check failed",
+    "stack": "Error: Database check failed\n    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/__tests__/health-api.test.ts:236:60)\n    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)\n    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)\n    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)\n    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)\n    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)\n    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)\n    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)\n    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)"
+  }
+}
+2025-08-01 12:00:34 [ERROR]: Health check 'database' failed
+{
+  "endpoint": "/health/checks/database",
+  "checkName": "database",
+  "error": {
+    "name": "Error",
+    "message": "Database check failed",
+    "stack": "Error: Database check failed\n    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/__tests__/health-api.test.ts:311:60)\n    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)\n    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)\n    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)\n    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)\n    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)\n    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)\n    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)\n    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)"
+  }
+}
+2025-08-01 12:00:34 [ERROR]: Metrics collection failed
+{
+  "endpoint": "/health/metrics",
+  "error": {
+    "name": "Error",
+    "message": "Metrics collection failed",
+    "stack": "Error: Metrics collection failed\n    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/__tests__/health-api.test.ts:363:67)\n    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)\n    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)\n    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)\n    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)\n    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)\n    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)\n    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)\n    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)"
+  }
+}
+2025-08-01 12:00:34 [ERROR]: Metrics history retrieval failed
+{
+  "endpoint": "/health/metrics/history",
+  "error": {
+    "name": "Error",
+    "message": "History retrieval failed",
+    "stack": "Error: History retrieval failed\n    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/__tests__/health-api.test.ts:439:15)\n    at /Users/akashrathod/cubcen/cubcen/node_modules/jest-mock/build/index.js:305:39\n    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/node_modules/jest-mock/build/index.js:312:13)\n    at Object.mockConstructor (/Users/akashrathod/cubcen/cubcen/node_modules/jest-mock/build/index.js:102:19)\n    at Object.getMetricsHistory (eval at _createMockFunction (/Users/akashrathod/cubcen/cubcen/node_modules/jest-mock/build/index.js:460:31), <anonymous>:3:63)\n    at /Users/akashrathod/cubcen/cubcen/src/backend/routes/health.ts:204:38\n    at Layer.handleRequest (/Users/akashrathod/cubcen/cubcen/node_modules/router/lib/layer.js:152:17)\n    at next (/Users/akashrathod/cubcen/cubcen/node_modules/router/lib/route.js:157:13)\n    at Route.dispatch (/Users/akashrathod/cubcen/cubcen/node_modules/router/lib/route.js:117:3)\n    at handle (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:435:11)\n    at Layer.handleRequest (/Users/akashrathod/cubcen/cubcen/node_modules/router/lib/layer.js:152:17)\n    at /Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:295:15\n    at processParams (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:582:12)\n    at next (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:291:5)\n    at router.handle (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:186:3)\n    at router (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:60:12)\n    at Layer.handleRequest (/Users/akashrathod/cubcen/cubcen/node_modules/router/lib/layer.js:152:17)\n    at trimPrefix (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:342:13)\n    at /Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:297:9\n    at processParams (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:582:12)\n    at next (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:291:5)\n    at jsonParser (/Users/akashrathod/cubcen/cubcen/node_modules/body-parser/lib/types/json.js:100:7)\n    at Layer.handleRequest (/Users/akashrathod/cubcen/cubcen/node_modules/router/lib/layer.js:152:17)\n    at trimPrefix (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:342:13)\n    at /Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:297:9\n    at processParams (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:582:12)\n    at next (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:291:5)\n    at router.handle (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:186:3)\n    at app.handle (/Users/akashrathod/cubcen/cubcen/node_modules/express/lib/application.js:177:15)\n    at Server.app (/Users/akashrathod/cubcen/cubcen/node_modules/express/lib/express.js:38:9)\n    at Server.emit (node:events:507:28)\n    at parserOnIncoming (node:_http_server:1153:12)\n    at HTTPParser.parserOnHeadersComplete (node:_http_common:117:17)"
+  }
+}
+2025-08-01 12:19:39 [INFO]: Email transporter initialized
+{
+  "host": "smtp.example.com",
+  "port": 587
+}
+2025-08-01 12:19:39 [INFO]: Slack client initialized
+2025-08-01 12:19:39 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:19:39 [INFO]: Slack client initialized
+2025-08-01 12:19:40 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:19:40 [INFO]: Slack client initialized
+2025-08-01 12:19:40 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:19:40 [INFO]: Slack client initialized
+2025-08-01 12:19:40 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:19:40 [INFO]: Slack client initialized
+2025-08-01 12:19:40 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:19:40 [INFO]: Slack client initialized
+2025-08-01 12:19:40 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:19:40 [INFO]: Slack client initialized
+2025-08-01 12:19:40 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:19:40 [INFO]: Slack client initialized
+2025-08-01 12:19:40 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:19:40 [INFO]: Slack client initialized
+2025-08-01 12:19:40 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:19:40 [INFO]: Slack client initialized
+2025-08-01 12:19:40 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:19:40 [INFO]: Slack client initialized
+2025-08-01 12:19:40 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:19:40 [INFO]: Slack client initialized
+2025-08-01 12:19:40 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:19:40 [INFO]: Slack client initialized
+2025-08-01 12:19:40 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:19:40 [INFO]: Slack client initialized
+2025-08-01 12:19:40 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:19:40 [INFO]: Slack client initialized
+2025-08-01 12:19:40 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:19:40 [INFO]: Slack client initialized
+2025-08-01 12:19:40 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:19:40 [INFO]: Slack client initialized
+2025-08-01 12:19:40 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:19:40 [INFO]: Slack client initialized
+2025-08-01 12:19:40 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:19:40 [INFO]: Slack client initialized
+2025-08-01 12:19:40 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:19:40 [INFO]: Slack client initialized
+2025-08-01 12:19:40 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:19:40 [INFO]: Slack client initialized
+2025-08-01 12:19:40 [INFO]: Email transporter initialized
+{
+  "host": "smtp.test.com",
+  "port": 587
+}
+2025-08-01 12:19:40 [INFO]: Slack client initialized
+2025-08-01 12:19:40 [INFO]: Audit logs table initialized successfully
+2025-08-01 12:19:40 [ERROR]: Health check endpoint failed
+{
+  "endpoint": "/health",
+  "error": {
+    "name": "Error",
+    "message": "Health check failed",
+    "stack": "Error: Health check failed\n    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/__tests__/health-api.test.ts:146:65)\n    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)\n    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)\n    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)\n    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)\n    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)\n    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)\n    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)\n    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)"
+  }
+}
+2025-08-01 12:19:40 [ERROR]: Readiness check failed
+{
+  "endpoint": "/health/ready",
+  "error": {
+    "name": "Error",
+    "message": "Database check failed",
+    "stack": "Error: Database check failed\n    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/__tests__/health-api.test.ts:236:60)\n    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)\n    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)\n    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)\n    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)\n    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)\n    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)\n    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)\n    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)"
+  }
+}
+2025-08-01 12:19:40 [ERROR]: Health check 'database' failed
+{
+  "endpoint": "/health/checks/database",
+  "checkName": "database",
+  "error": {
+    "name": "Error",
+    "message": "Database check failed",
+    "stack": "Error: Database check failed\n    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/__tests__/health-api.test.ts:311:60)\n    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)\n    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)\n    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)\n    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)\n    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)\n    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)\n    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)\n    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)"
+  }
+}
+2025-08-01 12:19:40 [ERROR]: Metrics collection failed
+{
+  "endpoint": "/health/metrics",
+  "error": {
+    "name": "Error",
+    "message": "Metrics collection failed",
+    "stack": "Error: Metrics collection failed\n    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/__tests__/health-api.test.ts:363:67)\n    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)\n    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)\n    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)\n    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)\n    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)\n    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)\n    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)\n    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)"
+  }
+}
+2025-08-01 12:19:40 [ERROR]: Metrics history retrieval failed
+{
+  "endpoint": "/health/metrics/history",
+  "error": {
+    "name": "Error",
+    "message": "History retrieval failed",
+    "stack": "Error: History retrieval failed\n    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/__tests__/health-api.test.ts:439:15)\n    at /Users/akashrathod/cubcen/cubcen/node_modules/jest-mock/build/index.js:305:39\n    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/node_modules/jest-mock/build/index.js:312:13)\n    at Object.mockConstructor (/Users/akashrathod/cubcen/cubcen/node_modules/jest-mock/build/index.js:102:19)\n    at Object.getMetricsHistory (eval at _createMockFunction (/Users/akashrathod/cubcen/cubcen/node_modules/jest-mock/build/index.js:460:31), <anonymous>:3:63)\n    at getMetricsHistory (/Users/akashrathod/cubcen/cubcen/src/backend/routes/health.ts:204:38)\n    at Layer.handleRequest (/Users/akashrathod/cubcen/cubcen/node_modules/router/lib/layer.js:152:17)\n    at next (/Users/akashrathod/cubcen/cubcen/node_modules/router/lib/route.js:157:13)\n    at Route.dispatch (/Users/akashrathod/cubcen/cubcen/node_modules/router/lib/route.js:117:3)\n    at handle (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:435:11)\n    at Layer.handleRequest (/Users/akashrathod/cubcen/cubcen/node_modules/router/lib/layer.js:152:17)\n    at /Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:295:15\n    at processParams (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:582:12)\n    at next (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:291:5)\n    at router.handle (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:186:3)\n    at router (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:60:12)\n    at Layer.handleRequest (/Users/akashrathod/cubcen/cubcen/node_modules/router/lib/layer.js:152:17)\n    at trimPrefix (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:342:13)\n    at /Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:297:9\n    at processParams (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:582:12)\n    at next (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:291:5)\n    at jsonParser (/Users/akashrathod/cubcen/cubcen/node_modules/body-parser/lib/types/json.js:100:7)\n    at Layer.handleRequest (/Users/akashrathod/cubcen/cubcen/node_modules/router/lib/layer.js:152:17)\n    at trimPrefix (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:342:13)\n    at /Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:297:9\n    at processParams (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:582:12)\n    at next (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:291:5)\n    at router.handle (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:186:3)\n    at app.handle (/Users/akashrathod/cubcen/cubcen/node_modules/express/lib/application.js:177:15)\n    at Server.app (/Users/akashrathod/cubcen/cubcen/node_modules/express/lib/express.js:38:9)\n    at Server.emit (node:events:507:28)\n    at parserOnIncoming (node:_http_server:1153:12)\n    at HTTPParser.parserOnHeadersComplete (node:_http_common:117:17)"
+  }
+}
+2025-08-01 12:19:42 [ERROR]: Failed to get notifications Database error
+Error: Database error
+    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/routes/__tests__/notifications.test.ts:130:62)
+    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)
+    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)
+    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)
+    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)
+    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)
+2025-08-01 12:19:42 [ERROR]: Failed to acknowledge notification Notification not found
+Error: Notification not found
+    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/routes/__tests__/notifications.test.ts:222:57)
+    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)
+    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)
+    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)
+    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)
+    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)
+2025-08-01 12:19:42 [ERROR]: Failed to get performance metrics Metrics error
+Error: Metrics error
+    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/routes/__tests__/performance.test.ts:98:9)
+    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)
+    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)
+    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)
+    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)
+    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)
+2025-08-01 12:19:42 [ERROR]: Failed to get notifications Database error
+Error: Database error
+    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/routes/__tests__/notifications.test.ts:130:62)
+    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)
+    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)
+    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)
+    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)
+    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)
+2025-08-01 12:19:42 [ERROR]: Failed to get notifications Service unavailable
+Error: Service unavailable
+    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/routes/__tests__/notifications.test.ts:557:62)
+    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)
+    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)
+    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)
+    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)
+    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)
+2025-08-01 12:19:42 [ERROR]: Failed to get performance metrics Monitor error
+Error: Monitor error
+    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/routes/__tests__/performance.test.ts:449:9)
+    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)
+    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)
+    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)
+    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)
+    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)
+2025-08-01 12:19:42 [ERROR]: Failed to optimize database Optimization error
+Error: Optimization error
+    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/routes/__tests__/performance.test.ts:463:9)
+    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)
+    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)
+    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)
+    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)
+    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)
+2025-08-01 12:19:42 [ERROR]: Failed to run benchmark Benchmark error
+Error: Benchmark error
+    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/routes/__tests__/performance.test.ts:477:9)
+    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)
+    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)
+    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)
+    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)
+    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)
+2025-08-01 12:19:42 [ERROR]: Health check endpoint failed
+{
+  "endpoint": "/health",
+  "error": {
+    "name": "Error",
+    "message": "Health check failed",
+    "stack": "Error: Health check failed\n    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/__tests__/health-api.test.ts:146:65)\n    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)\n    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)\n    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)\n    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)\n    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)\n    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)\n    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)\n    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)"
+  }
+}
+2025-08-01 12:19:42 [ERROR]: Failed to get performance metrics Monitor error
+Error: Monitor error
+    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/routes/__tests__/performance.test.ts:449:9)
+    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)
+    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)
+    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)
+    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)
+    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)
+2025-08-01 12:19:42 [ERROR]: Failed to get performance metrics Monitor error
+Error: Monitor error
+    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/routes/__tests__/performance.test.ts:449:9)
+    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)
+    at new Promise (<anonymous>)
+    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)
+    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)
+    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)
+    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)
+    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)
+    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)
+2025-08-01 12:19:42 [ERROR]: Readiness check failed
+{
+  "endpoint": "/health/ready",
+  "error": {
+    "name": "Error",
+    "message": "Database check failed",
+    "stack": "Error: Database check failed\n    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/__tests__/health-api.test.ts:236:60)\n    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)\n    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)\n    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)\n    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)\n    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)\n    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)\n    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)\n    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)"
+  }
+}
+2025-08-01 12:19:42 [ERROR]: Health check 'database' failed
+{
+  "endpoint": "/health/checks/database",
+  "checkName": "database",
+  "error": {
+    "name": "Error",
+    "message": "Database check failed",
+    "stack": "Error: Database check failed\n    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/__tests__/health-api.test.ts:311:60)\n    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)\n    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)\n    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)\n    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)\n    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)\n    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)\n    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)\n    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)"
+  }
+}
+2025-08-01 12:19:42 [ERROR]: Metrics collection failed
+{
+  "endpoint": "/health/metrics",
+  "error": {
+    "name": "Error",
+    "message": "Metrics collection failed",
+    "stack": "Error: Metrics collection failed\n    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/__tests__/health-api.test.ts:363:67)\n    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)\n    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)\n    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)\n    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)\n    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)\n    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)\n    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)\n    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)"
+  }
+}
+2025-08-01 12:19:42 [ERROR]: Metrics history retrieval failed
+{
+  "endpoint": "/health/metrics/history",
+  "error": {
+    "name": "Error",
+    "message": "History retrieval failed",
+    "stack": "Error: History retrieval failed\n    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/__tests__/health-api.test.ts:439:15)\n    at /Users/akashrathod/cubcen/cubcen/node_modules/jest-mock/build/index.js:305:39\n    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/node_modules/jest-mock/build/index.js:312:13)\n    at Object.mockConstructor (/Users/akashrathod/cubcen/cubcen/node_modules/jest-mock/build/index.js:102:19)\n    at Object.getMetricsHistory (eval at _createMockFunction (/Users/akashrathod/cubcen/cubcen/node_modules/jest-mock/build/index.js:460:31), <anonymous>:3:63)\n    at /Users/akashrathod/cubcen/cubcen/src/backend/routes/health.ts:204:38\n    at Layer.handleRequest (/Users/akashrathod/cubcen/cubcen/node_modules/router/lib/layer.js:152:17)\n    at next (/Users/akashrathod/cubcen/cubcen/node_modules/router/lib/route.js:157:13)\n    at Route.dispatch (/Users/akashrathod/cubcen/cubcen/node_modules/router/lib/route.js:117:3)\n    at handle (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:435:11)\n    at Layer.handleRequest (/Users/akashrathod/cubcen/cubcen/node_modules/router/lib/layer.js:152:17)\n    at /Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:295:15\n    at processParams (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:582:12)\n    at next (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:291:5)\n    at router.handle (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:186:3)\n    at router (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:60:12)\n    at Layer.handleRequest (/Users/akashrathod/cubcen/cubcen/node_modules/router/lib/layer.js:152:17)\n    at trimPrefix (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:342:13)\n    at /Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:297:9\n    at processParams (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:582:12)\n    at next (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:291:5)\n    at jsonParser (/Users/akashrathod/cubcen/cubcen/node_modules/body-parser/lib/types/json.js:100:7)\n    at Layer.handleRequest (/Users/akashrathod/cubcen/cubcen/node_modules/router/lib/layer.js:152:17)\n    at trimPrefix (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:342:13)\n    at /Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:297:9\n    at processParams (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:582:12)\n    at next (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:291:5)\n    at router.handle (/Users/akashrathod/cubcen/cubcen/node_modules/router/index.js:186:3)\n    at app.handle (/Users/akashrathod/cubcen/cubcen/node_modules/express/lib/application.js:177:15)\n    at Server.app (/Users/akashrathod/cubcen/cubcen/node_modules/express/lib/express.js:38:9)\n    at Server.emit (node:events:507:28)\n    at parserOnIncoming (node:_http_server:1153:12)\n    at HTTPParser.parserOnHeadersComplete (node:_http_common:117:17)"
+  }
+}
+2025-08-01 12:19:42 [ERROR]: Failed to initialize audit logs table database_1.prisma.$executeRaw is not a function
+TypeError: database_1.prisma.$executeRaw is not a function
+    at AuditLogger.initializeAuditTable (/Users/akashrathod/cubcen/cubcen/src/lib/audit-logger.ts:133:31)
+    at new AuditLogger (/Users/akashrathod/cubcen/cubcen/src/lib/audit-logger.ts:118:10)
+    at AuditLogger.getInstance (/Users/akashrathod/cubcen/cubcen/src/lib/audit-logger.ts:123:30)
+    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/lib/audit-logger.ts:550:40)
+    at Runtime._execModule (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runtime/build/index.js:1266:24)
+    at Runtime._loadModule (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runtime/build/index.js:942:12)
+    at Runtime.requireModule (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runtime/build/index.js:830:12)
+    at Runtime.requireModuleOrMock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runtime/build/index.js:962:21)
+    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/server.ts:22:1)
+    at Runtime._execModule (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runtime/build/index.js:1266:24)
+    at Runtime._loadModule (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runtime/build/index.js:942:12)
+    at Runtime.requireModule (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runtime/build/index.js:830:12)
+    at Runtime.requireModuleOrMock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runtime/build/index.js:962:21)
+    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/__tests__/server.test.ts:5:1)
+    at Runtime._execModule (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runtime/build/index.js:1266:24)
+    at Runtime._loadModule (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runtime/build/index.js:942:12)
+    at Runtime.requireModule (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runtime/build/index.js:830:12)
+    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:95:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)
+    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)
+    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)
+2025-08-01 12:19:42 [ERROR]: Failed to initialize audit logs table database_1.prisma.$executeRaw is not a function
+TypeError: database_1.prisma.$executeRaw is not a function
+    at AuditLogger.initializeAuditTable (/Users/akashrathod/cubcen/cubcen/src/lib/audit-logger.ts:133:31)
+    at new AuditLogger (/Users/akashrathod/cubcen/cubcen/src/lib/audit-logger.ts:118:10)
+    at AuditLogger.getInstance (/Users/akashrathod/cubcen/cubcen/src/lib/audit-logger.ts:123:30)
+    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/lib/audit-logger.ts:550:40)
+    at Runtime._execModule (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runtime/build/index.js:1266:24)
+    at Runtime._loadModule (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runtime/build/index.js:942:12)
+    at Runtime.requireModule (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runtime/build/index.js:830:12)
+    at Runtime.requireModuleOrMock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runtime/build/index.js:962:21)
+    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/server.ts:22:1)
+    at Runtime._execModule (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runtime/build/index.js:1266:24)
+    at Runtime._loadModule (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runtime/build/index.js:942:12)
+    at Runtime.requireModule (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runtime/build/index.js:830:12)
+    at Runtime.requireModuleOrMock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runtime/build/index.js:962:21)
+    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/backend/__tests__/error-handling.test.ts:5:1)
+    at Runtime._execModule (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runtime/build/index.js:1266:24)
+    at Runtime._loadModule (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runtime/build/index.js:942:12)
+    at Runtime.requireModule (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runtime/build/index.js:830:12)
+    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:95:13)
+    at processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)
+    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)
+    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)
+2025-08-01 12:19:43 [ERROR]: Database health check failed
+{
+  "healthCheck": "database",
+  "error": {
+    "name": "Error",
+    "message": "Database connection failed",
+    "stack": "Error: Database connection failed\n    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/lib/__tests__/health.test.ts:87:21)\n    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)\n    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)\n    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)\n    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)\n    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)\n    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)\n    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)\n    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)\n    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)"
+  }
+}undefined2025-08-01 12:19:43 [ERROR]: Disk health check failed
+{
+  "healthCheck": "disk",
+  "error": {
+    "name": "Error",
+    "message": "Disk check failed",
+    "stack": "Error: Disk check failed\n    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/lib/__tests__/health.test.ts:184:39)\n    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)\n    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)\n    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)\n    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)\n    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)\n    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)\n    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)\n    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)\n    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)"
+  }
+}undefined2025-08-01 12:19:44 [ERROR]: Database health check failed
+{
+  "healthCheck": "database",
+  "error": {
+    "name": "Error",
+    "message": "DB failed",
+    "stack": "Error: DB failed\n    at Object.<anonymous> (/Users/akashrathod/cubcen/cubcen/src/lib/__tests__/health.test.ts:298:53)\n    at Promise.finally.completed (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1559:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1499:10)\n    at _callCircusTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1009:40)\n    at _runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:949:3)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)\n    at _runTestsForDescribeBlock (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)\n    at run (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)\n    at runAndTransformResultsToJestFormat (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/jestAdapterInit.js:1920:21)\n    at jestAdapter (/Users/akashrathod/cubcen/cubcen/node_modules/jest-circus/build/runner.js:101:19)\n    at runTestInternal (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:275:16)\n    at runTest (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:343:7)\n    at Object.worker (/Users/akashrathod/cubcen/cubcen/node_modules/jest-runner/build/testWorker.js:497:12)"
+  }
+}undefined

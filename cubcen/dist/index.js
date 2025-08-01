@@ -9,7 +9,13 @@ const logger_1 = require("@/lib/logger");
 const database_1 = require("@/lib/database");
 const websocket_1 = require("@/services/websocket");
 const agent_1 = require("@/services/agent");
+const task_1 = require("@/services/task");
+const workflow_1 = require("@/services/workflow");
 const adapter_factory_1 = require("@/backend/adapters/adapter-factory");
+const tasks_1 = require("@/backend/routes/tasks");
+const workflows_1 = require("@/backend/routes/workflows");
+const backup_1 = require("@/lib/backup");
+const config_1 = __importDefault(require("@/lib/config"));
 const PORT = process.env.PORT || 3001;
 async function startServer() {
     try {
@@ -19,8 +25,26 @@ async function startServer() {
         const adapterManager = new adapter_factory_1.AdapterManager();
         const agentService = new agent_1.AgentService(adapterManager);
         const webSocketService = (0, websocket_1.initializeWebSocketService)(httpServer, agentService);
+        const taskService = new task_1.TaskService(adapterManager, webSocketService);
+        const workflowService = new workflow_1.WorkflowService(adapterManager, taskService, webSocketService);
         agentService.setWebSocketService(webSocketService);
-        logger_1.logger.info('WebSocket service initialized with agent integration');
+        (0, tasks_1.initializeTaskService)(adapterManager, webSocketService);
+        server_1.default.use('/api/cubcen/v1/workflows', (0, workflows_1.createWorkflowRoutes)(workflowService));
+        const backupConfig = config_1.default.getBackupConfig();
+        if (backupConfig.enabled) {
+            backup_1.scheduledBackupService.start();
+            logger_1.logger.info('Scheduled backup service started', {
+                intervalHours: backupConfig.intervalHours,
+                retentionDays: backupConfig.retentionDays
+            });
+        }
+        logger_1.logger.info('Services initialized', {
+            webSocket: true,
+            agentService: true,
+            taskService: true,
+            workflowService: true,
+            scheduledBackup: backupConfig.enabled
+        });
         const server = httpServer.listen(PORT, () => {
             logger_1.logger.info(`Cubcen server started successfully`, {
                 port: PORT,
@@ -31,6 +55,34 @@ async function startServer() {
         });
         const gracefulShutdown = async (signal) => {
             logger_1.logger.info(`Received ${signal}, shutting down gracefully`);
+            try {
+                backup_1.scheduledBackupService.stop();
+                logger_1.logger.info('Scheduled backup service stopped');
+            }
+            catch (error) {
+                logger_1.logger.error('Error stopping scheduled backup service', error);
+            }
+            try {
+                await workflowService.cleanup();
+                logger_1.logger.info('Workflow service cleaned up');
+            }
+            catch (error) {
+                logger_1.logger.error('Error cleaning up workflow service', error);
+            }
+            try {
+                await taskService.cleanup();
+                logger_1.logger.info('Task service cleaned up');
+            }
+            catch (error) {
+                logger_1.logger.error('Error cleaning up task service', error);
+            }
+            try {
+                await agentService.cleanup();
+                logger_1.logger.info('Agent service cleaned up');
+            }
+            catch (error) {
+                logger_1.logger.error('Error cleaning up agent service', error);
+            }
             try {
                 await webSocketService.shutdown();
                 logger_1.logger.info('WebSocket service closed');

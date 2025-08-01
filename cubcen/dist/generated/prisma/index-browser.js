@@ -174,6 +174,75 @@ exports.Prisma.MetricScalarFieldEnum = {
     tags: 'tags',
     timestamp: 'timestamp'
 };
+exports.Prisma.NotificationChannelScalarFieldEnum = {
+    id: 'id',
+    type: 'type',
+    name: 'name',
+    enabled: 'enabled',
+    configuration: 'configuration',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+};
+exports.Prisma.NotificationPreferenceScalarFieldEnum = {
+    id: 'id',
+    userId: 'userId',
+    eventType: 'eventType',
+    channels: 'channels',
+    enabled: 'enabled',
+    escalationDelay: 'escalationDelay',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+};
+exports.Prisma.NotificationScalarFieldEnum = {
+    id: 'id',
+    eventType: 'eventType',
+    priority: 'priority',
+    status: 'status',
+    title: 'title',
+    message: 'message',
+    data: 'data',
+    userId: 'userId',
+    channels: 'channels',
+    sentAt: 'sentAt',
+    acknowledgedAt: 'acknowledgedAt',
+    acknowledgedBy: 'acknowledgedBy',
+    retryCount: 'retryCount',
+    maxRetries: 'maxRetries',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+};
+exports.Prisma.NotificationTemplateScalarFieldEnum = {
+    id: 'id',
+    eventType: 'eventType',
+    channelType: 'channelType',
+    subject: 'subject',
+    template: 'template',
+    variables: 'variables',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+};
+exports.Prisma.InAppNotificationScalarFieldEnum = {
+    id: 'id',
+    userId: 'userId',
+    title: 'title',
+    message: 'message',
+    type: 'type',
+    read: 'read',
+    actionUrl: 'actionUrl',
+    actionText: 'actionText',
+    createdAt: 'createdAt',
+    expiresAt: 'expiresAt'
+};
+exports.Prisma.AlertEscalationScalarFieldEnum = {
+    id: 'id',
+    notificationId: 'notificationId',
+    level: 'level',
+    escalatedAt: 'escalatedAt',
+    escalatedTo: 'escalatedTo',
+    acknowledged: 'acknowledged',
+    acknowledgedAt: 'acknowledgedAt',
+    acknowledgedBy: 'acknowledgedBy'
+};
 exports.Prisma.SortOrder = {
     asc: 'asc',
     desc: 'desc'
@@ -181,59 +250,6 @@ exports.Prisma.SortOrder = {
 exports.Prisma.NullsOrder = {
     first: 'first',
     last: 'last'
-};
-exports.UserRole = exports.$Enums.UserRole = {
-    ADMIN: 'ADMIN',
-    OPERATOR: 'OPERATOR',
-    VIEWER: 'VIEWER'
-};
-exports.PlatformType = exports.$Enums.PlatformType = {
-    N8N: 'N8N',
-    MAKE: 'MAKE',
-    ZAPIER: 'ZAPIER'
-};
-exports.PlatformStatus = exports.$Enums.PlatformStatus = {
-    CONNECTED: 'CONNECTED',
-    DISCONNECTED: 'DISCONNECTED',
-    ERROR: 'ERROR'
-};
-exports.AgentStatus = exports.$Enums.AgentStatus = {
-    ACTIVE: 'ACTIVE',
-    INACTIVE: 'INACTIVE',
-    ERROR: 'ERROR',
-    MAINTENANCE: 'MAINTENANCE'
-};
-exports.TaskStatus = exports.$Enums.TaskStatus = {
-    PENDING: 'PENDING',
-    RUNNING: 'RUNNING',
-    COMPLETED: 'COMPLETED',
-    FAILED: 'FAILED',
-    CANCELLED: 'CANCELLED'
-};
-exports.TaskPriority = exports.$Enums.TaskPriority = {
-    LOW: 'LOW',
-    MEDIUM: 'MEDIUM',
-    HIGH: 'HIGH',
-    CRITICAL: 'CRITICAL'
-};
-exports.WorkflowStatus = exports.$Enums.WorkflowStatus = {
-    DRAFT: 'DRAFT',
-    ACTIVE: 'ACTIVE',
-    PAUSED: 'PAUSED',
-    ARCHIVED: 'ARCHIVED'
-};
-exports.LogLevel = exports.$Enums.LogLevel = {
-    DEBUG: 'DEBUG',
-    INFO: 'INFO',
-    WARN: 'WARN',
-    ERROR: 'ERROR',
-    FATAL: 'FATAL'
-};
-exports.MetricType = exports.$Enums.MetricType = {
-    COUNTER: 'COUNTER',
-    GAUGE: 'GAUGE',
-    HISTOGRAM: 'HISTOGRAM',
-    TIMER: 'TIMER'
 };
 exports.Prisma.ModelName = {
     User: 'User',
@@ -244,7 +260,13 @@ exports.Prisma.ModelName = {
     WorkflowStep: 'WorkflowStep',
     SystemLog: 'SystemLog',
     AgentHealth: 'AgentHealth',
-    Metric: 'Metric'
+    Metric: 'Metric',
+    NotificationChannel: 'NotificationChannel',
+    NotificationPreference: 'NotificationPreference',
+    Notification: 'Notification',
+    NotificationTemplate: 'NotificationTemplate',
+    InAppNotification: 'InAppNotification',
+    AlertEscalation: 'AlertEscalation'
 };
 class PrismaClient {
     constructor() {

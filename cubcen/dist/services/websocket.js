@@ -562,6 +562,100 @@ class WebSocketService {
         this.io.to('tasks:all').emit('task:cancelled', event);
         logger_1.logger.debug('Broadcasted task cancelled event', { taskId, agentId, reason });
     }
+    notifyTaskStatusChange(taskId, status, metadata) {
+        switch (status) {
+            case 'PENDING':
+                if (metadata?.retried) {
+                    this.notifyTaskStarted(taskId, metadata.agentId, new Date());
+                }
+                break;
+            case 'RUNNING':
+                this.notifyTaskStarted(taskId, metadata?.agentId, metadata?.startedAt || new Date());
+                break;
+            case 'COMPLETED':
+                this.notifyTaskCompleted(taskId, metadata?.agentId, metadata?.completedAt || new Date(), metadata?.executionTime || 0, metadata?.success ?? true, metadata?.result);
+                break;
+            case 'FAILED':
+                this.notifyTaskFailed(taskId, metadata?.agentId, new Date(), {
+                    code: 'EXECUTION_FAILED',
+                    message: metadata?.error || 'Task execution failed',
+                    details: metadata
+                }, metadata?.retryCount || 0, metadata?.maxRetriesExceeded !== true);
+                break;
+            case 'CANCELLED':
+                this.notifyTaskCancelled(taskId, metadata?.agentId, metadata?.timestamp || new Date(), 'system', 'Task was cancelled');
+                break;
+        }
+    }
+    notifyTaskProgress(taskId, progress, message) {
+        const event = {
+            taskId,
+            agentId: '',
+            progress: {
+                percentage: progress,
+                currentStep: message || 'Processing...',
+                totalSteps: 100,
+                completedSteps: progress,
+                message
+            },
+            timestamp: new Date()
+        };
+        this.io.to(`task:${taskId}`).emit('task:progress', event);
+        this.io.to('tasks:all').emit('task:progress', event);
+        logger_1.logger.debug('Broadcasted task progress event', { taskId, progress, message });
+    }
+    notifyTaskError(taskId, error, context) {
+        const event = {
+            taskId,
+            agentId: context?.agentId || '',
+            error: {
+                code: 'TASK_ERROR',
+                message: error,
+                severity: 'medium',
+                details: context
+            },
+            timestamp: new Date()
+        };
+        this.io.to(`task:${taskId}`).emit('error:task', event);
+        this.io.to('tasks:all').emit('error:task', event);
+        logger_1.logger.debug('Broadcasted task error event', { taskId, error });
+    }
+    notifyWorkflowStatusChange(executionId, status, metadata) {
+        const event = {
+            executionId,
+            status,
+            metadata,
+            timestamp: new Date()
+        };
+        this.io.to(`workflow:${executionId}`).emit('workflow:statusChange', event);
+        this.io.to('workflows:all').emit('workflow:statusChange', event);
+        logger_1.logger.debug('Broadcasted workflow status change event', { executionId, status });
+    }
+    notifyWorkflowProgress(executionId, progress) {
+        const event = {
+            executionId,
+            progress,
+            timestamp: new Date()
+        };
+        this.io.to(`workflow:${executionId}`).emit('workflow:progress', event);
+        this.io.to('workflows:all').emit('workflow:progress', event);
+        logger_1.logger.debug('Broadcasted workflow progress event', { executionId, progress: progress.progress });
+    }
+    notifyWorkflowError(executionId, error, context) {
+        const event = {
+            executionId,
+            error: {
+                code: 'WORKFLOW_ERROR',
+                message: error,
+                severity: 'high',
+                details: context
+            },
+            timestamp: new Date()
+        };
+        this.io.to(`workflow:${executionId}`).emit('error:workflow', event);
+        this.io.to('workflows:all').emit('error:workflow', event);
+        logger_1.logger.debug('Broadcasted workflow error event', { executionId, error });
+    }
     getRealTimeStats() {
         return {
             connections: this.connections.size,
