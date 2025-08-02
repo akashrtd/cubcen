@@ -98,9 +98,9 @@ export class CubcenNotificationService implements NotificationService {
         channels: notification.channels,
       })
 
-      const channels = JSON.parse(
-        notification.channels
-      ) as NotificationChannelType[]
+      const channels = typeof notification.channels === 'string' 
+        ? JSON.parse(notification.channels) as NotificationChannelType[]
+        : notification.channels
       const promises: Promise<void>[] = []
 
       for (const channel of channels) {
@@ -405,7 +405,7 @@ export class CubcenNotificationService implements NotificationService {
           channels: JSON.stringify([
             NotificationChannelType.EMAIL,
             NotificationChannelType.SLACK,
-          ]),
+          ]) as any,
           retryCount: 0,
           maxRetries: 3,
           createdAt: new Date(),
@@ -438,9 +438,9 @@ export class CubcenNotificationService implements NotificationService {
       if (options.eventType) where.eventType = options.eventType
       if (options.priority) where.priority = options.priority
       if (options.startDate || options.endDate) {
-        where.createdAt = {}
-        if (options.startDate) where.createdAt.gte = options.startDate
-        if (options.endDate) where.createdAt.lte = options.endDate
+        where.createdAt = {} as any
+        if (options.startDate) (where.createdAt as any).gte = options.startDate
+        if (options.endDate) (where.createdAt as any).lte = options.endDate
       }
 
       const notifications = await this.prisma.notification.findMany({
@@ -452,7 +452,11 @@ export class CubcenNotificationService implements NotificationService {
 
       return notifications.map(n => ({
         ...n,
-        channels: JSON.parse(n.channels),
+        eventType: n.eventType as NotificationEventType,
+        priority: n.priority as NotificationPriority,
+        status: n.status as NotificationStatus,
+        channels: JSON.parse(n.channels) as NotificationChannelType[],
+        userId: n.userId ?? undefined,
         data: n.data ? JSON.parse(n.data as string) : undefined,
       }))
     } catch (error) {
@@ -525,7 +529,9 @@ export class CubcenNotificationService implements NotificationService {
     }
 
     if (notification.data) {
-      const data = JSON.parse(notification.data)
+      const data = typeof notification.data === 'string' 
+        ? JSON.parse(notification.data)
+        : notification.data
       Object.assign(context, data)
     }
 
@@ -613,6 +619,10 @@ export class CubcenNotificationService implements NotificationService {
 
     return {
       ...notification,
+      eventType: notification.eventType as NotificationEventType,
+      priority: notification.priority as NotificationPriority,
+      status: notification.status as NotificationStatus,
+      userId: notification.userId ?? undefined,
       channels: channels as NotificationChannelType[],
       data: data as Record<string, unknown>,
     }

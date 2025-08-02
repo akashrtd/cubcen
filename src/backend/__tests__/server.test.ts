@@ -3,8 +3,7 @@
 
 import request from 'supertest'
 import app from '../../server'
-import { authService, AuthService } from '../../services/auth'
-import { prisma } from '../../lib/database'
+import { authService } from '../../services/auth'
 
 // Mock the database
 jest.mock('../../lib/database', () => ({

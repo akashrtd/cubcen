@@ -56,7 +56,7 @@ export class AnalyticsService {
           // Use optimized queries for better performance
           const taskStats = await OptimizedQueries.getTaskStatistics(
             undefined,
-            dateRange
+            dateRange ? { start: dateRange.startDate, end: dateRange.endDate } : undefined
           )
 
           // Get basic counts with optimized queries

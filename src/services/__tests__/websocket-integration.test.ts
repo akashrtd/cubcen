@@ -2,7 +2,7 @@
 // Tests for WebSocket integration with agent service and real-time updates
 
 import { createServer } from 'http'
-import { io as Client } from 'socket.io-client'
+import { io as Client, type Socket } from 'socket.io-client'
 import type { Socket } from 'socket.io-client'
 import { WebSocketService, initializeWebSocketService } from '../websocket'
 import { AgentService } from '../agent'

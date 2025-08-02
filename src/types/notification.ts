@@ -12,9 +12,9 @@ export interface NotificationChannel {
 }
 
 export enum NotificationChannelType {
-  EMAIL = 'email',
-  SLACK = 'slack',
-  IN_APP = 'in_app',
+  EMAIL = 'EMAIL',
+  SLACK = 'SLACK',
+  IN_APP = 'IN_APP',
 }
 
 export interface NotificationPreference {
@@ -41,17 +41,17 @@ export enum NotificationEventType {
 }
 
 export enum NotificationPriority {
-  LOW = 'low',
-  MEDIUM = 'medium',
-  HIGH = 'high',
-  CRITICAL = 'critical',
+  LOW = 'LOW',
+  MEDIUM = 'MEDIUM',
+  HIGH = 'HIGH',
+  CRITICAL = 'CRITICAL',
 }
 
 export enum NotificationStatus {
-  PENDING = 'pending',
-  SENT = 'sent',
-  FAILED = 'failed',
-  ACKNOWLEDGED = 'acknowledged',
+  PENDING = 'PENDING',
+  SENT = 'SENT',
+  FAILED = 'FAILED',
+  ACKNOWLEDGED = 'ACKNOWLEDGED',
 }
 
 export interface Notification {

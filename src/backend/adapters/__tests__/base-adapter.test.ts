@@ -32,7 +32,7 @@ class TestPlatformAdapter extends BasePlatformAdapter {
     return 'n8n'
   }
 
-  async authenticate(credentials: PlatformCredentials): Promise<AuthResult> {
+  async authenticate(_credentials: PlatformCredentials): Promise<AuthResult> {
     return this.mockAuthResult
   }
 

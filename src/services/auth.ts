@@ -69,14 +69,14 @@ class AuthService {
       }
 
       // Create tokens
-      const tokens = createTokenPair(user.id, user.email, user.role)
+      const tokens = createTokenPair(user.id, user.email, user.role as UserRole)
 
       // Convert user to AuthUser format
       const authUser: AuthUser = {
         id: user.id,
         email: user.email,
         name: user.name,
-        role: user.role,
+        role: user.role as UserRole,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       }
@@ -140,14 +140,14 @@ class AuthService {
       })
 
       // Create tokens
-      const tokens = createTokenPair(user.id, user.email, user.role)
+      const tokens = createTokenPair(user.id, user.email, user.role as UserRole)
 
       // Convert user to AuthUser format
       const authUser: AuthUser = {
         id: user.id,
         email: user.email,
         name: user.name,
-        role: user.role,
+        role: user.role as UserRole,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       }
@@ -197,7 +197,7 @@ class AuthService {
       }
 
       // Create new token pair
-      const tokens = createTokenPair(user.id, user.email, user.role)
+      const tokens = createTokenPair(user.id, user.email, user.role as UserRole)
 
       logger.info('Token refresh successful', {
         userId: user.id,
@@ -237,7 +237,7 @@ class AuthService {
         id: user.id,
         email: user.email,
         name: user.name,
-        role: user.role,
+        role: user.role as UserRole,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       }
@@ -346,7 +346,7 @@ class AuthService {
         id: user.id,
         email: user.email,
         name: user.name,
-        role: user.role,
+        role: user.role as UserRole,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       }
@@ -376,7 +376,7 @@ class AuthService {
         id: user.id,
         email: user.email,
         name: user.name,
-        role: user.role,
+        role: user.role as UserRole,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       }

@@ -8,6 +8,9 @@ import { TaskService } from '../task'
 import { AdapterManager } from '@/backend/adapters/adapter-factory'
 import { MockAdapter } from '@/backend/adapters/mock-adapter'
 import { prisma } from '@/lib/database'
+
+// Create mock prisma for testing
+const mockPrisma = prisma as jest.Mocked<typeof prisma>
 import { logger } from '@/lib/logger'
 import {
   WorkflowDefinition,
@@ -77,7 +80,7 @@ describe('WorkflowService', () => {
     adapterManager = new AdapterManager()
     adapterManager.registerAdapter('mock-platform', mockAdapter)
 
-    taskService = new TaskService(adapterManager)
+    taskService = new TaskService(mockPrisma, adapterManager)
     workflowService = new WorkflowService(
       adapterManager,
       taskService,
@@ -204,6 +207,7 @@ describe('WorkflowService', () => {
             stepOrder: 0,
             name: 'Invalid Step',
             parameters: {},
+            conditions: [],
           },
         ],
         createdBy: 'user-1',
@@ -342,16 +346,16 @@ describe('WorkflowService', () => {
 
       // Start execution
       jest.spyOn(workflowService, 'getWorkflow').mockResolvedValue(workflow)
-      await workflowService
-        .executeWorkflow(
-          'workflow-1',
-          {},
-          'user-1'
-        )(
-          // Try to update
-          prisma.workflow.findUnique as jest.Mock
-        )
-        .mockResolvedValue({
+      const executionId = await workflowService.executeWorkflow(
+        'workflow-1',
+        {},
+        'user-1'
+      )
+
+      expect(executionId).toBeDefined()
+      
+      // Mock workflow update
+      ;(prisma.workflow.findUnique as jest.Mock).mockResolvedValue({
           id: 'workflow-1',
           status: 'ACTIVE',
         })

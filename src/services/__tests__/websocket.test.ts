@@ -3,7 +3,7 @@
 
 import { createServer } from 'http'
 import { Server as SocketIOServer } from 'socket.io'
-import { io as Client, Socket } from 'socket.io-client'
+import { io as Client, type Socket } from 'socket.io-client'
 import { WebSocketService, initializeWebSocketService } from '../websocket'
 import { generateToken } from '@/lib/jwt'
 import type {

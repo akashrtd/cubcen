@@ -26,6 +26,7 @@ export class NotificationPreferencesService {
 
       return preferences.map(p => ({
         ...p,
+        eventType: p.eventType as NotificationEventType,
         channels: JSON.parse(p.channels) as NotificationChannelType[],
       }))
     } catch (error) {
@@ -54,7 +55,7 @@ export class NotificationPreferencesService {
         update: {
           channels: channels || undefined,
           enabled: preference.enabled,
-          escalationDelay: preference.escalationDelay,
+          escalationDelay: preference.escalationDelay ?? undefined,
         },
         create: {
           userId,
@@ -62,12 +63,13 @@ export class NotificationPreferencesService {
           channels:
             channels || JSON.stringify([NotificationChannelType.IN_APP]),
           enabled: preference.enabled ?? true,
-          escalationDelay: preference.escalationDelay,
+          escalationDelay: preference.escalationDelay ?? undefined,
         },
       })
 
       return {
         ...updated,
+        eventType: updated.eventType as NotificationEventType,
         channels: JSON.parse(updated.channels) as NotificationChannelType[],
       }
     } catch (error) {
@@ -164,6 +166,7 @@ export class NotificationPreferencesService {
 
       return channels.map(c => ({
         ...c,
+        type: c.type as NotificationChannelType,
         configuration: JSON.parse(c.configuration),
       }))
     } catch (error) {
@@ -192,6 +195,7 @@ export class NotificationPreferencesService {
 
       return {
         ...updated,
+        type: updated.type as NotificationChannelType,
         configuration: JSON.parse(updated.configuration),
       }
     } catch (error) {
@@ -217,6 +221,7 @@ export class NotificationPreferencesService {
 
       return {
         ...created,
+        type: created.type as NotificationChannelType,
         configuration: JSON.parse(created.configuration),
       }
     } catch (error) {
@@ -282,14 +287,14 @@ export class NotificationPreferencesService {
           update: {
             channels: JSON.stringify(pref.channels),
             enabled: pref.enabled,
-            escalationDelay: pref.escalationDelay,
+            escalationDelay: pref.escalationDelay ?? undefined,
           },
           create: {
             userId,
             eventType: pref.eventType,
             channels: JSON.stringify(pref.channels),
             enabled: pref.enabled,
-            escalationDelay: pref.escalationDelay,
+            escalationDelay: pref.escalationDelay ?? undefined,
           },
         })
       )

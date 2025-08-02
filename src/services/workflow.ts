@@ -928,7 +928,7 @@ export class WorkflowService extends EventEmitter {
       // Execute steps sequentially
       for (const step of workflow.steps) {
         // Check if execution was cancelled
-        if (execution.status === 'CANCELLED') {
+        if ((execution.status as WorkflowExecutionStatus) === 'CANCELLED') {
           break
         }
 

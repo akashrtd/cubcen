@@ -270,7 +270,7 @@ describe('AdapterFactory', () => {
     it('should register default mock adapters', () => {
       // Clear all adapters first
       const registeredTypes = AdapterFactory.getRegisteredTypes()
-      registeredTypes.forEach(_type => {
+      registeredTypes.forEach(() => {
         // We can't unregister, but we can verify they exist
       })
 

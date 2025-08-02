@@ -24,6 +24,11 @@ export interface ServerToClientEvents {
   'alert:warning': (data: WarningAlertEvent) => void
   'alert:info': (data: InfoAlertEvent) => void
 
+  // Workflow events
+  'workflow:statusChange': (data: WorkflowStatusChangeEvent) => void
+  'workflow:progress': (data: WorkflowProgressEvent) => void
+  'error:workflow': (data: WorkflowErrorEvent) => void
+
   // System notifications
   'system:maintenance': (data: MaintenanceEvent) => void
   'system:health': (data: SystemHealthEvent) => void
@@ -246,6 +251,34 @@ export interface SystemHealthEvent {
     runningTasks: number
     errorRate: number
   }
+}
+
+export interface WorkflowStatusChangeEvent {
+  executionId: string
+  status: string
+  metadata?: Record<string, unknown>
+  timestamp: Date
+}
+
+export interface WorkflowProgressEvent {
+  executionId: string
+  progress: {
+    totalSteps: number
+    completedSteps: number
+    currentStep?: string
+    percentage: number
+  }
+  timestamp: Date
+}
+
+export interface WorkflowErrorEvent {
+  executionId: string
+  error: {
+    code: string
+    message: string
+    details?: Record<string, unknown>
+  }
+  timestamp: Date
 }
 
 // Connection status types

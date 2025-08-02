@@ -180,3 +180,18 @@ export interface StepDataMapping {
   inputs: DataTransformation[]
   outputs: DataTransformation[]
 }
+
+// Additional types for workflow creation and updates
+export interface WorkflowCreationData {
+  name: string
+  description?: string
+  steps: Omit<WorkflowStepDefinition, 'id' | 'workflowId'>[]
+  createdBy: string
+}
+
+export interface WorkflowUpdateData {
+  name?: string
+  description?: string
+  status?: WorkflowStatus
+  steps?: Omit<WorkflowStepDefinition, 'id' | 'workflowId'>[]
+}

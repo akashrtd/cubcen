@@ -377,10 +377,10 @@ export class TaskService extends EventEmitter {
       }
 
       // Get total count
-      const total = await prisma.task.count({ where })
+      const total = await this.prisma.task.count({ where })
 
       // Get tasks with pagination
-      const tasks = await prisma.task.findMany({
+      const tasks = await this.prisma.task.findMany({
         where,
         include: {
           agent: {
@@ -433,7 +433,7 @@ export class TaskService extends EventEmitter {
       this.taskQueue.delete(taskId)
 
       // Update task status in database
-      await prisma.task.update({
+      await this.prisma.task.update({
         where: { id: taskId },
         data: {
           status: 'CANCELLED',
@@ -478,7 +478,7 @@ export class TaskService extends EventEmitter {
       }
 
       // Reset task status and add back to queue
-      await prisma.task.update({
+      await this.prisma.task.update({
         where: { id: taskId },
         data: {
           status: 'PENDING',
@@ -525,7 +525,7 @@ export class TaskService extends EventEmitter {
       await this.cancelTask(taskId)
 
       // Delete from database
-      await prisma.task.delete({
+      await this.prisma.task.delete({
         where: { id: taskId },
       })
 
@@ -660,7 +660,7 @@ export class TaskService extends EventEmitter {
       }
 
       // Update task status to running
-      await prisma.task.update({
+      await this.prisma.task.update({
         where: { id: taskId },
         data: {
           status: 'RUNNING',
@@ -782,7 +782,7 @@ export class TaskService extends EventEmitter {
         timestamp: new Date(),
       }
 
-      await prisma.task.update({
+      await this.prisma.task.update({
         where: { id: task.id },
         data: {
           status: 'COMPLETED',
@@ -844,7 +844,7 @@ export class TaskService extends EventEmitter {
       const nextRetryDelay = Math.min(1000 * Math.pow(2, retryCount), 30000) // Exponential backoff, max 30s
       const nextScheduledAt = new Date(Date.now() + nextRetryDelay)
 
-      await prisma.task.update({
+      await this.prisma.task.update({
         where: { id: taskId },
         data: {
           retryCount: retryCount + 1,
@@ -881,7 +881,7 @@ export class TaskService extends EventEmitter {
         retryCount,
       }
 
-      await prisma.task.update({
+      await this.prisma.task.update({
         where: { id: taskId },
         data: {
           status: 'FAILED',

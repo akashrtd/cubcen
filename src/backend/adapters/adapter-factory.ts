@@ -209,6 +209,13 @@ export class AdapterManager {
   }
 
   /**
+   * Register an adapter for testing purposes
+   */
+  registerAdapter(platformId: string, adapter: BasePlatformAdapter): void {
+    this.adapters.set(platformId, adapter)
+  }
+
+  /**
    * Disconnect all adapters
    */
   async disconnectAll(): Promise<void> {

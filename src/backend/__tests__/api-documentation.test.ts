@@ -4,61 +4,72 @@
  */
 
 import request from 'supertest'
+import { SwaggerDefinition, PathItem, Response } from 'swagger-jsdoc'
 import app from '@/server'
 import { specs, validateApiSpec } from '@/lib/swagger'
 
+type ExtendedPathItem = PathItem & {
+  post?: {
+    summary: string
+    tags: string[]
+    requestBody: object
+    responses: { [key: string]: Response }
+  }
+}
+
 describe('API Documentation', () => {
+  const typedSpecs = specs as SwaggerDefinition
+
   describe('OpenAPI Specification', () => {
     it('should generate valid OpenAPI specification', () => {
       expect(validateApiSpec()).toBe(true)
-      expect(specs).toBeDefined()
-      expect((specs as any).openapi).toBe('3.0.0')
-      expect((specs as any).info).toBeDefined()
-      expect((specs as any).info.title).toBe('Cubcen API')
-      expect((specs as any).info.version).toBe('1.0.0')
+      expect(typedSpecs).toBeDefined()
+      expect(typedSpecs.openapi).toBe('3.0.0')
+      expect(typedSpecs.info).toBeDefined()
+      expect(typedSpecs.info.title).toBe('Cubcen API')
+      expect(typedSpecs.info.version).toBe('1.0.0')
     })
 
     it('should include required OpenAPI fields', () => {
-      expect((specs as any).info.description).toContain(
+      expect(typedSpecs.info.description).toContain(
         'Cubcen AI Agent Management Platform'
       )
-      expect((specs as any).servers).toBeDefined()
-      expect((specs as any).servers.length).toBeGreaterThan(0)
-      expect((specs as any).components).toBeDefined()
-      expect((specs as any).components.securitySchemes).toBeDefined()
-      expect((specs as any).components.schemas).toBeDefined()
+      expect(typedSpecs.servers).toBeDefined()
+      expect(typedSpecs.servers?.length).toBeGreaterThan(0)
+      expect(typedSpecs.components).toBeDefined()
+      expect(typedSpecs.components?.securitySchemes).toBeDefined()
+      expect(typedSpecs.components?.schemas).toBeDefined()
     })
 
     it('should include security schemes', () => {
-      expect((specs as any).components.securitySchemes.bearerAuth).toBeDefined()
-      expect((specs as any).components.securitySchemes.bearerAuth.type).toBe(
-        'http'
-      )
-      expect((specs as any).components.securitySchemes.bearerAuth.scheme).toBe(
-        'bearer'
-      )
-      expect(
-        ((specs as any).components?.securitySchemes?.bearerAuth as any)
-          ?.bearerFormat
-      ).toBe('JWT')
+      const securitySchemes = typedSpecs.components?.securitySchemes
+      const bearerAuth = securitySchemes?.bearerAuth as {
+        type: string
+        scheme: string
+        bearerFormat: string
+      }
+      expect(bearerAuth).toBeDefined()
+      expect(bearerAuth.type).toBe('http')
+      expect(bearerAuth.scheme).toBe('bearer')
+      expect(bearerAuth.bearerFormat).toBe('JWT')
     })
 
     it('should include common schemas', () => {
-      const schemas = (specs as any).components.schemas
-      expect(schemas.Error).toBeDefined()
-      expect(schemas.Agent).toBeDefined()
-      expect(schemas.Task).toBeDefined()
-      expect(schemas.Platform).toBeDefined()
-      expect(schemas.User).toBeDefined()
-      expect(schemas.HealthStatus).toBeDefined()
+      const schemas = typedSpecs.components?.schemas
+      expect(schemas?.Error).toBeDefined()
+      expect(schemas?.Agent).toBeDefined()
+      expect(schemas?.Task).toBeDefined()
+      expect(schemas?.Platform).toBeDefined()
+      expect(schemas?.User).toBeDefined()
+      expect(schemas?.HealthStatus).toBeDefined()
     })
 
     it('should include API paths', () => {
-      expect((specs as any).paths).toBeDefined()
-      expect(Object.keys((specs as any).paths).length).toBeGreaterThan(0)
+      expect(typedSpecs.paths).toBeDefined()
+      expect(Object.keys(typedSpecs.paths as object).length).toBeGreaterThan(0)
 
       // Check for key endpoints
-      const paths = Object.keys((specs as any).paths)
+      const paths = Object.keys(typedSpecs.paths as object)
       expect(paths.some(path => path.includes('/auth/login'))).toBe(true)
       expect(paths.some(path => path.includes('/agents'))).toBe(true)
       expect(paths.some(path => path.includes('/tasks'))).toBe(true)
@@ -93,7 +104,7 @@ describe('API Documentation', () => {
 
   describe('API Documentation Content', () => {
     it('should document authentication endpoints', () => {
-      const authPaths = Object.keys((specs as any).paths).filter(path =>
+      const authPaths = Object.keys(typedSpecs.paths as object).filter(path =>
         path.includes('/auth/')
       )
 
@@ -101,20 +112,21 @@ describe('API Documentation', () => {
 
       // Check login endpoint documentation
       const loginPath = '/api/cubcen/v1/auth/login'
-      if ((specs as any).paths[loginPath]) {
-        const loginDoc = (specs as any).paths[loginPath].post
+      const loginPathItem = typedSpecs.paths?.[loginPath] as ExtendedPathItem
+      if (loginPathItem) {
+        const loginDoc = loginPathItem.post
         expect(loginDoc).toBeDefined()
-        expect(loginDoc.summary).toBeDefined()
-        expect(loginDoc.tags).toContain('Authentication')
-        expect(loginDoc.requestBody).toBeDefined()
-        expect(loginDoc.responses).toBeDefined()
-        expect(loginDoc.responses['200']).toBeDefined()
-        expect(loginDoc.responses['401']).toBeDefined()
+        expect(loginDoc?.summary).toBeDefined()
+        expect(loginDoc?.tags).toContain('Authentication')
+        expect(loginDoc?.requestBody).toBeDefined()
+        expect(loginDoc?.responses).toBeDefined()
+        expect(loginDoc?.responses['200']).toBeDefined()
+        expect(loginDoc?.responses['401']).toBeDefined()
       }
     })
 
     it('should document agent endpoints', () => {
-      const agentPaths = Object.keys((specs as any).paths).filter(path =>
+      const agentPaths = Object.keys(typedSpecs.paths as object).filter(path =>
         path.includes('/agents')
       )
 
@@ -122,29 +134,26 @@ describe('API Documentation', () => {
 
       // Check agents list endpoint documentation
       const agentsPath = '/api/cubcen/v1/agents'
-      if ((specs as any).paths[agentsPath]) {
-        const agentsDoc = (specs as any).paths[agentsPath].get
+      const agentsPathItem = typedSpecs.paths?.[agentsPath] as PathItem
+      if (agentsPathItem) {
+        const agentsDoc = agentsPathItem.get
         expect(agentsDoc).toBeDefined()
-        expect(agentsDoc.summary).toBeDefined()
-        expect(agentsDoc.tags).toContain('Agents')
-        expect(agentsDoc.parameters).toBeDefined()
-        expect(agentsDoc.responses).toBeDefined()
-        expect(agentsDoc.responses['200']).toBeDefined()
+        expect(agentsDoc?.summary).toBeDefined()
+        expect(agentsDoc?.tags).toContain('Agents')
+        expect(agentsDoc?.parameters).toBeDefined()
+        expect(agentsDoc?.responses).toBeDefined()
+        expect(agentsDoc?.responses?.['200']).toBeDefined()
       }
     })
 
     it('should include proper response schemas', () => {
       const agentsPath = '/api/cubcen/v1/agents'
-      if (
-        (specs as any).paths[agentsPath] &&
-        (specs as any).paths[agentsPath].get
-      ) {
-        const response200 = (specs as any).paths[agentsPath].get.responses[
-          '200'
-        ]
-        expect(response200.content['application/json'].schema).toBeDefined()
-
-        const schema = response200.content['application/json'].schema
+      const agentsPathItem = typedSpecs.paths?.[agentsPath] as PathItem
+      if (agentsPathItem && agentsPathItem.get) {
+        const response200 = agentsPathItem.get.responses?.['200'] as Response
+        const schema = response200.content?.['application/json']
+          .schema as { properties: { [key: string]: object } }
+        expect(schema).toBeDefined()
         expect(schema.properties.success).toBeDefined()
         expect(schema.properties.data).toBeDefined()
         expect(schema.properties.message).toBeDefined()
@@ -153,20 +162,19 @@ describe('API Documentation', () => {
 
     it('should include error response documentation', () => {
       const loginPath = '/api/cubcen/v1/auth/login'
-      if (
-        (specs as any).paths[loginPath] &&
-        (specs as any).paths[loginPath].post
-      ) {
-        const responses = (specs as any).paths[loginPath].post.responses
+      const loginPathItem = typedSpecs.paths?.[loginPath] as ExtendedPathItem
+      if (loginPathItem && loginPathItem.post) {
+        const responses = loginPathItem.post.responses
         expect(responses['400']).toBeDefined()
         expect(responses['401']).toBeDefined()
         expect(responses['429']).toBeDefined()
 
         // Check error schema reference
-        const errorResponse = responses['401']
-        expect(errorResponse.content['application/json'].schema.$ref).toBe(
-          '#/components/schemas/Error'
-        )
+        const errorResponse = responses['401'] as Response
+        const schema = errorResponse.content?.['application/json'].schema as {
+          $ref: string
+        }
+        expect(schema.$ref).toBe('#/components/schemas/Error')
       }
     })
   })
@@ -179,39 +187,40 @@ describe('API Documentation', () => {
     })
 
     it('should validate schema references', () => {
-      const schemas = (specs as any).components.schemas
+      const schemas = typedSpecs.components?.schemas
 
       // Check that referenced schemas exist
-      Object.values((specs as any).paths).forEach((pathItem: any) => {
-        Object.values(pathItem).forEach((operation: any) => {
-          if (operation.responses) {
-            Object.values(
-              operation.responses as Record<string, unknown>
-            ).forEach((response: any) => {
-              if (
-                response.content &&
-                (response.content as any)['application/json']
-              ) {
-                const schema = (response.content as any)['application/json']
-                  .schema
-                if (schema && schema.$ref) {
-                  const schemaName = schema.$ref.replace(
-                    '#/components/schemas/',
-                    ''
-                  )
-                  expect(schemas[schemaName]).toBeDefined()
+      Object.values(typedSpecs.paths as object).forEach(
+        (pathItem: PathItem) => {
+          Object.values(pathItem).forEach(operation => {
+            if (operation.responses) {
+              Object.values(operation.responses).forEach(response => {
+                const typedResponse = response as Response
+                if (
+                  typedResponse.content &&
+                  typedResponse.content['application/json']?.schema
+                ) {
+                  const schema = typedResponse.content['application/json']
+                    .schema as { $ref: string }
+                  if (schema && schema.$ref) {
+                    const schemaName = schema.$ref.replace(
+                      '#/components/schemas/',
+                      ''
+                    )
+                    expect(schemas?.[schemaName]).toBeDefined()
+                  }
                 }
-              }
-            })
-          }
-        })
-      })
+              })
+            }
+          })
+        }
+      )
     })
   })
 
   describe('API Versioning', () => {
     it('should include version in API paths', () => {
-      const paths = Object.keys((specs as any).paths)
+      const paths = Object.keys(typedSpecs.paths as object)
       const versionedPaths = paths.filter(path => path.includes('/v1/'))
 
       expect(versionedPaths.length).toBeGreaterThan(0)
@@ -224,14 +233,15 @@ describe('API Documentation', () => {
     })
 
     it('should have correct API version in info', () => {
-      const typedSpecs = specs as any
       expect(typedSpecs.info?.version).toBe('1.0.0')
     })
   })
 
   describe('Backward Compatibility', () => {
     it('should maintain consistent schema structure', () => {
-      const agentSchema = (specs as any).components.schemas.Agent
+      const agentSchema = typedSpecs.components?.schemas?.Agent as {
+        required: string[]
+      }
       expect(agentSchema).toBeDefined()
       expect(agentSchema.required).toContain('id')
       expect(agentSchema.required).toContain('name')
@@ -243,14 +253,15 @@ describe('API Documentation', () => {
     it('should include deprecation warnings for deprecated endpoints', () => {
       // This test would check for deprecated endpoints when they exist
       // For now, we just ensure the structure supports deprecation
-      const typedSpecs = specs as any
-      Object.values(typedSpecs.paths || {}).forEach((pathItem: any) => {
-        Object.values(pathItem).forEach((operation: any) => {
-          if (operation.deprecated) {
-            // This is a placeholder for a real test
-          }
-        })
-      })
+      Object.values(typedSpecs.paths as object).forEach(
+        (pathItem: PathItem) => {
+          Object.values(pathItem).forEach(operation => {
+            if (operation.deprecated) {
+              // This is a placeholder for a real test
+            }
+          })
+        }
+      )
     })
   })
 })

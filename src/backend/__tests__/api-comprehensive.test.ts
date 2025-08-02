@@ -3,7 +3,6 @@
  * End-to-end tests for all API endpoints with proper error scenarios
  */
 
-import { Prisma } from '@/generated/prisma'
 import request from 'supertest'
 import app from '@/server'
 import { prisma } from '@/lib/database'

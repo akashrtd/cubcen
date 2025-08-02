@@ -275,3 +275,5 @@ export class MockPlatformAdapter extends BasePlatformAdapter {
     }
   }
 }
+// Export alias for backward compatibility
+export { MockPlatformAdapter as MockAdapter }
