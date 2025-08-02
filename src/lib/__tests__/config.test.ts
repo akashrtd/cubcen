@@ -58,7 +58,7 @@ describe('Configuration System', () => {
     })
 
     it('should validate production environment requirements', async () => {
-      process.env.NODE_ENV = 'production' as const
+      Object.defineProperty(process.env, 'NODE_ENV', { value: 'production', configurable: true });
       process.env.DATABASE_URL = 'file:./test.db'
       process.env.JWT_SECRET =
         'your-super-secret-jwt-key-change-in-production-min-32-chars' // Default value

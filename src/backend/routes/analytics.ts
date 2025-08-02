@@ -31,7 +31,7 @@ router.get('/', async (req: Request, res: Response) => {
         error: {
           code: 'VALIDATION_ERROR',
           message: 'Invalid date range parameters',
-          details: query.error.errors,
+          details: query.error.issues,
         },
       })
     }
@@ -78,7 +78,7 @@ router.get('/kpis', async (req: Request, res: Response) => {
         error: {
           code: 'VALIDATION_ERROR',
           message: 'Invalid date range parameters',
-          details: query.error.errors,
+          details: query.error.issues,
         },
       })
     }
@@ -216,7 +216,7 @@ router.get('/trends', async (req: Request, res: Response) => {
         error: {
           code: 'VALIDATION_ERROR',
           message: 'Invalid date range parameters',
-          details: query.error.errors,
+          details: query.error.issues,
         },
       })
     }

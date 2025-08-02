@@ -353,7 +353,7 @@ describe('JWT Utilities', () => {
       const originalNodeEnv = process.env.NODE_ENV
       const originalAccessSecret = process.env.JWT_ACCESS_SECRET
 
-      process.env.NODE_ENV = 'production'
+      Object.defineProperty(process.env, 'NODE_ENV', { value: 'production', configurable: true });
       delete process.env.JWT_ACCESS_SECRET
 
       expect(() => validateJWTConfig()).toThrow(
@@ -371,7 +371,7 @@ describe('JWT Utilities', () => {
       const originalAccessSecret = process.env.JWT_ACCESS_SECRET
       const originalRefreshSecret = process.env.JWT_REFRESH_SECRET
 
-      process.env.NODE_ENV = 'production'
+      Object.defineProperty(process.env, 'NODE_ENV', { value: 'production', configurable: true });
       process.env.JWT_ACCESS_SECRET =
         'cubcen-access-secret-change-in-production'
       process.env.JWT_REFRESH_SECRET = 'some-other-secret'

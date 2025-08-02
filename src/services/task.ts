@@ -123,6 +123,7 @@ export interface TaskListOptions extends TaskFilter {
 }
 
 export class TaskService extends EventEmitter {
+  private prisma: PrismaClient
   private adapterManager: AdapterManager
   private webSocketService?: WebSocketService
   private taskQueue: Map<string, QueuedTask> = new Map()
@@ -133,10 +134,12 @@ export class TaskService extends EventEmitter {
   private isProcessing: boolean = false
 
   constructor(
+    prisma: PrismaClient,
     adapterManager: AdapterManager,
     webSocketService?: WebSocketService
   ) {
     super()
+    this.prisma = prisma
     this.adapterManager = adapterManager
     this.webSocketService = webSocketService
     this.startScheduler()
@@ -168,7 +171,7 @@ export class TaskService extends EventEmitter {
       })
 
       // Verify agent exists and is active
-      const agent = await prisma.agent.findUnique({
+      const agent = await this.prisma.agent.findUnique({
         where: { id: validatedData.agentId },
       })
 
@@ -244,7 +247,7 @@ export class TaskService extends EventEmitter {
       logger.info('Updating task', { taskId, updateData: validatedData })
 
       // Check if task exists and is not running
-      const existingTask = await prisma.task.findUnique({
+      const existingTask = await this.prisma.task.findUnique({
         where: { id: taskId },
       })
 
@@ -257,7 +260,7 @@ export class TaskService extends EventEmitter {
       }
 
       // Update task in database
-      const task = await prisma.task.update({
+      const task = await this.prisma.task.update({
         where: { id: taskId },
         data: {
           ...(validatedData.name && { name: validatedData.name }),
@@ -306,7 +309,7 @@ export class TaskService extends EventEmitter {
    */
   async getTask(taskId: string): Promise<Task | null> {
     try {
-      const task = await prisma.task.findUnique({
+      const task = await this.prisma.task.findUnique({
         where: { id: taskId },
         include: {
           agent: true,
@@ -460,7 +463,7 @@ export class TaskService extends EventEmitter {
       logger.info('Retrying task', { taskId })
 
       // Get task from database
-      const task = await prisma.task.findUnique({
+      const task = await this.prisma.task.findUnique({
         where: { id: taskId },
       })
 
@@ -647,7 +650,7 @@ export class TaskService extends EventEmitter {
       })
 
       // Get task details from database
-      const task = await prisma.task.findUnique({
+      const task = await this.prisma.task.findUnique({
         where: { id: taskId },
         include: { agent: { include: { platform: true } } },
       })

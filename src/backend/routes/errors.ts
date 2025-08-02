@@ -78,7 +78,7 @@ router.get('/logs', async (req, res) => {
     if (error instanceof z.ZodError) {
       return res.status(400).json({
         error: 'Invalid query parameters',
-        details: error.errors,
+        details: error.issues,
       })
     }
 
@@ -125,7 +125,7 @@ router.get('/stats', async (req, res) => {
     if (error instanceof z.ZodError) {
       return res.status(400).json({
         error: 'Invalid time range parameters',
-        details: error.errors,
+        details: error.issues,
       })
     }
 
@@ -172,7 +172,7 @@ router.get('/patterns', async (req, res) => {
     if (error instanceof z.ZodError) {
       return res.status(400).json({
         error: 'Invalid time range parameters',
-        details: error.errors,
+        details: error.issues,
       })
     }
 

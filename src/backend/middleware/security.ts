@@ -2,7 +2,7 @@
 // Comprehensive security middleware for input sanitization, CSRF protection, and security headers
 
 import { Request, Response, NextFunction } from 'express'
-import { ParamsDictionary, ParsedQs } from 'express-serve-static-core'
+import { ParamsDictionary, Query } from 'express-serve-static-core'
 import crypto from 'crypto'
 import { logger } from '@/lib/logger'
 
@@ -21,7 +21,7 @@ export function sanitizeInput(
         return (
           obj
             // Remove script tags and their content
-            .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+            .replace(/<script\b[^<]*(?:(?!<\/script>)[^<]*)*<\/script>/gi, '')
             // Remove javascript: protocol
             .replace(/javascript:/gi, '')
             // Remove vbscript: protocol
@@ -78,7 +78,7 @@ export function sanitizeInput(
         string,
         unknown
       >
-      req.query = sanitizedQuery as ParsedQs
+      req.query = sanitizedQuery as Query
     }
 
     // Sanitize URL parameters
@@ -87,7 +87,7 @@ export function sanitizeInput(
         string,
         unknown
       >
-      req.params = sanitizedParams
+      req.params = sanitizedParams as ParamsDictionary
     }
 
     // Log suspicious input patterns
@@ -122,6 +122,7 @@ export function sanitizeInput(
         timestamp: new Date().toISOString(),
       },
     })
+    return
   }
 }
 
@@ -132,7 +133,7 @@ export function csrfProtection(
   req: Request,
   res: Response,
   next: NextFunction
-): Response<any, Record<string, any>> | void {
+): void {
   try {
     // Skip CSRF protection for GET, HEAD, OPTIONS requests
     if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
@@ -160,13 +161,14 @@ export function csrfProtection(
         tokensMatch: csrfToken === sessionCsrfToken,
       })
 
-      return res.status(403).json({
+      res.status(403).json({
         error: {
           code: 'CSRF_TOKEN_INVALID',
           message: 'CSRF token validation failed',
           timestamp: new Date().toISOString(),
         },
       })
+      return
     }
 
     next()
@@ -184,6 +186,7 @@ export function csrfProtection(
         timestamp: new Date().toISOString(),
       },
     })
+    return
   }
 }
 
@@ -204,16 +207,21 @@ export function generateCsrfToken(req: Request, res: Response): void {
       timestamp: new Date().toISOString(),
     })
   } catch (error) {
-    logger.error('CSRF token generation error', error as Error)
+    logger.error('CSRF protection error', error as Error, {
+      path: req.path,
+      method: req.method,
+      ip: req.ip,
+    })
 
     res.status(500).json({
       error: {
-        code: 'CSRF_TOKEN_GENERATION_ERROR',
-        message: 'Failed to generate CSRF token',
+        code: 'CSRF_PROTECTION_ERROR',
+        message: 'CSRF protection failed',
         timestamp: new Date().toISOString(),
       },
     })
   }
+  return
 }
 
 /**
@@ -224,64 +232,80 @@ export function securityHeaders(
   res: Response,
   next: NextFunction
 ): void {
-  // Content Security Policy
-  res.setHeader(
-    'Content-Security-Policy',
-    [
-      "default-src 'self'",
-      "script-src 'self' 'unsafe-inline'",
-      "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: https:",
-      "font-src 'self'",
-      "connect-src 'self' ws: wss:",
-      "media-src 'self'",
-      "object-src 'none'",
-      "child-src 'none'",
-      "frame-ancestors 'none'",
-      "form-action 'self'",
-      "base-uri 'self'",
-    ].join('; ')
-  )
-
-  // Prevent MIME type sniffing
-  res.setHeader('X-Content-Type-Options', 'nosniff')
-
-  // Prevent clickjacking
-  res.setHeader('X-Frame-Options', 'DENY')
-
-  // XSS protection
-  res.setHeader('X-XSS-Protection', '1; mode=block')
-
-  // Referrer policy
-  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin')
-
-  // Permissions policy
-  res.setHeader(
-    'Permissions-Policy',
-    [
-      'camera=()',
-      'microphone=()',
-      'geolocation=()',
-      'payment=()',
-      'usb=()',
-      'magnetometer=()',
-      'gyroscope=()',
-      'accelerometer=()',
-    ].join(', ')
-  )
-
-  // Strict Transport Security (HTTPS only)
-  if (req.secure || req.headers['x-forwarded-proto'] === 'https') {
+  try {
+    // Content Security Policy
     res.setHeader(
-      'Strict-Transport-Security',
-      'max-age=31536000; includeSubDomains; preload'
+      'Content-Security-Policy',
+      [
+        "default-src 'self'",
+        "script-src 'self' 'unsafe-inline'",
+        "style-src 'self' 'unsafe-inline'",
+        "img-src 'self' data: https:",
+        "font-src 'self'",
+        "connect-src 'self' ws: wss:",
+        "media-src 'self'",
+        "object-src 'none'",
+        "child-src 'none'",
+        "frame-ancestors 'none'",
+        "form-action 'self'",
+        "base-uri 'self'",
+      ].join('; ')
     )
+
+    // Prevent MIME type sniffing
+    res.setHeader('X-Content-Type-Options', 'nosniff')
+
+    // Prevent clickjacking
+    res.setHeader('X-Frame-Options', 'DENY')
+
+    // XSS protection
+    res.setHeader('X-XSS-Protection', '1; mode=block')
+
+    // Referrer policy
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin')
+
+    // Permissions policy
+    res.setHeader(
+      'Permissions-Policy',
+      [
+        'camera=()',
+        'microphone=()',
+        'geolocation=()',
+        'payment=()',
+        'usb=()',
+        'magnetometer=()',
+        'gyroscope=()',
+        'accelerometer=()',
+      ].join(', ')
+    )
+
+    // Strict Transport Security (HTTPS only)
+    if (req.secure || req.headers['x-forwarded-proto'] === 'https') {
+      res.setHeader(
+        'Strict-Transport-Security',
+        'max-age=31536000; includeSubDomains; preload'
+      )
+    }
+
+    // Remove server information
+    res.removeHeader('X-Powered-By')
+    res.removeHeader('Server')
+  } catch (error) {
+    logger.error('Security headers error', error as Error, {
+      path: req.path,
+      method: req.method,
+      ip: req.ip,
+    })
+
+    res.status(500).json({
+      error: {
+        code: 'SECURITY_HEADERS_ERROR',
+        message: 'Failed to set security headers',
+        timestamp: new Date().toISOString(),
+      },
+    })
+    return
   }
-
-  // Remove server information
-  res.removeHeader('X-Powered-By')
-  res.removeHeader('Server')
-
   next()
 }
 
@@ -303,13 +327,14 @@ export function requestSizeLimit(maxSize: number = 10 * 1024 * 1024) {
         maxSize,
       })
 
-      return res.status(413).json({
+      res.status(413).json({
         error: {
           code: 'REQUEST_TOO_LARGE',
           message: `Request size exceeds limit of ${maxSize} bytes`,
           timestamp: new Date().toISOString(),
         },
       })
+      return
     }
 
     next()
@@ -337,13 +362,14 @@ export function ipWhitelist(allowedIPs: string[] = []) {
         method: req.method,
       })
 
-      return res.status(403).json({
+      res.status(403).json({
         error: {
           code: 'IP_NOT_ALLOWED',
           message: 'Access denied from this IP address',
           timestamp: new Date().toISOString(),
         },
       })
+      return
     }
 
     next()
@@ -362,7 +388,7 @@ export function suspiciousActivityDetection(
     // SQL injection patterns
     /(\b(union|select|insert|update|delete|drop|create|alter|exec|execute)\b.*\b(from|where|into|values|set)\b)/i,
     // XSS patterns
-    /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+    /<script\b[^<]*(?:(?!<\/script>)[^<]*)*<\/script>/gi,
     /javascript:/i,
     /vbscript:/i,
     // Path traversal patterns
@@ -396,13 +422,14 @@ export function suspiciousActivityDetection(
 
     // In production, you might want to block the request
     if (process.env.NODE_ENV === 'production') {
-      return res.status(400).json({
+      res.status(400).json({
         error: {
           code: 'SUSPICIOUS_ACTIVITY',
           message: 'Request contains suspicious patterns',
           timestamp: new Date().toISOString(),
         },
       })
+      return
     }
   }
 
@@ -452,13 +479,14 @@ export function fileUploadSecurity(
         ip: req.ip,
       })
 
-      return res.status(413).json({
+      res.status(413).json({
         error: {
           code: 'FILE_TOO_LARGE',
           message: `File size exceeds limit of ${maxFileSize} bytes`,
           timestamp: new Date().toISOString(),
         },
       })
+      return
     }
 
     // Check MIME type
@@ -470,13 +498,14 @@ export function fileUploadSecurity(
         ip: req.ip,
       })
 
-      return res.status(400).json({
+      res.status(400).json({
         error: {
           code: 'INVALID_FILE_TYPE',
           message: `File type ${file.mimetype} is not allowed`,
           timestamp: new Date().toISOString(),
         },
       })
+      return
     }
 
     // Check for executable file extensions
@@ -503,13 +532,14 @@ export function fileUploadSecurity(
         ip: req.ip,
       })
 
-      return res.status(400).json({
+      res.status(400).json({
         error: {
           code: 'DANGEROUS_FILE_EXTENSION',
           message: `File extension ${fileExtension} is not allowed`,
           timestamp: new Date().toISOString(),
         },
       })
+      return
     }
   }
 
@@ -720,13 +750,14 @@ export function geolocationFilter(allowedCountries: string[] = []) {
         method: req.method,
       })
 
-      return res.status(403).json({
+      res.status(403).json({
         error: {
           code: 'GEOGRAPHIC_RESTRICTION',
           message: 'Access denied from this geographic location',
           timestamp: new Date().toISOString(),
         },
       })
+      return
     }
 
     next()
@@ -742,13 +773,14 @@ export function requestSignatureValidation(secretKey: string) {
     const timestamp = req.headers['x-timestamp'] as string
 
     if (!signature || !timestamp) {
-      return res.status(400).json({
+      res.status(400).json({
         error: {
           code: 'MISSING_SIGNATURE',
           message: 'Request signature and timestamp required',
           timestamp: new Date().toISOString(),
         },
       })
+      return
     }
 
     // Check timestamp freshness (prevent replay attacks)
@@ -765,13 +797,14 @@ export function requestSignatureValidation(secretKey: string) {
         maxAge,
       })
 
-      return res.status(400).json({
+      res.status(400).json({
         error: {
           code: 'INVALID_TIMESTAMP',
           message: 'Request timestamp is too old or too far in the future',
           timestamp: new Date().toISOString(),
         },
       })
+      return
     }
 
     // Validate signature
@@ -791,13 +824,14 @@ export function requestSignatureValidation(secretKey: string) {
         expectedSignature,
       })
 
-      return res.status(401).json({
+      res.status(401).json({
         error: {
           code: 'INVALID_SIGNATURE',
           message: 'Request signature validation failed',
           timestamp: new Date().toISOString(),
         },
-      }) as unknown as void
+      })
+      return
     }
 
     next()

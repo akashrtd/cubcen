@@ -57,7 +57,7 @@ describe('Agent Routes', () => {
       viewerUser.id,
       viewerUser.email,
       viewerUser.role
-    )
+    ).accessToken
     operatorToken = createTokenPair(
       operatorUser.id,
       operatorUser.email,

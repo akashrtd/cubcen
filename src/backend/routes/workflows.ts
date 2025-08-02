@@ -6,16 +6,15 @@
 import { Router, Request, Response, NextFunction } from 'express'
 import { z } from 'zod'
 import { WorkflowService } from '@/services/workflow'
-import { authenticateToken } from '@/backend/middleware/auth'
+import { authenticate } from '@/backend/middleware/auth'
 import { validateRequest } from '@/backend/middleware/validation'
 import { logger } from '@/lib/logger'
 import {
-  WorkflowCreationData,
-  WorkflowUpdateData,
   WorkflowExecutionOptions,
   WorkflowListOptions,
   WorkflowStatus,
 } from '@/types/workflow'
+import { WorkflowCreationData, WorkflowUpdateData } from '@/services/workflow'
 
 // Validation schemas
 const createWorkflowSchema = z.object({
@@ -105,12 +104,12 @@ const updateWorkflowSchema = z.object({
 
 const getWorkflowsSchema = z.object({
   query: z.object({
-    page: z.string().transform(Number).pipe(z.number().min(1)).default('1'),
+    page: z.string().transform(Number).pipe(z.number().min(1)).default(1),
     limit: z
       .string()
       .transform(Number)
       .pipe(z.number().min(1).max(100))
-      .default('10'),
+      .default(10),
     status: z.enum(['DRAFT', 'ACTIVE', 'PAUSED', 'ARCHIVED']).optional(),
     createdBy: z.string().optional(),
     dateFrom: z

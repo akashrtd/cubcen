@@ -205,7 +205,7 @@ describe('Notification Routes', () => {
   describe('POST /api/notifications/:id/acknowledge', () => {
     it('should acknowledge notification', async () => {
       const { notificationService } = require('../../../services/notification')
-      notificationService.acknowledge.mockResolvedValue(undefined)
+      notificationService.acknowledge.mockResolvedValue(Promise.resolve())
 
       const response = await request(app)
         .post('/api/notifications/notification-123/acknowledge')

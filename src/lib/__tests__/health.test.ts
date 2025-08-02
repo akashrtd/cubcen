@@ -3,17 +3,20 @@
  * Comprehensive tests for health checks and system metrics
  */
 
-import healthMonitoring from '../health'
-import { prisma as database } from '../database'
+
+
 
 // Mock the database
+const mockPrismaUserFindFirst = jest.fn();
 jest.mock('../database', () => ({
   prisma: {
     user: {
-      findFirst: jest.fn(),
+      findFirst: mockPrismaUserFindFirst,
     },
   },
-}))
+}));
+
+
 
 // Mock fs/promises for disk space checks
 jest.mock('fs/promises', () => ({
@@ -28,7 +31,7 @@ jest.mock('os', () => ({
   cpus: jest.fn(() => Array(4).fill({})), // 4 CPUs
 }))
 
-const mockDatabase = database as jest.Mocked<typeof database>
+
 const mockFs = jest.requireMock('fs/promises')
 const mockOs = jest.requireMock('os')
 
@@ -61,7 +64,7 @@ describe('Health Monitoring Service', () => {
 
   describe('Database Health Check', () => {
     it('should return healthy status when database is accessible', async () => {
-      mockDatabase.user.findFirst.mockResolvedValue({ id: 'test-id' })
+      mockPrismaUserFindFirst.mockResolvedValue({ id: 'test-id' })
 
       const result = await healthMonitoring.checkDatabase()
 
@@ -73,7 +76,7 @@ describe('Health Monitoring Service', () => {
     })
 
     it('should return degraded status when database is slow', async () => {
-      mockDatabase.user.findFirst.mockImplementation(
+      mockPrismaUserFindFirst.mockImplementation(
         () =>
           new Promise(resolve =>
             setTimeout(() => resolve({ id: 'test-id' }), 1500)
@@ -88,7 +91,7 @@ describe('Health Monitoring Service', () => {
 
     it('should return unhealthy status when database fails', async () => {
       const error = new Error('Database connection failed')
-          (mockPrisma.user.findUnique as jest.Mock).mockRejectedValue(new Error('Database error'));
+          mockDatabase.user.findFirst.mockRejectedValue(new Error('Database connection failed'))
 
       const result = await healthMonitoring.checkDatabase()
 
@@ -268,7 +271,7 @@ describe('Health Monitoring Service', () => {
 
   describe('Overall Health Status', () => {
     it('should return healthy status when all checks pass', async () => {
-      mockDatabase.user.findFirst.mockResolvedValue({ id: 'test-id' })
+      mockPrismaUserFindFirst.mockResolvedValue({ id: 'test-id' })
       mockFs.statfs.mockResolvedValue({
         bavail: 1000000,
         bsize: 4096,
@@ -284,7 +287,7 @@ describe('Health Monitoring Service', () => {
     })
 
     it('should return degraded status when some checks are degraded', async () => {
-      mockDatabase.user.findFirst.mockResolvedValue({ id: 'test-id' })
+      mockPrismaUserFindFirst.mockResolvedValue({ id: 'test-id' })
       mockFs.statfs.mockResolvedValue({
         bavail: 200000, // Low disk space
         bsize: 4096,
@@ -361,7 +364,7 @@ describe('Health Monitoring Service', () => {
 
   describe('Individual Health Check Retrieval', () => {
     it('should retrieve specific health check after running', async () => {
-      mockDatabase.user.findFirst.mockResolvedValue({ id: 'test-id' })
+      mockPrismaUserFindFirst.mockResolvedValue({ id: 'test-id' })
       await healthMonitoring.checkDatabase()
 
       const check = healthMonitoring.getHealthCheck('database')
