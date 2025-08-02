@@ -3,7 +3,7 @@
 
 import express from 'express'
 import { z } from 'zod'
-import { authenticate } from "../middleware/auth"
+import { authenticate } from '../middleware/auth'
 import { validateRequest } from '../middleware/validation'
 import { notificationService } from '../../services/notification'
 import { notificationPreferencesService } from '../../services/notification-preferences'
@@ -394,7 +394,7 @@ router.post('/test', authenticate, async (req, res) => {
       })
     }
 
-    const { channel, message = 'Test notification from Cubcen' } = req.body;
+    const { channel, message = 'Test notification from Cubcen' } = req.body
 
     const notification = await notificationService.createNotification(
       NotificationEventType.SYSTEM_ERROR,

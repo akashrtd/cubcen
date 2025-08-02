@@ -216,26 +216,24 @@ export function addVersionInfoToSpec(
   spec: Record<string, unknown>
 ): Record<string, unknown> {
   // Add version information to OpenAPI spec
-  spec.info.version = API_VERSIONS[CURRENT_VERSION].version
-
-  // Add supported versions to info
-  (specs.info as Record<string, unknown>)['x-api-versions'] = Object.entries(API_VERSIONS).map(
-    ([key, value]) => ({
-      version: key,
-      info: value,
-    })
-  );
+  spec.info.version = API_VERSIONS[CURRENT_VERSION].version(
+    // Add supported versions to info
+    specs.info as Record<string, unknown>
+  )['x-api-versions'] = Object.entries(API_VERSIONS).map(([key, value]) => ({
+    version: key,
+    info: value,
+  }))
 
   // Add version-specific servers
-  (spec.servers as Array<Record<string, unknown>>) = (spec.servers as Array<Record<string, unknown>>).map(
-    server => ({
-      ...server,
-      url: (server.url as string).replace(
-        '/api/cubcen/',
-        `/api/cubcen/${CURRENT_VERSION}/`
-      ),
-    })
-  );
+  ;(spec.servers as Array<Record<string, unknown>>) = (
+    spec.servers as Array<Record<string, unknown>>
+  ).map(server => ({
+    ...server,
+    url: (server.url as string).replace(
+      '/api/cubcen/',
+      `/api/cubcen/${CURRENT_VERSION}/`
+    ),
+  }))
 
   return spec
 }

@@ -250,7 +250,10 @@ describe('Security Hardening Tests', () => {
     it('should set HSTS header for HTTPS requests', async () => {
       // Mock HTTPS request
       app.use((req: Request, res: Response, next: NextFunction) => {
-        Object.defineProperty(process.env, 'secure', { writable: true, value: true });
+        Object.defineProperty(process.env, 'secure', {
+          writable: true,
+          value: true,
+        })
         next()
       })
 
@@ -683,7 +686,10 @@ describe('Security Hardening Tests', () => {
     it('should not expose sensitive information in production errors', async () => {
       // Set production environment
       const originalEnv = process.env.NODE_ENV
-      Object.defineProperty(process.env, 'NODE_ENV', { value: 'production', configurable: true });
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: 'production',
+        configurable: true,
+      })
 
       const response = await request(app).get('/error').expect(500)
 
@@ -692,13 +698,19 @@ describe('Security Hardening Tests', () => {
       expect(response.body.error.stack).toBeUndefined()
 
       // Restore environment
-      Object.defineProperty(process.env, 'NODE_ENV', { value: originalEnv, configurable: true });
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: originalEnv,
+        configurable: true,
+      })
     })
 
     it('should provide detailed errors in development', async () => {
       // Set development environment
       const originalEnv = process.env.NODE_ENV
-      Object.defineProperty(process.env, 'NODE_ENV', { writable: true, value: 'development' });
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        writable: true,
+        value: 'development',
+      })
 
       const response = await request(app).get('/error').expect(500)
 
@@ -708,7 +720,10 @@ describe('Security Hardening Tests', () => {
       expect(response.body.error.stack).toBeDefined()
 
       // Restore environment
-      Object.defineProperty(process.env, 'NODE_ENV', { value: originalEnv, configurable: true });
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: originalEnv,
+        configurable: true,
+      })
     })
   })
 })

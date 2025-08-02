@@ -402,7 +402,7 @@ class AuthService {
         role: user.role as UserRole,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
-      }));
+      }))
     } catch (error) {
       logger.error('Get all users error', error as Error)
       throw new AuthenticationError('Failed to get users', 'GET_USERS_ERROR')

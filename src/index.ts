@@ -37,7 +37,11 @@ async function startServer() {
     )
 
     // Initialize task service with adapter manager and WebSocket service
-    const taskService = new TaskService(prisma, adapterManager, webSocketService)
+    const taskService = new TaskService(
+      prisma,
+      adapterManager,
+      webSocketService
+    )
 
     // Initialize workflow service with adapter manager, task service, and WebSocket service
     const workflowService = new WorkflowService(

@@ -137,7 +137,9 @@ describe('TaskDetailModal', () => {
     const retryButton = screen.getByText('Retry')
     await user.click(retryButton)
 
-    expect(mockOnUpdate).toHaveBeenCalledWith('task-1', { status: TaskStatus.PENDING })
+    expect(mockOnUpdate).toHaveBeenCalledWith('task-1', {
+      status: TaskStatus.PENDING,
+    })
   })
 
   it('calls onUpdate when cancel button is clicked', async () => {
@@ -362,16 +364,16 @@ describe('TaskDetailModal', () => {
   it('disables delete button while deleting', async () => {
     const mockOnDelete = jest.fn(
       () => new Promise<void>(resolve => setTimeout(resolve, 100))
-    );
-    const user = userEvent.setup();
+    )
+    const user = userEvent.setup()
 
-    render(<TaskDetailModal {...defaultProps} onDelete={mockOnDelete} />);
+    render(<TaskDetailModal {...defaultProps} onDelete={mockOnDelete} />)
 
-    const deleteButton = screen.getByText('Delete');
-    await user.click(deleteButton);
+    const deleteButton = screen.getByText('Delete')
+    await user.click(deleteButton)
 
     // Button should be disabled while deleting
-    expect(deleteButton).toBeDisabled();
+    expect(deleteButton).toBeDisabled()
   })
 
   it('handles malformed JSON in parameters gracefully', async () => {

@@ -3,20 +3,15 @@
  * Comprehensive tests for health checks and system metrics
  */
 
-
-
-
 // Mock the database
-const mockPrismaUserFindFirst = jest.fn();
+const mockPrismaUserFindFirst = jest.fn()
 jest.mock('../database', () => ({
   prisma: {
     user: {
       findFirst: mockPrismaUserFindFirst,
     },
   },
-}));
-
-
+}))
 
 // Mock fs/promises for disk space checks
 jest.mock('fs/promises', () => ({
@@ -30,7 +25,6 @@ jest.mock('os', () => ({
   loadavg: jest.fn(() => [0.5, 0.7, 0.9]),
   cpus: jest.fn(() => Array(4).fill({})), // 4 CPUs
 }))
-
 
 const mockFs = jest.requireMock('fs/promises')
 const mockOs = jest.requireMock('os')
@@ -91,7 +85,9 @@ describe('Health Monitoring Service', () => {
 
     it('should return unhealthy status when database fails', async () => {
       const error = new Error('Database connection failed')
-          mockDatabase.user.findFirst.mockRejectedValue(new Error('Database connection failed'))
+      mockDatabase.user.findFirst.mockRejectedValue(
+        new Error('Database connection failed')
+      )
 
       const result = await healthMonitoring.checkDatabase()
 

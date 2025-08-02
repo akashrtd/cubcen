@@ -756,7 +756,7 @@ export class WorkflowService extends EventEmitter {
           retryCount: 0,
         })),
         createdBy,
-      };
+      }
 
       // Store execution
       this.runningExecutions.set(executionId, execution)
@@ -1358,7 +1358,7 @@ export class WorkflowService extends EventEmitter {
       step.conditions.every(
         condition => !condition.dependsOn || condition.dependsOn.length === 0
       )
-    );
+    )
 
     // If no entry points, first step is reachable
     if (entryPoints.length === 0 && steps.length > 0) {

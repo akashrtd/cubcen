@@ -391,8 +391,12 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
           limit: parseInt(req.query.limit as string),
           status: req.query.status as WorkflowStatus,
           createdBy: req.query.createdBy as string,
-          dateFrom: req.query.dateFrom ? new Date(req.query.dateFrom as string) : undefined,
-          dateTo: req.query.dateTo ? new Date(req.query.dateTo as string) : undefined,
+          dateFrom: req.query.dateFrom
+            ? new Date(req.query.dateFrom as string)
+            : undefined,
+          dateTo: req.query.dateTo
+            ? new Date(req.query.dateTo as string)
+            : undefined,
           search: req.query.search as string,
           sortBy: req.query.sortBy as string,
           sortOrder: req.query.sortOrder as 'asc' | 'desc',

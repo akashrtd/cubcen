@@ -390,7 +390,11 @@ export function validateApiSpec(): boolean {
       throw new Error('Invalid OpenAPI specification generated')
     }
 
-    if (!(specs as OpenAPI.Document).openapi || !(specs as OpenAPI.Document).info || !(specs as OpenAPI.Document).paths) {
+    if (
+      !(specs as OpenAPI.Document).openapi ||
+      !(specs as OpenAPI.Document).info ||
+      !(specs as OpenAPI.Document).paths
+    ) {
       throw new Error('OpenAPI specification missing required fields')
     }
 

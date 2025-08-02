@@ -1,7 +1,23 @@
 // Cubcen WebSocket Service
 // Handles real-time communication using Socket.io for agent status, task updates, and alerts
 
-import type { ServerToClientEvents, ClientToServerEvents, AgentStatusUpdate, TaskProgressEvent, AgentErrorEvent, CriticalAlertEvent, TaskErrorEvent, PlatformErrorEvent, SystemHealthEvent, WarningAlertEvent, InfoAlertEvent, ConnectionInfo, AuthResult, SocketData, InterServerEvents } from '@/types/websocket'
+import type {
+  ServerToClientEvents,
+  ClientToServerEvents,
+  AgentStatusUpdate,
+  TaskProgressEvent,
+  AgentErrorEvent,
+  CriticalAlertEvent,
+  TaskErrorEvent,
+  PlatformErrorEvent,
+  SystemHealthEvent,
+  WarningAlertEvent,
+  InfoAlertEvent,
+  ConnectionInfo,
+  AuthResult,
+  SocketData,
+  InterServerEvents,
+} from '@/types/websocket'
 import { Server as HTTPServer } from 'http'
 import { logger } from '@/lib/logger'
 import { verifyAccessToken } from '@/lib/jwt'
@@ -162,7 +178,6 @@ export class WebSocketService {
     socket: any,
     token: string
   ): Promise<AuthResult> {
-     
     try {
       const decoded = verifyAccessToken(token)
 
@@ -200,7 +215,6 @@ export class WebSocketService {
   }
 
   private handleAgentSubscription(socket: any, agentIds: string[]): void {
-     
     const userId = socket.data.userId
 
     if (agentIds.length === 0) {
@@ -247,7 +261,6 @@ export class WebSocketService {
   }
 
   private handleTaskSubscription(socket: any, taskIds: string[]): void {
-     
     const userId = socket.data.userId
 
     if (taskIds.length === 0) {
@@ -289,7 +302,6 @@ export class WebSocketService {
   }
 
   private handlePlatformSubscription(socket: any, platformIds: string[]): void {
-     
     const userId = socket.data.userId
 
     if (platformIds.length === 0) {
@@ -331,7 +343,6 @@ export class WebSocketService {
   }
 
   private handleAgentUnsubscription(socket: any, agentIds: string[]): void {
-     
     if (agentIds.length === 0) {
       // Unsubscribe from all agents
       socket.leave('agents:all')
@@ -359,7 +370,6 @@ export class WebSocketService {
   }
 
   private handleTaskUnsubscription(socket: any, taskIds: string[]): void {
-     
     if (taskIds.length === 0) {
       // Unsubscribe from all tasks
       socket.leave('tasks:all')
@@ -390,7 +400,6 @@ export class WebSocketService {
     socket: any,
     platformIds: string[]
   ): void {
-     
     if (platformIds.length === 0) {
       // Unsubscribe from all platforms
       socket.leave('platforms:all')
@@ -418,7 +427,6 @@ export class WebSocketService {
   }
 
   private handleDisconnection(socket: any, reason: string): void {
-     
     logger.info('Socket disconnected', {
       socketId: socket.id,
       userId: socket.data.userId,
@@ -470,17 +478,17 @@ export class WebSocketService {
     // Send system health updates every 30 seconds
     setInterval(() => {
       const healthData: SystemHealthEvent = {
-      timestamp: new Date(),
-      status: 'healthy', // This would be calculated based on actual system metrics
-      metrics: {
-        cpu: process.cpuUsage().user / 1000000, // Convert to percentage
-        memory: process.memoryUsage().heapUsed / 1024 / 1024, // Convert to MB
-        activeConnections: this.connections.size,
-        activeAgents: this.subscriptions.agents.size,
-        runningTasks: this.subscriptions.tasks.size,
-        errorRate: 0, // This would be calculated from actual error metrics
-      },
-    };
+        timestamp: new Date(),
+        status: 'healthy', // This would be calculated based on actual system metrics
+        metrics: {
+          cpu: process.cpuUsage().user / 1000000, // Convert to percentage
+          memory: process.memoryUsage().heapUsed / 1024 / 1024, // Convert to MB
+          activeConnections: this.connections.size,
+          activeAgents: this.subscriptions.agents.size,
+          runningTasks: this.subscriptions.tasks.size,
+          errorRate: 0, // This would be calculated from actual error metrics
+        },
+      }
 
       this.broadcastSystemHealth(healthData)
     }, 30000)
@@ -905,7 +913,7 @@ export class WebSocketService {
         message,
       },
       timestamp: new Date(),
-    };
+    }
 
     this.io.to(`task:${taskId}`).emit('task:progress', event)
     this.io.to('tasks:all').emit('task:progress', event)

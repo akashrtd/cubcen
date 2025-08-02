@@ -3,7 +3,12 @@
 
 import { PrismaClient } from '../generated/prisma'
 import { logger } from '../lib/logger'
-import { NotificationChannelType, NotificationEventType, NotificationPreference, NotificationChannel } from '../types/notification'
+import {
+  NotificationChannelType,
+  NotificationEventType,
+  NotificationPreference,
+  NotificationChannel,
+} from '../types/notification'
 
 export class NotificationPreferencesService {
   private prisma: PrismaClient
@@ -22,7 +27,7 @@ export class NotificationPreferencesService {
       return preferences.map(p => ({
         ...p,
         channels: JSON.parse(p.channels) as NotificationChannelType[],
-      }));
+      }))
     } catch (error) {
       logger.error('Failed to get user preferences', error as Error, { userId })
       throw error
@@ -241,7 +246,9 @@ export class NotificationPreferencesService {
         return []
       }
 
-      return JSON.parse(preference.channels as string) as NotificationChannelType[];
+      return JSON.parse(
+        preference.channels as string
+      ) as NotificationChannelType[]
     } catch (error) {
       logger.error('Failed to get user preferences for event', error as Error, {
         userId,

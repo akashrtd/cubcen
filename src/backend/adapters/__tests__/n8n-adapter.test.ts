@@ -113,7 +113,9 @@ describe('N8nPlatformAdapter', () => {
 
       expect(
         () => new N8nPlatformAdapter(invalidConfig as PlatformConfig)
-      ).toThrow('n8n adapter requires either apiKey or email/password credentials')
+      ).toThrow(
+        'n8n adapter requires either apiKey or email/password credentials'
+      )
     })
 
     it('should throw error for missing credentials', () => {

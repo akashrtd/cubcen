@@ -179,7 +179,7 @@ describe('ErrorService', () => {
       mockPrisma.systemLog.groupBy.mockResolvedValueOnce([
         { source: 'agent-service', _count: { source: 25 } },
         { source: 'task-service', _count: { source: 15 } },
-      ]);
+      ])
 
       // Mock top errors
       mockPrisma.systemLog.groupBy.mockResolvedValueOnce([
@@ -466,9 +466,10 @@ describe('ErrorService', () => {
       const taskIds = ['task1', 'task2']
 
       jest
-        jest.spyOn(errorService, 'retryTask')
+      jest
+        .spyOn(errorService, 'retryTask')
         .mockResolvedValueOnce(undefined)
-        .mockRejectedValueOnce(new Error('Task not found'));
+        .mockRejectedValueOnce(new Error('Task not found'))
 
       const result = await errorService.bulkRetryTasks(taskIds)
 

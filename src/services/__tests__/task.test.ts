@@ -563,11 +563,12 @@ describe('TaskService', () => {
     beforeEach(() => {
       mockPrisma.agent.findUnique.mockResolvedValue(mockAgent)
       mockPrisma.task.create.mockResolvedValue(mockTask)
-      mockPrisma.task.findUnique.mockResolvedValue({
-        ...mockTask,
-        agent: mockAgent,
-      })
-      (mockPrisma.task.update as jest.Mock).mockResolvedValue(mockTask);
+      mockPrisma.task.findUnique
+        .mockResolvedValue({
+          ...mockTask,
+          agent: mockAgent,
+        })(mockPrisma.task.update as jest.Mock)
+        .mockResolvedValue(mockTask)
     })
 
     it('should execute a task successfully', async () => {
@@ -846,8 +847,9 @@ describe('TaskService', () => {
     })
 
     it('should handle database errors gracefully', async () => {
-      const dbError = new Error('Database connection failed')
-      (mockPrisma.task.update as jest.Mock).mockRejectedValue(dbError);
+      const dbError = new Error('Database connection failed')(
+        mockPrisma.task.update as jest.Mock
+      ).mockRejectedValue(dbError)
 
       await expect(
         taskService.updateTask('task_1', { name: 'Updated' })

@@ -130,10 +130,10 @@ export function TaskCreateModal({
   const onSubmit = async (data: TaskFormData) => {
     // Validate parameters if provided
     if (data.parameters && !validateParameters(data.parameters)) {
-      return;
+      return
     }
 
-    setIsCreating(true);
+    setIsCreating(true)
     try {
       const taskData = {
         name: data.name,
@@ -145,17 +145,17 @@ export function TaskCreateModal({
         timeoutMs: data.timeoutMs,
         parameters: data.parameters ? JSON.parse(data.parameters) : {},
         createdBy: 'current-user', // This should come from auth context
-      };
+      }
 
-      await onCreate(taskData);
-      reset();
-      onClose();
+      await onCreate(taskData)
+      reset()
+      onClose()
     } catch (_error) {
-      console.error('Failed to create task:', _error);
+      console.error('Failed to create task:', _error)
     } finally {
-      setIsCreating(false);
+      setIsCreating(false)
     }
-  };
+  }
 
   const handleClose = () => {
     reset()
