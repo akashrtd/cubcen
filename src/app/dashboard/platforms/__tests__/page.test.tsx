@@ -1,5 +1,47 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import PlatformsPage from '../page'
+import { toast } from 'sonner' // Import toast directly
+
+// Mock the components
+jest.mock('@/components/platforms/platform-list', () => ({
+  PlatformList: ({ onPlatformEdit, onPlatformDelete, onRefresh }: any) => (
+    <div data-testid="platform-list">
+      <button onClick={() => onPlatformEdit?.({ id: '1', name: 'Test Platform' })}>
+        Edit Platform
+      </button>
+      <button onClick={() => onPlatformDelete?.({ id: '1', name: 'Test Platform' })}>
+        Delete Platform
+      </button>
+      <button onClick={() => onRefresh?.()}>Refresh</button>
+    </div>
+  )
+}))
+
+jest.mock('@/components/platforms/platform-form', () => ({
+  PlatformForm: ({ onSave, onCancel, onTestConnection, platform }: any) => (
+    <div data-testid="platform-form">
+      <span>{platform ? 'Edit Mode' : 'Add Mode'}</span>
+      <button onClick={() => onSave?.({ name: 'Test Platform', type: 'n8n' })}>
+        Save Platform
+      </button>
+      <button onClick={() => onCancel?.()}>Cancel</button>
+      <button onClick={() => onTestConnection?.({ baseUrl: 'test', authConfig: {} })}>
+        Test Connection
+      </button>
+    </div>
+  )
+}))
+
+// Mock sonner toast
+jest.mock('sonner', () => ({
+  toast: {
+    success: jest.fn(),
+    error: jest.fn(),
+  }
+}))
+
+// Mock fetch
+global.fetch = jest.fn()
 
 // Mock the components
 jest.mock('@/components/platforms/platform-list', () => ({
@@ -118,8 +160,6 @@ describe('PlatformsPage', () => {
   })
 
   it('handles platform save successfully', async () => {
-    const { toast } = require('sonner')
-    
     render(<PlatformsPage />)
     
     // Open dialog
@@ -148,8 +188,6 @@ describe('PlatformsPage', () => {
   })
 
   it('handles platform update successfully', async () => {
-    const { toast } = require('sonner')
-    
     render(<PlatformsPage />)
     
     // Open edit dialog
@@ -174,8 +212,6 @@ describe('PlatformsPage', () => {
   })
 
   it('handles save error', async () => {
-    const { toast } = require('sonner')
-    
     ;(fetch as jest.Mock).mockResolvedValue({
       ok: false,
       json: async () => ({
@@ -234,8 +270,6 @@ describe('PlatformsPage', () => {
   })
 
   it('handles platform deletion successfully', async () => {
-    const { toast } = require('sonner')
-    
     render(<PlatformsPage />)
     
     // Open delete dialog
@@ -259,8 +293,6 @@ describe('PlatformsPage', () => {
   })
 
   it('handles delete error', async () => {
-    const { toast } = require('sonner')
-    
     ;(fetch as jest.Mock).mockResolvedValue({
       ok: false,
       json: async () => ({

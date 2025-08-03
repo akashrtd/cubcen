@@ -106,24 +106,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [isNavigating, setIsNavigating] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
-  const { user, isLoading, isAuthenticated, hasAnyRole, canAccessResource, logout } = useAuth()
+  const { user, isLoading, hasAnyRole, canAccessResource, logout } = useAuth()
 
-  // Handle navigation loading states
+  // Reset navigation state when route changes
   useEffect(() => {
-    const handleStart = () => setIsNavigating(true)
-    const handleComplete = () => setIsNavigating(false)
-
-    // Listen for route changes
-    const originalPush = router.push
-    router.push = (...args) => {
-      handleStart()
-      return originalPush.apply(router, args).finally(handleComplete)
-    }
-
-    return () => {
-      router.push = originalPush
-    }
-  }, [router])
+    setIsNavigating(false);
+  }, [pathname]);
 
   // Filter navigation items based on user permissions
   const getVisibleNavigation = (): NavigationItem[] => {
@@ -174,15 +162,18 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 }
                 ${isNavigating ? 'pointer-events-none opacity-50' : ''}
               `}
-              onClick={() => mobile && setSidebarOpen(false)}
+              onClick={() => {
+                mobile && setSidebarOpen(false);
+                setIsNavigating(true); // Set navigating true on click
+              }}
               aria-current={isActive ? 'page' : undefined}
               aria-label={`Navigate to ${item.name}`}
             >
               <item.icon className="mr-3 h-5 w-5" aria-hidden="true" />
               {item.name}
-              {isNavigating && pathname !== item.href && (
+              {isNavigating && pathname !== item.href ? (
                 <Loader2 className="ml-auto h-4 w-4 animate-spin" aria-hidden="true" />
-              )}
+              ) : null}
             </Link>
           )
         })}

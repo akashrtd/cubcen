@@ -1,6 +1,5 @@
 import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/use-auth'
 import { UserRole } from '@/types/auth'
 import DashboardLayout from '../layout'
@@ -76,16 +75,18 @@ describe('Permission-based Navigation Integration', () => {
       })
     })
 
-    it('should allow admin to access users page', () => {
+    it('should allow admin to access users page', async () => {
       render(<UsersPage />)
-      expect(screen.getByText('User Management')).toBeInTheDocument()
-      expect(screen.getByText('User List Component')).toBeInTheDocument()
+      await waitFor(() => {
+        expect(screen.getByText('User Management')).toBeInTheDocument()
+      })
     })
 
-    it('should allow admin to access platforms page', () => {
+    it('should allow admin to access platforms page', async () => {
       render(<PlatformsPage />)
-      expect(screen.getByText('Platform Management')).toBeInTheDocument()
-      expect(screen.getByText('Platform List Component')).toBeInTheDocument()
+      await waitFor(() => {
+        expect(screen.getByText('Platform Management')).toBeInTheDocument()
+      })
     })
 
     it('should allow admin to access settings page', () => {

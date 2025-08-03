@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import { AuthUser, UserRole } from '@/types/auth'
-import { logger } from '@/lib/logger'
+import { clientLogger } from '@/lib/client-logger'
 
 interface AuthContextType {
   user: AuthUser | null
@@ -93,9 +93,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
         router.push('/dashboard')
       }
       
-      logger.info('User logged in successfully', { userId: data.user.id })
+      clientLogger.info('User logged in successfully', { userId: data.user.id })
     } catch (error) {
-      logger.error('Login failed', error as Error)
+      clientLogger.error('Login failed', error as Error)
       throw error
     } finally {
       setIsLoading(false)
@@ -108,7 +108,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     localStorage.removeItem('refreshToken')
     setUser(null)
     router.push('/auth/login')
-    logger.info('User logged out')
+    clientLogger.info('User logged out')
   }
 
   // Validate token and get user info
@@ -135,7 +135,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const data = await response.json()
       setUser(data.user)
     } catch (error) {
-      logger.error('Token validation failed', error as Error)
+      clientLogger.error('Token validation failed', error as Error)
       logout()
     } finally {
       setIsLoading(false)
@@ -173,7 +173,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // Validate the new token
       await validateToken()
     } catch (error) {
-      logger.error('Token refresh failed', error as Error)
+      clientLogger.error('Token refresh failed', error as Error)
       logout()
     }
   }

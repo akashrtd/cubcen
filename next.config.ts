@@ -33,22 +33,25 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 60,
   },
   
-  // Bundle analyzer for production builds
-  ...(process.env.ANALYZE === 'true' && {
-    webpack: (config: any) => {
-      if (process.env.NODE_ENV === 'production') {
-        const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
-        config.plugins.push(
-          new BundleAnalyzerPlugin({
-            analyzerMode: 'static',
-            openAnalyzer: false,
-            reportFilename: 'bundle-analyzer-report.html',
-          })
-        )
-      }
-      return config
-    },
-  }),
+  // Webpack configuration for server-side modules
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.externals.push('winston');
+    }
+    
+    // Bundle analyzer for production builds
+    if (process.env.ANALYZE === 'true' && process.env.NODE_ENV === 'production') {
+      const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+      config.plugins.push(
+        new BundleAnalyzerPlugin({
+          analyzerMode: 'static',
+          openAnalyzer: false,
+          reportFilename: 'bundle-analyzer-report.html',
+        })
+      );
+    }
+    return config;
+  },
   
   // Performance optimizations
   poweredByHeader: false,

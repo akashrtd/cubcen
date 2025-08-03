@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { backupService } from '../../lib/backup'
 import { requireAuth } from '../middleware/auth'
 import { validateRequest } from '../middleware/validation'
-import { logger } from '../../lib/logger'
+import structuredLogger from '../../lib/logger'
 
 const router = express.Router()
 
@@ -18,7 +18,7 @@ const restoreBackupSchema = {
   body: z.object({
     backupId: z.string().min(1),
   }),
-})
+}
 
 const deleteBackupSchema = {
   params: z.object({
@@ -71,7 +71,7 @@ router.get('/', requireAuth, async (req, res) => {
   try {
     const backups = await backupService.listBackups()
 
-    logger.info('Listed backups', {
+    structuredLogger.info('Listed backups', {
       userId: req.user?.id,
       backupCount: backups.length,
     })
@@ -81,7 +81,7 @@ router.get('/', requireAuth, async (req, res) => {
       data: backups,
     })
   } catch (error) {
-    logger.error('Failed to list backups', error as Error, {
+    structuredLogger.error('Failed to list backups', error as Error, {
       userId: req.user?.id,
     })
 
@@ -155,7 +155,7 @@ router.post(
     try {
       const { compress } = req.body
 
-      logger.info('Creating backup', {
+      structuredLogger.info('Creating backup', {
         userId: req.user?.id,
         compress,
       })
@@ -163,7 +163,7 @@ router.post(
       const result = await backupService.createBackup(compress)
 
       if (result.success) {
-        logger.info('Backup created successfully', {
+        structuredLogger.info('Backup created successfully', {
           userId: req.user?.id,
           backupId: result.metadata?.id,
           filename: result.metadata?.filename,
@@ -175,7 +175,7 @@ router.post(
           data: result.metadata,
         })
       } else {
-        logger.warn('Backup creation failed', {
+        structuredLogger.warn('Backup creation failed', {
           userId: req.user?.id,
           error: result.error,
         })
@@ -194,7 +194,7 @@ router.post(
         })
       }
     } catch (error) {
-      logger.error('Backup creation error', error as Error, {
+      structuredLogger.error('Backup creation error', error as Error, {
         userId: req.user?.id,
       })
 
@@ -273,7 +273,7 @@ router.get('/:backupId', requireAuth, async (req, res) => {
       })
     }
 
-    logger.info('Retrieved backup details', {
+    structuredLogger.info('Retrieved backup details', {
       userId: req.user?.id,
       backupId,
     })
@@ -283,7 +283,7 @@ router.get('/:backupId', requireAuth, async (req, res) => {
       data: backup,
     })
   } catch (error) {
-    logger.error('Failed to get backup details', error as Error, {
+    structuredLogger.error('Failed to get backup details', error as Error, {
       userId: req.user?.id,
       backupId: req.params.backupId,
     })
@@ -356,7 +356,7 @@ router.post(
     try {
       const { backupId } = req.body
 
-      logger.info('Starting database restore', {
+      structuredLogger.info('Starting database restore', {
         userId: req.user?.id,
         backupId,
       })
@@ -364,7 +364,7 @@ router.post(
       const result = await backupService.restoreBackup(backupId)
 
       if (result.success) {
-        logger.info('Database restored successfully', {
+        structuredLogger.info('Database restored successfully', {
           userId: req.user?.id,
           backupId,
           restoredFrom: result.restoredFrom,
@@ -378,7 +378,7 @@ router.post(
           },
         })
       } else {
-        logger.warn('Database restore failed', {
+        structuredLogger.warn('Database restore failed', {
           userId: req.user?.id,
           backupId,
           error: result.error,
@@ -403,7 +403,7 @@ router.post(
         })
       }
     } catch (error) {
-      logger.error('Database restore error', error as Error, {
+      structuredLogger.error('Database restore error', error as Error, {
         userId: req.user?.id,
         backupId: req.body.backupId,
       })
@@ -462,7 +462,7 @@ router.delete(
     try {
       const { backupId } = req.params
 
-      logger.info('Deleting backup', {
+      structuredLogger.info('Deleting backup', {
         userId: req.user?.id,
         backupId,
       })
@@ -470,7 +470,7 @@ router.delete(
       const deleted = await backupService.deleteBackup(backupId)
 
       if (deleted) {
-        logger.info('Backup deleted successfully', {
+        structuredLogger.info('Backup deleted successfully', {
           userId: req.user?.id,
           backupId,
         })
@@ -480,7 +480,7 @@ router.delete(
           message: 'Backup deleted successfully',
         })
       } else {
-        logger.warn('Backup not found for deletion', {
+        structuredLogger.warn('Backup not found for deletion', {
           userId: req.user?.id,
           backupId,
         })
@@ -495,7 +495,7 @@ router.delete(
         })
       }
     } catch (error) {
-      logger.error('Failed to delete backup', error as Error, {
+      structuredLogger.error('Failed to delete backup', error as Error, {
         userId: req.user?.id,
         backupId: req.params.backupId,
       })
@@ -506,8 +506,8 @@ router.delete(
           code: 'BACKUP_DELETE_FAILED',
           message: 'Failed to delete backup',
           timestamp: new Date().toISOString(),
-        },
-      })
+          },
+        })
     }
   }
 )
@@ -552,7 +552,7 @@ router.get('/stats', requireAuth, async (req, res) => {
   try {
     const stats = await backupService.getBackupStats()
 
-    logger.info('Retrieved backup statistics', {
+    structuredLogger.info('Retrieved backup statistics', {
       userId: req.user?.id,
       totalBackups: stats.totalBackups,
       totalSize: stats.totalSize,
@@ -563,7 +563,7 @@ router.get('/stats', requireAuth, async (req, res) => {
       data: stats,
     })
   } catch (error) {
-    logger.error('Failed to get backup statistics', error as Error, {
+    structuredLogger.error('Failed to get backup statistics', error as Error, {
       userId: req.user?.id,
     })
 
