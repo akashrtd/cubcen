@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { TaskBoard } from '@/components/kanban/task-board'
 import { Task } from '@/lib/database'
+import { ProtectedRoute } from '@/components/auth/protected-route'
 import { toast } from 'sonner'
 
 type TaskPriority = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW'
@@ -192,13 +193,15 @@ export default function TasksPage() {
   }
 
   return (
-    <TaskBoard
+    <ProtectedRoute requiredResource="tasks">
+      <TaskBoard
       tasks={tasks}
       onTaskUpdate={handleTaskUpdate}
       onTaskCreate={handleTaskCreate}
       onTaskDelete={handleTaskDelete}
       agents={mockAgents}
       isLoading={isLoading}
-    />
+      />
+    </ProtectedRoute>
   )
 }

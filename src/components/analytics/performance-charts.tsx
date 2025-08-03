@@ -82,6 +82,26 @@ export function PerformanceCharts({ data, loading }: PerformanceChartsProps) {
     )
   }
 
+  // Validate data to prevent runtime errors
+  if (!data || typeof data !== 'object') {
+    return (
+      <Card>
+        <CardContent className="flex items-center justify-center py-8">
+          <p className="text-muted-foreground">No chart data available</p>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  // Ensure required data arrays exist and have valid structure
+  const safeData = {
+    dailyTaskTrends: Array.isArray(data.dailyTaskTrends) ? data.dailyTaskTrends : [],
+    tasksByStatus: Array.isArray(data.tasksByStatus) ? data.tasksByStatus : [],
+    tasksByPriority: Array.isArray(data.tasksByPriority) ? data.tasksByPriority : [],
+    platformDistribution: Array.isArray(data.platformDistribution) ? data.platformDistribution : [],
+    agentPerformance: Array.isArray(data.agentPerformance) ? data.agentPerformance : [],
+  }
+
   // Custom tooltip component
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -114,7 +134,7 @@ export function PerformanceCharts({ data, loading }: PerformanceChartsProps) {
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={data.dailyTaskTrends}>
+            <AreaChart data={safeData.dailyTaskTrends}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
                 dataKey="date"
@@ -162,7 +182,7 @@ export function PerformanceCharts({ data, loading }: PerformanceChartsProps) {
             <ResponsiveContainer width="100%" height={250}>
               <PieChart>
                 <Pie
-                  data={data.tasksByStatus}
+                  data={safeData.tasksByStatus}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
@@ -173,7 +193,7 @@ export function PerformanceCharts({ data, loading }: PerformanceChartsProps) {
                   fill="#8884d8"
                   dataKey="count"
                 >
-                  {data.tasksByStatus.map((entry, index) => (
+                  {safeData.tasksByStatus.map((entry, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={
@@ -188,7 +208,7 @@ export function PerformanceCharts({ data, loading }: PerformanceChartsProps) {
               </PieChart>
             </ResponsiveContainer>
             <div className="flex flex-wrap gap-2 mt-4">
-              {data.tasksByStatus.map((item, index) => (
+              {safeData.tasksByStatus.map((item, index) => (
                 <Badge
                   key={index}
                   variant="outline"
@@ -221,7 +241,7 @@ export function PerformanceCharts({ data, loading }: PerformanceChartsProps) {
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={data.tasksByPriority}>
+              <BarChart data={safeData.tasksByPriority}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="priority" />
                 <YAxis />
@@ -231,7 +251,7 @@ export function PerformanceCharts({ data, loading }: PerformanceChartsProps) {
                   fill={COLORS.primary}
                   radius={[4, 4, 0, 0]}
                 >
-                  {data.tasksByPriority.map((entry, index) => (
+                  {safeData.tasksByPriority.map((entry, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={
@@ -245,7 +265,7 @@ export function PerformanceCharts({ data, loading }: PerformanceChartsProps) {
               </BarChart>
             </ResponsiveContainer>
             <div className="flex flex-wrap gap-2 mt-4">
-              {data.tasksByPriority.map((item, index) => (
+              {safeData.tasksByPriority.map((item, index) => (
                 <Badge
                   key={index}
                   variant="outline"
@@ -280,7 +300,7 @@ export function PerformanceCharts({ data, loading }: PerformanceChartsProps) {
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={data.platformDistribution} layout="horizontal">
+              <BarChart data={safeData.platformDistribution} layout="horizontal">
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis type="number" />
                 <YAxis dataKey="platform" type="category" width={100} />
@@ -306,7 +326,7 @@ export function PerformanceCharts({ data, loading }: PerformanceChartsProps) {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {data.agentPerformance
+              {safeData.agentPerformance
                 .sort((a, b) => b.successRate - a.successRate)
                 .slice(0, 5)
                 .map((agent, index) => (
@@ -339,7 +359,7 @@ export function PerformanceCharts({ data, loading }: PerformanceChartsProps) {
                     </div>
                   </div>
                 ))}
-              {data.agentPerformance.length === 0 && (
+              {safeData.agentPerformance.length === 0 && (
                 <div className="text-center text-muted-foreground py-8">
                   No agent performance data available
                 </div>

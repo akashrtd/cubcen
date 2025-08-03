@@ -1,302 +1,444 @@
-/**
- * Cubcen Error Handling API Routes
- * Handles error logs, patterns, and recovery operations
- */
+// Cubcen Error Reporting API
+// Handles client-side error reporting and logging
 
-import { Router } from 'express'
-import { ErrorService } from '@/services/error'
-import { healthMonitoring } from '@/lib/health'
-import { logger } from '@/lib/logger'
+import express from 'express'
 import { z } from 'zod'
+import { logger } from '@/lib/logger'
+import { auditLogger, AuditEventType, AuditSeverity } from '@/lib/audit-logger'
+import { validateRequest } from '@/backend/middleware/validation'
+import { authenticateToken } from '@/backend/middleware/auth'
+import { APIErrorResponse, createErrorResponse, handleAPIError } from '@/lib/api-error-handler'
 
-const router = Router()
-const errorService = new ErrorService()
+const router = express.Router()
 
-// Validation schemas
-const errorFilterSchema = z.object({
-  level: z.enum(['DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL']).optional(),
-  source: z.string().optional(),
-  agentId: z.string().optional(),
-  taskId: z.string().optional(),
-  dateFrom: z.string().datetime().optional(),
-  dateTo: z.string().datetime().optional(),
-  search: z.string().optional(),
-  page: z.string().regex(/^\d+$/).optional(),
-  limit: z.string().regex(/^\d+$/).optional(),
+// Error report schema
+const ErrorReportSchema = z.object({
+  errorId: z.string(),
+  message: z.string(),
+  stack: z.string().optional(),
+  componentStack: z.string().optional(),
+  pageName: z.string().optional(),
+  timestamp: z.string(),
+  userAgent: z.string().optional(),
+  url: z.string().optional(),
+  metadata: z.record(z.unknown()).optional(),
 })
 
-const timeRangeSchema = z.object({
-  from: z.string().datetime(),
-  to: z.string().datetime(),
+// User error report schema
+const UserErrorReportSchema = z.object({
+  errorId: z.string(),
+  userDescription: z.string(),
+  reproductionSteps: z.string().optional(),
+  expectedBehavior: z.string().optional(),
+  actualBehavior: z.string().optional(),
+  metadata: z.record(z.unknown()).optional(),
 })
 
-const bulkRetrySchema = z.object({
-  taskIds: z.array(z.string().min(1)).min(1).max(50),
+// Error query schema
+const ErrorQuerySchema = z.object({
+  page: z.coerce.number().min(1).default(1),
+  limit: z.coerce.number().min(1).max(100).default(20),
+  severity: z.enum(['low', 'medium', 'high', 'critical']).optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  pageName: z.string().optional(),
+  resolved: z.coerce.boolean().optional(),
 })
 
 /**
- * GET /api/cubcen/v1/errors/logs
- * Get error logs with filtering and pagination
+ * POST /api/cubcen/v1/errors/report
+ * Report a client-side error
  */
-router.get('/logs', async (req, res) => {
+router.post('/report', validateRequest(ErrorReportSchema), async (req, res) => {
   try {
-    // Validate query parameters
-    const validatedQuery = errorFilterSchema.parse(req.query)
+    const errorData = req.body
+    const requestId = req.headers['x-request-id'] as string
 
-    // Parse filter parameters
-    const filter = {
-      ...(validatedQuery.level && { level: validatedQuery.level }),
-      ...(validatedQuery.source && { source: validatedQuery.source }),
-      ...(validatedQuery.agentId && { agentId: validatedQuery.agentId }),
-      ...(validatedQuery.taskId && { taskId: validatedQuery.taskId }),
-      ...(validatedQuery.dateFrom && {
-        dateFrom: new Date(validatedQuery.dateFrom),
-      }),
-      ...(validatedQuery.dateTo && { dateTo: new Date(validatedQuery.dateTo) }),
-      ...(validatedQuery.search && { search: validatedQuery.search }),
-    }
-
-    const page = validatedQuery.page ? parseInt(validatedQuery.page) : 1
-    const limit = validatedQuery.limit ? parseInt(validatedQuery.limit) : 50
-
-    // Get error logs
-    const result = await errorService.getErrorLogs({
-      filter,
-      page,
-      limit,
-      sortBy: 'timestamp',
-      sortOrder: 'desc',
+    // Log the error with structured data
+    logger.error('Client-side error reported', new Error(errorData.message), {
+      errorId: errorData.errorId,
+      pageName: errorData.pageName,
+      url: errorData.url,
+      userAgent: errorData.userAgent,
+      timestamp: errorData.timestamp,
+      requestId,
+      stack: errorData.stack,
+      componentStack: errorData.componentStack,
+      metadata: errorData.metadata,
     })
 
-    res.json(result)
-  } catch (error) {
-    logger.error('Failed to get error logs', error as Error, {
-      query: req.query,
-      endpoint: '/errors/logs',
+    // Store error in database for tracking
+    await storeError({
+      ...errorData,
+      requestId,
+      ipAddress: req.ip,
+      userId: req.user?.id,
+      userEmail: req.user?.email,
+      severity: determineSeverity(errorData.message, errorData.stack),
+      resolved: false,
     })
 
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({
-        error: 'Invalid query parameters',
-        details: error.issues,
+    // Log audit event for error reporting
+    if (req.user) {
+      await auditLogger.logEvent({
+        eventType: AuditEventType.SYSTEM_CONFIG_CHANGED,
+        severity: AuditSeverity.LOW,
+        userId: req.user.id,
+        userEmail: req.user.email,
+        action: 'ERROR_REPORTED',
+        description: `User reported client-side error: ${errorData.message}`,
+        metadata: {
+          errorId: errorData.errorId,
+          pageName: errorData.pageName,
+          url: errorData.url,
+        },
+        ipAddress: req.ip,
+        userAgent: req.get('User-Agent'),
+        requestId,
+        timestamp: new Date(),
+        success: true,
       })
     }
-
-    res.status(500).json({
-      error: 'Failed to fetch error logs',
-    })
-  }
-})
-
-/**
- * GET /api/cubcen/v1/errors/stats
- * Get error statistics for a time range
- */
-router.get('/stats', async (req, res) => {
-  try {
-    // Default to last 24 hours if no time range provided
-    const defaultTimeRange = {
-      from: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-      to: new Date().toISOString(),
-    }
-
-    const timeRangeQuery = {
-      from: (req.query.from as string) || defaultTimeRange.from,
-      to: (req.query.to as string) || defaultTimeRange.to,
-    }
-
-    const validatedTimeRange = timeRangeSchema.parse(timeRangeQuery)
-
-    const timeRange = {
-      from: new Date(validatedTimeRange.from),
-      to: new Date(validatedTimeRange.to),
-    }
-
-    // Get error statistics
-    const stats = await errorService.getErrorStats(timeRange)
-
-    res.json({ stats })
-  } catch (error) {
-    logger.error('Failed to get error statistics', error as Error, {
-      query: req.query,
-      endpoint: '/errors/stats',
-    })
-
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({
-        error: 'Invalid time range parameters',
-        details: error.issues,
-      })
-    }
-
-    res.status(500).json({
-      error: 'Failed to fetch error statistics',
-    })
-  }
-})
-
-/**
- * GET /api/cubcen/v1/errors/patterns
- * Detect error patterns in a time range
- */
-router.get('/patterns', async (req, res) => {
-  try {
-    // Default to last 24 hours if no time range provided
-    const defaultTimeRange = {
-      from: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-      to: new Date().toISOString(),
-    }
-
-    const timeRangeQuery = {
-      from: (req.query.from as string) || defaultTimeRange.from,
-      to: (req.query.to as string) || defaultTimeRange.to,
-    }
-
-    const validatedTimeRange = timeRangeSchema.parse(timeRangeQuery)
-
-    const timeRange = {
-      from: new Date(validatedTimeRange.from),
-      to: new Date(validatedTimeRange.to),
-    }
-
-    // Detect error patterns
-    const patterns = await errorService.detectErrorPatterns(timeRange)
-
-    res.json({ patterns })
-  } catch (error) {
-    logger.error('Failed to detect error patterns', error as Error, {
-      query: req.query,
-      endpoint: '/errors/patterns',
-    })
-
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({
-        error: 'Invalid time range parameters',
-        details: error.issues,
-      })
-    }
-
-    res.status(500).json({
-      error: 'Failed to detect error patterns',
-    })
-  }
-})
-
-/**
- * GET /api/cubcen/v1/errors/retryable-tasks
- * Get tasks that can be retried
- */
-router.get('/retryable-tasks', async (req, res) => {
-  try {
-    const tasks = await errorService.getRetryableTasks()
-    res.json({ tasks })
-  } catch (error) {
-    logger.error('Failed to get retryable tasks', error as Error, {
-      endpoint: '/errors/retryable-tasks',
-    })
-
-    res.status(500).json({
-      error: 'Failed to fetch retryable tasks',
-    })
-  }
-})
-
-/**
- * POST /api/cubcen/v1/errors/retry-task/:taskId
- * Retry a single failed task
- */
-router.post('/retry-task/:taskId', async (req, res) => {
-  try {
-    const { taskId } = req.params
-
-    if (!taskId) {
-      return res.status(400).json({
-        error: 'Task ID is required',
-      })
-    }
-
-    await errorService.retryTask(taskId)
 
     res.json({
-      message: 'Task retry initiated successfully',
-      taskId,
+      success: true,
+      message: 'Error reported successfully',
+      data: {
+        errorId: errorData.errorId,
+        reported: true,
+      },
     })
   } catch (error) {
-    logger.error('Failed to retry task', error as Error, {
-      taskId: req.params.taskId,
-      endpoint: '/errors/retry-task',
-    })
-
-    res.status(500).json({
-      error: (error as Error).message || 'Failed to retry task',
-    })
+    handleAPIError(error, req, res)
   }
 })
 
 /**
- * POST /api/cubcen/v1/errors/bulk-retry-tasks
- * Retry multiple failed tasks
+ * POST /api/cubcen/v1/errors/user-report
+ * Report an error with user description
  */
-router.post('/bulk-retry-tasks', async (req, res) => {
+router.post('/user-report', authenticateToken, validateRequest(UserErrorReportSchema), async (req, res) => {
   try {
-    const validatedBody = bulkRetrySchema.parse(req.body)
+    const reportData = req.body
+    const requestId = req.headers['x-request-id'] as string
 
-    const result = await errorService.bulkRetryTasks(validatedBody.taskIds)
-
-    res.json(result)
-  } catch (error) {
-    logger.error('Failed to bulk retry tasks', error as Error, {
-      body: req.body,
-      endpoint: '/errors/bulk-retry-tasks',
+    // Log the user error report
+    logger.info('User error report submitted', {
+      errorId: reportData.errorId,
+      userId: req.user.id,
+      userEmail: req.user.email,
+      userDescription: reportData.userDescription,
+      requestId,
     })
 
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({
-        error: 'Invalid request body',
-        details: error.issues,
-      })
-    }
-
-    res.status(500).json({
-      error: 'Failed to retry tasks',
+    // Update error record with user feedback
+    await updateErrorWithUserFeedback(reportData.errorId, {
+      userDescription: reportData.userDescription,
+      reproductionSteps: reportData.reproductionSteps,
+      expectedBehavior: reportData.expectedBehavior,
+      actualBehavior: reportData.actualBehavior,
+      userReportedAt: new Date(),
+      userId: req.user.id,
+      userEmail: req.user.email,
     })
-  }
-})
 
-/**
- * GET /api/cubcen/v1/health/indicators
- * Get system health indicators
- */
-router.get('/health/indicators', async (req, res) => {
-  try {
-    const healthStatus = await healthMonitoring.runAllHealthChecks()
-
-    // Transform health checks to indicators format
-    const indicators = healthStatus.checks.map(check => ({
-      name: check.name,
-      status: check.status,
-      value: check.details?.value || check.responseTime,
-      threshold: check.details?.threshold,
-      unit: check.details?.unit || (check.responseTime ? 'ms' : undefined),
-      lastCheck: check.lastCheck,
-      details: check.details,
-      trend: check.details?.trend || 'stable',
-    }))
+    // Log audit event
+    await auditLogger.logEvent({
+      eventType: AuditEventType.DATA_ACCESSED,
+      severity: AuditSeverity.LOW,
+      userId: req.user.id,
+      userEmail: req.user.email,
+      action: 'USER_ERROR_REPORT',
+      description: `User provided additional details for error ${reportData.errorId}`,
+      metadata: {
+        errorId: reportData.errorId,
+        hasReproductionSteps: !!reportData.reproductionSteps,
+        hasExpectedBehavior: !!reportData.expectedBehavior,
+      },
+      ipAddress: req.ip,
+      userAgent: req.get('User-Agent'),
+      requestId,
+      timestamp: new Date(),
+      success: true,
+    })
 
     res.json({
-      indicators,
-      overallStatus: healthStatus.status,
-      timestamp: healthStatus.timestamp,
+      success: true,
+      message: 'User error report submitted successfully',
+      data: {
+        errorId: reportData.errorId,
+        userReported: true,
+      },
     })
   } catch (error) {
-    logger.error('Failed to get health indicators', error as Error, {
-      endpoint: '/health/indicators',
-    })
-
-    res.status(500).json({
-      error: 'Failed to fetch health indicators',
-    })
+    handleAPIError(error, req, res)
   }
 })
+
+/**
+ * GET /api/cubcen/v1/errors
+ * Get error reports (admin only)
+ */
+router.get('/', authenticateToken, validateRequest(ErrorQuerySchema, 'query'), async (req, res) => {
+  try {
+    // Check if user has admin permissions
+    if (req.user.role !== 'ADMIN') {
+      return res.status(403).json(
+        createErrorResponse('INSUFFICIENT_PERMISSIONS', 'Admin access required')
+      )
+    }
+
+    const query = req.query as z.infer<typeof ErrorQuerySchema>
+    const requestId = req.headers['x-request-id'] as string
+
+    const errors = await getErrors({
+      page: query.page,
+      limit: query.limit,
+      severity: query.severity,
+      startDate: query.startDate ? new Date(query.startDate) : undefined,
+      endDate: query.endDate ? new Date(query.endDate) : undefined,
+      pageName: query.pageName,
+      resolved: query.resolved,
+    })
+
+    // Log audit event for error access
+    await auditLogger.logEvent({
+      eventType: AuditEventType.DATA_ACCESSED,
+      severity: AuditSeverity.LOW,
+      userId: req.user.id,
+      userEmail: req.user.email,
+      action: 'ERRORS_ACCESSED',
+      description: 'Admin accessed error reports',
+      metadata: {
+        page: query.page,
+        limit: query.limit,
+        filters: {
+          severity: query.severity,
+          pageName: query.pageName,
+          resolved: query.resolved,
+        },
+      },
+      ipAddress: req.ip,
+      userAgent: req.get('User-Agent'),
+      requestId,
+      timestamp: new Date(),
+      success: true,
+    })
+
+    res.json({
+      success: true,
+      data: errors,
+    })
+  } catch (error) {
+    handleAPIError(error, req, res)
+  }
+})
+
+/**
+ * PUT /api/cubcen/v1/errors/:errorId/resolve
+ * Mark an error as resolved (admin only)
+ */
+router.put('/:errorId/resolve', authenticateToken, async (req, res) => {
+  try {
+    // Check if user has admin permissions
+    if (req.user.role !== 'ADMIN') {
+      return res.status(403).json(
+        createErrorResponse('INSUFFICIENT_PERMISSIONS', 'Admin access required')
+      )
+    }
+
+    const { errorId } = req.params
+    const { resolution, notes } = req.body
+    const requestId = req.headers['x-request-id'] as string
+
+    await resolveError(errorId, {
+      resolved: true,
+      resolvedAt: new Date(),
+      resolvedBy: req.user.id,
+      resolution,
+      notes,
+    })
+
+    // Log audit event
+    await auditLogger.logEvent({
+      eventType: AuditEventType.SYSTEM_CONFIG_CHANGED,
+      severity: AuditSeverity.MEDIUM,
+      userId: req.user.id,
+      userEmail: req.user.email,
+      resourceType: 'error',
+      resourceId: errorId,
+      action: 'ERROR_RESOLVED',
+      description: `Admin marked error ${errorId} as resolved`,
+      metadata: {
+        resolution,
+        notes,
+      },
+      ipAddress: req.ip,
+      userAgent: req.get('User-Agent'),
+      requestId,
+      timestamp: new Date(),
+      success: true,
+    })
+
+    res.json({
+      success: true,
+      message: 'Error marked as resolved',
+      data: {
+        errorId,
+        resolved: true,
+      },
+    })
+  } catch (error) {
+    handleAPIError(error, req, res)
+  }
+})
+
+// Helper functions
+
+async function storeError(errorData: any): Promise<void> {
+  try {
+    // In a real implementation, this would store in a dedicated errors table
+    // For now, we'll use the audit log system
+    await auditLogger.logEvent({
+      eventType: AuditEventType.SYSTEM_CONFIG_CHANGED,
+      severity: errorData.severity === 'critical' ? AuditSeverity.CRITICAL : 
+                errorData.severity === 'high' ? AuditSeverity.HIGH :
+                errorData.severity === 'medium' ? AuditSeverity.MEDIUM : AuditSeverity.LOW,
+      userId: errorData.userId,
+      userEmail: errorData.userEmail,
+      action: 'CLIENT_ERROR',
+      description: `Client-side error: ${errorData.message}`,
+      metadata: {
+        errorId: errorData.errorId,
+        stack: errorData.stack,
+        componentStack: errorData.componentStack,
+        pageName: errorData.pageName,
+        url: errorData.url,
+        userAgent: errorData.userAgent,
+        severity: errorData.severity,
+        resolved: errorData.resolved,
+      },
+      ipAddress: errorData.ipAddress,
+      userAgent: errorData.userAgent,
+      requestId: errorData.requestId,
+      timestamp: new Date(errorData.timestamp),
+      success: false,
+      errorMessage: errorData.message,
+    })
+  } catch (error) {
+    logger.error('Failed to store error report', error as Error)
+  }
+}
+
+async function updateErrorWithUserFeedback(errorId: string, feedback: any): Promise<void> {
+  try {
+    // In a real implementation, this would update the errors table
+    // For now, we'll log the feedback as an audit event
+    await auditLogger.logEvent({
+      eventType: AuditEventType.DATA_ACCESSED,
+      severity: AuditSeverity.LOW,
+      userId: feedback.userId,
+      userEmail: feedback.userEmail,
+      resourceType: 'error',
+      resourceId: errorId,
+      action: 'ERROR_FEEDBACK',
+      description: `User provided feedback for error ${errorId}`,
+      metadata: {
+        userDescription: feedback.userDescription,
+        reproductionSteps: feedback.reproductionSteps,
+        expectedBehavior: feedback.expectedBehavior,
+        actualBehavior: feedback.actualBehavior,
+      },
+      timestamp: feedback.userReportedAt,
+      success: true,
+    })
+  } catch (error) {
+    logger.error('Failed to update error with user feedback', error as Error)
+  }
+}
+
+async function getErrors(filters: any): Promise<any> {
+  try {
+    // In a real implementation, this would query the errors table
+    // For now, we'll return audit logs related to errors
+    const auditLogs = await auditLogger.getAuditLogs({
+      startDate: filters.startDate,
+      endDate: filters.endDate,
+      page: filters.page,
+      limit: filters.limit,
+    })
+
+    // Filter for error-related events
+    const errorLogs = auditLogs.logs.filter(log => 
+      log.action === 'CLIENT_ERROR' || log.action === 'ERROR_FEEDBACK' || log.action === 'ERROR_RESOLVED'
+    )
+
+    return {
+      errors: errorLogs,
+      total: errorLogs.length,
+      page: filters.page,
+      limit: filters.limit,
+    }
+  } catch (error) {
+    logger.error('Failed to get errors', error as Error)
+    throw error
+  }
+}
+
+async function resolveError(errorId: string, resolution: any): Promise<void> {
+  try {
+    // In a real implementation, this would update the errors table
+    // For now, we'll log the resolution as an audit event
+    await auditLogger.logEvent({
+      eventType: AuditEventType.SYSTEM_CONFIG_CHANGED,
+      severity: AuditSeverity.MEDIUM,
+      userId: resolution.resolvedBy,
+      resourceType: 'error',
+      resourceId: errorId,
+      action: 'ERROR_RESOLVED',
+      description: `Error ${errorId} marked as resolved`,
+      metadata: {
+        resolution: resolution.resolution,
+        notes: resolution.notes,
+        resolvedAt: resolution.resolvedAt,
+      },
+      timestamp: resolution.resolvedAt,
+      success: true,
+    })
+  } catch (error) {
+    logger.error('Failed to resolve error', error as Error)
+  }
+}
+
+function determineSeverity(message: string, stack?: string): 'low' | 'medium' | 'high' | 'critical' {
+  const lowerMessage = message.toLowerCase()
+  const lowerStack = stack?.toLowerCase() || ''
+
+  // Critical errors
+  if (lowerMessage.includes('network error') || 
+      lowerMessage.includes('failed to fetch') ||
+      lowerMessage.includes('authentication') ||
+      lowerStack.includes('auth')) {
+    return 'critical'
+  }
+
+  // High severity errors
+  if (lowerMessage.includes('cannot read') ||
+      lowerMessage.includes('undefined') ||
+      lowerMessage.includes('null') ||
+      lowerStack.includes('typeerror')) {
+    return 'high'
+  }
+
+  // Medium severity errors
+  if (lowerMessage.includes('validation') ||
+      lowerMessage.includes('invalid') ||
+      lowerMessage.includes('error')) {
+    return 'medium'
+  }
+
+  // Default to low severity
+  return 'low'
+}
 
 export default router

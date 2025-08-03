@@ -84,6 +84,9 @@ export function ExportDialog({
         params.append('endDate', dateRange.to.toISOString())
       }
 
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 second timeout
+
       const response = await fetch(
         `/api/cubcen/v1/analytics/export?${params}`,
         {
@@ -95,11 +98,33 @@ export function ExportDialog({
             format,
             dataType,
           }),
+          signal: controller.signal,
         }
       )
 
+      clearTimeout(timeoutId)
+
       if (!response.ok) {
-        throw new Error(`Export failed: ${response.statusText}`)
+        let errorMessage = `Export failed: ${response.statusText}`
+        
+        try {
+          const errorData = await response.json()
+          if (errorData.error?.message) {
+            errorMessage = errorData.error.message
+          }
+        } catch {
+          // Use default error message if response is not JSON
+        }
+        
+        throw new Error(errorMessage)
+      }
+
+      // Validate response content type
+      const contentType = response.headers.get('Content-Type')
+      const expectedContentType = format === 'csv' ? 'text/csv' : 'application/json'
+      
+      if (!contentType?.includes(expectedContentType.split('/')[0])) {
+        throw new Error(`Invalid response format. Expected ${expectedContentType}, got ${contentType}`)
       }
 
       // Get the filename from the response headers
@@ -110,25 +135,46 @@ export function ExportDialog({
 
       // Create blob and download
       const blob = await response.blob()
+      
+      // Validate blob size
+      if (blob.size === 0) {
+        throw new Error('Export file is empty. No data available for the selected criteria.')
+      }
+      
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
       a.download = filename
       document.body.appendChild(a)
       a.click()
-      window.URL.revokeObjectURL(url)
-      document.body.removeChild(a)
+      
+      // Cleanup
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url)
+        document.body.removeChild(a)
+      }, 100)
 
       toast.success('Export completed successfully', {
-        description: `Downloaded ${filename}`,
+        description: `Downloaded ${filename} (${(blob.size / 1024).toFixed(1)} KB)`,
       })
 
       onOpenChange(false)
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Export failed'
+      let errorMessage = 'Export failed'
+      
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          errorMessage = 'Export timed out. Please try again with a smaller date range.'
+        } else if (error.message.includes('Failed to fetch')) {
+          errorMessage = 'Network error. Please check your connection and try again.'
+        } else {
+          errorMessage = error.message
+        }
+      }
+      
       toast.error('Export failed', {
         description: errorMessage,
+        duration: 5000,
       })
     } finally {
       setLoading(false)

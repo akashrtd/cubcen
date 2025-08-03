@@ -8,23 +8,23 @@ import { logger } from '../../lib/logger'
 const router = express.Router()
 
 // Validation schemas
-const createBackupSchema = z.object({
+const createBackupSchema = {
   body: z.object({
     compress: z.boolean().optional().default(true),
   }),
-})
+}
 
-const restoreBackupSchema = z.object({
+const restoreBackupSchema = {
   body: z.object({
     backupId: z.string().min(1),
   }),
 })
 
-const deleteBackupSchema = z.object({
+const deleteBackupSchema = {
   params: z.object({
     backupId: z.string().min(1),
   }),
-})
+}
 
 /**
  * @swagger

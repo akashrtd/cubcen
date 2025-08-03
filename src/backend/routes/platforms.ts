@@ -16,6 +16,13 @@ import {
   idParamSchema,
   paginationQuerySchema,
 } from '@/backend/middleware/validation'
+import {
+  asyncHandler,
+  createSuccessResponse,
+  APIError,
+  APIErrorCode,
+  ValidationHelpers,
+} from '@/lib/api-error-handler'
 import { z } from 'zod'
 
 const router = Router()
@@ -65,16 +72,17 @@ router.get(
   authenticate,
   requireAuth,
   validateQuery(platformQuerySchema),
-  async (req: Request, res: Response) => {
+  asyncHandler(async (req: Request, res: Response) => {
+    const { page, limit, sortBy, sortOrder, type, status } = req.query
+
+    logger.info('Get platforms request', {
+      userId: req.user!.id,
+      filters: { type, status },
+      pagination: { page, limit, sortBy, sortOrder },
+      requestId: req.headers['x-request-id'],
+    })
+
     try {
-      const { page, limit, sortBy, sortOrder, type, status } = req.query
-
-      logger.info('Get platforms request', {
-        userId: req.user!.id,
-        filters: { type, status },
-        pagination: { page, limit, sortBy, sortOrder },
-      })
-
       // TODO: Implement platform service to fetch platforms from database
       // For now, return mock data
       const mockPlatforms = [
@@ -110,33 +118,33 @@ router.get(
         },
       ]
 
-      res.status(200).json({
-        success: true,
-        data: {
-          platforms: mockPlatforms,
-          pagination: {
-            page: Number(page),
-            limit: Number(limit),
-            total: mockPlatforms.length,
-            totalPages: Math.ceil(mockPlatforms.length / Number(limit)),
-          },
+      const responseData = {
+        platforms: mockPlatforms,
+        pagination: {
+          page: Number(page),
+          limit: Number(limit),
+          total: mockPlatforms.length,
+          totalPages: Math.ceil(mockPlatforms.length / Number(limit)),
         },
-        message: 'Platforms retrieved successfully',
-      })
+      }
+
+      res.json(createSuccessResponse(
+        responseData,
+        'Platforms retrieved successfully',
+        req.headers['x-request-id'] as string
+      ))
     } catch (error) {
-      logger.error('Get platforms failed', error as Error, {
+      logger.error('Platform service error', error as Error, {
         userId: req.user?.id,
+        requestId: req.headers['x-request-id'],
       })
 
-      res.status(500).json({
-        success: false,
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: 'Failed to retrieve platforms',
-        },
-      })
+      throw new APIError(
+        APIErrorCode.INTERNAL_ERROR,
+        'Failed to retrieve platforms'
+      )
     }
-  }
+  })
 )
 
 /**

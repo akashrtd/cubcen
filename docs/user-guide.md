@@ -56,7 +56,20 @@ Configure how you want to receive alerts:
 
 ## Dashboard Overview
 
-The Cubcen dashboard provides a comprehensive view of your AI agent ecosystem:
+The Cubcen dashboard provides a comprehensive view of your AI agent ecosystem with enhanced navigation and functionality:
+
+### Navigation Menu
+
+The dashboard includes the following main sections:
+
+- **Dashboard**: Main overview with key metrics and system status
+- **Agents**: Manage and monitor your AI agents
+- **Tasks**: Kanban-style task management board
+- **Analytics**: Comprehensive performance analytics and reporting
+- **Errors**: Error monitoring and management system
+- **Platforms**: Automation platform connection management
+- **Users**: User account and permission management (Admin only)
+- **Settings**: Personal preferences and account settings
 
 ### Key Metrics Cards
 
@@ -64,12 +77,14 @@ The Cubcen dashboard provides a comprehensive view of your AI agent ecosystem:
 - **Tasks Today**: Tasks executed in the last 24 hours
 - **Success Rate**: Percentage of successful task executions
 - **Error Rate**: Percentage of failed executions
+- **Platform Health**: Status of connected automation platforms
 
 ### Real-Time Status
 
 - **Agent Status Grid**: Visual representation of all agents with color-coded status
 - **Recent Activity**: Live feed of agent activities and status changes
 - **System Health**: Overall platform health indicators
+- **Error Alerts**: Real-time error notifications and alerts
 
 ### Quick Actions
 
@@ -77,6 +92,7 @@ The Cubcen dashboard provides a comprehensive view of your AI agent ecosystem:
 - **View Errors**: Jump to error management interface
 - **Generate Report**: Create analytics reports
 - **Platform Status**: Check external platform connectivity
+- **User Management**: Manage user accounts and permissions (Admin only)
 
 ## Managing Agents
 
@@ -225,31 +241,43 @@ Each task card displays:
 
 ## Analytics and Reporting
 
-### Performance Dashboard
+### Enhanced Analytics Dashboard
 
-The analytics dashboard provides insights into your agent ecosystem:
+The completely redesigned analytics dashboard provides comprehensive insights into your agent ecosystem:
 
 #### Key Performance Indicators (KPIs)
 
-- **Total Executions**: Number of tasks executed
-- **Average Response Time**: Mean execution duration
-- **Success Rate**: Percentage of successful executions
-- **Error Rate**: Percentage of failed executions
-- **Uptime**: Agent availability percentage
+- **Total Executions**: Number of tasks executed with trend indicators
+- **Average Response Time**: Mean execution duration with performance targets
+- **Success Rate**: Percentage of successful executions with historical comparison
+- **Error Rate**: Percentage of failed executions with severity breakdown
+- **Uptime**: Agent availability percentage with SLA tracking
+- **Platform Health**: Overall health status of connected platforms
 
-#### Performance Charts
+#### Interactive Performance Charts
 
-- **Execution Trends**: Task volume over time
-- **Response Time Trends**: Performance changes
-- **Success Rate Trends**: Reliability metrics
-- **Agent Comparison**: Relative performance analysis
+- **Execution Trends**: Task volume over time with customizable date ranges
+- **Response Time Trends**: Performance changes with threshold alerts
+- **Success Rate Trends**: Reliability metrics with goal tracking
+- **Agent Comparison**: Relative performance analysis with benchmarking
+- **Error Distribution**: Error types and frequency analysis
+- **Resource Usage**: System resource consumption patterns
 
-#### Error Analysis
+#### Advanced Error Analysis
 
-- **Error Patterns**: Common failure types
-- **Error Frequency**: Error occurrence rates
-- **Error Resolution Time**: Time to fix issues
-- **Top Error Sources**: Most problematic agents
+- **Error Patterns**: Common failure types with root cause analysis
+- **Error Frequency**: Error occurrence rates with trend analysis
+- **Error Resolution Time**: Time to fix issues with SLA tracking
+- **Top Error Sources**: Most problematic agents with impact assessment
+- **Error Correlation**: Relationship between errors and system events
+- **Predictive Alerts**: AI-powered error prediction and prevention
+
+#### Real-Time Monitoring
+
+- **Live Metrics**: Real-time KPI updates with auto-refresh
+- **Alert System**: Configurable alerts for threshold breaches
+- **Performance Notifications**: Instant notifications for critical issues
+- **Dashboard Customization**: Personalized dashboard layouts
 
 ### Custom Reports
 
@@ -276,7 +304,42 @@ Set up automatic report generation:
    - **Format**: Report format preference
 4. Save scheduled report
 
-## Platform Integrations
+## Platform Management
+
+### Enhanced Platform Management Interface
+
+The new platform management system provides comprehensive control over your automation platform connections:
+
+#### Platform List View
+
+- **Connection Status**: Real-time status indicators for all platforms
+- **Health Monitoring**: Continuous health checks with response time tracking
+- **Agent Count**: Number of agents discovered on each platform
+- **Last Sync**: When the platform was last synchronized
+- **Platform Type**: Visual badges for different platform types
+- **Quick Actions**: Edit, test, delete, and refresh operations
+
+#### Platform Configuration
+
+**Adding New Platforms:**
+
+1. Navigate to **Platforms** in the dashboard
+2. Click **Add Platform** button
+3. Select platform type (n8n, Make.com, Zapier)
+4. Enter platform details:
+   - **Name**: Descriptive name for the platform
+   - **Base URL**: Platform instance URL
+   - **Authentication**: API keys or OAuth credentials
+5. Click **Test Connection** to verify connectivity
+6. Save the configuration
+
+**Connection Testing:**
+
+- Real-time connection testing with detailed feedback
+- Response time measurement
+- Platform version detection
+- Capability discovery
+- Agent count verification
 
 ### n8n Integration
 
@@ -286,19 +349,27 @@ Set up automatic report generation:
 - API key with appropriate permissions
 - Network connectivity between Cubcen and n8n
 
-**Configuration Steps:**
+**Enhanced Configuration:**
 
-1. In n8n, generate an API key
-2. In Cubcen, add n8n platform connection
-3. Enter n8n base URL and API key
-4. Test connection and save
+1. In n8n, generate an API key with workflow and execution permissions
+2. In Cubcen, navigate to **Platforms** → **Add Platform**
+3. Select **n8n** as platform type
+4. Enter configuration:
+   - **Name**: "Production n8n" (or your preferred name)
+   - **Base URL**: Your n8n instance URL
+   - **API Key**: Generated API key
+5. Click **Test Connection** to verify
+6. Review discovered capabilities and agent count
+7. Save the configuration
 
 **Supported Features:**
 
 - Workflow discovery and monitoring
-- Execution status tracking
-- Error reporting and alerting
+- Real-time execution status tracking
+- Comprehensive error reporting and alerting
 - Performance metrics collection
+- Health monitoring with automatic reconnection
+- Version compatibility checking
 
 ### Make.com Integration
 
@@ -308,29 +379,333 @@ Set up automatic report generation:
 - OAuth application credentials
 - Appropriate scenario permissions
 
-**Configuration Steps:**
+**Enhanced Configuration:**
 
-1. Create OAuth app in Make.com
-2. In Cubcen, add Make.com platform connection
-3. Enter client ID and client secret
-4. Complete OAuth authorization flow
-5. Test connection and save
+1. Create OAuth app in Make.com developer console
+2. In Cubcen, navigate to **Platforms** → **Add Platform**
+3. Select **Make.com** as platform type
+4. Enter OAuth credentials:
+   - **Client ID**: From Make.com OAuth app
+   - **Client Secret**: From Make.com OAuth app
+5. Complete OAuth authorization flow
+6. Test connection and verify permissions
+7. Save the configuration
 
 **Supported Features:**
 
 - Scenario discovery and monitoring
-- Execution tracking and logging
+- Execution tracking and detailed logging
 - Resource usage monitoring
-- Error handling and recovery
+- Advanced error handling and recovery
+- Webhook integration for real-time updates
+- Rate limit management
+
+### Zapier Integration
+
+**Setup Requirements:**
+
+- Zapier account with API access
+- Private app credentials
+- Appropriate Zap permissions
+
+**Configuration Steps:**
+
+1. Create private app in Zapier developer platform
+2. In Cubcen, navigate to **Platforms** → **Add Platform**
+3. Select **Zapier** as platform type
+4. Enter app credentials and complete authentication
+5. Test connection and verify Zap access
+6. Save the configuration
+
+**Supported Features:**
+
+- Zap discovery and monitoring
+- Execution tracking
+- Error reporting
+- Performance analytics
+
+### Platform Health Monitoring
+
+**Health Indicators:**
+
+- 🟢 **Healthy**: Platform is responding normally
+- 🟡 **Degraded**: Platform is responding but with issues
+- 🔴 **Unhealthy**: Platform is not responding or has critical errors
+- ⚫ **Offline**: Platform is unreachable
+
+**Monitoring Features:**
+
+- Continuous health checks every 5 minutes
+- Response time tracking
+- Version monitoring
+- Automatic reconnection attempts
+- Alert notifications for status changes
+- Historical health data
+
+### Platform Management Actions
+
+**Edit Platform:**
+- Update connection details
+- Modify authentication credentials
+- Change platform name or description
+- Update health check intervals
+
+**Delete Platform:**
+- Confirmation dialog with impact assessment
+- Shows number of connected agents
+- Audit trail logging
+- Graceful disconnection process
+
+**Refresh Platform:**
+- Force synchronization with platform
+- Rediscover agents and capabilities
+- Update health status
+- Refresh connection credentials
 
 ### Adding New Platforms
 
 Cubcen supports a plugin architecture for adding new platforms:
 
-1. **Contact Support**: Reach out for new platform requests
-2. **Provide API Documentation**: Share platform API details
-3. **Testing**: Participate in integration testing
-4. **Deployment**: New platform support will be deployed
+1. **Request New Platform**: Contact support with platform details
+2. **API Documentation**: Provide comprehensive API documentation
+3. **Testing Environment**: Provide test instance access
+4. **Integration Development**: Our team develops the integration
+5. **Beta Testing**: Participate in integration testing
+6. **Production Deployment**: New platform support is deployed
+
+**Currently Supported Platforms:**
+- n8n (Full support)
+- Make.com (Full support)
+- Zapier (Full support)
+- Custom REST APIs (Beta)
+
+**Planned Platform Support:**
+- Microsoft Power Automate
+- Integromat
+- Workato
+- Tray.io
+
+## User Management
+
+### User Management Interface (Admin Only)
+
+The user management system provides comprehensive control over user accounts, roles, and permissions:
+
+#### User List View
+
+- **User Information**: Name, email, role, and status for all users
+- **Activity Statistics**: Login count, tasks created, agents managed
+- **Status Indicators**: Active, inactive, or suspended status
+- **Role Badges**: Visual indicators for user roles (Admin, Operator, Viewer)
+- **Last Login**: When each user last accessed the system
+- **Quick Actions**: Edit, suspend, reactivate, or delete users
+
+#### User Roles and Permissions
+
+**Administrator (ADMIN):**
+- Full system access
+- User management capabilities
+- Platform configuration
+- System settings management
+- Analytics and reporting access
+- Audit log access
+
+**Operator (OPERATOR):**
+- Agent management
+- Task creation and monitoring
+- Analytics viewing
+- Platform status monitoring
+- Limited settings access
+
+**Viewer (VIEWER):**
+- Read-only access to dashboards
+- View agent status
+- View task status
+- Basic analytics access
+- No configuration capabilities
+
+#### Creating Users
+
+1. Navigate to **Users** in the dashboard (Admin only)
+2. Click **Create User** or **Invite User**
+3. Enter user details:
+   - **Name**: Full name of the user
+   - **Email**: Valid email address
+   - **Role**: Select appropriate role
+   - **Password**: Set initial password (for direct creation)
+4. Choose to send invitation email
+5. Save the user account
+
+**User Creation Options:**
+
+- **Direct Creation**: Create user with immediate access
+- **Email Invitation**: Send invitation email with setup link
+- **Bulk Import**: Import multiple users from CSV file
+
+#### Managing Users
+
+**Edit User:**
+- Update user information
+- Change user role
+- Modify permissions
+- Update contact details
+
+**Suspend/Reactivate User:**
+- Temporarily disable user access
+- Maintain audit trail
+- Preserve user data and settings
+- Reactivate when needed
+
+**Delete User:**
+- Permanently remove user account
+- Transfer ownership of created resources
+- Complete audit trail logging
+- Confirmation required
+
+#### User Activity Monitoring
+
+**Activity Statistics:**
+- Total login count
+- Last login timestamp
+- Tasks created and managed
+- Agents accessed
+- Platform interactions
+
+**Audit Trail:**
+- All user actions logged
+- Login/logout events
+- Permission changes
+- Resource access
+- Administrative actions
+
+### Settings Management
+
+#### Personal Settings
+
+**Profile Settings:**
+- Update personal information
+- Change display name
+- Upload profile avatar
+- Update contact preferences
+- Set timezone and language
+
+**Password Management:**
+- Change account password
+- Password strength requirements
+- Password history tracking
+- Forced password reset options
+
+#### Notification Preferences
+
+**Notification Channels:**
+- **Email Notifications**: Configure email alerts
+- **Push Notifications**: Browser and mobile push alerts
+- **Slack Integration**: Direct Slack notifications
+- **Webhook Notifications**: Custom webhook endpoints
+
+**Notification Types:**
+- **Agent Alerts**: Agent status changes and errors
+- **Task Updates**: Task completion and failure notifications
+- **System Notifications**: System maintenance and updates
+- **Security Alerts**: Login attempts and security events
+
+**Notification Frequency:**
+- **Immediate**: Real-time notifications
+- **Hourly**: Batched hourly summaries
+- **Daily**: Daily digest emails
+- **Weekly**: Weekly summary reports
+
+#### Security Settings
+
+**Two-Factor Authentication (2FA):**
+- Enable/disable 2FA
+- QR code setup for authenticator apps
+- Backup code generation
+- Recovery options
+
+**Active Sessions:**
+- View all active login sessions
+- Session details (device, location, browser)
+- Terminate individual sessions
+- Terminate all sessions except current
+
+**Security Audit Log:**
+- Login/logout events
+- Password changes
+- 2FA setup/changes
+- Suspicious activity alerts
+- IP address tracking
+
+**Account Security:**
+- Password change history
+- Failed login attempt tracking
+- Account lockout settings
+- Security question setup
+
+#### Dashboard Preferences
+
+**Theme Settings:**
+- Light/dark mode toggle
+- System theme following
+- Custom color schemes
+- High contrast options
+
+**Dashboard Layout:**
+- Default page on login
+- Widget arrangements
+- Refresh intervals
+- Data display preferences
+
+**Accessibility Options:**
+- Screen reader compatibility
+- Keyboard navigation
+- Font size adjustments
+- Color blind friendly options
+
+## Error Management
+
+### Enhanced Error Monitoring System
+
+The new error management system provides comprehensive error tracking and resolution:
+
+#### Error Dashboard
+
+- **Error Overview**: Total errors, error rate trends, resolution status
+- **Error Categories**: Categorized by severity and type
+- **Recent Errors**: Latest errors with quick action buttons
+- **Error Patterns**: Common error types and their frequency
+- **Resolution Metrics**: Average resolution time and success rates
+
+#### Error Details
+
+**Error Information:**
+- Error message and stack trace
+- Timestamp and frequency
+- Affected users and sessions
+- Browser and system information
+- Page or component where error occurred
+
+**User Reports:**
+- User-submitted error descriptions
+- Reproduction steps
+- Expected vs actual behavior
+- Screenshots and additional context
+
+#### Error Resolution
+
+**Admin Actions:**
+- Mark errors as resolved
+- Add resolution notes
+- Assign errors to team members
+- Set error priority levels
+- Create bug reports
+
+**Automatic Features:**
+- Error grouping and deduplication
+- Severity classification
+- Impact assessment
+- Notification routing
+- Integration with issue tracking
 
 ## Troubleshooting
 

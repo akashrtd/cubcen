@@ -5,10 +5,12 @@ import { ErrorLogViewer } from '@/components/errors/error-log-viewer'
 import { ErrorPatterns } from '@/components/errors/error-patterns'
 import { SystemHealthIndicators } from '@/components/errors/system-health-indicators'
 import { TaskRetryPanel } from '@/components/errors/task-retry-panel'
+import { ProtectedRoute } from '@/components/auth/protected-route'
 
 export default function ErrorsPage() {
   return (
-    <div className="space-y-6">
+    <ProtectedRoute requiredResource="errors">
+      <div className="space-y-6">
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -33,6 +35,7 @@ export default function ErrorsPage() {
 
       {/* Error Log Viewer */}
       <ErrorLogViewer />
-    </div>
+      </div>
+    </ProtectedRoute>
   )
 }

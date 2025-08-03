@@ -2,6 +2,12 @@ import { Router, Request, Response } from 'express'
 import { analyticsService, DateRange } from '@/services/analytics'
 import { logger } from '@/lib/logger'
 import { z } from 'zod'
+import {
+  asyncHandler,
+  createSuccessResponse,
+  APIError,
+  APIErrorCode,
+} from '@/lib/api-error-handler'
 
 const router = Router()
 
@@ -22,77 +28,74 @@ const exportSchema = z.object({
  * GET /api/cubcen/v1/analytics
  * Get comprehensive analytics data
  */
-router.get('/', async (req: Request, res: Response) => {
-  try {
-    const query = dateRangeSchema.safeParse(req.query)
+router.get('/', asyncHandler(async (req: Request, res: Response) => {
+  const query = dateRangeSchema.safeParse(req.query)
 
-    if (!query.success) {
-      return res.status(400).json({
-        error: {
-          code: 'VALIDATION_ERROR',
-          message: 'Invalid date range parameters',
-          details: query.error.issues,
-        },
-      })
-    }
-
-    let dateRange: DateRange | undefined
-    if (query.data.startDate || query.data.endDate) {
-      dateRange = {
-        startDate: query.data.startDate
-          ? new Date(query.data.startDate)
-          : new Date(0),
-        endDate: query.data.endDate ? new Date(query.data.endDate) : new Date(),
-      }
-    }
-
-    const analyticsData = await analyticsService.getAnalyticsData(dateRange)
-
-    res.json({
-      success: true,
-      data: analyticsData,
-      timestamp: new Date().toISOString(),
-    })
-  } catch (error) {
-    logger.error('Failed to get analytics data', error)
-    res.status(500).json({
-      error: {
-        code: 'ANALYTICS_ERROR',
-        message: 'Failed to retrieve analytics data',
-        timestamp: new Date().toISOString(),
-      },
-    })
+  if (!query.success) {
+    throw new APIError(
+      APIErrorCode.VALIDATION_ERROR,
+      'Invalid date range parameters',
+      query.error.issues
+    )
   }
-})
+
+  let dateRange: DateRange | undefined
+  if (query.data.startDate || query.data.endDate) {
+    dateRange = {
+      startDate: query.data.startDate
+        ? new Date(query.data.startDate)
+        : new Date(0),
+      endDate: query.data.endDate ? new Date(query.data.endDate) : new Date(),
+    }
+  }
+
+  try {
+    const analyticsData = await analyticsService.getAnalyticsData(dateRange)
+    
+    res.json(createSuccessResponse(
+      analyticsData,
+      'Analytics data retrieved successfully',
+      req.headers['x-request-id'] as string
+    ))
+  } catch (error) {
+    logger.error('Analytics service error', error as Error, {
+      requestId: req.headers['x-request-id'],
+      dateRange,
+    })
+    
+    throw new APIError(
+      APIErrorCode.INTERNAL_ERROR,
+      'Failed to retrieve analytics data'
+    )
+  }
+}))
 
 /**
  * GET /api/cubcen/v1/analytics/kpis
  * Get key performance indicators only
  */
-router.get('/kpis', async (req: Request, res: Response) => {
+router.get('/kpis', asyncHandler(async (req: Request, res: Response) => {
+  const query = dateRangeSchema.safeParse(req.query)
+
+  if (!query.success) {
+    throw new APIError(
+      APIErrorCode.VALIDATION_ERROR,
+      'Invalid date range parameters',
+      query.error.issues
+    )
+  }
+
+  let dateRange: DateRange | undefined
+  if (query.data.startDate || query.data.endDate) {
+    dateRange = {
+      startDate: query.data.startDate
+        ? new Date(query.data.startDate)
+        : new Date(0),
+      endDate: query.data.endDate ? new Date(query.data.endDate) : new Date(),
+    }
+  }
+
   try {
-    const query = dateRangeSchema.safeParse(req.query)
-
-    if (!query.success) {
-      return res.status(400).json({
-        error: {
-          code: 'VALIDATION_ERROR',
-          message: 'Invalid date range parameters',
-          details: query.error.issues,
-        },
-      })
-    }
-
-    let dateRange: DateRange | undefined
-    if (query.data.startDate || query.data.endDate) {
-      dateRange = {
-        startDate: query.data.startDate
-          ? new Date(query.data.startDate)
-          : new Date(0),
-        endDate: query.data.endDate ? new Date(query.data.endDate) : new Date(),
-      }
-    }
-
     const analyticsData = await analyticsService.getAnalyticsData(dateRange)
 
     // Return only KPIs
@@ -106,22 +109,23 @@ router.get('/kpis', async (req: Request, res: Response) => {
       averageResponseTime: analyticsData.averageResponseTime,
     }
 
-    res.json({
-      success: true,
-      data: kpis,
-      timestamp: new Date().toISOString(),
-    })
+    res.json(createSuccessResponse(
+      kpis,
+      'KPI data retrieved successfully',
+      req.headers['x-request-id'] as string
+    ))
   } catch (error) {
-    logger.error('Failed to get KPI data', error)
-    res.status(500).json({
-      error: {
-        code: 'ANALYTICS_ERROR',
-        message: 'Failed to retrieve KPI data',
-        timestamp: new Date().toISOString(),
-      },
+    logger.error('Analytics service error', error as Error, {
+      requestId: req.headers['x-request-id'],
+      dateRange,
     })
+    
+    throw new APIError(
+      APIErrorCode.INTERNAL_ERROR,
+      'Failed to retrieve KPI data'
+    )
   }
-})
+}))
 
 /**
  * POST /api/cubcen/v1/analytics/export

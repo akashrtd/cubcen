@@ -84,14 +84,28 @@ export function KPICards({ data, loading }: KPICardsProps) {
               <CardTitle className="text-sm font-medium">
                 <div className="h-4 bg-muted animate-pulse rounded w-20" />
               </CardTitle>
-              <div className="h-4 w-4 bg-muted animate-pulse rounded" />
+              <div className="h-8 w-8 bg-muted animate-pulse rounded-full" />
             </CardHeader>
             <CardContent>
-              <div className="h-8 bg-muted animate-pulse rounded mb-2" />
-              <div className="h-3 bg-muted animate-pulse rounded w-2/3" />
+              <div className="h-8 bg-muted animate-pulse rounded mb-2 w-16" />
+              <div className="h-3 bg-muted animate-pulse rounded w-2/3 mb-2" />
+              <div className="h-1 bg-muted animate-pulse rounded w-full" />
             </CardContent>
           </Card>
         ))}
+      </div>
+    )
+  }
+
+  // Validate data to prevent runtime errors
+  if (!data || typeof data !== 'object') {
+    return (
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        <Card className="col-span-full">
+          <CardContent className="flex items-center justify-center py-8">
+            <p className="text-muted-foreground">No KPI data available</p>
+          </CardContent>
+        </Card>
       </div>
     )
   }

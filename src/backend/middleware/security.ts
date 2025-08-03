@@ -314,7 +314,7 @@ export function securityHeaders(
  */
 export function requestSizeLimit(maxSize: number = 10 * 1024 * 1024) {
   // 10MB default
-  return (req: Request, res: Response, next: NextFunction): void => {
+  return (req: Request, res: Response, next: NextFunction): void | Response => {
     const contentLength = parseInt(req.headers['content-length'] || '0', 10)
 
     if (contentLength > maxSize) {
@@ -345,7 +345,7 @@ export function requestSizeLimit(maxSize: number = 10 * 1024 * 1024) {
  * IP whitelist middleware
  */
 export function ipWhitelist(allowedIPs: string[] = []) {
-  return (req: Request, res: Response, next: NextFunction): void => {
+  return (req: Request, res: Response, next: NextFunction): void | Response => {
     if (allowedIPs.length === 0) {
       return next() // No whitelist configured, allow all
     }
@@ -574,7 +574,7 @@ export class AdvancedRateLimiter {
   }
 
   public middleware() {
-    return (req: Request, res: Response, next: NextFunction): void => {
+    return (req: Request, res: Response, next: NextFunction): void | Response => {
       const key = this.getKey(req)
       const now = new Date()
       const attempt = this.attempts.get(key)
@@ -702,7 +702,7 @@ export function honeypotProtection(
   req: Request,
   res: Response,
   next: NextFunction
-): void {
+): void | Response {
   // Check for honeypot field in forms
   if (req.body && req.body.honeypot && req.body.honeypot.trim() !== '') {
     logger.warn('Honeypot field filled, likely bot detected', {
@@ -727,7 +727,7 @@ export function honeypotProtection(
  * Geolocation-based access control
  */
 export function geolocationFilter(allowedCountries: string[] = []) {
-  return (req: Request, res: Response, next: NextFunction): void => {
+  return (req: Request, res: Response, next: NextFunction): void | Response => {
     if (allowedCountries.length === 0) {
       return next() // No restrictions
     }
@@ -768,7 +768,7 @@ export function geolocationFilter(allowedCountries: string[] = []) {
  * Request signature validation middleware
  */
 export function requestSignatureValidation(secretKey: string) {
-  return (req: Request, res: Response, next: NextFunction): void => {
+  return (req: Request, res: Response, next: NextFunction): void | Response => {
     const signature = req.headers['x-signature'] as string
     const timestamp = req.headers['x-timestamp'] as string
 

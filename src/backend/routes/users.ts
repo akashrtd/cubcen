@@ -3,6 +3,7 @@
 
 import { Router, Request, Response } from 'express'
 import { logger } from '@/lib/logger'
+import { auditLogger, AuditEventType, AuditSeverity } from '@/lib/audit-logger'
 import {
   authenticate,
   requireAdmin,
@@ -51,6 +52,17 @@ const userQuerySchema = paginationQuerySchema.extend({
 
 const updateUserStatusSchema = z.object({
   status: z.enum(['active', 'inactive', 'suspended']),
+  reason: z.string().optional(),
+  auditTrail: z.boolean().optional(),
+})
+
+const createUserSchema = z.object({
+  name: z.string().min(1, 'Name is required').max(100),
+  email: z.string().email('Valid email is required'),
+  role: z.enum(['ADMIN', 'OPERATOR', 'VIEWER']).default('VIEWER'),
+  status: z.enum(['active', 'inactive', 'suspended']).default('active'),
+  auditTrail: z.boolean().optional(),
+  action: z.string().optional(),
 })
 
 /**
@@ -199,19 +211,117 @@ router.get(
 )
 
 /**
+ * POST /api/cubcen/v1/users
+ * Create new user (admin only) with audit trail logging
+ */
+router.post(
+  '/',
+  authenticate,
+  requireAdmin,
+  validateBody(createUserSchema),
+  async (req: Request, res: Response) => {
+    try {
+      const userData = req.body
+
+      logger.info('Create user request', {
+        userId: req.user!.id,
+        userData: {
+          ...userData,
+          email: '[REDACTED]',
+        },
+      })
+
+      // TODO: Implement user service to create user
+      // For now, return mock response
+      const mockUser = {
+        id: `user_${Date.now()}`,
+        name: userData.name,
+        email: userData.email,
+        role: userData.role,
+        status: userData.status,
+        lastLoginAt: null,
+        preferences: {
+          theme: 'system' as const,
+          notifications: { email: true, push: true, slack: false },
+          dashboard: { defaultView: 'grid' as const, refreshInterval: 30 },
+        },
+        activityStats: {
+          totalLogins: 0,
+          lastLogin: null,
+          tasksCreated: 0,
+          agentsManaged: 0,
+        },
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+
+      // Log audit trail if requested
+      if (userData.auditTrail) {
+        await auditLogger.logUserEvent(
+          AuditEventType.USER_CREATED,
+          mockUser.id,
+          mockUser.email,
+          req.user!.id,
+          req.user!.email || 'admin@cubcen.com',
+          req,
+          {
+            role: userData.role,
+            status: userData.status,
+            action: userData.action || 'create',
+            adminAction: true,
+          }
+        )
+
+        logger.info('User creation logged to audit trail', {
+          userId: req.user!.id,
+          newUserId: mockUser.id,
+          eventType: AuditEventType.USER_CREATED,
+        })
+      }
+
+      logger.info('User created successfully', {
+        userId: req.user!.id,
+        newUserId: mockUser.id,
+      })
+
+      res.status(201).json({
+        success: true,
+        data: { user: mockUser },
+        message: 'User created successfully',
+      })
+    } catch (error) {
+      logger.error('Create user failed', error as Error, {
+        userId: req.user?.id,
+      })
+
+      res.status(500).json({
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Failed to create user',
+        },
+      })
+    }
+  }
+)
+
+/**
  * PUT /api/cubcen/v1/users/:id/profile
- * Update user profile (self or admin)
+ * Update user profile (self or admin) with audit trail logging
  */
 router.put(
   '/:id/profile',
   authenticate,
   requireSelfOrAdmin('id'),
   validateParams(idParamSchema),
-  validateBody(updateUserProfileSchema),
+  validateBody(updateUserProfileSchema.extend({
+    auditTrail: z.boolean().optional(),
+    action: z.string().optional(),
+  })),
   async (req: Request, res: Response) => {
     try {
       const { id } = req.params
-      const updateData = req.body
+      const { auditTrail, action, ...updateData } = req.body
 
       logger.info('Update user profile request', {
         userId: req.user!.id,
@@ -220,6 +330,8 @@ router.put(
           ...updateData,
           email: updateData.email ? '[REDACTED]' : undefined,
         },
+        auditTrail,
+        action,
       })
 
       // TODO: Implement user service to update user profile
@@ -228,16 +340,45 @@ router.put(
         id,
         name: updateData.name || 'User Name',
         email: updateData.email || '[email]',
-        role: 'OPERATOR',
-        status: 'active',
+        role: 'OPERATOR' as const,
+        status: 'active' as const,
         lastLoginAt: new Date(),
         preferences: updateData.preferences || {
-          theme: 'light',
+          theme: 'light' as const,
           notifications: { email: true, push: false, slack: true },
-          dashboard: { defaultView: 'kanban', refreshInterval: 60 },
+          dashboard: { defaultView: 'kanban' as const, refreshInterval: 60 },
+        },
+        activityStats: {
+          totalLogins: 45,
+          lastLogin: new Date(),
+          tasksCreated: 23,
+          agentsManaged: 5,
         },
         createdAt: new Date('2024-01-01'),
         updatedAt: new Date(),
+      }
+
+      // Log audit trail if requested
+      if (auditTrail) {
+        await auditLogger.logUserEvent(
+          AuditEventType.USER_UPDATED,
+          id,
+          mockUser.email,
+          req.user!.id,
+          req.user!.email || 'admin@cubcen.com',
+          req,
+          {
+            updatedFields: Object.keys(updateData),
+            action: action || 'update',
+            selfUpdate: id === req.user!.id,
+          }
+        )
+
+        logger.info('User profile update logged to audit trail', {
+          userId: req.user!.id,
+          targetUserId: id,
+          eventType: AuditEventType.USER_UPDATED,
+        })
       }
 
       logger.info('User profile updated successfully', {
@@ -269,7 +410,7 @@ router.put(
 
 /**
  * PUT /api/cubcen/v1/users/:id/status
- * Update user status (admin only)
+ * Update user status (admin only) with audit trail logging
  */
 router.put(
   '/:id/status',
@@ -280,7 +421,7 @@ router.put(
   async (req: Request, res: Response) => {
     try {
       const { id } = req.params
-      const { status } = req.body
+      const { status, reason, auditTrail } = req.body
 
       // Prevent admin from suspending themselves
       if (id === req.user!.id && status === 'suspended') {
@@ -298,6 +439,8 @@ router.put(
         userId: req.user!.id,
         targetUserId: id,
         newStatus: status,
+        reason,
+        auditTrail,
       })
 
       // TODO: Implement user service to update user status
@@ -306,16 +449,53 @@ router.put(
         id,
         name: 'User Name',
         email: '[email]',
-        role: 'OPERATOR',
+        role: 'OPERATOR' as const,
         status,
         lastLoginAt: new Date(),
         preferences: {
-          theme: 'light',
+          theme: 'light' as const,
           notifications: { email: true, push: false, slack: true },
-          dashboard: { defaultView: 'kanban', refreshInterval: 60 },
+          dashboard: { defaultView: 'kanban' as const, refreshInterval: 60 },
+        },
+        activityStats: {
+          totalLogins: 45,
+          lastLogin: new Date(),
+          tasksCreated: 23,
+          agentsManaged: 5,
         },
         createdAt: new Date('2024-01-01'),
         updatedAt: new Date(),
+      }
+
+      // Log audit trail if requested
+      if (auditTrail) {
+        const eventType = status === 'suspended' 
+          ? AuditEventType.USER_DELETED 
+          : status === 'active' 
+            ? AuditEventType.USER_UPDATED 
+            : AuditEventType.USER_UPDATED
+
+        await auditLogger.logUserEvent(
+          eventType,
+          id,
+          mockUser.email,
+          req.user!.id,
+          req.user!.email || 'admin@cubcen.com',
+          req,
+          {
+            previousStatus: 'active', // In real implementation, get from database
+            newStatus: status,
+            reason: reason || `User status changed to ${status}`,
+            adminAction: true,
+          }
+        )
+
+        logger.info('User status change logged to audit trail', {
+          userId: req.user!.id,
+          targetUserId: id,
+          eventType,
+          newStatus: status,
+        })
       }
 
       logger.info('User status updated successfully', {

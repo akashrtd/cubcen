@@ -233,7 +233,7 @@ export class LoadTester {
               name: `Load Test Agent ${i}`,
               platformId: 'test-platform',
               externalId: `load-test-${i}`,
-              status: 'active',
+              status: 'ACTIVE',
               capabilities: JSON.stringify(['testing']),
               configuration: JSON.stringify({ test: true }),
               healthStatus: 'healthy',
