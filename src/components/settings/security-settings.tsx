@@ -455,7 +455,7 @@ export function SecuritySettings({
           </div>
           <DialogFooter>
             <Button onClick={() => setShowBackupCodes(false)}>
-              I've Saved These Codes
+              I&apos;ve Saved These Codes
             </Button>
           </DialogFooter>
         </DialogContent>

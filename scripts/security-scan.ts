@@ -5,7 +5,7 @@
 
 import axios from 'axios'
 import crypto from 'crypto'
-import { logger } from '../src/lib/logger'
+
 
 interface SecurityTest {
   name: string

@@ -184,7 +184,7 @@ function DefaultErrorFallback({
             {pageName && <span className="ml-2 text-sm text-muted-foreground">in {pageName}</span>}
           </CardTitle>
           <CardDescription>
-            An unexpected error occurred. We've been notified and are working to fix it.
+            An unexpected error occurred. We&apos;ve been notified and are working to fix it.
             {errorId && (
               <span className="block mt-1 text-xs text-muted-foreground">
                 Error ID: {errorId}
