@@ -73,13 +73,13 @@ export function ErrorPatterns({ className, timeRange }: ErrorPatternsProps) {
         to: effectiveTimeRange.to.toISOString(),
       })
 
-      const response = await fetch(`/api/cubcen/v1/errors/patterns?${params}`)
+      const response = await fetch(`/api/errors/patterns?${params}`)
       if (!response.ok) {
         throw new Error('Failed to fetch error patterns')
       }
 
       const data = await response.json()
-      setPatterns(data.patterns || [])
+      setPatterns(Array.isArray(data.patterns) ? data.patterns : [])
       setError(null)
     } catch (err) {
       setError(
@@ -241,11 +241,11 @@ export function ErrorPatterns({ className, timeRange }: ErrorPatternsProps) {
                             <Clock className="h-3 w-3" />
                             {formatFrequency(pattern.frequency)}
                           </span>
-                          {pattern.affectedAgents.length > 0 && (
+                          {pattern.affectedAgents && pattern.affectedAgents.length > 0 && (
                             <span className="text-sm text-gray-600 flex items-center gap-1">
                               <Users className="h-3 w-3" />
-                              {pattern.affectedAgents.length} agent
-                              {pattern.affectedAgents.length !== 1 ? 's' : ''}
+                              {pattern.affectedAgents?.length || 0} agent
+                              {(pattern.affectedAgents?.length || 0) !== 1 ? 's' : ''}
                             </span>
                           )}
                         </div>
@@ -291,13 +291,13 @@ export function ErrorPatterns({ className, timeRange }: ErrorPatternsProps) {
                         </div>
 
                         {/* Affected Agents */}
-                        {pattern.affectedAgents.length > 0 && (
+                        {pattern.affectedAgents && pattern.affectedAgents.length > 0 && (
                           <div>
                             <label className="text-sm font-medium text-gray-600 mb-2 block">
-                              Affected Agents ({pattern.affectedAgents.length})
+                              Affected Agents ({pattern.affectedAgents?.length || 0})
                             </label>
                             <div className="flex flex-wrap gap-2">
-                              {pattern.affectedAgents
+                              {(pattern.affectedAgents || [])
                                 .slice(0, 10)
                                 .map(agentId => (
                                   <Badge
@@ -308,12 +308,12 @@ export function ErrorPatterns({ className, timeRange }: ErrorPatternsProps) {
                                     {agentId.slice(0, 8)}...
                                   </Badge>
                                 ))}
-                              {pattern.affectedAgents.length > 10 && (
+                              {(pattern.affectedAgents?.length || 0) > 10 && (
                                 <Badge
                                   variant="outline"
                                   className="text-xs text-gray-500"
                                 >
-                                  +{pattern.affectedAgents.length - 10} more
+                                  +{(pattern.affectedAgents?.length || 0) - 10} more
                                 </Badge>
                               )}
                             </div>
@@ -347,7 +347,7 @@ export function ErrorPatterns({ className, timeRange }: ErrorPatternsProps) {
                           </div>
                           <div className="text-center">
                             <div className="text-lg font-semibold text-[#B19ADA]">
-                              {pattern.affectedAgents.length}
+                              {pattern.affectedAgents?.length || 0}
                             </div>
                             <div className="text-xs text-gray-500">Agents</div>
                           </div>

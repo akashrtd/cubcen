@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { useAuth } from '@/hooks/use-auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -22,6 +23,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const { login } = useAuth()
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -43,13 +45,10 @@ export default function LoginPage() {
     }
 
     try {
-      // TODO: Implement actual authentication
-      await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate API call
-
-      // For now, just redirect to dashboard
-      router.push('/dashboard')
-    } catch {
-      setError('Invalid email or password')
+      await login(email, password)
+      // The login function handles the redirect to dashboard
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Invalid email or password')
     } finally {
       setIsLoading(false)
     }

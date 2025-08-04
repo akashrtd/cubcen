@@ -113,16 +113,16 @@ export function ErrorLogViewer({ className }: ErrorLogViewerProps) {
           ...(searchTerm && { search: searchTerm }),
         })
 
-        const response = await fetch(`/api/cubcen/v1/errors/logs?${params}`)
+        const response = await fetch(`/api/errors/logs?${params}`)
         if (!response.ok) {
           throw new Error('Failed to fetch error logs')
         }
 
         const data = await response.json()
-        setLogs(data.logs)
-        setTotal(data.total)
-        setTotalPages(data.totalPages)
-        setCurrentPage(data.page)
+        setLogs(Array.isArray(data.logs) ? data.logs : [])
+        setTotal(data.total || 0)
+        setTotalPages(data.totalPages || 1)
+        setCurrentPage(data.page || 1)
         setError(null)
       } catch (err) {
         setError(

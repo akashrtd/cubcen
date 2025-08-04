@@ -47,8 +47,8 @@ interface NotificationPreference {
 }
 
 interface NotificationSettingsProps {
-  preferences: NotificationPreference[]
-  globalSettings: {
+  preferences?: NotificationPreference[]
+  globalSettings?: {
     emailEnabled: boolean
     slackEnabled: boolean
     pushEnabled: boolean
@@ -155,20 +155,29 @@ const channelConfig = {
   },
 }
 
-export function NotificationSettings({ preferences, globalSettings, onSave }: NotificationSettingsProps) {
+export function NotificationSettings({ preferences = [], globalSettings, onSave }: NotificationSettingsProps) {
   const [isSaving, setIsSaving] = useState(false)
 
   const form = useForm<NotificationPreferencesFormData>({
     resolver: zodResolver(notificationPreferencesSchema),
     defaultValues: {
-      preferences: preferences.map(pref => ({
+      preferences: Array.isArray(preferences) ? preferences.map(pref => ({
         eventType: pref.eventType,
         enabled: pref.enabled,
         channels: pref.channels,
         frequency: pref.frequency,
         escalationDelay: pref.escalationDelay,
-      })),
-      globalSettings,
+      })) : [],
+      globalSettings: globalSettings || {
+        emailEnabled: true,
+        slackEnabled: false,
+        pushEnabled: false,
+        quietHours: {
+          enabled: false,
+          startTime: '22:00',
+          endTime: '08:00',
+        },
+      },
     },
   })
 

@@ -94,7 +94,7 @@ export function PlatformList({
       setLoading(true)
       setError(null)
       
-      const response = await fetch('/api/cubcen/v1/platforms', {
+      const response = await fetch('/api/platforms', {
         headers: {
           'Content-Type': 'application/json',
         },

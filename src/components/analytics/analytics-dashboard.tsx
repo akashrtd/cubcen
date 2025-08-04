@@ -90,7 +90,7 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
         params.append('endDate', range.to.toISOString())
       }
 
-      const response = await fetch(`/api/cubcen/v1/analytics?${params}`, {
+      const response = await fetch(`/api/analytics?${params}`, {
         signal: abortControllerRef.current.signal,
         headers: {
           'Content-Type': 'application/json',

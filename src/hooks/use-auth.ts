@@ -63,7 +63,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       setIsLoading(true)
       
-      const response = await fetch('/api/cubcen/v1/auth/login', {
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -72,17 +72,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
       })
 
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.message || 'Login failed')
+        const errorData = await response.json()
+        throw new Error(errorData.error?.message || 'Login failed')
       }
 
       const data = await response.json()
       
       // Store tokens
-      localStorage.setItem('accessToken', data.tokens.accessToken)
-      localStorage.setItem('refreshToken', data.tokens.refreshToken)
+      localStorage.setItem('accessToken', data.data.tokens.accessToken)
+      localStorage.setItem('refreshToken', data.data.tokens.refreshToken)
       
-      setUser(data.user)
+      setUser(data.data.user)
       
       // Handle redirect after login
       const redirectPath = localStorage.getItem('redirectAfterLogin')
@@ -93,7 +93,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         router.push('/dashboard')
       }
       
-      clientLogger.info('User logged in successfully', { userId: data.user.id })
+      clientLogger.info('User logged in successfully', { userId: data.data.user.id })
     } catch (error) {
       clientLogger.error('Login failed', error as Error)
       throw error
@@ -120,7 +120,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         return
       }
 
-      const response = await fetch('/api/cubcen/v1/auth/me', {
+      const response = await fetch('/api/auth/me', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -133,7 +133,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
 
       const data = await response.json()
-      setUser(data.user)
+      setUser(data.data.user)
     } catch (error) {
       clientLogger.error('Token validation failed', error as Error)
       logout()
@@ -151,7 +151,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         return
       }
 
-      const response = await fetch('/api/cubcen/v1/auth/refresh', {
+      const response = await fetch('/api/auth/refresh', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -167,8 +167,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const data = await response.json()
       
       // Update tokens
-      localStorage.setItem('accessToken', data.tokens.accessToken)
-      localStorage.setItem('refreshToken', data.tokens.refreshToken)
+      localStorage.setItem('accessToken', data.data.tokens.accessToken)
+      localStorage.setItem('refreshToken', data.data.tokens.refreshToken)
       
       // Validate the new token
       await validateToken()

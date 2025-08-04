@@ -124,7 +124,7 @@ export function AgentMonitoringDashboard({
         setError(null)
 
         const token = localStorage.getItem('auth_token')
-        const response = await fetch('/api/cubcen/v1/agents', {
+        const response = await fetch('/api/agents', {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
@@ -183,7 +183,7 @@ export function AgentMonitoringDashboard({
     async (agentId: string) => {
       try {
         const token = localStorage.getItem('auth_token')
-        const response = await fetch(`/api/cubcen/v1/agents/${agentId}`, {
+        const response = await fetch(`/api/agents/${agentId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',

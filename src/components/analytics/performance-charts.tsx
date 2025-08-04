@@ -109,7 +109,7 @@ export function PerformanceCharts({ data, loading }: PerformanceChartsProps) {
         <div className="bg-background border rounded-lg shadow-lg p-3">
           <p className="font-medium">{label}</p>
           {payload.map((entry: any, index: number) => (
-            <p key={index} style={{ color: entry.color }}>
+            <p key={`tooltip-${index}`} style={{ color: entry.color }}>
               {entry.name}: {entry.value}
             </p>
           ))}
@@ -195,7 +195,7 @@ export function PerformanceCharts({ data, loading }: PerformanceChartsProps) {
                 >
                   {safeData.tasksByStatus.map((entry, index) => (
                     <Cell
-                      key={`cell-${index}`}
+                      key={`status-cell-${index}`}
                       fill={
                         STATUS_COLORS[
                           entry.status as keyof typeof STATUS_COLORS
@@ -210,7 +210,7 @@ export function PerformanceCharts({ data, loading }: PerformanceChartsProps) {
             <div className="flex flex-wrap gap-2 mt-4">
               {safeData.tasksByStatus.map((item, index) => (
                 <Badge
-                  key={index}
+                  key={`status-badge-${index}`}
                   variant="outline"
                   style={{
                     borderColor:
@@ -253,7 +253,7 @@ export function PerformanceCharts({ data, loading }: PerformanceChartsProps) {
                 >
                   {safeData.tasksByPriority.map((entry, index) => (
                     <Cell
-                      key={`cell-${index}`}
+                      key={`priority-cell-${index}`}
                       fill={
                         PRIORITY_COLORS[
                           entry.priority as keyof typeof PRIORITY_COLORS
@@ -267,7 +267,7 @@ export function PerformanceCharts({ data, loading }: PerformanceChartsProps) {
             <div className="flex flex-wrap gap-2 mt-4">
               {safeData.tasksByPriority.map((item, index) => (
                 <Badge
-                  key={index}
+                  key={`priority-badge-${index}`}
                   variant="outline"
                   style={{
                     borderColor:
@@ -331,7 +331,7 @@ export function PerformanceCharts({ data, loading }: PerformanceChartsProps) {
                 .slice(0, 5)
                 .map((agent, index) => (
                   <div
-                    key={agent.agentId}
+                    key={`agent-${agent.agentId || index}`}
                     className="flex items-center justify-between"
                   >
                     <div className="flex-1">

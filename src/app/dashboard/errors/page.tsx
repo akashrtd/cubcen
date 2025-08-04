@@ -25,7 +25,7 @@ export default function ErrorsPage() {
       </div>
 
       {/* System Health Overview */}
-      <SystemHealthIndicators />
+      {/* <SystemHealthIndicators /> */}
 
       {/* Error Patterns and Task Retry */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

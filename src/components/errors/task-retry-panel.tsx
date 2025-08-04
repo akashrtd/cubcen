@@ -66,13 +66,13 @@ export function TaskRetryPanel({ className }: TaskRetryPanelProps) {
       setLoading(true)
       setRefreshing(true)
 
-      const response = await fetch('/api/cubcen/v1/errors/retryable-tasks')
+      const response = await fetch('/api/errors/retryable-tasks')
       if (!response.ok) {
         throw new Error('Failed to fetch retryable tasks')
       }
 
       const data = await response.json()
-      setTasks(data.tasks || [])
+      setTasks(Array.isArray(data.tasks) ? data.tasks : [])
       setError(null)
     } catch (err) {
       setError(
@@ -129,7 +129,7 @@ export function TaskRetryPanel({ className }: TaskRetryPanelProps) {
         setRetryingTasks(prev => new Set(prev).add(taskId))
 
         const response = await fetch(
-          `/api/cubcen/v1/errors/retry-task/${taskId}`,
+          `/api/errors/retry-task/${taskId}`,
           {
             method: 'POST',
           }
@@ -175,7 +175,7 @@ export function TaskRetryPanel({ className }: TaskRetryPanelProps) {
     try {
       setRetryingTasks(new Set(selectedTasks))
 
-      const response = await fetch('/api/cubcen/v1/errors/bulk-retry-tasks', {
+      const response = await fetch('/api/errors/bulk-retry-tasks', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
