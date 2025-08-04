@@ -70,7 +70,7 @@ export default function UsersPage() {
       setLoading(true)
       setError(null)
 
-      const response = await fetch('/api/cubcen/v1/users?page=1&limit=100', {
+      const response = await fetch('/api/users?page=1&limit=100', {
         headers: {
           'Content-Type': 'application/json',
         },

@@ -45,7 +45,7 @@ export function ErrorPatternsChart({ data, loading }: ErrorPatternsChartProps) {
     )
   }
 
-  if (data.length === 0) {
+  if (!data || data.length === 0) {
     return (
       <Card>
         <CardHeader>
@@ -75,8 +75,9 @@ export function ErrorPatternsChart({ data, loading }: ErrorPatternsChartProps) {
     )
   }
 
-  const displayData = showAll ? data : data.slice(0, 5)
-  const totalErrors = data.reduce((sum, item) => sum + item.count, 0)
+  const safeData = data || []
+  const displayData = showAll ? safeData : safeData.slice(0, 5)
+  const totalErrors = safeData.reduce((sum, item) => sum + item.count, 0)
 
   // Custom tooltip component
   const CustomTooltip = ({ active, payload, label }: any) => {
@@ -173,7 +174,7 @@ export function ErrorPatternsChart({ data, loading }: ErrorPatternsChartProps) {
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <h4 className="font-semibold">Error Details</h4>
-              {data.length > 5 && (
+              {safeData.length > 5 && (
                 <Button
                   variant="ghost"
                   size="sm"
@@ -186,7 +187,7 @@ export function ErrorPatternsChart({ data, loading }: ErrorPatternsChartProps) {
                     </>
                   ) : (
                     <>
-                      Show All ({data.length}){' '}
+                      Show All ({safeData.length}){' '}
                       <ChevronDown className="ml-1 h-4 w-4" />
                     </>
                   )}
@@ -286,13 +287,13 @@ export function ErrorPatternsChart({ data, loading }: ErrorPatternsChartProps) {
               </div>
               <div>
                 <span className="text-muted-foreground">Unique Patterns:</span>
-                <div className="font-semibold">{data.length}</div>
+                <div className="font-semibold">{safeData.length}</div>
               </div>
               <div>
                 <span className="text-muted-foreground">Most Common:</span>
                 <div className="font-semibold text-red-600">
-                  {data[0]?.error.substring(0, 30)}
-                  {data[0]?.error.length > 30 ? '...' : ''}
+                  {safeData[0]?.error?.substring(0, 30) || 'N/A'}
+                  {(safeData[0]?.error?.length || 0) > 30 ? '...' : ''}
                 </div>
               </div>
             </div>

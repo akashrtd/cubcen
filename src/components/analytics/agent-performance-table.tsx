@@ -77,9 +77,9 @@ export function AgentPerformanceTable({
     }
   }
 
-  const filteredAndSortedData = data
+  const filteredAndSortedData = (data || [])
     .filter(agent => {
-      const matchesSearch = agent.agentName
+      const matchesSearch = (agent.agentName || '')
         .toLowerCase()
         .includes(searchTerm.toLowerCase())
 
@@ -87,11 +87,11 @@ export function AgentPerformanceTable({
 
       switch (filterPerformance) {
         case 'excellent':
-          return agent.successRate >= 90
+          return (agent.successRate || 0) >= 90
         case 'good':
-          return agent.successRate >= 70 && agent.successRate < 90
+          return (agent.successRate || 0) >= 70 && (agent.successRate || 0) < 90
         case 'poor':
-          return agent.successRate < 70
+          return (agent.successRate || 0) < 70
         default:
           return true
       }
@@ -102,20 +102,20 @@ export function AgentPerformanceTable({
 
       switch (sortField) {
         case 'agentName':
-          aValue = a.agentName
-          bValue = b.agentName
+          aValue = a.agentName || ''
+          bValue = b.agentName || ''
           break
         case 'totalTasks':
-          aValue = a.totalTasks
-          bValue = b.totalTasks
+          aValue = a.totalTasks || 0
+          bValue = b.totalTasks || 0
           break
         case 'successRate':
-          aValue = a.successRate
-          bValue = b.successRate
+          aValue = a.successRate || 0
+          bValue = b.successRate || 0
           break
         case 'averageResponseTime':
-          aValue = a.averageResponseTime
-          bValue = b.averageResponseTime
+          aValue = a.averageResponseTime || 0
+          bValue = b.averageResponseTime || 0
           break
         default:
           return 0
@@ -270,18 +270,18 @@ export function AgentPerformanceTable({
                 </TableRow>
               ) : (
                 filteredAndSortedData.map(agent => (
-                  <TableRow key={agent.agentId}>
+                  <TableRow key={agent.agentId || `agent-${Math.random()}`}>
                     <TableCell className="font-medium">
                       <div>
-                        <div className="font-semibold">{agent.agentName}</div>
+                        <div className="font-semibold">{agent.agentName || 'Unknown Agent'}</div>
                         <div className="text-xs text-muted-foreground">
-                          ID: {agent.agentId.slice(0, 8)}...
+                          ID: {(agent.agentId || 'unknown').slice(0, 8)}...
                         </div>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="text-center">
-                        <div className="font-semibold">{agent.totalTasks}</div>
+                        <div className="font-semibold">{agent.totalTasks || 0}</div>
                         <div className="text-xs text-muted-foreground">
                           tasks
                         </div>
@@ -290,7 +290,7 @@ export function AgentPerformanceTable({
                     <TableCell>
                       <div className="text-center">
                         <div className="font-semibold">
-                          {agent.successRate.toFixed(1)}%
+                          {(agent.successRate || 0).toFixed(1)}%
                         </div>
                         <div className="text-xs text-muted-foreground">
                           success
@@ -300,7 +300,7 @@ export function AgentPerformanceTable({
                     <TableCell>
                       <div className="text-center">
                         <div className="font-semibold">
-                          {agent.averageResponseTime}ms
+                          {agent.averageResponseTime || 0}ms
                         </div>
                         <div className="text-xs text-muted-foreground">
                           average
@@ -308,10 +308,10 @@ export function AgentPerformanceTable({
                       </div>
                     </TableCell>
                     <TableCell>
-                      {getPerformanceBadge(agent.successRate)}
+                      {getPerformanceBadge(agent.successRate || 0)}
                     </TableCell>
                     <TableCell>
-                      {getResponseTimeBadge(agent.averageResponseTime)}
+                      {getResponseTimeBadge(agent.averageResponseTime || 0)}
                     </TableCell>
                   </TableRow>
                 ))

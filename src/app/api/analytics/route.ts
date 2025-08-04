@@ -100,6 +100,36 @@ export async function GET(request: NextRequest) {
         ],
       },
     },
+    errorPatterns: [
+      {
+        error: 'Connection timeout to external API',
+        count: 45,
+      },
+      {
+        error: 'Authentication failed - invalid credentials',
+        count: 32,
+      },
+      {
+        error: 'Rate limit exceeded - too many requests',
+        count: 28,
+      },
+      {
+        error: 'Database connection lost',
+        count: 15,
+      },
+      {
+        error: 'Invalid JSON response from server',
+        count: 12,
+      },
+      {
+        error: 'Memory allocation failed',
+        count: 8,
+      },
+      {
+        error: 'File not found - missing configuration',
+        count: 6,
+      },
+    ],
     trends: {
       successRate: {
         current: 94.2,
