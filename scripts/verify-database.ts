@@ -10,7 +10,7 @@ import {
   getDatabaseStats,
   validateDatabaseSchema,
 } from '../src/lib/database-utils'
-import { logger } from '../src/lib/logger'
+import structuredLogger from '../src/lib/logger'
 
 async function main() {
   console.log('🔍 Verifying Cubcen database setup...\n')
@@ -112,6 +112,6 @@ async function main() {
 
 // Run the verification
 main().catch(error => {
-  logger.error('Database verification script failed', error)
+  structuredLogger.error('Database verification script failed', error)
   process.exit(1)
 })

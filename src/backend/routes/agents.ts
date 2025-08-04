@@ -2,7 +2,7 @@
 // Express routes for agent management endpoints
 
 import { Router, Request, Response } from 'express'
-import { logger } from '@/lib/logger'
+import { structuredLogger as logger } from '@/lib/logger'
 import {
   authenticate,
   requireAuth,

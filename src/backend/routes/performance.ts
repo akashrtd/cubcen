@@ -5,7 +5,7 @@
 
 import { Router } from 'express'
 import { z } from 'zod'
-import { logger } from '@/lib/logger'
+import { structuredLogger as logger } from '@/lib/logger'
 import { performanceMonitor } from '@/lib/performance-monitor'
 import {
   dbPerformanceMonitor,

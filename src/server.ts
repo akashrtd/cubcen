@@ -8,7 +8,7 @@ import compression from 'compression'
 import morgan from 'morgan'
 import rateLimit from 'express-rate-limit'
 import session from 'express-session'
-import { logger } from '@/lib/logger'
+import { structuredLogger as logger } from '@/lib/logger'
 import {
   sanitizeInput,
   securityHeaders,

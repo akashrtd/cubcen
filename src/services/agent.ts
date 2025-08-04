@@ -5,7 +5,7 @@
 
 import { AgentStatus } from '@/generated/prisma'
 import { AgentHealth, Agent, Platform, prisma } from '@/lib/database'
-import { logger } from '@/lib/logger'
+import { structuredLogger as logger } from '@/lib/logger'
 import {
   AdapterFactory,
   AdapterManager,

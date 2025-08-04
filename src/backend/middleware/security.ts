@@ -4,7 +4,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { ParamsDictionary, Query } from 'express-serve-static-core'
 import crypto from 'crypto'
-import { logger } from '@/lib/logger'
+import structuredLogger from '@/lib/logger'
 
 /**
  * Enhanced input sanitization middleware
@@ -97,7 +97,7 @@ export function sanitizeInput(
       originalUrl.includes('javascript:') ||
       originalUrl.includes('union select')
     ) {
-      logger.warn('Suspicious input detected and sanitized', {
+      structuredLogger.warn('Suspicious input detected and sanitized', {
         ip: req.ip,
         userAgent: req.get('User-Agent'),
         path: req.path,
@@ -109,7 +109,7 @@ export function sanitizeInput(
 
     next()
   } catch (error) {
-    logger.error('Input sanitization error', error as Error, {
+    structuredLogger.error('Input sanitization error', error as Error, {
       path: req.path,
       method: req.method,
       ip: req.ip,
@@ -151,7 +151,7 @@ export function csrfProtection(
     const sessionCsrfToken = req.session?.csrfToken
 
     if (!csrfToken || !sessionCsrfToken || csrfToken !== sessionCsrfToken) {
-      logger.warn('CSRF token validation failed', {
+      structuredLogger.warn('CSRF token validation failed', {
         ip: req.ip,
         userAgent: req.get('User-Agent'),
         path: req.path,
@@ -173,7 +173,7 @@ export function csrfProtection(
 
     next()
   } catch (error) {
-    logger.error('CSRF protection error', error as Error, {
+    structuredLogger.error('CSRF protection error', error as Error, {
       path: req.path,
       method: req.method,
       ip: req.ip,
@@ -207,7 +207,7 @@ export function generateCsrfToken(req: Request, res: Response): void {
       timestamp: new Date().toISOString(),
     })
   } catch (error) {
-    logger.error('CSRF protection error', error as Error, {
+    structuredLogger.error('CSRF protection error', error as Error, {
       path: req.path,
       method: req.method,
       ip: req.ip,
@@ -291,7 +291,7 @@ export function securityHeaders(
     res.removeHeader('X-Powered-By')
     res.removeHeader('Server')
   } catch (error) {
-    logger.error('Security headers error', error as Error, {
+    structuredLogger.error('Security headers error', error as Error, {
       path: req.path,
       method: req.method,
       ip: req.ip,
@@ -318,7 +318,7 @@ export function requestSizeLimit(maxSize: number = 10 * 1024 * 1024) {
     const contentLength = parseInt(req.headers['content-length'] || '0', 10)
 
     if (contentLength > maxSize) {
-      logger.warn('Request size limit exceeded', {
+      structuredLogger.warn('Request size limit exceeded', {
         ip: req.ip,
         userAgent: req.get('User-Agent'),
         path: req.path,
@@ -354,7 +354,7 @@ export function ipWhitelist(allowedIPs: string[] = []) {
       req.ip || req.connection.remoteAddress || req.socket.remoteAddress
 
     if (!clientIP || !allowedIPs.includes(clientIP)) {
-      logger.warn('IP not in whitelist', {
+      structuredLogger.warn('IP not in whitelist', {
         ip: clientIP,
         allowedIPs,
         userAgent: req.get('User-Agent'),
@@ -411,7 +411,7 @@ export function suspiciousActivityDetection(
   )
 
   if (suspiciousActivity) {
-    logger.warn('Suspicious activity detected', {
+    structuredLogger.warn('Suspicious activity detected', {
       ip: req.ip,
       userAgent: req.get('User-Agent'),
       path: req.path,
@@ -472,7 +472,7 @@ export function fileUploadSecurity(
 
     // Check file size
     if (file.size > maxFileSize) {
-      logger.warn('File size exceeds limit', {
+      structuredLogger.warn('File size exceeds limit', {
         filename: file.originalname,
         size: file.size,
         maxSize: maxFileSize,
@@ -491,7 +491,7 @@ export function fileUploadSecurity(
 
     // Check MIME type
     if (!allowedMimeTypes.includes(file.mimetype)) {
-      logger.warn('Disallowed file type uploaded', {
+      structuredLogger.warn('Disallowed file type uploaded', {
         filename: file.originalname,
         mimetype: file.mimetype,
         allowedTypes: allowedMimeTypes,
@@ -526,7 +526,7 @@ export function fileUploadSecurity(
       .substring(file.originalname.lastIndexOf('.'))
 
     if (dangerousExtensions.includes(fileExtension)) {
-      logger.warn('Dangerous file extension detected', {
+      structuredLogger.warn('Dangerous file extension detected', {
         filename: file.originalname,
         extension: fileExtension,
         ip: req.ip,
@@ -583,7 +583,7 @@ export class AdvancedRateLimiter {
       if (attempt?.blocked && attempt.blockUntil && now < attempt.blockUntil) {
         const remainingMs = attempt.blockUntil.getTime() - now.getTime()
 
-        logger.warn('Request blocked by advanced rate limiter', {
+        structuredLogger.warn('Request blocked by advanced rate limiter', {
           ip: req.ip,
           userAgent: req.get('User-Agent'),
           path: req.path,
@@ -628,7 +628,7 @@ export class AdvancedRateLimiter {
           blockUntil,
         })
 
-        logger.warn('IP blocked by advanced rate limiter', {
+        structuredLogger.warn('IP blocked by advanced rate limiter', {
           ip: req.ip,
           userAgent: req.get('User-Agent'),
           path: req.path,
@@ -705,7 +705,7 @@ export function honeypotProtection(
 ): void | Response {
   // Check for honeypot field in forms
   if (req.body && req.body.honeypot && req.body.honeypot.trim() !== '') {
-    logger.warn('Honeypot field filled, likely bot detected', {
+    structuredLogger.warn('Honeypot field filled, likely bot detected', {
       ip: req.ip,
       userAgent: req.get('User-Agent'),
       path: req.path,
@@ -741,7 +741,7 @@ export function geolocationFilter(allowedCountries: string[] = []) {
       typeof country === 'string' &&
       !allowedCountries.includes(country.toUpperCase())
     ) {
-      logger.warn('Request from restricted country', {
+      structuredLogger.warn('Request from restricted country', {
         ip: req.ip,
         country,
         allowedCountries,
@@ -789,7 +789,7 @@ export function requestSignatureValidation(secretKey: string) {
     const maxAge = 5 * 60 * 1000 // 5 minutes
 
     if (Math.abs(now - requestTime) > maxAge) {
-      logger.warn('Request timestamp too old or too far in future', {
+      structuredLogger.warn('Request timestamp too old or too far in future', {
         ip: req.ip,
         requestTime,
         currentTime: now,
@@ -815,7 +815,7 @@ export function requestSignatureValidation(secretKey: string) {
       .digest('hex')
 
     if (signature !== expectedSignature) {
-      logger.warn('Invalid request signature', {
+      structuredLogger.warn('Invalid request signature', {
         ip: req.ip,
         userAgent: req.get('User-Agent'),
         path: req.path,

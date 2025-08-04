@@ -220,7 +220,7 @@ export class LazyLoader<T> {
         hasMore: this.hasMore,
       })
     } catch (error) {
-      logger.error('Lazy loader: failed to load more data', error)
+      logger.error('Lazy loader: failed to load more data', error instanceof Error ? error : undefined)
       throw error
     } finally {
       this.loading = false
@@ -294,7 +294,7 @@ export class LazyLoader<T> {
           this.hasMore
         ) {
           this.loadMore().catch(error => {
-            logger.error('Lazy loader: scroll handler error', error)
+            logger.error('Lazy loader: scroll handler error', error instanceof Error ? error : undefined)
           })
         }
       }, this.options.debounceMs)

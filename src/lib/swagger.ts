@@ -6,7 +6,7 @@
 import swaggerJsdoc from 'swagger-jsdoc'
 import swaggerUi from 'swagger-ui-express'
 import { Express } from 'express'
-import { logger } from '@/lib/logger'
+import { structuredLogger as logger } from '@/lib/logger'
 
 // OpenAPI specification configuration
 const swaggerOptions: swaggerJsdoc.Options = {

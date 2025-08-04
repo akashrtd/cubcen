@@ -4,7 +4,7 @@
  */
 
 import { prisma } from '@/lib/database'
-import { logger } from '@/lib/logger'
+import { structuredLogger as logger } from '@/lib/logger'
 import { AdapterManager } from '@/backend/adapters/adapter-factory'
 import { TaskService } from './task'
 import { z } from 'zod'

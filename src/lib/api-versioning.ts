@@ -4,7 +4,7 @@
  */
 
 import { Request, Response, NextFunction } from 'express'
-import { logger } from '@/lib/logger'
+import { structuredLogger as logger } from '@/lib/logger'
 
 export interface ApiVersion {
   version: string

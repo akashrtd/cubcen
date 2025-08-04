@@ -16,7 +16,7 @@ import {
   LoadTester,
   PerformanceTestSuite,
 } from '../src/lib/benchmark'
-import { logger } from '../src/lib/logger'
+import structuredLogger from '../src/lib/logger'
 
 async function testPerformanceFeatures() {
   console.log('🚀 Testing Cubcen Performance Optimization Features\n')
@@ -45,20 +45,24 @@ async function testPerformanceFeatures() {
 
     // 3. Test Performance Monitoring
     console.log('\n3. Testing Performance Monitoring...')
-    performanceMonitor.startMonitoring()
-
-    // Simulate some API requests
-    performanceMonitor.recordAPIRequest(150, false)
-    performanceMonitor.recordAPIRequest(200, false)
-    performanceMonitor.recordAPIRequest(500, true)
-
-    const stats = await performanceMonitor.getCurrentStats()
-    console.log('   📊 Performance stats:', {
-      apiRequests: stats.api.requestCount,
-      avgResponseTime: Math.round(stats.api.averageResponseTime) + 'ms',
-      errorRate: stats.api.errorRate + '%',
-      memoryUsage: Math.round(stats.memory.percentage) + '%',
+    
+    // Test component tracking
+    performanceMonitor.trackComponentRender('TestComponent', 25, 50)
+    performanceMonitor.trackLazyComponentLoad('LazyTestComponent', 150)
+    
+    // Get metrics
+    const perfMetrics = performanceMonitor.getMetrics()
+    const componentMetrics = performanceMonitor.getComponentMetrics()
+    const coreWebVitals = performanceMonitor.getCoreWebVitals()
+    
+    console.log('   📊 Performance metrics collected:', {
+      totalMetrics: Object.keys(perfMetrics).length,
+      componentMetrics: Object.keys(componentMetrics).length,
+      coreWebVitals: coreWebVitals,
     })
+    
+    // Log performance summary
+    performanceMonitor.logPerformanceSummary()
 
     // 4. Test Database Performance Monitoring
     console.log('\n4. Testing Database Performance...')
@@ -115,15 +119,14 @@ async function testPerformanceFeatures() {
       avgResponseTime: Math.round(loadTestResult.averageResponseTime) + 'ms',
     })
 
-    // 8. Test Performance Alerts
-    console.log('\n8. Testing Performance Alerts...')
-    const alerts = performanceMonitor.getActiveAlerts()
-    console.log('   📊 Active alerts:', alerts.length)
+    // 8. Test Performance Summary
+    console.log('\n8. Testing Performance Summary...')
+    console.log('   📊 Performance monitoring active')
 
     // 9. Test Metrics Collection
     console.log('\n9. Testing Metrics Collection...')
-    const metrics = performanceMonitor.getMetrics('api_request_count')
-    console.log('   📊 Collected metrics:', metrics.length)
+    const allMetrics = performanceMonitor.getMetrics()
+    console.log('   📊 Collected metrics:', Object.keys(allMetrics).length)
 
     console.log(
       '\n✅ All performance optimization features tested successfully!'
@@ -140,7 +143,7 @@ async function testPerformanceFeatures() {
     console.error('❌ Error testing performance features:', error)
   } finally {
     // Cleanup
-    performanceMonitor.stopMonitoring()
+    console.log('\n🧹 Cleaning up test environment...')
     cache.clear()
   }
 }

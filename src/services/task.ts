@@ -10,7 +10,7 @@ import {
   Task,
   Agent,
 } from '@/generated/prisma'
-import { logger } from '@/lib/logger'
+import { structuredLogger as logger } from '@/lib/logger'
 import { AdapterManager } from '@/backend/adapters/adapter-factory'
 import { z } from 'zod'
 import { EventEmitter } from 'events'

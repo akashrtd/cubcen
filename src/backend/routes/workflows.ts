@@ -8,7 +8,7 @@ import { z } from 'zod'
 import { WorkflowService } from '@/services/workflow'
 import { authenticate } from '@/backend/middleware/auth'
 import { validateRequest } from '@/backend/middleware/validation'
-import { logger } from '@/lib/logger'
+import { structuredLogger as logger } from '@/lib/logger'
 import {
   WorkflowExecutionOptions,
   WorkflowListOptions,

@@ -20,7 +20,7 @@ import {
   verifyRefreshToken,
   extractTokenFromHeader,
 } from '@/lib/jwt'
-import { logger } from '@/lib/logger'
+import { structuredLogger as logger } from '@/lib/logger'
 import { prisma } from '@/lib/database'
 
 class AuthService {

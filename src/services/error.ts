@@ -4,7 +4,7 @@
  */
 
 import { prisma } from '@/lib/database'
-import { logger } from '@/lib/logger'
+import { structuredLogger as logger } from '@/lib/logger'
 import {
   ErrorLog,
   ErrorPattern,

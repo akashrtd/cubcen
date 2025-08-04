@@ -3,7 +3,7 @@
 
 import { Request, Response, NextFunction } from 'express'
 import { z, ZodError, ZodSchema } from 'zod'
-import { logger } from '@/lib/logger'
+import structuredLogger from '@/lib/logger'
 
 /**
  * Validation error response interface
@@ -76,7 +76,7 @@ export function validate(
         }
       } catch (assignError) {
         // If we can't assign the validated data, log and continue
-        logger.debug('Could not assign validated data', {
+        structuredLogger.debug('Could not assign validated data', {
           source,
           path: req.path,
           method: req.method,
@@ -84,7 +84,7 @@ export function validate(
         })
       }
 
-      logger.debug('Validation successful', {
+      structuredLogger.debug('Validation successful', {
         source,
         path: req.path,
         method: req.method,
@@ -93,7 +93,7 @@ export function validate(
       next()
     } catch (error) {
       if (error instanceof ZodError) {
-        logger.warn('Validation failed', {
+        structuredLogger.warn('Validation failed', {
           source,
           path: req.path,
           method: req.method,
@@ -119,7 +119,7 @@ export function validate(
         return
       }
 
-      logger.error('Unexpected validation error', error as Error, {
+      structuredLogger.error('Unexpected validation error', error as Error, {
         source,
         path: req.path,
         method: req.method,
@@ -230,7 +230,7 @@ export function validateRequest(schemas: {
 
       // If there are validation errors, return them
       if (errors.length > 0) {
-        logger.warn('Request validation failed', {
+        structuredLogger.warn('Request validation failed', {
           path: req.path,
           method: req.method,
           errors,
@@ -253,14 +253,14 @@ export function validateRequest(schemas: {
         return
       }
 
-      logger.debug('Request validation successful', {
+      structuredLogger.debug('Request validation successful', {
         path: req.path,
         method: req.method,
       })
 
       next()
     } catch (error) {
-      logger.error('Unexpected request validation error', error as Error, {
+      structuredLogger.error('Unexpected request validation error', error as Error, {
         path: req.path,
         method: req.method,
       })
@@ -317,7 +317,7 @@ export function sanitizeInput(
         req.body = sanitizeObject(req.body)
       } catch {
         // If body is not modifiable, skip sanitization
-        logger.debug('Body sanitization skipped - not modifiable', {
+        structuredLogger.debug('Body sanitization skipped - not modifiable', {
           path: req.path,
         })
       }
@@ -334,7 +334,7 @@ export function sanitizeInput(
 
     next()
   } catch (error) {
-    logger.error('Input sanitization error', error as Error, {
+    structuredLogger.error('Input sanitization error', error as Error, {
       path: req.path,
       method: req.method,
     })

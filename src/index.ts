@@ -3,7 +3,7 @@
 
 import { createServer } from 'http'
 import app from './server'
-import { logger } from '@/lib/logger'
+import { structuredLogger as logger } from '@/lib/logger'
 import { prisma } from '@/lib/database'
 import { initializeWebSocketService } from '@/services/websocket'
 import { AgentService } from '@/services/agent'

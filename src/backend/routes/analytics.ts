@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express'
 import { analyticsService, DateRange } from '@/services/analytics'
-import { logger } from '@/lib/logger'
+import { structuredLogger as logger } from '@/lib/logger'
 import { z } from 'zod'
 import {
   asyncHandler,
@@ -196,7 +196,7 @@ router.post('/export', async (req: Request, res: Response) => {
 
     res.send(exportedData)
   } catch (error) {
-    logger.error('Failed to export analytics data', error)
+    logger.error('Failed to export analytics data', error instanceof Error ? error : undefined)
     res.status(500).json({
       error: {
         code: 'EXPORT_ERROR',
@@ -248,7 +248,7 @@ router.get('/trends', async (req: Request, res: Response) => {
       timestamp: new Date().toISOString(),
     })
   } catch (error) {
-    logger.error('Failed to get trend data', error)
+    logger.error('Failed to get trend data', error instanceof Error ? error : undefined)
     res.status(500).json({
       error: {
         code: 'ANALYTICS_ERROR',

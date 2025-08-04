@@ -25,7 +25,7 @@
     - Add platform disconnection with confirmation dialogs
     - _Requirements: 2.1, 2.2, 2.5_
 
-- [-] 3. Create User Management Page
+- [ ] 3. Create User Management Page
   - [x] 3.1 Create user list component
     - Implement UserList component with role-based filtering and search
     - Add user status indicators and last login information

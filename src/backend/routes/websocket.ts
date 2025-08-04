@@ -4,7 +4,7 @@
 import { Router, Request, Response } from 'express'
 import { authenticate } from '@/backend/middleware/auth'
 import { getWebSocketService } from '@/services/websocket'
-import { logger } from '@/lib/logger'
+import { structuredLogger as logger } from '@/lib/logger'
 
 const router = Router()
 

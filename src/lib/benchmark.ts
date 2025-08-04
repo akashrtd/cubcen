@@ -573,7 +573,7 @@ export class PerformanceTestSuite {
         recommendations
       )
     } catch (error) {
-      logger.error('Performance test suite failed', error)
+      logger.error('Performance test suite failed', error instanceof Error ? error : undefined)
       criticalIssues.push(`Test suite execution failed: ${error}`)
     }
 

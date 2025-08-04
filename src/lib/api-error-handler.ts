@@ -3,7 +3,7 @@
 
 import { Request, Response, NextFunction } from 'express'
 import { ZodError } from 'zod'
-import { logger } from '@/lib/logger'
+import { structuredLogger as logger } from '@/lib/logger'
 import { AuthenticationError, AuthorizationError } from '@/types/auth'
 
 /**

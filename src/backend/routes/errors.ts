@@ -3,11 +3,11 @@
 
 import express from 'express'
 import { z } from 'zod'
-import { logger } from '@/lib/logger'
+import { structuredLogger as logger } from '@/lib/logger'
 import { auditLogger, AuditEventType, AuditSeverity } from '@/lib/audit-logger'
 import { validateRequest } from '@/backend/middleware/validation'
-import { authenticateToken } from '@/backend/middleware/auth'
-import { APIErrorResponse, createErrorResponse, handleAPIError } from '@/lib/api-error-handler'
+import { authenticate } from '@/backend/middleware/auth'
+import { APIErrorResponse, createErrorResponse, errorHandler, APIErrorCode } from '@/lib/api-error-handler'
 
 const router = express.Router()
 
@@ -21,7 +21,7 @@ const ErrorReportSchema = z.object({
   timestamp: z.string(),
   userAgent: z.string().optional(),
   url: z.string().optional(),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 })
 
 // User error report schema
@@ -31,7 +31,7 @@ const UserErrorReportSchema = z.object({
   reproductionSteps: z.string().optional(),
   expectedBehavior: z.string().optional(),
   actualBehavior: z.string().optional(),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 })
 
 // Error query schema
@@ -49,7 +49,7 @@ const ErrorQuerySchema = z.object({
  * POST /api/cubcen/v1/errors/report
  * Report a client-side error
  */
-router.post('/report', validateRequest(ErrorReportSchema), async (req, res) => {
+router.post('/report', validateRequest({ body: ErrorReportSchema }), async (req, res) => {
   try {
     const errorData = req.body
     const requestId = req.headers['x-request-id'] as string
@@ -83,8 +83,8 @@ router.post('/report', validateRequest(ErrorReportSchema), async (req, res) => {
       await auditLogger.logEvent({
         eventType: AuditEventType.SYSTEM_CONFIG_CHANGED,
         severity: AuditSeverity.LOW,
-        userId: req.user.id,
-        userEmail: req.user.email,
+        userId: req.user!.id,
+        userEmail: req.user!.email,
         action: 'ERROR_REPORTED',
         description: `User reported client-side error: ${errorData.message}`,
         metadata: {
@@ -109,7 +109,7 @@ router.post('/report', validateRequest(ErrorReportSchema), async (req, res) => {
       },
     })
   } catch (error) {
-    handleAPIError(error, req, res)
+    errorHandler(error as Error, req, res, () => {})
   }
 })
 
@@ -117,7 +117,7 @@ router.post('/report', validateRequest(ErrorReportSchema), async (req, res) => {
  * POST /api/cubcen/v1/errors/user-report
  * Report an error with user description
  */
-router.post('/user-report', authenticateToken, validateRequest(UserErrorReportSchema), async (req, res) => {
+router.post('/user-report', authenticate, validateRequest({ body: UserErrorReportSchema }), async (req, res) => {
   try {
     const reportData = req.body
     const requestId = req.headers['x-request-id'] as string
@@ -125,8 +125,8 @@ router.post('/user-report', authenticateToken, validateRequest(UserErrorReportSc
     // Log the user error report
     logger.info('User error report submitted', {
       errorId: reportData.errorId,
-      userId: req.user.id,
-      userEmail: req.user.email,
+      userId: req.user!.id,
+      userEmail: req.user!.email,
       userDescription: reportData.userDescription,
       requestId,
     })
@@ -138,16 +138,16 @@ router.post('/user-report', authenticateToken, validateRequest(UserErrorReportSc
       expectedBehavior: reportData.expectedBehavior,
       actualBehavior: reportData.actualBehavior,
       userReportedAt: new Date(),
-      userId: req.user.id,
-      userEmail: req.user.email,
+      userId: req.user!.id,
+      userEmail: req.user!.email,
     })
 
     // Log audit event
     await auditLogger.logEvent({
       eventType: AuditEventType.DATA_ACCESSED,
       severity: AuditSeverity.LOW,
-      userId: req.user.id,
-      userEmail: req.user.email,
+      userId: req.user!.id,
+      userEmail: req.user!.email,
       action: 'USER_ERROR_REPORT',
       description: `User provided additional details for error ${reportData.errorId}`,
       metadata: {
@@ -171,7 +171,7 @@ router.post('/user-report', authenticateToken, validateRequest(UserErrorReportSc
       },
     })
   } catch (error) {
-    handleAPIError(error, req, res)
+    errorHandler(error as Error, req, res, () => {})
   }
 })
 
@@ -179,12 +179,12 @@ router.post('/user-report', authenticateToken, validateRequest(UserErrorReportSc
  * GET /api/cubcen/v1/errors
  * Get error reports (admin only)
  */
-router.get('/', authenticateToken, validateRequest(ErrorQuerySchema, 'query'), async (req, res) => {
+router.get('/', authenticate, validateRequest({ query: ErrorQuerySchema }), async (req, res) => {
   try {
     // Check if user has admin permissions
-    if (req.user.role !== 'ADMIN') {
+    if (req.user!.role !== 'ADMIN') {
       return res.status(403).json(
-        createErrorResponse('INSUFFICIENT_PERMISSIONS', 'Admin access required')
+        createErrorResponse(APIErrorCode.INSUFFICIENT_PERMISSIONS, 'Admin access required')
       )
     }
 
@@ -205,8 +205,8 @@ router.get('/', authenticateToken, validateRequest(ErrorQuerySchema, 'query'), a
     await auditLogger.logEvent({
       eventType: AuditEventType.DATA_ACCESSED,
       severity: AuditSeverity.LOW,
-      userId: req.user.id,
-      userEmail: req.user.email,
+      userId: req.user!.id,
+      userEmail: req.user!.email,
       action: 'ERRORS_ACCESSED',
       description: 'Admin accessed error reports',
       metadata: {
@@ -230,7 +230,7 @@ router.get('/', authenticateToken, validateRequest(ErrorQuerySchema, 'query'), a
       data: errors,
     })
   } catch (error) {
-    handleAPIError(error, req, res)
+    errorHandler(error as Error, req, res, () => {})
   }
 })
 
@@ -238,12 +238,12 @@ router.get('/', authenticateToken, validateRequest(ErrorQuerySchema, 'query'), a
  * PUT /api/cubcen/v1/errors/:errorId/resolve
  * Mark an error as resolved (admin only)
  */
-router.put('/:errorId/resolve', authenticateToken, async (req, res) => {
+router.put('/:errorId/resolve', authenticate, async (req, res) => {
   try {
     // Check if user has admin permissions
-    if (req.user.role !== 'ADMIN') {
+    if (req.user!.role !== 'ADMIN') {
       return res.status(403).json(
-        createErrorResponse('INSUFFICIENT_PERMISSIONS', 'Admin access required')
+        createErrorResponse(APIErrorCode.INSUFFICIENT_PERMISSIONS, 'Admin access required')
       )
     }
 
@@ -254,7 +254,7 @@ router.put('/:errorId/resolve', authenticateToken, async (req, res) => {
     await resolveError(errorId, {
       resolved: true,
       resolvedAt: new Date(),
-      resolvedBy: req.user.id,
+      resolvedBy: req.user!.id,
       resolution,
       notes,
     })
@@ -263,8 +263,8 @@ router.put('/:errorId/resolve', authenticateToken, async (req, res) => {
     await auditLogger.logEvent({
       eventType: AuditEventType.SYSTEM_CONFIG_CHANGED,
       severity: AuditSeverity.MEDIUM,
-      userId: req.user.id,
-      userEmail: req.user.email,
+      userId: req.user!.id,
+      userEmail: req.user!.email,
       resourceType: 'error',
       resourceId: errorId,
       action: 'ERROR_RESOLVED',
@@ -289,7 +289,7 @@ router.put('/:errorId/resolve', authenticateToken, async (req, res) => {
       },
     })
   } catch (error) {
-    handleAPIError(error, req, res)
+    errorHandler(error as Error, req, res, () => {})
   }
 })
 

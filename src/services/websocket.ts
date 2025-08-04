@@ -27,7 +27,7 @@ import type {
   InterServerEvents,
 } from '@/types/websocket'
 import { Server as HTTPServer } from 'http'
-import { logger } from '@/lib/logger'
+import { structuredLogger as logger } from '@/lib/logger'
 import { verifyAccessToken } from '@/lib/jwt'
 import { AgentService } from '@/services/agent'
 import { TaskStatus } from '@/lib/database'

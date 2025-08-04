@@ -2,7 +2,7 @@
 // Express routes for user management endpoints (separate from auth)
 
 import { Router, Request, Response } from 'express'
-import { logger } from '@/lib/logger'
+import { structuredLogger as logger } from '@/lib/logger'
 import { auditLogger, AuditEventType, AuditSeverity } from '@/lib/audit-logger'
 import {
   authenticate,

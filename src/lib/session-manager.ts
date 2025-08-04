@@ -2,7 +2,7 @@
 // Secure session handling with Redis-like in-memory storage for MVP
 
 import crypto from 'crypto'
-import { logger } from '@/lib/logger'
+import { structuredLogger as logger } from '@/lib/logger'
 import { auditLogger, AuditEventType, AuditSeverity } from '@/lib/audit-logger'
 import { Request } from 'express'
 

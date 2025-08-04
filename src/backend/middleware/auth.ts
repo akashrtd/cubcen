@@ -14,7 +14,7 @@ import {
   requirePermission as rbacRequirePermission,
   requireResourcePermission as rbacRequireResourcePermission,
 } from '@/lib/rbac'
-import { logger } from '@/lib/logger'
+import structuredLogger from '@/lib/logger'
 import { prisma } from '@/lib/database'
 
 // Extend Express Request to include user information
@@ -41,7 +41,7 @@ export async function authenticate(
     // Add user to request object
     req.user = user
 
-    logger.debug('User authenticated', {
+    structuredLogger.debug('User authenticated', {
       userId: user.id,
       email: user.email,
       role: user.role,
@@ -51,7 +51,7 @@ export async function authenticate(
 
     next()
   } catch (error) {
-    logger.warn('Authentication failed', {
+    structuredLogger.warn('Authentication failed', {
       error: error instanceof Error ? error.message : 'Unknown error',
       path: req.path,
       method: req.method,
@@ -93,7 +93,7 @@ export async function optionalAuthenticate(
       const user = await authService.validateAuthHeader(authHeader)
       req.user = user
 
-      logger.debug('Optional authentication successful', {
+      structuredLogger.debug('Optional authentication successful', {
         userId: user.id,
         email: user.email,
         role: user.role,
@@ -103,7 +103,7 @@ export async function optionalAuthenticate(
     next()
   } catch (error) {
     // For optional auth, we don't fail on invalid tokens, just continue without user
-    logger.debug('Optional authentication failed, continuing without user', {
+    structuredLogger.debug('Optional authentication failed, continuing without user', {
       error: error instanceof Error ? error.message : 'Unknown error',
     })
     next()
@@ -124,7 +124,7 @@ export function requireRole(...allowedRoles: UserRole[]) {
       }
 
       if (!allowedRoles.includes(req.user.role)) {
-        logger.warn('Authorization failed: Insufficient role', {
+        structuredLogger.warn('Authorization failed: Insufficient role', {
           userId: req.user.id,
           userRole: req.user.role,
           requiredRoles: allowedRoles,
@@ -138,7 +138,7 @@ export function requireRole(...allowedRoles: UserRole[]) {
         )
       }
 
-      logger.debug('Role authorization successful', {
+      structuredLogger.debug('Role authorization successful', {
         userId: req.user.id,
         userRole: req.user.role,
         requiredRoles: allowedRoles,
@@ -183,7 +183,7 @@ export function requirePermission(permission: Permission) {
 
       rbacRequirePermission(req.user.role, permission)
 
-      logger.debug('Permission authorization successful', {
+      structuredLogger.debug('Permission authorization successful', {
         userId: req.user.id,
         userRole: req.user.role,
         permission: permission,
@@ -191,7 +191,7 @@ export function requirePermission(permission: Permission) {
 
       next()
     } catch (error) {
-      logger.warn('Permission authorization failed', {
+      structuredLogger.warn('Permission authorization failed', {
         userId: req.user?.id,
         userRole: req.user?.role,
         permission: permission,
@@ -237,7 +237,7 @@ export function requireResourcePermission(resource: string, action: string) {
 
       rbacRequireResourcePermission(req.user.role, resource, action)
 
-      logger.debug('Resource permission authorization successful', {
+      structuredLogger.debug('Resource permission authorization successful', {
         userId: req.user.id,
         userRole: req.user.role,
         resource,
@@ -246,7 +246,7 @@ export function requireResourcePermission(resource: string, action: string) {
 
       next()
     } catch (error) {
-      logger.warn('Resource permission authorization failed', {
+      structuredLogger.warn('Resource permission authorization failed', {
         userId: req.user?.id,
         userRole: req.user?.role,
         resource,
@@ -315,7 +315,7 @@ export function requireSelfOrAdmin(userIdParam: string = 'userId') {
       const isSelf = req.user.id === targetUserId
 
       if (!isAdmin && !isSelf) {
-        logger.warn('Self or admin authorization failed', {
+        structuredLogger.warn('Self or admin authorization failed', {
           userId: req.user.id,
           userRole: req.user.role,
           targetUserId,
@@ -329,7 +329,7 @@ export function requireSelfOrAdmin(userIdParam: string = 'userId') {
         )
       }
 
-      logger.debug('Self or admin authorization successful', {
+      structuredLogger.debug('Self or admin authorization successful', {
         userId: req.user.id,
         userRole: req.user.role,
         targetUserId,

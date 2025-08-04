@@ -2,7 +2,7 @@
 // Express routes for task management endpoints
 
 import { Router, Request, Response } from 'express'
-import { logger } from '@/lib/logger'
+import { structuredLogger as logger } from '@/lib/logger'
 import { TaskService } from '@/services/task'
 import { AdapterManager } from '@/backend/adapters/adapter-factory'
 import { TaskStatus, TaskPriority } from '@/lib/database'

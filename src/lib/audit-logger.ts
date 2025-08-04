@@ -1,7 +1,7 @@
 // Cubcen Audit Logging System
 // Comprehensive audit logging for user actions and system changes
 
-import { logger } from '@/lib/logger'
+import { structuredLogger as logger } from '@/lib/logger'
 import { prisma } from '@/lib/database'
 import { Request } from 'express'
 import crypto from 'crypto'

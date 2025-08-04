@@ -3,7 +3,7 @@
 
 import { Router, Request, Response } from 'express'
 import { z } from 'zod'
-import { logger } from '@/lib/logger'
+import { structuredLogger as logger } from '@/lib/logger'
 import { auditLogger, AuditEventType } from '@/lib/audit-logger'
 import {
   authenticate,

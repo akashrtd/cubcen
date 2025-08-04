@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/database'
-import { logger } from '@/lib/logger'
+import { structuredLogger as logger } from '@/lib/logger'
 import { AnalyticsCache, cached } from '@/lib/cache'
 import { OptimizedQueries } from '@/lib/database-performance'
 import { PaginationHelper, PaginatedResult } from '@/lib/pagination'
@@ -125,7 +125,7 @@ export class AnalyticsService {
             errorPatterns,
           }
         } catch (error) {
-          logger.error('Failed to get analytics data', error)
+          logger.error('Failed to get analytics data', error instanceof Error ? error : undefined)
           throw new Error('Failed to retrieve analytics data')
         }
       },
@@ -347,7 +347,7 @@ export class AnalyticsService {
       }
       throw new Error('Unsupported export format')
     } catch (error) {
-      logger.error('Failed to export analytics data', error)
+      logger.error('Failed to export analytics data', error instanceof Error ? error : undefined)
       throw new Error('Failed to export data')
     }
   }

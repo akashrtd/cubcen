@@ -329,7 +329,7 @@ export class CacheWarmer {
 
       logger.info('Cache warm-up completed successfully')
     } catch (error) {
-      logger.error('Cache warm-up failed', error)
+      logger.error('Cache warm-up failed', error instanceof Error ? error : undefined)
     }
   }
 
