@@ -1,8 +1,14 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { cn } from '@/lib/utils'
 import { DashboardLayoutProps } from '@/types/dashboard'
+import { MobileNavigation, defaultMobileNavItems, useMobileNavigation } from './mobile-navigation'
+import { SwipeNavigation, useSwipeNavigation } from './swipe-navigation'
+import { useIsMobile } from '../mobile/touch-interactions'
+import { KeyboardNavigation, SkipLinks } from '../accessibility/keyboard-navigation'
+import { FocusManagement } from '../accessibility/focus-management'
+import { ScreenReaderAnnouncer } from '../accessibility/screen-reader-announcer'
 
 const defaultGridAreas = {
   header: 'header',
@@ -25,29 +31,67 @@ export function DashboardLayout({
   className,
   gridAreas = defaultGridAreas,
   breakpoints = defaultBreakpoints,
+  mobileNavItems = defaultMobileNavItems,
+  showMobileNav = true,
+  enableSwipeNavigation = true,
   ...props
 }: DashboardLayoutProps) {
-  const [isMobile, setIsMobile] = useState(false)
+  const isMobileHook = useIsMobile()
   const [isTablet, setIsTablet] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [isInitialized, setIsInitialized] = useState(false)
+  const { isVisible: isMobileNavVisible } = useMobileNavigation()
+  
+  // Use the hook for mobile detection
+  const isMobile = isMobileHook
 
-  // Handle responsive breakpoints
-  useEffect(() => {
-    const handleResize = () => {
-      const width = window.innerWidth
-      setIsMobile(width < breakpoints.mobile)
-      setIsTablet(width >= breakpoints.mobile && width < breakpoints.desktop)
-      
-      // Auto-collapse sidebar on mobile
-      if (width < breakpoints.mobile) {
-        setSidebarCollapsed(true)
+  // Handle responsive breakpoints with debouncing
+  const handleResize = useCallback(() => {
+    const width = window.innerWidth
+    const newIsTablet = width >= breakpoints.mobile && width < breakpoints.desktop
+    
+    setIsTablet(newIsTablet)
+    
+    // Auto-collapse sidebar on mobile, but preserve user preference on desktop
+    if (isMobile && !sidebarCollapsed) {
+      setSidebarCollapsed(true)
+    } else if (!isMobile && !isInitialized) {
+      // Restore sidebar state from localStorage on desktop
+      const savedState = localStorage.getItem('dashboard-sidebar-collapsed')
+      if (savedState !== null) {
+        setSidebarCollapsed(JSON.parse(savedState))
       }
     }
+    
+    if (!isInitialized) {
+      setIsInitialized(true)
+    }
+  }, [breakpoints, sidebarCollapsed, isInitialized, isMobile])
 
+  useEffect(() => {
+    // Initial setup
     handleResize()
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [breakpoints])
+    
+    // Debounced resize handler
+    let timeoutId: NodeJS.Timeout
+    const debouncedResize = () => {
+      clearTimeout(timeoutId)
+      timeoutId = setTimeout(handleResize, 150)
+    }
+
+    window.addEventListener('resize', debouncedResize)
+    return () => {
+      window.removeEventListener('resize', debouncedResize)
+      clearTimeout(timeoutId)
+    }
+  }, [handleResize])
+
+  // Persist sidebar state to localStorage
+  useEffect(() => {
+    if (isInitialized && !isMobile) {
+      localStorage.setItem('dashboard-sidebar-collapsed', JSON.stringify(sidebarCollapsed))
+    }
+  }, [sidebarCollapsed, isMobile, isInitialized])
 
   // Generate CSS Grid template areas based on screen size and sidebar state
   const getGridTemplateAreas = () => {
@@ -105,8 +149,16 @@ export function DashboardLayout({
     gridTemplateRows: getGridTemplateRows(),
   }
 
+  // Default skip links for accessibility
+  const defaultSkipLinks = [
+    { href: '#main-content', label: 'Skip to main content' },
+    { href: '#dashboard-sidebar', label: 'Skip to navigation' },
+    ...(footer ? [{ href: '#dashboard-footer', label: 'Skip to footer' }] : [])
+  ]
+
   return (
-    <div
+    <KeyboardNavigation
+      skipLinks={defaultSkipLinks}
       className={cn(
         'dashboard-layout',
         'min-h-screen',
@@ -122,6 +174,7 @@ export function DashboardLayout({
       {/* Header */}
       {header && (
         <header
+          id="dashboard-header"
           className={cn(
             'dashboard-header',
             'flex',
@@ -152,22 +205,26 @@ export function DashboardLayout({
                 'focus:outline-none',
                 'focus:ring-2',
                 'focus:ring-dashboard-primary',
-                'focus:ring-offset-2'
+                'focus:ring-offset-2',
+                'ml-auto' // Push to right side of header
               )}
               aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
               aria-expanded={!sidebarCollapsed}
+              aria-controls="dashboard-sidebar"
             >
               <svg
                 className={cn(
                   'w-5 h-5',
                   'text-dashboard-text-secondary',
                   'transition-transform',
-                  'duration-200',
+                  'duration-300',
+                  'ease-in-out',
                   sidebarCollapsed && 'rotate-180'
                 )}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path
                   strokeLinecap="round"
@@ -184,6 +241,7 @@ export function DashboardLayout({
       {/* Sidebar */}
       {sidebar && !isMobile && (
         <aside
+          id="dashboard-sidebar"
           className={cn(
             'dashboard-sidebar',
             'border-r',
@@ -193,6 +251,7 @@ export function DashboardLayout({
             'transition-all',
             'duration-300',
             'ease-in-out',
+            'relative',
             sidebarCollapsed && 'w-0 overflow-hidden'
           )}
           style={{ gridArea: gridAreas.sidebar }}
@@ -202,10 +261,31 @@ export function DashboardLayout({
         >
           <div className={cn(
             'p-4',
+            'transition-opacity',
+            'duration-300',
+            'ease-in-out',
             sidebarCollapsed && 'opacity-0'
           )}>
             {sidebar}
           </div>
+          
+          {/* Sidebar resize handle for better UX */}
+          <div
+            className={cn(
+              'absolute',
+              'top-0',
+              'right-0',
+              'w-1',
+              'h-full',
+              'bg-transparent',
+              'hover:bg-dashboard-primary',
+              'transition-colors',
+              'duration-200',
+              'cursor-col-resize',
+              sidebarCollapsed && 'hidden'
+            )}
+            aria-hidden="true"
+          />
         </aside>
       )}
 
@@ -215,7 +295,9 @@ export function DashboardLayout({
           'dashboard-main',
           'overflow-auto',
           'bg-dashboard-background',
-          'min-h-0' // Prevents grid item from growing beyond container
+          'min-h-0', // Prevents grid item from growing beyond container
+          // Add bottom padding on mobile to account for mobile navigation
+          isMobile && showMobileNav && 'pb-20'
         )}
         style={{ gridArea: gridAreas.main }}
         role="main"
@@ -227,6 +309,7 @@ export function DashboardLayout({
       {/* Footer */}
       {footer && (
         <footer
+          id="dashboard-footer"
           className={cn(
             'dashboard-footer',
             'flex',
@@ -246,7 +329,33 @@ export function DashboardLayout({
           {footer}
         </footer>
       )}
-    </div>
+
+      {/* Mobile Navigation */}
+      {isMobile && showMobileNav && (
+        <div
+          className={cn(
+            'mobile-nav-container',
+            'transition-transform',
+            'duration-300',
+            'ease-in-out',
+            !isMobileNavVisible && 'translate-y-full'
+          )}
+        >
+          <MobileNavigation
+            items={mobileNavItems}
+            onItemClick={(item) => {
+              // Handle mobile navigation item clicks
+              console.log('Mobile nav item clicked:', item)
+            }}
+          />
+        </div>
+      )}
+
+
+
+      {/* Screen Reader Announcer */}
+      <ScreenReaderAnnouncer />
+    </KeyboardNavigation>
   )
 }
 

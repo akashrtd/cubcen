@@ -19,6 +19,15 @@ export interface GridConfiguration {
   }
 }
 
+export interface MobileNavigationItem {
+  id: string
+  label: string
+  href: string
+  icon: React.ComponentType<{ className?: string }>
+  badge?: string | number
+  disabled?: boolean
+}
+
 export interface DashboardLayoutProps {
   children: React.ReactNode
   header?: React.ReactNode
@@ -36,6 +45,10 @@ export interface DashboardLayoutProps {
     tablet: number
     desktop: number
   }
+  mobileNavItems?: MobileNavigationItem[]
+  showMobileNav?: boolean
+  enableSwipeNavigation?: boolean
+  swipeRoutes?: string[]
 }
 
 // Card Types
@@ -151,6 +164,7 @@ export interface LegendItem {
   label: string
   color: string
   visible: boolean
+  metadata?: Record<string, any>
 }
 
 export interface TooltipProps {

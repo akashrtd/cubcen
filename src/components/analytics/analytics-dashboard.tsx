@@ -1,13 +1,6 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -20,9 +13,7 @@ import {
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Skeleton } from '@/components/ui/skeleton'
 import { DatePickerWithRange } from '@/components/analytics/date-range-picker'
-import { KPICards } from '@/components/analytics/kpi-cards'
 import { 
-  LazyPerformanceChartsWithSuspense,
   LazyAgentPerformanceTableWithSuspense,
   LazyErrorPatternsChartWithSuspense,
   LazyExportDialogWithSuspense
@@ -36,11 +27,28 @@ import {
   Wifi, 
   WifiOff,
   Clock,
-  AlertCircle
+  AlertCircle,
+  Users,
+  Activity,
+  CheckCircle,
+  XCircle,
+  TrendingUp,
+  Target,
+  Zap,
+  PieChart as PieChartIcon
 } from 'lucide-react'
 import { DateRange } from 'react-day-picker'
 import { AnalyticsData } from '@/services/analytics'
 import { toast } from 'sonner'
+
+// Import new modular dashboard components
+import { DashboardLayout } from '@/components/dashboard/layout/dashboard-layout'
+import { DashboardGrid } from '@/components/dashboard/grid/dashboard-grid'
+import { DashboardCard } from '@/components/dashboard/cards/dashboard-card'
+import { MetricCard } from '@/components/dashboard/cards/metric-card'
+import { ChartCard } from '@/components/dashboard/cards/chart-card'
+import { ChartWrapper } from '@/components/dashboard/charts/chart-wrapper'
+import { DashboardDataTransforms } from '@/lib/dashboard-data-transforms'
 
 interface AnalyticsDashboardProps {
   className?: string
@@ -547,15 +555,13 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
           </Alert>
         )}
 
-      {/* Date Range Filter */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Filters</CardTitle>
-          <CardDescription>
-            Select date range to filter analytics data
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+        {/* Date Range Filter using new DashboardCard */}
+        <DashboardCard
+          title="Filters"
+          subtitle="Select date range to filter analytics data"
+          size="md"
+          priority="medium"
+        >
           <div className="flex items-center space-x-4">
             <DatePickerWithRange
               date={dateRange}
@@ -571,68 +577,288 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
               </Button>
             )}
           </div>
-        </CardContent>
-      </Card>
+        </DashboardCard>
 
-        {/* KPI Cards */}
+        {/* KPI Cards using new MetricCard components */}
         <ErrorBoundary fallback={({ error, resetError }) => (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center text-destructive">
-                <AlertTriangle className="mr-2 h-4 w-4" />
-                KPI Cards Error
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">{error.message}</p>
+          <DashboardCard
+            title="KPI Cards Error"
+            icon={AlertTriangle}
+            error={error.message}
+            actions={
               <Button onClick={resetError} size="sm" variant="outline">
                 <RefreshCw className="mr-2 h-3 w-3" />
                 Retry
               </Button>
-            </CardContent>
-          </Card>
+            }
+          />
         )}>
-          {data && <KPICards data={data} loading={loading} />}
+          {data && (
+            <DashboardGrid columns={6} className="mb-6">
+              <MetricCard
+                title="Total Agents"
+                metrics={[{
+                  label: "Total",
+                  value: data.totalAgents,
+                  unit: "agents",
+                  trend: data.activeAgents > data.totalAgents * 0.8 ? 'up' : 'neutral',
+                  color: "text-blue-600"
+                }]}
+                icon={Users}
+                size="sm"
+                priority="high"
+                loading={loading}
+              />
+              <MetricCard
+                title="Active Agents"
+                metrics={[{
+                  label: "Active",
+                  value: data.activeAgents,
+                  unit: "running",
+                  trend: data.activeAgents > 0 ? 'up' : 'down',
+                  color: "text-cubcen-primary"
+                }]}
+                icon={Zap}
+                size="sm"
+                priority="critical"
+                loading={loading}
+              />
+              <MetricCard
+                title="Total Tasks"
+                metrics={[{
+                  label: "All time",
+                  value: data.totalTasks,
+                  unit: "tasks",
+                  color: "text-purple-600"
+                }]}
+                icon={Activity}
+                size="sm"
+                priority="medium"
+                loading={loading}
+              />
+              <MetricCard
+                title="Success Rate"
+                metrics={[{
+                  label: "Completed",
+                  value: `${data.successRate}%`,
+                  trend: data.successRate >= 90 ? 'up' : data.successRate >= 70 ? 'neutral' : 'down',
+                  trendValue: `${data.completedTasks} completed`,
+                  color: "text-green-600"
+                }]}
+                icon={Target}
+                size="sm"
+                priority="critical"
+                loading={loading}
+              />
+              <MetricCard
+                title="Failed Tasks"
+                metrics={[{
+                  label: "Needs attention",
+                  value: data.failedTasks,
+                  unit: "failed",
+                  trend: data.failedTasks > 0 ? 'down' : 'neutral',
+                  color: "text-red-600"
+                }]}
+                icon={XCircle}
+                size="sm"
+                priority="high"
+                loading={loading}
+              />
+              <MetricCard
+                title="Avg Response Time"
+                metrics={[{
+                  label: "Performance",
+                  value: data.averageResponseTime,
+                  unit: "ms",
+                  trend: data.averageResponseTime < 1000 ? 'up' : data.averageResponseTime < 3000 ? 'neutral' : 'down',
+                  color: "text-orange-600"
+                }]}
+                icon={Clock}
+                size="sm"
+                priority="medium"
+                loading={loading}
+              />
+            </DashboardGrid>
+          )}
         </ErrorBoundary>
 
-        {/* Performance Charts */}
+        {/* Performance Charts using new ChartCard components */}
         <ErrorBoundary fallback={({ error, resetError }) => (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center text-destructive">
-                <AlertTriangle className="mr-2 h-4 w-4" />
-                Charts Error
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">{error.message}</p>
+          <DashboardCard
+            title="Charts Error"
+            icon={AlertTriangle}
+            error={error.message}
+            actions={
               <Button onClick={resetError} size="sm" variant="outline">
                 <RefreshCw className="mr-2 h-3 w-3" />
                 Retry
               </Button>
-            </CardContent>
-          </Card>
+            }
+          />
         )}>
-          {data && <LazyPerformanceChartsWithSuspense data={data} loading={loading} />}
+          {data && (
+            <DashboardGrid className="space-y-6">
+              {/* Daily Task Trends */}
+              <ChartCard
+                title="Task Trends Over Time"
+                subtitle="Daily completed and failed tasks over the selected period"
+                icon={TrendingUp}
+                chartType="area"
+                data={DashboardDataTransforms.transformDailyTaskTrends(data.dailyTaskTrends)}
+                chartConfig={{
+                  colors: {
+                    primary: '#4CAF50',
+                    secondary: '#F44336',
+                    accent: '#3F51B5'
+                  },
+                  legend: { show: true, position: 'bottom' },
+                  tooltip: { show: true },
+                  responsive: {
+                    breakpoints: {
+                      mobile: { legend: { position: 'top' } }
+                    }
+                  }
+                }}
+                size="lg"
+                priority="high"
+                loading={loading}
+                exportable
+                colSpan={12}
+              />
+
+              <div className="grid gap-4 md:grid-cols-2">
+                {/* Task Status Distribution */}
+                <ChartCard
+                  title="Task Status Distribution"
+                  subtitle="Breakdown of tasks by current status"
+                  icon={PieChartIcon}
+                  chartType="pie"
+                  data={DashboardDataTransforms.transformTasksByStatus(data.tasksByStatus)}
+                  chartConfig={{
+                    colors: {
+                      primary: '#4CAF50',
+                      secondary: '#F44336',
+                      accent: '#FF9800',
+                      success: '#4CAF50',
+                      warning: '#FF9800',
+                      error: '#F44336'
+                    },
+                    legend: { show: true, position: 'bottom' }
+                  }}
+                  size="md"
+                  priority="medium"
+                  loading={loading}
+                  exportable
+                />
+
+                {/* Task Priority Distribution */}
+                <ChartCard
+                  title="Task Priority Distribution"
+                  subtitle="Tasks organized by priority level"
+                  icon={BarChart3}
+                  chartType="bar"
+                  data={DashboardDataTransforms.transformTasksByPriority(data.tasksByPriority)}
+                  chartConfig={{
+                    colors: {
+                      primary: '#3F51B5',
+                      secondary: '#B19ADA',
+                      accent: '#FF6B35'
+                    },
+                    legend: { show: false }
+                  }}
+                  size="md"
+                  priority="medium"
+                  loading={loading}
+                  exportable
+                />
+
+                {/* Platform Distribution */}
+                <ChartCard
+                  title="Platform Distribution"
+                  subtitle="Agents distributed across platforms"
+                  icon={Activity}
+                  chartType="bar"
+                  data={DashboardDataTransforms.transformPlatformDistribution(data.platformDistribution)}
+                  chartConfig={{
+                    colors: {
+                      primary: '#B19ADA',
+                      secondary: '#3F51B5'
+                    },
+                    legend: { show: false }
+                  }}
+                  size="md"
+                  priority="low"
+                  loading={loading}
+                  exportable
+                />
+
+                {/* Top Performing Agents */}
+                <DashboardCard
+                  title="Top Performing Agents"
+                  subtitle="Agents with highest success rates"
+                  icon={TrendingUp}
+                  size="md"
+                  priority="medium"
+                  loading={loading}
+                >
+                  <div className="space-y-4">
+                    {data.agentPerformance
+                      .sort((a, b) => b.successRate - a.successRate)
+                      .slice(0, 5)
+                      .map((agent, index) => (
+                        <div
+                          key={`agent-${agent.agentId || index}`}
+                          className="flex items-center justify-between"
+                        >
+                          <div className="flex-1">
+                            <div className="font-medium text-sm">
+                              {agent.agentName}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              {agent.totalTasks} tasks • {agent.averageResponseTime}ms avg
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Badge
+                              variant={
+                                agent.successRate >= 90
+                                  ? 'default'
+                                  : agent.successRate >= 70
+                                    ? 'secondary'
+                                    : 'destructive'
+                              }
+                              className="text-xs"
+                            >
+                              {agent.successRate.toFixed(1)}%
+                            </Badge>
+                          </div>
+                        </div>
+                      ))}
+                    {data.agentPerformance.length === 0 && (
+                      <div className="text-center text-muted-foreground py-8">
+                        No agent performance data available
+                      </div>
+                    )}
+                  </div>
+                </DashboardCard>
+              </div>
+            </DashboardGrid>
+          )}
         </ErrorBoundary>
 
         {/* Agent Performance Table */}
         <ErrorBoundary fallback={({ error, resetError }) => (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center text-destructive">
-                <AlertTriangle className="mr-2 h-4 w-4" />
-                Agent Performance Error
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">{error.message}</p>
+          <DashboardCard
+            title="Agent Performance Error"
+            icon={AlertTriangle}
+            error={error.message}
+            actions={
               <Button onClick={resetError} size="sm" variant="outline">
                 <RefreshCw className="mr-2 h-3 w-3" />
                 Retry
               </Button>
-            </CardContent>
-          </Card>
+            }
+          />
         )}>
           {data && (
             <LazyAgentPerformanceTableWithSuspense data={data.agentPerformance} loading={loading} />
@@ -641,21 +867,17 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
 
         {/* Error Patterns */}
         <ErrorBoundary fallback={({ error, resetError }) => (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center text-destructive">
-                <AlertTriangle className="mr-2 h-4 w-4" />
-                Error Patterns Error
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground mb-4">{error.message}</p>
+          <DashboardCard
+            title="Error Patterns Error"
+            icon={AlertTriangle}
+            error={error.message}
+            actions={
               <Button onClick={resetError} size="sm" variant="outline">
                 <RefreshCw className="mr-2 h-3 w-3" />
                 Retry
               </Button>
-            </CardContent>
-          </Card>
+            }
+          />
         )}>
           {data && (
             <LazyErrorPatternsChartWithSuspense data={data.errorPatterns} loading={loading} />

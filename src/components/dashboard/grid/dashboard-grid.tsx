@@ -1,25 +1,12 @@
 import React from 'react'
 import { cn } from '@/lib/utils'
-
-interface DashboardGridProps {
-  children: React.ReactNode
-  columns?: number
-  gap?: number
-  className?: string
-  responsive?: {
-    mobile: number
-    tablet: number
-    desktop: number
-  }
-  autoFlow?: 'row' | 'column' | 'dense'
-  alignItems?: 'start' | 'center' | 'end' | 'stretch'
-  justifyItems?: 'start' | 'center' | 'end' | 'stretch'
-}
+import { useIsMobile } from '../mobile/touch-interactions'
+import type { DashboardGridProps } from '@/types/dashboard'
 
 export function DashboardGrid({
   children,
   columns = 12,
-  gap = 24,
+  gap,
   className,
   responsive = {
     mobile: 1,
@@ -30,68 +17,40 @@ export function DashboardGrid({
   alignItems = 'stretch',
   justifyItems = 'stretch',
 }: DashboardGridProps) {
+  const isMobile = useIsMobile()
+  
+  // Use CSS custom properties for responsive behavior
+  const gridStyle = {
+    '--dashboard-grid-columns-mobile': responsive.mobile.toString(),
+    '--dashboard-grid-columns-tablet': responsive.tablet.toString(),
+    '--dashboard-grid-columns-desktop': responsive.desktop.toString(),
+    '--dashboard-grid-gap': gap ? `${gap}px` : 'var(--dashboard-grid-gap)',
+    gridAutoFlow: autoFlow,
+    alignItems,
+    justifyItems,
+  } as React.CSSProperties
+
   return (
     <div
-      className={cn('dashboard-grid', className)}
-      style={{
-        display: 'grid',
-        gridTemplateColumns: `repeat(${columns}, 1fr)`,
-        gap: `${gap}px`,
-        gridAutoFlow: autoFlow,
-        alignItems,
-        justifyItems,
-      }}
+      className={cn(
+        'dashboard-grid',
+        'grid',
+        // Responsive grid columns using CSS custom properties
+        '[grid-template-columns:repeat(var(--dashboard-grid-columns-mobile),1fr)]',
+        'md:[grid-template-columns:repeat(var(--dashboard-grid-columns-tablet),1fr)]',
+        'lg:[grid-template-columns:repeat(var(--dashboard-grid-columns-desktop),1fr)]',
+        // Mobile-specific optimizations
+        isMobile && [
+          'px-4', // Add horizontal padding on mobile
+          'gap-4', // Reduce gap on mobile
+          'pb-20', // Add bottom padding for mobile navigation
+        ],
+        className
+      )}
+      style={gridStyle}
     >
       {children}
     </div>
   )
 }
 
-interface GridItemProps {
-  children: React.ReactNode
-  colSpan?: number | { mobile?: number; tablet?: number; desktop?: number }
-  rowSpan?: number | { mobile?: number; tablet?: number; desktop?: number }
-  order?: number | { mobile?: number; tablet?: number; desktop?: number }
-  className?: string
-  priority?: 'low' | 'medium' | 'high' | 'critical'
-}
-
-export function GridItem({
-  children,
-  colSpan = 1,
-  rowSpan = 1,
-  order,
-  className,
-  priority = 'medium',
-}: GridItemProps) {
-  const getSpanValue = (span: number | { mobile?: number; tablet?: number; desktop?: number }) => {
-    if (typeof span === 'number') return span
-    return span.desktop || span.tablet || span.mobile || 1
-  }
-
-  const getOrderValue = (orderValue?: number | { mobile?: number; tablet?: number; desktop?: number }) => {
-    if (!orderValue) return undefined
-    if (typeof orderValue === 'number') return orderValue
-    return orderValue.desktop || orderValue.tablet || orderValue.mobile
-  }
-
-  const priorityClasses = {
-    low: 'dashboard-grid-item-priority-low',
-    medium: 'dashboard-grid-item-priority-medium',
-    high: 'dashboard-grid-item-priority-high',
-    critical: 'dashboard-grid-item-priority-critical',
-  }
-
-  return (
-    <div
-      className={cn('dashboard-grid-item', priorityClasses[priority], className)}
-      style={{
-        gridColumn: `span ${getSpanValue(colSpan)}`,
-        gridRow: `span ${getSpanValue(rowSpan)}`,
-        order: getOrderValue(order),
-      }}
-    >
-      {children}
-    </div>
-  )
-}

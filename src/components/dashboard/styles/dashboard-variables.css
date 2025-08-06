@@ -313,6 +313,161 @@
   outline-offset: 2px;
 }
 
+/* Mobile Navigation Styles */
+.mobile-navigation {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.mobile-nav-item {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Safe area support for mobile devices */
+.safe-area-inset-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Mobile-specific responsive adjustments */
+@media (max-width: 768px) {
+  .dashboard-main {
+    /* Ensure content doesn't get hidden behind mobile nav */
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+  }
+  
+  /* Hide desktop sidebar completely on mobile */
+  .dashboard-sidebar {
+    display: none !important;
+  }
+  
+  /* Adjust header for mobile */
+  .dashboard-header {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Mobile-optimized card spacing and stacking */
+  .dashboard-card {
+    margin-bottom: 1rem;
+    /* Ensure cards stack vertically with proper spacing */
+    width: 100%;
+    min-height: auto;
+  }
+  
+  /* Touch-optimized interactive elements */
+  .dashboard-card[role="button"] {
+    min-height: 44px; /* Minimum touch target size */
+    padding: 1rem;
+  }
+  
+  /* Chart containers on mobile */
+  .chart-wrapper {
+    /* Allow horizontal scrolling for charts if needed */
+    overflow-x: auto;
+    /* Ensure minimum height for touch interactions */
+    min-height: 200px;
+  }
+  
+  /* Grid adjustments for mobile */
+  .dashboard-grid {
+    /* Force single column layout */
+    grid-template-columns: 1fr !important;
+    /* Optimize spacing for touch */
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  /* Grid items on mobile */
+  .dashboard-grid-item {
+    /* Reset all column spans to full width */
+    grid-column: 1 / -1 !important;
+    /* Ensure proper spacing between items */
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Smooth transitions for mobile navigation */
+@media (prefers-reduced-motion: no-preference) {
+  .mobile-nav-container {
+    transition: transform var(--dashboard-transition-normal);
+  }
+  
+  .mobile-nav-item {
+    transition: all var(--dashboard-transition-fast);
+  }
+}
+
+/* Touch Interaction Styles */
+.touch-interaction {
+  /* Optimize for touch interactions */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  
+  /* Ensure smooth touch feedback */
+  transition: transform var(--dashboard-transition-fast);
+}
+
+.touch-interaction:active {
+  transform: scale(0.98);
+}
+
+/* Mobile Tooltip Styles */
+.mobile-tooltip-trigger {
+  /* Ensure minimum touch target size */
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-tooltip-content {
+  /* Ensure tooltip is readable on mobile */
+  font-size: var(--dashboard-text-sm);
+  line-height: var(--dashboard-line-height-normal);
+  /* Prevent tooltip from being too wide on mobile */
+  max-width: calc(100vw - 2rem);
+  /* Ensure tooltip is above other elements */
+  z-index: var(--dashboard-z-tooltip);
+}
+
+/* Chart Touch Interactions */
+.chart-touch-wrapper {
+  /* Enable smooth pinch-to-zoom */
+  touch-action: manipulation;
+  overflow: hidden;
+}
+
+.chart-container {
+  /* Ensure charts are touch-friendly */
+  min-height: 200px;
+  position: relative;
+}
+
+/* Touch-specific chart elements */
+@media (pointer: coarse) {
+  /* Increase touch target sizes for chart elements */
+  .recharts-dot,
+  .recharts-legend-item,
+  .recharts-bar,
+  .recharts-pie-sector {
+    cursor: pointer;
+    /* Increase minimum touch target */
+    min-width: 44px;
+    min-height: 44px;
+  }
+  
+  /* Adjust tooltip positioning for touch */
+  .recharts-tooltip-wrapper {
+    pointer-events: none;
+  }
+}
+
 /* Screen Reader Only Content */
 .sr-only {
   position: absolute;
@@ -324,4 +479,355 @@
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+/
+* Performance & Loading Variables */
+:root {
+  /* Skeleton Animation Variables */
+  --skeleton-animation-duration: 1.5s;
+  --skeleton-shimmer-intensity: 0.4;
+  --skeleton-fade-duration: 0.3s;
+  --skeleton-wave-duration: 1.6s;
+  
+  /* Progressive Loading Variables */
+  --progressive-loader-stage-duration: 200ms;
+  --progressive-loader-fade-duration: 400ms;
+  
+  /* Lazy Loading Variables */
+  --lazy-card-fade-duration: 0.4s;
+  --lazy-card-skeleton-height: 200px;
+  
+  /* Intersection Observer Variables */
+  --intersection-root-margin: 50px;
+  --intersection-threshold: 0.1;
+}
+
+[data-theme="dark"] {
+  --skeleton-shimmer-intensity: 0.24; /* Reduced intensity for dark theme */
+}
+
+/* Skeleton Animation Styles */
+.dashboard-card-skeleton {
+  @apply border border-border/50 bg-card/50;
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-shimmer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, var(--skeleton-shimmer-intensity)),
+    transparent
+  );
+  animation: shimmer var(--skeleton-animation-duration) infinite;
+  z-index: 1;
+}
+
+.skeleton-shimmer[data-theme="dark"]::before {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, calc(var(--skeleton-shimmer-intensity) * 0.6)),
+    transparent
+  );
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+.skeleton-no-animation * {
+  animation: none !important;
+}
+
+/* Priority-based skeleton styles */
+.viewport-skeleton-priority-critical {
+  @apply border-primary/20 bg-primary/5;
+}
+
+.viewport-skeleton-priority-critical .dashboard-card-skeleton {
+  @apply border-primary/30;
+}
+
+.viewport-skeleton-priority-high {
+  @apply border-blue-500/20 bg-blue-500/5;
+}
+
+.viewport-skeleton-priority-high .dashboard-card-skeleton {
+  @apply border-blue-500/30;
+}
+
+.viewport-skeleton-priority-medium {
+  @apply border-muted-foreground/20 bg-muted/50;
+}
+
+.viewport-skeleton-priority-low {
+  @apply border-muted-foreground/10 bg-muted/30;
+}
+
+/* Variant-specific skeleton styles */
+.viewport-skeleton-card {
+  @apply rounded-lg;
+}
+
+.viewport-skeleton-chart {
+  @apply rounded-lg;
+}
+
+.viewport-skeleton-chart .dashboard-card-skeleton {
+  min-height: 300px;
+}
+
+.viewport-skeleton-table {
+  @apply rounded-lg;
+}
+
+.viewport-skeleton-metric {
+  @apply rounded-lg;
+}
+
+.viewport-skeleton-metric .dashboard-card-skeleton {
+  min-height: 120px;
+}
+
+.viewport-skeleton-list {
+  @apply rounded-lg;
+}
+
+.viewport-skeleton-grid {
+  @apply gap-4;
+}
+
+/* Progressive loader styles */
+.progressive-loader {
+  position: relative;
+  transition: opacity var(--progressive-loader-fade-duration) ease-out;
+}
+
+.progressive-loader-complete {
+  animation: content-fade-in var(--progressive-loader-fade-duration) ease-out;
+}
+
+@keyframes content-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Lazy card styles */
+.lazy-card-container {
+  position: relative;
+  transition: min-height var(--lazy-card-fade-duration) ease-out;
+}
+
+.lazy-card-content {
+  animation: lazy-card-fade-in var(--lazy-card-fade-duration) ease-out;
+}
+
+@keyframes lazy-card-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Priority-based lazy card styles */
+.lazy-card-critical {
+  @apply border-l-4 border-l-red-500;
+}
+
+.lazy-card-high {
+  @apply border-l-4 border-l-orange-500;
+}
+
+.lazy-card-medium {
+  @apply border-l-4 border-l-blue-500;
+}
+
+.lazy-card-low {
+  @apply border-l-4 border-l-gray-400;
+}
+
+/* Responsive skeleton adjustments */
+@media (max-width: 768px) {
+  .viewport-skeleton-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .skeleton-shimmer::before {
+    animation-duration: calc(var(--skeleton-animation-duration) * 0.8);
+  }
+  
+  .dashboard-card-skeleton {
+    min-height: var(--lazy-card-skeleton-height);
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-card-skeleton {
+    @apply text-sm;
+  }
+  
+  .dashboard-card-skeleton .space-y-3 {
+    @apply space-y-2;
+  }
+  
+  .dashboard-card-skeleton .space-y-2 {
+    @apply space-y-1;
+  }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-shimmer::before {
+    animation: none;
+  }
+  
+  .dashboard-card-skeleton * {
+    animation: none !important;
+  }
+  
+  .progressive-loader {
+    transition: none;
+  }
+  
+  .lazy-card-container {
+    transition: none;
+  }
+  
+  .lazy-card-content {
+    animation: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .dashboard-card-skeleton {
+    @apply border-2 border-foreground/50;
+  }
+  
+  .skeleton-shimmer::before {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(0, 0, 0, 0.8),
+      transparent
+    );
+  }
+  
+  [data-theme="dark"] .skeleton-shimmer::before {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.8),
+      transparent
+    );
+  }
+}
+
+/* Performance optimizations */
+.dashboard-card-skeleton {
+  will-change: auto;
+  transform: translateZ(0);
+}
+
+.skeleton-shimmer::before {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Loading state indicators */
+.viewport-skeleton[aria-label]::after {
+  content: attr(aria-label);
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Skeleton pulse animation for fallback */
+@keyframes skeleton-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.skeleton-pulse {
+  animation: skeleton-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Skeleton wave animation */
+@keyframes skeleton-wave {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.skeleton-wave {
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-wave::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  animation: skeleton-wave var(--skeleton-wave-duration) linear 0.5s infinite;
+}
+
+/* Skeleton fade-in animation */
+@keyframes skeleton-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.skeleton-fade-in {
+  animation: skeleton-fade-in var(--skeleton-fade-duration) ease-out;
 }
