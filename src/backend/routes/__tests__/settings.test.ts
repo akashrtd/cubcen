@@ -53,8 +53,8 @@ describe('Settings API Routes', () => {
     app.use('/api/settings', settingsRouter)
 
     // Mock authentication middleware
-    mockAuthenticate.mockImplementation((req, res, next) => {
-      req.user = mockUser
+    mockAuthenticate.mockImplementation(async (req, res, next) => {
+      req.user = { ...mockUser, createdAt: new Date(), updatedAt: new Date() };
       next()
     })
 
@@ -88,7 +88,7 @@ describe('Settings API Routes', () => {
     })
 
     it('should handle authentication failure', async () => {
-      mockAuthenticate.mockImplementation((req, res, next) => {
+      mockAuthenticate.mockImplementation(async (req, res, next) => {
         res.status(401).json({
           error: {
             code: 'AUTHENTICATION_FAILED',

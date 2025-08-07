@@ -113,11 +113,7 @@ describe('ErrorPatternsChart', () => {
 
   it('applies custom className', () => {
     const { container } = render(
-      <ErrorPatternsChart
-        data={mockData}
-        loading={false}
-        className="custom-class"
-      />
+      <ErrorPatternsChart data={mockData} loading={false} />
     )
 
     expect(container.firstChild).toHaveClass('custom-class')

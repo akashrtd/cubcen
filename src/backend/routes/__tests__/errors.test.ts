@@ -3,7 +3,8 @@ import express from 'express'
 import { jest } from '@jest/globals'
 import errorsRouter from '../errors'
 import { auditLogger } from '@/lib/audit-logger'
-import { logger } from '@/lib/logger'
+import { Logger } from '@/lib/logger'
+import { UserRole } from '@/types/auth'
 
 // Mock dependencies
 jest.mock('@/lib/audit-logger')
@@ -21,9 +22,9 @@ app.use((req, res, next) => {
   req.user = {
     id: 'test-user-id',
     email: 'test@example.com',
-    role: 'ADMIN',
+    role: UserRole.ADMIN,
   }
-  req.ip = '127.0.0.1'
+  
   req.headers['x-request-id'] = 'test-request-id'
   next()
 })
@@ -200,6 +201,8 @@ describe('Error Reporting API', () => {
           description: 'Test error',
           timestamp: new Date(),
           success: false,
+          eventType: 'ERROR',
+          severity: 'HIGH',
         },
       ]
 
@@ -231,7 +234,7 @@ describe('Error Reporting API', () => {
         req.user = {
           id: 'test-user-id',
           email: 'test@example.com',
-          role: 'OPERATOR', // Non-admin role
+          role: UserRole.OPERATOR, // Non-admin role
         }
         next()
       })
@@ -312,7 +315,7 @@ describe('Error Reporting API', () => {
         req.user = {
           id: 'test-user-id',
           email: 'test@example.com',
-          role: 'VIEWER', // Non-admin role
+          role: UserRole.VIEWER, // Non-admin role
         }
         next()
       })

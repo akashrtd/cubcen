@@ -4,7 +4,7 @@
 
 import express, { Express } from 'express'
 import cors from 'cors'
-import { logger } from '@/lib/logger'
+import { Logger } from '@/lib/logger'
 import authRoutes from '@/backend/routes/auth'
 import agentRoutes from '@/backend/routes/agents'
 import platformRoutes from '@/backend/routes/platforms'

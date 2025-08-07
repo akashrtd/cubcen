@@ -302,22 +302,10 @@ function DefaultErrorFallback({
 }
 
 // Hook for functional components
-export function useErrorBoundary() {
-  const [error, setError] = React.useState<Error | null>(null)
-
-  const resetError = React.useCallback(() => {
-    setError(null)
-  }, [])
-
-  const captureError = React.useCallback((error: Error) => {
-    setError(error)
-  }, [])
-
-  React.useEffect(() => {
-    if (error) {
-      throw error
-    }
-  }, [error])
-
-  return { captureError, resetError }
+export const useErrorBoundary = () => {
+  const context = React.useContext(ErrorBoundaryContext)
+  if (!context) {
+    throw new Error('useErrorBoundary must be used within an ErrorBoundary')
+  }
+  return context
 }

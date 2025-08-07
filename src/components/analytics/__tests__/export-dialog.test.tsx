@@ -68,11 +68,7 @@ describe('ExportDialog', () => {
 
   it('renders when open is true', () => {
     render(
-      <ExportDialog
-        open={true}
-        onOpenChange={mockOnOpenChange}
-        data={mockAnalyticsData}
-      />
+      <ExportDialog open={true} onOpenChange={mockOnOpenChange} />
     )
 
     expect(screen.getByText('Export Analytics Data')).toBeInTheDocument()
@@ -95,11 +91,7 @@ describe('ExportDialog', () => {
 
   it('displays all data type options', () => {
     render(
-      <ExportDialog
-        open={true}
-        onOpenChange={mockOnOpenChange}
-        data={mockAnalyticsData}
-      />
+      <ExportDialog open={true} onOpenChange={mockOnOpenChange} />
     )
 
     expect(screen.getByText('Overview & KPIs')).toBeInTheDocument()
@@ -111,11 +103,7 @@ describe('ExportDialog', () => {
 
   it('displays format options', () => {
     render(
-      <ExportDialog
-        open={true}
-        onOpenChange={mockOnOpenChange}
-        data={mockAnalyticsData}
-      />
+      <ExportDialog open={true} onOpenChange={mockOnOpenChange} />
     )
 
     expect(screen.getByText('CSV')).toBeInTheDocument()
@@ -124,11 +112,7 @@ describe('ExportDialog', () => {
 
   it('allows selecting data types', async () => {
     render(
-      <ExportDialog
-        open={true}
-        onOpenChange={mockOnOpenChange}
-        data={mockAnalyticsData}
-      />
+      <ExportDialog open={true} onOpenChange={mockOnOpenChange} />
     )
 
     const overviewCheckbox = screen.getByRole('checkbox', { name: /overview/i })
@@ -139,11 +123,7 @@ describe('ExportDialog', () => {
 
   it('allows selecting export format', async () => {
     render(
-      <ExportDialog
-        open={true}
-        onOpenChange={mockOnOpenChange}
-        data={mockAnalyticsData}
-      />
+      <ExportDialog open={true} onOpenChange={mockOnOpenChange} />
     )
 
     const jsonRadio = screen.getByRole('radio', { name: /json/i })
@@ -154,11 +134,7 @@ describe('ExportDialog', () => {
 
   it('exports CSV data when export button is clicked', async () => {
     render(
-      <ExportDialog
-        open={true}
-        onOpenChange={mockOnOpenChange}
-        data={mockAnalyticsData}
-      />
+      <ExportDialog open={true} onOpenChange={mockOnOpenChange} />
     )
 
     // Select overview data type
@@ -181,11 +157,7 @@ describe('ExportDialog', () => {
 
   it('exports JSON data when JSON format is selected', async () => {
     render(
-      <ExportDialog
-        open={true}
-        onOpenChange={mockOnOpenChange}
-        data={mockAnalyticsData}
-      />
+      <ExportDialog open={true} onOpenChange={mockOnOpenChange} />
     )
 
     // Select overview data type
@@ -208,11 +180,7 @@ describe('ExportDialog', () => {
 
   it('disables export button when no data types are selected', () => {
     render(
-      <ExportDialog
-        open={true}
-        onOpenChange={mockOnOpenChange}
-        data={mockAnalyticsData}
-      />
+      <ExportDialog open={true} onOpenChange={mockOnOpenChange} />
     )
 
     const exportButton = screen.getByRole('button', { name: /export data/i })
@@ -221,11 +189,7 @@ describe('ExportDialog', () => {
 
   it('enables export button when at least one data type is selected', async () => {
     render(
-      <ExportDialog
-        open={true}
-        onOpenChange={mockOnOpenChange}
-        data={mockAnalyticsData}
-      />
+      <ExportDialog open={true} onOpenChange={mockOnOpenChange} />
     )
 
     const overviewCheckbox = screen.getByRole('checkbox', { name: /overview/i })
@@ -237,11 +201,7 @@ describe('ExportDialog', () => {
 
   it('closes dialog when cancel button is clicked', () => {
     render(
-      <ExportDialog
-        open={true}
-        onOpenChange={mockOnOpenChange}
-        data={mockAnalyticsData}
-      />
+      <ExportDialog open={true} onOpenChange={mockOnOpenChange} />
     )
 
     const cancelButton = screen.getByRole('button', { name: /cancel/i })
@@ -252,11 +212,7 @@ describe('ExportDialog', () => {
 
   it('closes dialog when close button is clicked', () => {
     render(
-      <ExportDialog
-        open={true}
-        onOpenChange={mockOnOpenChange}
-        data={mockAnalyticsData}
-      />
+      <ExportDialog open={true} onOpenChange={mockOnOpenChange} />
     )
 
     const closeButton = screen.getByRole('button', { name: /close/i })
@@ -267,11 +223,7 @@ describe('ExportDialog', () => {
 
   it('handles multiple data type selections', async () => {
     render(
-      <ExportDialog
-        open={true}
-        onOpenChange={mockOnOpenChange}
-        data={mockAnalyticsData}
-      />
+      <ExportDialog open={true} onOpenChange={mockOnOpenChange} />
     )
 
     // Select multiple data types
@@ -297,11 +249,7 @@ describe('ExportDialog', () => {
 
   it('generates correct filename for CSV export', async () => {
     render(
-      <ExportDialog
-        open={true}
-        onOpenChange={mockOnOpenChange}
-        data={mockAnalyticsData}
-      />
+      <ExportDialog open={true} onOpenChange={mockOnOpenChange} />
     )
 
     const overviewCheckbox = screen.getByRole('checkbox', { name: /overview/i })
@@ -317,11 +265,7 @@ describe('ExportDialog', () => {
 
   it('generates correct filename for JSON export', async () => {
     render(
-      <ExportDialog
-        open={true}
-        onOpenChange={mockOnOpenChange}
-        data={mockAnalyticsData}
-      />
+      <ExportDialog open={true} onOpenChange={mockOnOpenChange} />
     )
 
     const overviewCheckbox = screen.getByRole('checkbox', { name: /overview/i })
@@ -344,11 +288,7 @@ describe('ExportDialog', () => {
     })
 
     render(
-      <ExportDialog
-        open={true}
-        onOpenChange={mockOnOpenChange}
-        data={mockAnalyticsData}
-      />
+      <ExportDialog open={true} onOpenChange={mockOnOpenChange} />
     )
 
     const overviewCheckbox = screen.getByRole('checkbox', { name: /overview/i })
@@ -363,11 +303,7 @@ describe('ExportDialog', () => {
 
   it('cleans up blob URL after download', async () => {
     render(
-      <ExportDialog
-        open={true}
-        onOpenChange={mockOnOpenChange}
-        data={mockAnalyticsData}
-      />
+      <ExportDialog open={true} onOpenChange={mockOnOpenChange} />
     )
 
     const overviewCheckbox = screen.getByRole('checkbox', { name: /overview/i })

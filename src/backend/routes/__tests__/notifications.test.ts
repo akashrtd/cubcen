@@ -302,7 +302,7 @@ describe('Notification Routes', () => {
       const mockAuthMiddleware = authenticate as jest.MockedFunction<
         typeof authenticate
       >
-      mockAuthMiddleware.mockImplementationOnce((req, res, next) => {
+      mockAuthMiddleware.mockImplementation(async (req, res, next) => {
         req.user = {
           id: 'test-user-id',
           email: 'test@cubcen.com',
@@ -507,7 +507,7 @@ describe('Notification Routes', () => {
       const mockAuthMiddleware = authenticate as jest.MockedFunction<
         typeof authenticate
       >
-      mockAuthMiddleware.mockImplementationOnce((req, res, next) => {
+      mockAuthMiddleware.mockImplementation(async (req, res, next) => {
         req.user = {
           id: 'test-user-id',
           email: 'test@cubcen.com',

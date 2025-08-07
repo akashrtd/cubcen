@@ -252,6 +252,7 @@ describe('Chart Integration Comprehensive Tests', () => {
           config={{
             ...mockConfig,
             legend: { show: true, position: 'bottom', align: 'center' },
+            animations: { enabled: true, duration: 300, easing: 'ease-out' },
           }}
         />
       )

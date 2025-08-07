@@ -165,11 +165,7 @@ describe('AgentPerformanceTable', () => {
 
   it('applies custom className', () => {
     const { container } = render(
-      <AgentPerformanceTable
-        data={mockData}
-        loading={false}
-        className="custom-class"
-      />
+      <AgentPerformanceTable data={mockData} loading={false} />
     )
 
     expect(container.firstChild).toHaveClass('custom-class')

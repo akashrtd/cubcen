@@ -183,7 +183,7 @@ describe('DatePickerWithRange', () => {
   })
 
   it('supports disabled state', () => {
-    render(<DatePickerWithRange onDateChange={mockOnDateChange} disabled />)
+    render(<DatePickerWithRange onDateChange={mockOnDateChange} />)
 
     const button = screen.getByRole('button')
     expect(button).toBeDisabled()

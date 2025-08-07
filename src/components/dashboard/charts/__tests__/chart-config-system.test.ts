@@ -13,21 +13,48 @@ describe('ChartConfigBuilder', () => {
     const config = builder.build()
 
     expect(config.colors.primary).toBe('#3F51B5')
+    expect(config.colors.secondary).toBe('#B19ADA')
+    expect(config.colors.accent).toBe('#FF6B35')
+    expect(config.colors.success).toBe('#10B981')
+    expect(config.colors.warning).toBe('#F59E0B')
+    expect(config.colors.error).toBe('#EF4444')
     expect(config.legend.show).toBe(true)
+    expect(config.legend.position).toBe('bottom')
+    expect(config.legend.align).toBe('center')
     expect(config.tooltip.show).toBe(true)
+    expect(config.tooltip.trigger).toBe('hover')
     expect(config.animations.enabled).toBe(true)
+    expect(config.animations.duration).toBe(400)
+    expect(config.animations.easing).toBe('ease-in-out')
   })
 
   it('creates a builder with base configuration', () => {
     const baseConfig = {
-      colors: { primary: '#FF0000' },
-      legend: { show: false },
+      colors: {
+        primary: '#FF0000',
+        secondary: '#B19ADA',
+        accent: '#FF6B35',
+        success: '#10B981',
+        warning: '#F59E0B',
+        error: '#EF4444',
+      },
+      legend: { show: false, position: 'bottom', align: 'center' },
     }
 
     const builder = new ChartConfigBuilder(baseConfig)
     const config = builder.build()
 
     expect(config.colors.primary).toBe('#FF0000')
+    expect(config.colors.secondary).toBe('#B19ADA')
+    expect(config.colors.accent).toBe('#FF6B35')
+    expect(config.colors.success).toBe('#10B981')
+    expect(config.colors.warning).toBe('#F59E0B')
+    expect(config.colors.error).toBe('#EF4444')
+    expect(config.colors.secondary).toBe('#B19ADA')
+    expect(config.colors.accent).toBe('#FF6B35')
+    expect(config.colors.success).toBe('#10B981')
+    expect(config.colors.warning).toBe('#F59E0B')
+    expect(config.colors.error).toBe('#EF4444')
     expect(config.legend.show).toBe(false)
   })
 
@@ -62,7 +89,8 @@ describe('ChartConfigBuilder', () => {
     expect(config.colors.primary).toBe('#CUSTOM')
     expect(config.legend.show).toBe(false)
     expect(config.tooltip.show).toBe(false)
-    expect(config.axes.x.show).toBe(false)
+    expect(config.axes.x.show).toBe(true)
+    expect(config.axes.y.show).toBe(true)
     expect(config.animations.enabled).toBe(false)
   })
 

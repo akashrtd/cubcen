@@ -1,10 +1,10 @@
 import './setup-accessibility-tests'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { axe, toHaveNoViolations } from 'jest-axe'
+import { axe } from 'jest-axe'
 import { DashboardLayout } from '../layout/dashboard-layout'
 import { DashboardCard } from '../cards/dashboard-card'
-import { DashboardGrid, GridItem } from '../grid/dashboard-grid'
+import { DashboardGrid } from '../grid/dashboard-grid'
 import { ChartWrapper } from '../charts/chart-wrapper'
 import { DashboardThemeProvider } from '../theming/theme-provider'
 import { FilterProvider } from '../filters/filter-context'
@@ -112,7 +112,7 @@ describe('Dashboard Accessibility Comprehensive Tests', () => {
             type="line"
             data={mockData}
             config={{
-              colors: { primary: '#3F51B5' },
+              colors: { primary: '#3F51B5', secondary: '#FFC107', accent: '#9C27B0', success: '#4CAF50', warning: '#FF9800', error: '#F44336' },
               legend: { show: true, position: 'bottom', align: 'center' },
             }}
           />

@@ -8,7 +8,7 @@ const mockAgent = {
   platform: {
     id: 'platform-1',
     name: 'n8n Instance',
-    type: 'N8N',
+    type: 'N8N' as const,
   },
   status: 'ACTIVE',
   healthStatus: {
@@ -49,13 +49,7 @@ describe('AgentDetailView', () => {
 
   it('renders loading state correctly', () => {
     render(
-      <AgentDetailView
-        agent={null}
-        loading={true}
-        onClose={mockOnClose}
-        onEdit={mockOnEdit}
-        onDelete={mockOnDelete}
-      />
+      <AgentDetailView agent={null} loading={true} />
     )
 
     // Check for loading skeletons

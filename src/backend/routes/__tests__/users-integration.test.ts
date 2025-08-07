@@ -1,6 +1,6 @@
 import request from 'supertest'
 import express from 'express'
-import { usersRouter } from '../users'
+import usersRouter from '../users'
 import { authMiddleware } from '../../middleware/auth'
 
 // Mock Prisma

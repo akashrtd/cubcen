@@ -6,6 +6,7 @@
 import request from 'supertest'
 import express from 'express'
 import { createWorkflowRoutes } from '../workflows'
+import { authenticateToken } from '@/backend/middleware/auth'
 import { WorkflowService } from '@/services/workflow'
 import { logger } from '@/lib/logger'
 import {
@@ -30,6 +31,9 @@ jest.mock('@/lib/logger', () => ({
 }))
 
 const MockWorkflowService = WorkflowService as jest.MockedClass<
+  typeof WorkflowService
+>
+const mockAuthenticate = jest.fn()
   typeof WorkflowService
 >
 const mockAuthenticateToken = authenticateToken as jest.MockedFunction<

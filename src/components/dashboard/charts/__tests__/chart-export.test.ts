@@ -100,7 +100,19 @@ Object.defineProperty(document.body, 'removeChild', {
 })
 
 describe('ChartExporter', () => {
-  let mockElement: HTMLElement
+  const mockElement = {
+  querySelector: jest.fn(selector => {
+    if (selector === 'svg') {
+      return {
+        cloneNode: jest.fn(() => ({
+          setAttribute: jest.fn(),
+          getAttribute: jest.fn(() => null),
+        })),
+      }
+    }
+    return null
+  }),
+} as any
 
   beforeEach(() => {
     // Create a proper mock element with querySelector

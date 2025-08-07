@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { DashboardLayout } from '../layout/dashboard-layout'
 import { DashboardCard } from '../cards/dashboard-card'
-import { DashboardGrid, GridItem } from '../grid/dashboard-grid'
+import { DashboardGrid } from '../grid/dashboard-grid'
 import { ChartWrapper } from '../charts/chart-wrapper'
 
 describe('Dashboard Infrastructure', () => {

@@ -9,6 +9,7 @@ import { createTestApp } from '@/backend/__tests__/test-helpers'
 import { prisma } from '@/lib/database'
 import { resetDatabase } from '@/lib/database-utils'
 import { createTokenPair } from '@/lib/jwt'
+import { UserRole } from '@/types/auth'
 
 describe('Agent Routes', () => {
   let app: Express
@@ -56,17 +57,17 @@ describe('Agent Routes', () => {
     authToken = createTokenPair(
       viewerUser.id,
       viewerUser.email,
-      viewerUser.role
+            viewerUser.role as UserRole
     ).accessToken
     operatorToken = createTokenPair(
       operatorUser.id,
       operatorUser.email,
-      operatorUser.role
+            operatorUser.role as UserRole
     ).accessToken
     adminToken = createTokenPair(
       adminUser.id,
       adminUser.email,
-      adminUser.role
+            adminUser.role as UserRole
     ).accessToken
 
     // Create test platform

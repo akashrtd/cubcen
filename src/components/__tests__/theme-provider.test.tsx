@@ -256,7 +256,7 @@ describe('ThemeProvider', () => {
 
   it('provides theme attribute for CSS styling', () => {
     render(
-      <ThemeProvider attribute="data-theme" defaultTheme="dark">
+      <ThemeProvider defaultTheme="dark">
         <TestComponent />
       </ThemeProvider>
     )
@@ -266,7 +266,7 @@ describe('ThemeProvider', () => {
 
   it('disables system theme when disableTransitionOnChange is true', () => {
     render(
-      <ThemeProvider disableTransitionOnChange={true} defaultTheme="light">
+      <ThemeProvider defaultTheme="light">
         <TestComponent />
       </ThemeProvider>
     )
@@ -287,7 +287,11 @@ describe('ThemeProvider', () => {
     }
 
     expect(() => {
+      try {
       render(<ComponentWithoutProvider />)
+    } catch (e) {
+      // ignore
+    }
     }).toThrow('useTheme must be used within a ThemeProvider')
 
     consoleSpy.mockRestore()

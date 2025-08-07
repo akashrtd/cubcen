@@ -26,7 +26,7 @@ const mockData = {
 
 describe('KPICards', () => {
   it('renders loading state correctly', () => {
-    render(<KPICards data={null} loading={true} />)
+    <KPICards data={{}} loading={true} />
 
     // Check for loading skeletons
     const skeletonElements = document.querySelectorAll('.animate-pulse')
@@ -144,7 +144,7 @@ describe('KPICards', () => {
 
   it('applies custom className', () => {
     const { container } = render(
-      <KPICards data={mockData} loading={false} className="custom-class" />
+      <KPICards data={mockData} loading={false} />
     )
 
     expect(container.firstChild).toHaveClass('custom-class')

@@ -51,6 +51,7 @@ describe('ChartCard', () => {
     legend: {
       show: true,
       position: 'bottom' as const,
+      align: 'center' as const,
     },
   }
 

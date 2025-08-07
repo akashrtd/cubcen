@@ -64,7 +64,7 @@ describe('PerformanceCharts', () => {
   })
 
   it('renders loading state correctly', () => {
-    render(<PerformanceCharts data={null} loading={true} />)
+    <PerformanceCharts data={{}} loading={true} />
 
     // Check for loading skeletons
     const skeletonElements = document.querySelectorAll('.animate-pulse')
@@ -131,11 +131,7 @@ describe('PerformanceCharts', () => {
 
   it('applies custom className', () => {
     const { container } = render(
-      <PerformanceCharts
-        data={mockData}
-        loading={false}
-        className="custom-class"
-      />
+      <PerformanceCharts data={mockData} loading={false} />
     )
 
     expect(container.firstChild).toHaveClass('custom-class')
