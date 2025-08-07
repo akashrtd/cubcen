@@ -30,7 +30,7 @@ interface FilterControlsProps {
   customFilterOptions?: Array<{
     key: string
     label: string
-    type: 'string' | 'number' | 'select'
+    type: 'string' | 'number'
     options?: string[]
   }>
 }

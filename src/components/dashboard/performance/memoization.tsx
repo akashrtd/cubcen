@@ -264,9 +264,9 @@ export class RenderOptimizer {
     this.renderQueue.length = 0
 
     // Execute all updates in a single batch
-    React.unstable_batchedUpdates(() => {
+    setTimeout(() => {
       updates.forEach(update => update())
-    })
+    }, 0)
 
     this.isProcessing = false
 

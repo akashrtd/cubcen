@@ -3,7 +3,7 @@
  * Provides tools for measuring and testing system performance
  */
 
-import { logger } from './logger'
+import logger from './logger'
 import { prisma } from './database'
 import { cache } from './cache'
 import { performanceMonitor } from './performance-monitor'

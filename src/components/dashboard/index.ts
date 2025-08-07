@@ -10,11 +10,7 @@ export {
   defaultMobileNavItems,
   useMobileNavigation,
 } from './layout/mobile-navigation'
-export {
-  useSwipeNavigation,
-  SwipeIndicator,
-  defaultSwipeRoutes,
-} from './layout/swipe-navigation'
+export { useSwipeNavigation } from './layout/swipe-navigation'
 
 // Dashboard Card Components
 export { DashboardCard, MetricCard, ChartCard, DataTableCard } from './cards'

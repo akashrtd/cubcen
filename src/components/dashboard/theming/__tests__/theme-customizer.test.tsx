@@ -104,11 +104,19 @@ global.URL.createObjectURL = jest.fn(() => 'mock-url')
 global.URL.revokeObjectURL = jest.fn()
 
 // Mock FileReader
-global.FileReader = jest.fn().mockImplementation(() => ({
-  readAsText: jest.fn(),
-  onload: null,
-  result: null,
-}))
+global.FileReader = jest.fn().mockImplementation(() => {
+  const reader = {
+    readAsText: jest.fn(),
+    onload: null,
+    result: null,
+  }
+
+  Object.defineProperty(reader, 'onload', {
+    set: fn => (reader.onload = fn),
+  })
+
+  return reader
+})
 
 describe('ThemeCustomizer', () => {
   beforeEach(() => {

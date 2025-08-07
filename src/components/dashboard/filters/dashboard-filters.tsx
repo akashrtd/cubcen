@@ -231,10 +231,7 @@ export function DashboardFilters({
             <PopoverContent className="w-auto p-0" align="start">
               <CalendarComponent
                 mode="range"
-                selected={{
-                  from: filters.dateRange?.start,
-                  to: filters.dateRange?.end,
-                }}
+                selected={filters.dateRange}
                 onSelect={handleDateRangeSelect}
                 numberOfMonths={2}
               />

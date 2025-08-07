@@ -117,7 +117,7 @@ describe('LegacyDataAdapter', () => {
   describe('validateDataCompatibility', () => {
     it('should validate analytics data format', () => {
       const validData = { totalAgents: 5, activeAgents: 3 }
-      const invalidData = { foo: 'bar' }
+      const invalidData: { [key: string]: any } = { foo: 'bar' }
 
       expect(
         LegacyDataAdapter.validateDataCompatibility(validData, 'analytics')

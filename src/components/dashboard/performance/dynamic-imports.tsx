@@ -226,7 +226,7 @@ export function withDynamicLoading<T extends object>(
 export const DynamicAnalyticsDashboard = withDynamicLoading(
   () =>
     import('../../analytics/analytics-dashboard').then(m => ({
-      default: m.AnalyticsDashboard,
+      default: m.AnalyticsDashboard as any,
     })),
   <DashboardLoadingFallback />,
   <ComponentErrorFallback />
@@ -235,14 +235,14 @@ export const DynamicAnalyticsDashboard = withDynamicLoading(
 export const DynamicPerformanceCharts = withDynamicLoading(
   () =>
     import('../../analytics/performance-charts').then(m => ({
-      default: m.PerformanceCharts,
+      default: m.PerformanceCharts as any,
     })),
   <ChartLoadingFallback />,
   <ChartErrorFallback />
 )
 
 export const DynamicTaskBoard = withDynamicLoading(
-  () => import('../../kanban/task-board').then(m => ({ default: m.TaskBoard })),
+  () => import('../../kanban/task-board').then(m => ({ default: m.TaskBoard as any })),
   <DashboardLoadingFallback />,
   <ComponentErrorFallback />
 )

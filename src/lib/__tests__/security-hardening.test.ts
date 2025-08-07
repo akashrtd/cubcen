@@ -600,20 +600,20 @@ describe('Security Hardening Tests', () => {
       // This test would verify that audit logs can only be accessed by authorized users
       // and that the logs themselves are tamper-evident
 
-      const filters = {
+      const filters: AuditLogFilter = {
         eventType: AuditEventType.SUSPICIOUS_ACTIVITY,
         startDate: new Date('2023-01-01'),
         endDate: new Date('2023-12-31'),
-      }(
-        // Mock successful retrieval
-        auditLogger.getAuditLogs as jest.Mock
-      ).mockResolvedValue({
+      }
+      // Mock successful retrieval
+      ;(auditLogger.getAuditLogs as jest.Mock).mockResolvedValue({
         logs: [
           {
             id: 'log1',
             eventType: AuditEventType.SUSPICIOUS_ACTIVITY,
             timestamp: new Date(),
             description: 'Test log entry',
+            severity: AuditSeverity.HIGH,
           },
         ],
         total: 1,
@@ -625,14 +625,13 @@ describe('Security Hardening Tests', () => {
     })
 
     it('should handle audit log export securely', async () => {
-      const exportFilters = {
+      const exportFilters: AuditLogFilter = {
         startDate: new Date('2023-01-01'),
         endDate: new Date('2023-12-31'),
         format: 'json' as const,
-      }(
-        // Mock audit logs for export
-        auditLogger.getAuditLogs as jest.Mock
-      ).mockResolvedValue({
+      }
+      // Mock audit logs for export
+      ;(auditLogger.getAuditLogs as jest.Mock).mockResolvedValue({
         logs: [
           {
             id: 'log1',

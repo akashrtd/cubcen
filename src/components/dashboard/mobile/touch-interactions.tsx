@@ -56,7 +56,7 @@ export function TouchInteraction({
     initialDistance: 0,
     initialScale: 1,
   })
-  const longPressTimerRef = useRef<NodeJS.Timeout>()
+  const longPressTimerRef = useRef<NodeJS.Timeout | undefined>()
 
   // Calculate distance between two touch points
   const getTouchDistance = useCallback((touches: TouchList): number => {

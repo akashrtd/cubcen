@@ -52,11 +52,7 @@ describe('NotificationPreferences', () => {
 
   it('renders all notification channels', () => {
     render(
-      <NotificationPreferences
-        preferences={mockPreferences}
-        globalSettings={mockGlobalSettings}
-        onSave={mockOnSave}
-      />
+      <NotificationPreferences onSave={mockOnSave} />
     )
 
     expect(screen.getByText('Email Notifications')).toBeInTheDocument()
@@ -66,11 +62,7 @@ describe('NotificationPreferences', () => {
 
   it('displays current preference values', () => {
     render(
-      <NotificationPreferences
-        preferences={mockPreferences}
-        globalSettings={mockGlobalSettings}
-        onSave={mockOnSave}
-      />
+      <NotificationPreferences onSave={mockOnSave} />
     )
 
     // Email preferences
@@ -109,11 +101,7 @@ describe('NotificationPreferences', () => {
 
   it('displays notification frequency setting', () => {
     render(
-      <NotificationPreferences
-        preferences={mockPreferences}
-        globalSettings={mockGlobalSettings}
-        onSave={mockOnSave}
-      />
+      <NotificationPreferences onSave={mockOnSave} />
     )
 
     expect(screen.getByDisplayValue('Immediate')).toBeInTheDocument()
@@ -121,11 +109,7 @@ describe('NotificationPreferences', () => {
 
   it('displays quiet hours settings', () => {
     render(
-      <NotificationPreferences
-        preferences={mockPreferences}
-        globalSettings={mockGlobalSettings}
-        onSave={mockOnSave}
-      />
+      <NotificationPreferences onSave={mockOnSave} />
     )
 
     expect(
@@ -137,11 +121,7 @@ describe('NotificationPreferences', () => {
 
   it('handles email notification toggle', async () => {
     render(
-      <NotificationPreferences
-        preferences={mockPreferences}
-        globalSettings={mockGlobalSettings}
-        onSave={mockOnSave}
-      />
+      <NotificationPreferences onSave={mockOnSave} />
     )
 
     const emailToggle = screen.getByRole('checkbox', {
@@ -165,11 +145,7 @@ describe('NotificationPreferences', () => {
 
   it('handles individual email preference changes', async () => {
     render(
-      <NotificationPreferences
-        preferences={mockPreferences}
-        globalSettings={mockGlobalSettings}
-        onSave={mockOnSave}
-      />
+      <NotificationPreferences onSave={mockOnSave} />
     )
 
     const taskCompletionToggle = screen.getByRole('checkbox', {
@@ -193,11 +169,7 @@ describe('NotificationPreferences', () => {
 
   it('handles push notification toggle', async () => {
     render(
-      <NotificationPreferences
-        preferences={mockPreferences}
-        globalSettings={mockGlobalSettings}
-        onSave={mockOnSave}
-      />
+      <NotificationPreferences onSave={mockOnSave} />
     )
 
     const pushToggle = screen.getByRole('checkbox', {
@@ -221,11 +193,7 @@ describe('NotificationPreferences', () => {
 
   it('handles slack notification toggle', async () => {
     render(
-      <NotificationPreferences
-        preferences={mockPreferences}
-        globalSettings={mockGlobalSettings}
-        onSave={mockOnSave}
-      />
+      <NotificationPreferences onSave={mockOnSave} />
     )
 
     const slackToggle = screen.getByRole('checkbox', {
@@ -285,11 +253,7 @@ describe('NotificationPreferences', () => {
 
   it('handles frequency changes', async () => {
     render(
-      <NotificationPreferences
-        preferences={mockPreferences}
-        globalSettings={mockGlobalSettings}
-        onSave={mockOnSave}
-      />
+      <NotificationPreferences onSave={mockOnSave} />
     )
 
     const frequencySelect = screen.getByLabelText(/notification frequency/i)
@@ -308,11 +272,7 @@ describe('NotificationPreferences', () => {
 
   it('handles quiet hours toggle', async () => {
     render(
-      <NotificationPreferences
-        preferences={mockPreferences}
-        globalSettings={mockGlobalSettings}
-        onSave={mockOnSave}
-      />
+      <NotificationPreferences onSave={mockOnSave} />
     )
 
     const quietHoursToggle = screen.getByRole('checkbox', {
@@ -336,11 +296,7 @@ describe('NotificationPreferences', () => {
 
   it('handles quiet hours time changes', async () => {
     render(
-      <NotificationPreferences
-        preferences={mockPreferences}
-        globalSettings={mockGlobalSettings}
-        onSave={mockOnSave}
-      />
+      <NotificationPreferences onSave={mockOnSave} />
     )
 
     const startTimeInput = screen.getByLabelText(/start time/i)
@@ -408,11 +364,7 @@ describe('NotificationPreferences', () => {
     )
 
     render(
-      <NotificationPreferences
-        preferences={mockPreferences}
-        globalSettings={mockGlobalSettings}
-        onSave={mockOnSave}
-      />
+      <NotificationPreferences onSave={mockOnSave} />
     )
 
     const saveButton = screen.getByRole('button', { name: /save preferences/i })
@@ -428,11 +380,7 @@ describe('NotificationPreferences', () => {
 
   it('resets form when reset button is clicked', () => {
     render(
-      <NotificationPreferences
-        preferences={mockPreferences}
-        globalSettings={mockGlobalSettings}
-        onSave={mockOnSave}
-      />
+      <NotificationPreferences onSave={mockOnSave} />
     )
 
     // Make a change
@@ -483,11 +431,7 @@ describe('NotificationPreferences', () => {
 
   it('shows success message after saving', async () => {
     render(
-      <NotificationPreferences
-        preferences={mockPreferences}
-        globalSettings={mockGlobalSettings}
-        onSave={mockOnSave}
-      />
+      <NotificationPreferences onSave={mockOnSave} />
     )
 
     const saveButton = screen.getByRole('button', { name: /save preferences/i })

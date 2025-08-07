@@ -8,7 +8,7 @@ import {
 } from '../layout/dashboard-layout'
 import { DashboardSidebar } from '../layout/dashboard-sidebar'
 import { DashboardCard } from '../cards/dashboard-card'
-import { DashboardGrid, GridItem } from '../grid/dashboard-grid'
+import { DashboardGrid } from '../grid/dashboard-grid'
 import { ChartWrapper } from '../charts/chart-wrapper'
 
 // Example header component

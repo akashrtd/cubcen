@@ -3,7 +3,7 @@
  * Comprehensive tests for health checks and system metrics
  */
 
-// Mock the database
+import { healthMonitoring } from '../health'
 const mockPrismaUserFindFirst = jest.fn()
 jest.mock('../database', () => ({
   prisma: {
@@ -85,7 +85,7 @@ describe('Health Monitoring Service', () => {
 
     it('should return unhealthy status when database fails', async () => {
       const error = new Error('Database connection failed')
-      mockDatabase.user.findFirst.mockRejectedValue(
+      mockPrismaUserFindFirst.mockRejectedValue(
         new Error('Database connection failed')
       )
 

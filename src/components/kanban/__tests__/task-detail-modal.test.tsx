@@ -15,8 +15,8 @@ const createMockTask = (overrides: Partial<Task> = {}): Task => ({
   description: 'Test description',
   agentId: 'agent-1',
   workflowId: null,
-  status: 'PENDING' as TaskStatus,
-  priority: 'MEDIUM' as TaskPriority,
+  status: 'PENDING',
+  priority: 'MEDIUM',
   parameters: '{"test": true, "value": 123}',
   scheduledAt: new Date('2024-01-15T10:00:00Z'),
   startedAt: null,
@@ -123,7 +123,7 @@ describe('TaskDetailModal', () => {
 
   it('calls onUpdate when retry button is clicked', async () => {
     const mockOnUpdate = jest.fn()
-    const failedTask = createMockTask({ status: TaskStatus.FAILED })
+    const failedTask = createMockTask({ status: 'FAILED' })
     const user = userEvent.setup()
 
     render(

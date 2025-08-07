@@ -150,7 +150,7 @@ describe('Dynamic Imports', () => {
       )
 
       const DynamicTestComponent = withDynamicLoading(
-        () => Promise.resolve({ default: TestComponent }),
+        () => Promise.resolve({ default: TestComponent as any }),
         <div data-testid="loading">Loading...</div>,
         <div data-testid="error">Error loading component</div>
       )
@@ -197,7 +197,7 @@ describe('Dynamic Imports', () => {
     })
 
     it('should render DynamicPerformanceCharts', async () => {
-      render(<DynamicPerformanceCharts />)
+      render(<DynamicPerformanceCharts data={{}} loading={false} />)
 
       await waitFor(() => {
         expect(screen.getByTestId('performance-charts')).toBeInTheDocument()
@@ -205,7 +205,7 @@ describe('Dynamic Imports', () => {
     })
 
     it('should render DynamicTaskBoard', async () => {
-      render(<DynamicTaskBoard />)
+      render(<DynamicTaskBoard tasks={[]} onTaskUpdate={jest.fn()} onTaskCreate={jest.fn()} onTaskDelete={jest.fn()} agents={[]} />)
 
       await waitFor(() => {
         expect(screen.getByTestId('task-board')).toBeInTheDocument()

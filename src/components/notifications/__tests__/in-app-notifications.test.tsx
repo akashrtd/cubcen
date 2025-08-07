@@ -65,12 +65,7 @@ describe('InAppNotifications', () => {
 
   it('renders loading state initially', async () => {
     render(
-      <InAppNotifications
-        userId="user-1"
-        onNotificationClick={mockOnNotificationClick}
-        onMarkAsRead={mockOnMarkAsRead}
-        onMarkAllAsRead={mockOnMarkAllAsRead}
-      />
+      <InAppNotifications userId="user-1" />
     )
 
     expect(screen.getByText('Notifications')).toBeInTheDocument()
@@ -87,12 +82,7 @@ describe('InAppNotifications', () => {
 
   it('fetches and displays notifications', async () => {
     render(
-      <InAppNotifications
-        userId="user-1"
-        onNotificationClick={mockOnNotificationClick}
-        onMarkAsRead={mockOnMarkAsRead}
-        onMarkAllAsRead={mockOnMarkAllAsRead}
-      />
+      <InAppNotifications userId="user-1" />
     )
 
     await waitFor(() => {
@@ -108,12 +98,7 @@ describe('InAppNotifications', () => {
 
   it('displays notification messages', async () => {
     render(
-      <InAppNotifications
-        userId="user-1"
-        onNotificationClick={mockOnNotificationClick}
-        onMarkAsRead={mockOnMarkAsRead}
-        onMarkAllAsRead={mockOnMarkAllAsRead}
-      />
+      <InAppNotifications userId="user-1" />
     )
 
     await waitFor(() => {
@@ -131,12 +116,7 @@ describe('InAppNotifications', () => {
 
   it('displays notification types with correct icons', async () => {
     render(
-      <InAppNotifications
-        userId="user-1"
-        onNotificationClick={mockOnNotificationClick}
-        onMarkAsRead={mockOnMarkAsRead}
-        onMarkAllAsRead={mockOnMarkAllAsRead}
-      />
+      <InAppNotifications userId="user-1" />
     )
 
     await waitFor(() => {
@@ -153,12 +133,7 @@ describe('InAppNotifications', () => {
 
   it('displays unread notification indicators', async () => {
     render(
-      <InAppNotifications
-        userId="user-1"
-        onNotificationClick={mockOnNotificationClick}
-        onMarkAsRead={mockOnMarkAsRead}
-        onMarkAllAsRead={mockOnMarkAllAsRead}
-      />
+      <InAppNotifications userId="user-1" />
     )
 
     await waitFor(() => {
@@ -170,12 +145,7 @@ describe('InAppNotifications', () => {
 
   it('displays timestamps in relative format', async () => {
     render(
-      <InAppNotifications
-        userId="user-1"
-        onNotificationClick={mockOnNotificationClick}
-        onMarkAsRead={mockOnMarkAsRead}
-        onMarkAllAsRead={mockOnMarkAllAsRead}
-      />
+      <InAppNotifications userId="user-1" />
     )
 
     await waitFor(() => {
@@ -187,12 +157,7 @@ describe('InAppNotifications', () => {
 
   it('calls onNotificationClick when notification is clicked', async () => {
     render(
-      <InAppNotifications
-        userId="user-1"
-        onNotificationClick={mockOnNotificationClick}
-        onMarkAsRead={mockOnMarkAsRead}
-        onMarkAllAsRead={mockOnMarkAllAsRead}
-      />
+      <InAppNotifications userId="user-1" />
     )
 
     await waitFor(() => {
@@ -207,12 +172,7 @@ describe('InAppNotifications', () => {
 
   it('calls onMarkAsRead when mark as read is clicked', async () => {
     render(
-      <InAppNotifications
-        userId="user-1"
-        onNotificationClick={mockOnNotificationClick}
-        onMarkAsRead={mockOnMarkAsRead}
-        onMarkAllAsRead={mockOnMarkAllAsRead}
-      />
+      <InAppNotifications userId="user-1" />
     )
 
     await waitFor(() => {
@@ -229,12 +189,7 @@ describe('InAppNotifications', () => {
 
   it('calls onMarkAllAsRead when mark all as read is clicked', async () => {
     render(
-      <InAppNotifications
-        userId="user-1"
-        onNotificationClick={mockOnNotificationClick}
-        onMarkAsRead={mockOnMarkAsRead}
-        onMarkAllAsRead={mockOnMarkAllAsRead}
-      />
+      <InAppNotifications userId="user-1" />
     )
 
     await waitFor(() => {
@@ -260,12 +215,7 @@ describe('InAppNotifications', () => {
     })
 
     render(
-      <InAppNotifications
-        userId="user-1"
-        onNotificationClick={mockOnNotificationClick}
-        onMarkAsRead={mockOnMarkAsRead}
-        onMarkAllAsRead={mockOnMarkAllAsRead}
-      />
+      <InAppNotifications userId="user-1" />
     )
 
     await waitFor(() => {
@@ -282,12 +232,7 @@ describe('InAppNotifications', () => {
     })
 
     render(
-      <InAppNotifications
-        userId="user-1"
-        onNotificationClick={mockOnNotificationClick}
-        onMarkAsRead={mockOnMarkAsRead}
-        onMarkAllAsRead={mockOnMarkAllAsRead}
-      />
+      <InAppNotifications userId="user-1" />
     )
 
     await waitFor(() => {
@@ -301,12 +246,7 @@ describe('InAppNotifications', () => {
     ;(fetch as jest.Mock).mockRejectedValue(new Error('Network error'))
 
     render(
-      <InAppNotifications
-        userId="user-1"
-        onNotificationClick={mockOnNotificationClick}
-        onMarkAsRead={mockOnMarkAsRead}
-        onMarkAllAsRead={mockOnMarkAllAsRead}
-      />
+      <InAppNotifications userId="user-1" />
     )
 
     await waitFor(() => {
@@ -332,12 +272,7 @@ describe('InAppNotifications', () => {
 
   it('displays unread count in header', async () => {
     render(
-      <InAppNotifications
-        userId="user-1"
-        onNotificationClick={mockOnNotificationClick}
-        onMarkAsRead={mockOnMarkAsRead}
-        onMarkAllAsRead={mockOnMarkAllAsRead}
-      />
+      <InAppNotifications userId="user-1" />
     )
 
     await waitFor(() => {
@@ -347,12 +282,7 @@ describe('InAppNotifications', () => {
 
   it('filters notifications by type', async () => {
     render(
-      <InAppNotifications
-        userId="user-1"
-        onNotificationClick={mockOnNotificationClick}
-        onMarkAsRead={mockOnMarkAsRead}
-        onMarkAllAsRead={mockOnMarkAllAsRead}
-      />
+      <InAppNotifications userId="user-1" />
     )
 
     await waitFor(() => {
@@ -374,12 +304,7 @@ describe('InAppNotifications', () => {
 
   it('refreshes notifications when refresh button is clicked', async () => {
     render(
-      <InAppNotifications
-        userId="user-1"
-        onNotificationClick={mockOnNotificationClick}
-        onMarkAsRead={mockOnMarkAsRead}
-        onMarkAllAsRead={mockOnMarkAllAsRead}
-      />
+      <InAppNotifications userId="user-1" />
     )
 
     await waitFor(() => {

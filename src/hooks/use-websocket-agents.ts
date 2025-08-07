@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { io } from 'socket.io-client'
+import io from 'socket.io-client'
 import type { Socket } from 'socket.io-client'
 import { toast } from 'sonner'
 import type { Agent } from '@/components/agents/agent-list'
@@ -88,7 +88,7 @@ export function useWebSocketAgents(
     autoReconnect = true,
   } = options
 
-  const [socket, setSocket] = useState<typeof Socket | null>(null)
+  const [socket, setSocket] = useState<Socket | null>(null)
   const [connected, setConnected] = useState(false)
   const [connecting, setConnecting] = useState(false)
   const [error, setError] = useState<string | null>(null)

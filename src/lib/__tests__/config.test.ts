@@ -161,6 +161,8 @@ describe('Configuration System', () => {
 
       const { config } = await import('../config')
       const summary = config.getConfigSummary() as {
+        nodeEnv: string
+        databaseType: string
         platformsConfigured: unknown
         notificationsConfigured: unknown
       }

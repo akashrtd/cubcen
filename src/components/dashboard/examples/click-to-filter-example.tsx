@@ -319,17 +319,7 @@ export function ClickToFilterExample() {
         <ActiveFiltersDisplay className="mb-4" />
 
         {/* Filter Synchronizer */}
-        <FilterSynchronizer
-          syncConfig={{
-            syncAll: true,
-            debounceMs: 100,
-            onSync: filters => {
-              if (debugMode) {
-                console.log('Filters synchronized:', filters)
-              }
-            },
-          }}
-        >
+        <FilterSynchronizer>
           {/* Dashboard Grid */}
           <DashboardGrid columns={12} gap={6}>
             {/* KPI Cards */}
@@ -410,9 +400,9 @@ export function ClickToFilterExample() {
                 filterMappings={barChartFilterMappings}
                 exportFilename="sales-revenue-trends"
                 chartConfig={{
-                  legend: { show: true, position: 'bottom' },
-                  tooltip: { show: true },
-                  animations: { enabled: true, duration: 300 },
+                  legend: { show: true, position: 'bottom', align: 'center' },
+                  tooltip: { show: true, trigger: 'hover' },
+                  animations: { enabled: true, duration: 300, easing: 'ease-out' },
                 }}
               />
             </div>
@@ -429,9 +419,9 @@ export function ClickToFilterExample() {
                 filterMappings={pieChartFilterMappings}
                 exportFilename="regional-distribution"
                 chartConfig={{
-                  legend: { show: true, position: 'bottom' },
-                  tooltip: { show: true },
-                  animations: { enabled: true, duration: 300 },
+                  legend: { show: true, position: 'bottom', align: 'center' },
+                  tooltip: { show: true, trigger: 'hover' },
+                  animations: { enabled: true, duration: 300, easing: 'ease-out' },
                 }}
               />
             </div>

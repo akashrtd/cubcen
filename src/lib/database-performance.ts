@@ -5,7 +5,7 @@
 
 import { PrismaClient } from '../generated/prisma'
 import { prisma } from './database'
-import { logger } from './logger'
+import logger from './logger'
 
 export interface QueryPerformanceMetrics {
   query: string
@@ -234,6 +234,7 @@ export class OptimizedQueries {
             id: true,
             name: true,
             status: true,
+            platformId: true,
           },
         },
       },

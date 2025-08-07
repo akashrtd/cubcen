@@ -45,7 +45,29 @@ const userFormSchema = z.object({
   password: z.string().optional(),
   confirmPassword: z.string().optional(),
   sendInvitation: z.boolean().default(true),
-})
+}).refine(
+  data => {
+    if (data.sendInvitation === false && data.password === undefined) {
+      return false
+    }
+    return true
+  },
+  {
+    message: "Password is required when not sending an invitation",
+    path: ["password"],
+  }
+).refine(
+  data => {
+    if (data.password && data.confirmPassword !== data.password) {
+      return false
+    }
+    return true
+  },
+  {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  }
+)
 
 type UserFormData = z.infer<typeof userFormSchema>
 

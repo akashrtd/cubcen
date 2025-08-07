@@ -42,7 +42,7 @@ global.fetch = jest.fn(() =>
     ok: true,
     json: () => Promise.resolve({}),
   })
-) as jest.Mock
+) as jest.MockedFunction<typeof fetch>
 
 describe('Core Web Vitals', () => {
   beforeEach(() => {
@@ -114,27 +114,17 @@ describe('Core Web Vitals', () => {
 
   describe('PerformanceDashboard', () => {
     it('should not render in production by default', () => {
-      const originalEnv = process.env.NODE_ENV
-      process.env.NODE_ENV = 'production'
-
       render(<PerformanceDashboard />)
 
       // Should not render dashboard in production
       expect(screen.queryByText('Core Web Vitals')).not.toBeInTheDocument()
-
-      process.env.NODE_ENV = originalEnv
     })
 
     it('should render in development', () => {
-      const originalEnv = process.env.NODE_ENV
-      process.env.NODE_ENV = 'development'
-
       render(<PerformanceDashboard />)
 
       // Should render dashboard in development
       expect(screen.getByText('Core Web Vitals')).toBeInTheDocument()
-
-      process.env.NODE_ENV = originalEnv
     })
   })
 

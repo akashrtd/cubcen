@@ -554,7 +554,7 @@ export class AuditLogger {
         return [headers, ...csvRows]
           .map(row =>
             row
-              .map(cell => `"${cell.toString().replace(/"/g, '""')}"`)
+              .map(cell => `"${String(cell).replace(/"/g, '""')}"`)
               .join(',')
           )
           .join('\n')

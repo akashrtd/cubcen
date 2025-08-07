@@ -185,11 +185,16 @@ describe('ChartWrapper', () => {
       },
       tooltip: {
         show: false,
+        trigger: 'hover' as const,
       },
       animations: {
         enabled: false,
         duration: 0,
-        easing: 'linear',
+        easing: 'linear' as const,
+      },
+      axes: {
+        x: { show: true },
+        y: { show: true },
       },
     }
 

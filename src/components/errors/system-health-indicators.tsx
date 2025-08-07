@@ -40,12 +40,14 @@ const HEALTH_STATUS_COLORS = {
   healthy: 'bg-green-100 text-green-800 border-green-200',
   degraded: 'bg-yellow-100 text-yellow-800 border-yellow-200',
   unhealthy: 'bg-red-100 text-red-800 border-red-200',
+  unknown: 'bg-gray-100 text-gray-800 border-gray-200',
 }
 
 const HEALTH_STATUS_ICONS = {
   healthy: CheckCircle,
   degraded: AlertTriangle,
   unhealthy: AlertCircle,
+  unknown: AlertCircle,
 }
 
 const TREND_ICONS = {

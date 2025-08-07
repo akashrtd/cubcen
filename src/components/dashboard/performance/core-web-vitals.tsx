@@ -416,9 +416,9 @@ export function useRealUserMonitoring() {
       'navigation'
     )[0] as PerformanceNavigationTiming
     if (navigation) {
-      const pageLoadTime = navigation.loadEventEnd - navigation.navigationStart
+      const pageLoadTime = navigation.loadEventEnd - navigation.requestStart
       const domContentLoaded =
-        navigation.domContentLoadedEventEnd - navigation.navigationStart
+        navigation.domContentLoadedEventEnd - navigation.requestStart
 
       // Collect resource load times
       const resources = performance.getEntriesByType(

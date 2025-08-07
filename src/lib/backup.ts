@@ -4,7 +4,7 @@ import { createReadStream, createWriteStream } from 'fs'
 import { pipeline } from 'stream/promises'
 import { createGzip, createGunzip } from 'zlib'
 import config from './config'
-import { logger } from './logger'
+import logger from './logger'
 
 export interface BackupMetadata {
   id: string

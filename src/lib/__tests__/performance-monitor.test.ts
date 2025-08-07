@@ -4,7 +4,7 @@
  */
 
 import { performanceMonitor } from '../performance-monitor'
-import { logger } from '../logger'
+import { Logger } from '../logger'
 
 // Mock logger
 jest.mock('../logger', () => ({

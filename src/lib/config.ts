@@ -7,20 +7,12 @@ const envSchema = z.object({
   NODE_ENV: z
     .enum(['development', 'production', 'test'])
     .default('development'),
-  PORT: z
-    .string()
-    .transform(Number)
-    .pipe(z.number().min(1).max(65535))
-    .default('3000'),
+  PORT: z.coerce.number().min(1).max(65535).default(3000),
   HOST: z.string().default('localhost'),
 
   // Database Configuration
   DATABASE_URL: z.string().min(1),
-  DATABASE_MAX_CONNECTIONS: z
-    .string()
-    .transform(Number)
-    .pipe(z.number().min(1))
-    .default('10'),
+  DATABASE_MAX_CONNECTIONS: z.coerce.number().min(1).default(10),
 
   // Authentication Configuration
   JWT_SECRET: z
@@ -29,11 +21,7 @@ const envSchema = z.object({
     .default('your-super-secret-jwt-key-change-in-production-min-32-chars'),
   JWT_EXPIRES_IN: z.string().default('24h'),
   JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
-  BCRYPT_ROUNDS: z
-    .string()
-    .transform(Number)
-    .pipe(z.number().min(8).max(15))
-    .default('12'),
+  BCRYPT_ROUNDS: z.coerce.number().min(8).max(15).default(12),
 
   // External Platform Configuration
   N8N_BASE_URL: z.string().url().optional(),
@@ -44,11 +32,7 @@ const envSchema = z.object({
 
   // Notification Configuration
   SMTP_HOST: z.string().optional(),
-  SMTP_PORT: z
-    .string()
-    .transform(Number)
-    .pipe(z.number().min(1).max(65535))
-    .optional(),
+  SMTP_PORT: z.coerce.number().min(1).max(65535).optional(),
   SMTP_USER: z.string().optional(),
   SMTP_PASS: z.string().optional(),
   SLACK_BOT_TOKEN: z.string().optional(),
@@ -59,65 +43,23 @@ const envSchema = z.object({
   LOG_FILE_PATH: z.string().default('./logs'),
 
   // Feature Flags
-  ENABLE_ANALYTICS: z
-    .string()
-    .transform(val => val === 'true')
-    .default('true'),
-  ENABLE_KANBAN_BOARD: z
-    .string()
-    .transform(val => val === 'true')
-    .default('true'),
-  ENABLE_WORKFLOW_ORCHESTRATION: z
-    .string()
-    .transform(val => val === 'true')
-    .default('false'),
-  ENABLE_ADVANCED_AUTH: z
-    .string()
-    .transform(val => val === 'true')
-    .default('false'),
-  ENABLE_NOTIFICATIONS: z
-    .string()
-    .transform(val => val === 'true')
-    .default('true'),
+  ENABLE_ANALYTICS: z.coerce.boolean().default(true),
+  ENABLE_KANBAN_BOARD: z.coerce.boolean().default(true),
+  ENABLE_WORKFLOW_ORCHESTRATION: z.coerce.boolean().default(false),
+  ENABLE_ADVANCED_AUTH: z.coerce.boolean().default(false),
+  ENABLE_NOTIFICATIONS: z.coerce.boolean().default(true),
 
   // Performance Configuration
-  RATE_LIMIT_WINDOW_MS: z
-    .string()
-    .transform(Number)
-    .pipe(z.number().min(1000))
-    .default('900000'), // 15 minutes
-  RATE_LIMIT_MAX_REQUESTS: z
-    .string()
-    .transform(Number)
-    .pipe(z.number().min(1))
-    .default('100'),
-  WEBSOCKET_HEARTBEAT_INTERVAL: z
-    .string()
-    .transform(Number)
-    .pipe(z.number().min(1000))
-    .default('30000'),
+  RATE_LIMIT_WINDOW_MS: z.coerce.number().min(1000).default(900000),
+  RATE_LIMIT_MAX_REQUESTS: z.coerce.number().min(1).default(100),
+  WEBSOCKET_HEARTBEAT_INTERVAL: z.coerce.number().min(1000).default(30000),
 
   // Health Check Configuration
-  HEALTH_CHECK_INTERVAL: z
-    .string()
-    .transform(Number)
-    .pipe(z.number().min(1000))
-    .default('60000'),
-  HEALTH_CHECK_TIMEOUT: z
-    .string()
-    .default('5000')
-    .transform(Number)
-    .pipe(z.number().min(1000)),
+  HEALTH_CHECK_INTERVAL: z.coerce.number().min(1000).default(60000),
+  HEALTH_CHECK_TIMEOUT: z.coerce.number().min(1000).default(5000),
   // Backup Configuration
-  BACKUP_ENABLED: z
-    .string()
-    .transform(val => val === 'true')
-    .default('true'),
-  BACKUP_INTERVAL_HOURS: z
-    .string()
-    .transform(Number)
-    .pipe(z.number().min(1))
-    .default('24'),
+  BACKUP_ENABLED: z.coerce.boolean().default(true),
+  BACKUP_INTERVAL_HOURS: z.coerce.number().min(1).default(24),
   BACKUP_RETENTION_DAYS: z.coerce.number().min(1).default(7),
   BACKUP_PATH: z.string().default('./backups'),
 })

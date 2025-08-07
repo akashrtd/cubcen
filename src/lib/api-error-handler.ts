@@ -142,13 +142,20 @@ export function createSuccessResponse<T>(
   message?: string,
   requestId?: string
 ): APISuccessResponse<T> {
-  return {
+  const response: APISuccessResponse<T> = {
     success: true,
-    ...(data !== undefined && { data }),
-    ...(message && { message }),
     timestamp: new Date().toISOString(),
-    ...(requestId && { requestId }),
   }
+  if (data !== undefined) {
+    response.data = data
+  }
+  if (message) {
+    response.message = message
+  }
+  if (requestId) {
+    response.requestId = requestId
+  }
+  return response
 }
 
 /**

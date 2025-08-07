@@ -216,10 +216,9 @@ export function addVersionInfoToSpec(
   spec: Record<string, unknown>
 ): Record<string, unknown> {
   // Add version information to OpenAPI spec
-  spec.info.version = API_VERSIONS[CURRENT_VERSION].version(
-    // Add supported versions to info
-    specs.info as Record<string, unknown>
-  )['x-api-versions'] = Object.entries(API_VERSIONS).map(([key, value]) => ({
+  (spec.info as Record<string, unknown>).version = API_VERSIONS[CURRENT_VERSION].version
+  // Add supported versions to info
+  ;(spec.info as Record<string, unknown>)['x-api-versions'] = Object.entries(API_VERSIONS).map(([key, value]) => ({
     version: key,
     info: value,
   }))

@@ -3,7 +3,7 @@
  * Provides in-memory caching for frequently accessed data with TTL and invalidation
  */
 
-import { logger } from './logger'
+import logger from './logger'
 
 export interface CacheEntry<T = unknown> {
   data: T

@@ -179,13 +179,11 @@ function CardSkeleton({
         showShimmer && 'skeleton-shimmer',
         !animated && 'skeleton-no-animation'
       )}
-      style={
-        {
-          minHeight: `${height}px`,
-          '--skeleton-animation-duration': config.animationDuration,
-          '--skeleton-shimmer-intensity': config.shimmerIntensity,
-        } as React.CSSProperties
-      }
+      style={{
+        minHeight: `${height}px`,
+        '--skeleton-animation-duration': config.animationDuration,
+        '--skeleton-shimmer-intensity': config.shimmerIntensity,
+      }}
     >
       <CardHeader className="space-y-2">
         <div className="flex items-center justify-between">
@@ -243,12 +241,10 @@ function ChartSkeleton({
         showShimmer && 'skeleton-shimmer',
         !animated && 'skeleton-no-animation'
       )}
-      style={
-        {
-          '--skeleton-animation-duration': config.animationDuration,
-          '--skeleton-shimmer-intensity': config.shimmerIntensity,
-        } as React.CSSProperties
-      }
+      style={{
+        '--skeleton-animation-duration': config.animationDuration,
+        '--skeleton-shimmer-intensity': config.shimmerIntensity,
+      }}
     >
       <CardHeader>
         <div className="flex items-center justify-between">
@@ -311,12 +307,10 @@ function TableSkeleton({
         showShimmer && 'skeleton-shimmer',
         !animated && 'skeleton-no-animation'
       )}
-      style={
-        {
-          '--skeleton-animation-duration': config.animationDuration,
-          '--skeleton-shimmer-intensity': config.shimmerIntensity,
-        } as React.CSSProperties
-      }
+      style={{
+        '--skeleton-animation-duration': config.animationDuration,
+        '--skeleton-shimmer-intensity': config.shimmerIntensity,
+      }}
     >
       <CardHeader>
         <Skeleton className="h-5 w-32" />
@@ -378,12 +372,10 @@ function MetricSkeleton({
         showShimmer && 'skeleton-shimmer',
         !animated && 'skeleton-no-animation'
       )}
-      style={
-        {
-          '--skeleton-animation-duration': config.animationDuration,
-          '--skeleton-shimmer-intensity': config.shimmerIntensity,
-        } as React.CSSProperties
-      }
+      style={{
+        '--skeleton-animation-duration': config.animationDuration,
+        '--skeleton-shimmer-intensity': config.shimmerIntensity,
+      }}
     >
       <CardHeader>
         <div className="flex items-center space-x-2">
@@ -428,12 +420,10 @@ function ListSkeleton({
         showShimmer && 'skeleton-shimmer',
         !animated && 'skeleton-no-animation'
       )}
-      style={
-        {
-          '--skeleton-animation-duration': config.animationDuration,
-          '--skeleton-shimmer-intensity': config.shimmerIntensity,
-        } as React.CSSProperties
-      }
+      style={{
+        '--skeleton-animation-duration': config.animationDuration,
+        '--skeleton-shimmer-intensity': config.shimmerIntensity,
+      }}
     >
       <CardHeader>
         <Skeleton className="h-5 w-32" />

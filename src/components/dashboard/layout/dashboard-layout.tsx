@@ -10,10 +10,7 @@ import {
 } from './mobile-navigation'
 import { SwipeNavigation, useSwipeNavigation } from './swipe-navigation'
 import { useIsMobile } from '../mobile/touch-interactions'
-import {
-  KeyboardNavigation,
-  SkipLinks,
-} from '../accessibility/keyboard-navigation'
+import { KeyboardNavigation } from '../accessibility/keyboard-navigation'
 import { FocusManagement } from '../accessibility/focus-management'
 import { ScreenReaderAnnouncer } from '../accessibility/screen-reader-announcer'
 

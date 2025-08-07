@@ -29,7 +29,7 @@ interface AccessibleTableRowProps
   selected?: boolean
   selectable?: boolean
   rowId?: string
-  onSelect?: (rowId: string, selected: boolean) => void
+  onSelect?: React.MouseEventHandler<HTMLTableRowElement> | undefined
 }
 
 interface AccessibleTableHeadProps

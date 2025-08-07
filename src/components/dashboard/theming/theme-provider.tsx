@@ -32,9 +32,35 @@ const defaultDashboardTheme: DashboardTheme = {
     surface: '#F8F9FA',
     text: {
       primary: '#1A1A1A',
-      secondary: '#6B7280',
-      disabled: '#9CA3AF',
+    secondary: '#6B7280',
+    disabled: '#9CA3AF',
+  },
+  status: {
+    success: '#10B981',
+    warning: '#F59E0B',
+    error: '#EF4444',
+    info: '#3B82F6',
+  },
+  chart: {
+    palette: [
+      '#3F51B5',
+      '#B19ADA',
+      '#FF6B35',
+      '#10B981',
+      '#F59E0B',
+      '#EF4444',
+      '#3B82F6',
+      '#8B5CF6',
+      '#EC4899',
+      '#14B8A6',
+    ],
+    gradients: {
+      primary: 'linear-gradient(135deg, #3F51B5 0%, #B19ADA 100%)',
+      success: 'linear-gradient(135deg, #10B981 0%, #34D399 100%)',
+      warning: 'linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%)',
+      error: 'linear-gradient(135deg, #EF4444 0%, #F87171 100%)',
     },
+  },
     status: {
       success: '#10B981',
       warning: '#F59E0B',

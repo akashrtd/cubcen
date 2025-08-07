@@ -459,7 +459,6 @@ const DashboardContent = () => (
             { key: 'success', label: 'Success Rate', sortable: true },
           ]}
           searchable
-          filterable
           exportable
           pageSize={5}
         />

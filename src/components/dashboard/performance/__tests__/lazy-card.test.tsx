@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, act } from '@testing-library/react'
 import { jest } from '@jest/globals'
 import { LazyCard, withLazyLoading, useLazyLoading } from '../lazy-card'
 
@@ -76,7 +76,7 @@ describe('LazyCard', () => {
     // Simulate intersection
     const mockEntry = {
       isIntersecting: true,
-      target: document.createElement('div'),
+      target: document.createElement('div') as Element,
     } as IntersectionObserverEntry
 
     act(() => {
@@ -108,7 +108,7 @@ describe('LazyCard', () => {
     // Simulate intersection
     const mockEntry = {
       isIntersecting: true,
-      target: document.createElement('div'),
+      target: document.createElement('div') as Element,
     } as IntersectionObserverEntry
 
     act(() => {
@@ -136,7 +136,7 @@ describe('LazyCard', () => {
 
     const mockEntry = {
       isIntersecting: true,
-      target: document.createElement('div'),
+      target: document.createElement('div') as Element,
     } as IntersectionObserverEntry
 
     mockCallback([mockEntry])
@@ -164,7 +164,7 @@ describe('LazyCard', () => {
 
     const mockEntry = {
       isIntersecting: true,
-      target: document.createElement('div'),
+      target: document.createElement('div') as Element,
     } as IntersectionObserverEntry
 
     mockCallback([mockEntry])
@@ -219,7 +219,7 @@ describe('LazyCard', () => {
 
     const mockEntry = {
       isIntersecting: true,
-      target: document.createElement('div'),
+      target: document.createElement('div') as Element,
     } as IntersectionObserverEntry
 
     mockCallback([mockEntry])
@@ -269,7 +269,7 @@ describe('withLazyLoading', () => {
     // Simulate intersection
     const mockEntry = {
       isIntersecting: true,
-      target: document.createElement('div'),
+      target: document.createElement('div') as Element,
     } as IntersectionObserverEntry
 
     mockCallback([mockEntry])

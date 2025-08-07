@@ -12,8 +12,8 @@ const mockFilters = {
 const mockOnFiltersChange = jest.fn()
 
 const mockAgents = [
-  { id: 'agent-1', name: 'Test Agent 1' },
-  { id: 'agent-2', name: 'Test Agent 2' },
+  { id: 'agent-1', name: 'Test Agent 1', platformId: 'platform-1' },
+  { id: 'agent-2', name: 'Test Agent 2', platformId: 'platform-2' },
 ]
 
 const mockPlatforms = [

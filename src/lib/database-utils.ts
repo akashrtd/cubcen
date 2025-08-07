@@ -4,7 +4,7 @@
  */
 
 import { prisma } from './database'
-import { logger } from './logger'
+import logger from './logger'
 
 /**
  * Reset database for testing - removes all data

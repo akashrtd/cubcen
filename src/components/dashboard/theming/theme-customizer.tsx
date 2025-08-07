@@ -31,7 +31,7 @@ export function ThemeCustomizer({
 }: ThemeCustomizerProps) {
   const { theme, setTheme, dashboardTheme, setDashboardTheme } =
     useDashboardTheme()
-  const [activeTab, setActiveTab] = React.useState(defaultTab)
+  const [activeTab, setActiveTab] = React.useState<string>(defaultTab)
   const [validationResults, setValidationResults] = React.useState<any[]>([])
   const fileInputRef = React.useRef<HTMLInputElement>(null)
 
