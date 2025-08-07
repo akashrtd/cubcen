@@ -12,6 +12,13 @@ import {
 } from '@/components/ui/select'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Skeleton } from '@/components/ui/skeleton'
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card'
 import { DatePickerWithRange } from '@/components/analytics/date-range-picker'
 import { 
   LazyAgentPerformanceTableWithSuspense,
@@ -265,7 +272,7 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
         abortControllerRef.current.abort()
       }
     }
-  }, [fetchAnalyticsData])
+  }, [fetchAnalyticsData, retryTimeout])
 
   // Loading skeleton component
   const LoadingSkeleton = () => (
@@ -709,13 +716,16 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                   colors: {
                     primary: '#4CAF50',
                     secondary: '#F44336',
-                    accent: '#3F51B5'
+                    accent: '#3F51B5',
+                    success: '#4CAF50',
+                    warning: '#FF9800',
+                    error: '#F44336'
                   },
-                  legend: { show: true, position: 'bottom' },
+                  legend: { show: true, position: 'bottom', align: 'center' },
                   tooltip: { show: true },
                   responsive: {
                     breakpoints: {
-                      mobile: { legend: { position: 'top' } }
+                      mobile: { legend: { show: true, position: 'top', align: 'center' } }
                     }
                   }
                 }}
@@ -723,7 +733,6 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                 priority="high"
                 loading={loading}
                 exportable
-                colSpan={12}
               />
 
               <div className="grid gap-4 md:grid-cols-2">
@@ -743,7 +752,7 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                       warning: '#FF9800',
                       error: '#F44336'
                     },
-                    legend: { show: true, position: 'bottom' }
+                    legend: { show: true, position: 'bottom', align: 'center' }
                   }}
                   size="md"
                   priority="medium"
@@ -762,7 +771,10 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                     colors: {
                       primary: '#3F51B5',
                       secondary: '#B19ADA',
-                      accent: '#FF6B35'
+                      accent: '#FF6B35',
+                      success: '#4CAF50',
+                      warning: '#FF9800',
+                      error: '#F44336'
                     },
                     legend: { show: false }
                   }}
@@ -782,7 +794,11 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                   chartConfig={{
                     colors: {
                       primary: '#B19ADA',
-                      secondary: '#3F51B5'
+                      secondary: '#3F51B5',
+                      accent: '#FF6B35',
+                      success: '#4CAF50',
+                      warning: '#FF9800',
+                      error: '#F44336'
                     },
                     legend: { show: false }
                   }}

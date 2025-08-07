@@ -54,7 +54,7 @@ async function startServer() {
     agentService.setWebSocketService(webSocketService)
 
     // Initialize task routes with the task service
-    initializeTaskService(taskService)
+    initializeTaskService(prisma, adapterManager, webSocketService)
 
     // Initialize workflow routes
     app.use('/api/cubcen/v1/workflows', createWorkflowRoutes(workflowService))

@@ -7,7 +7,7 @@ import { authenticate } from '../middleware/auth'
 import { validateRequest } from '../middleware/validation'
 import { notificationService } from '../../services/notification'
 import { notificationPreferencesService } from '../../services/notification-preferences'
-import { logger } from '../../lib/logger'
+import { structuredLogger as logger } from '../../lib/logger'
 import {
   NotificationEventType,
   NotificationChannelType,
@@ -18,7 +18,7 @@ import {
 const router = express.Router()
 
 // Validation schemas
-const getNotificationsSchema = z.object({
+const getNotificationsSchema = {
   query: z.object({
     status: z.nativeEnum(NotificationStatus).optional(),
     eventType: z.nativeEnum(NotificationEventType).optional(),
@@ -28,21 +28,21 @@ const getNotificationsSchema = z.object({
     startDate: z.string().datetime().optional(),
     endDate: z.string().datetime().optional(),
   }),
-})
+}
 
-const acknowledgeNotificationSchema = z.object({
+const acknowledgeNotificationSchema = {
   params: z.object({
     id: z.string().min(1),
   }),
-})
+}
 
-const markAsReadSchema = z.object({
+const markAsReadSchema = {
   params: z.object({
     id: z.string().min(1),
   }),
-})
+}
 
-const createNotificationSchema = z.object({
+const createNotificationSchema = {
   body: z.object({
     eventType: z.nativeEnum(NotificationEventType),
     title: z.string().min(1).max(255),
@@ -51,12 +51,12 @@ const createNotificationSchema = z.object({
       .nativeEnum(NotificationPriority)
       .default(NotificationPriority.MEDIUM),
     userId: z.string().optional(),
-    data: z.record(z.any()).optional(),
+    data: z.record(z.string(), z.any()).optional(),
     channels: z.array(z.nativeEnum(NotificationChannelType)).optional(),
   }),
-})
+}
 
-const updatePreferenceSchema = z.object({
+const updatePreferenceSchema = {
   params: z.object({
     eventType: z.nativeEnum(NotificationEventType),
   }),
@@ -65,9 +65,9 @@ const updatePreferenceSchema = z.object({
     enabled: z.boolean(),
     escalationDelay: z.number().min(0).max(1440).optional(), // max 24 hours
   }),
-})
+}
 
-const bulkUpdatePreferencesSchema = z.object({
+const bulkUpdatePreferencesSchema = {
   body: z.object({
     preferences: z.array(
       z.object({
@@ -78,12 +78,12 @@ const bulkUpdatePreferencesSchema = z.object({
       })
     ),
   }),
-})
+}
 
 // Get user notifications
 router.get(
   '/',
-  authMiddleware,
+  authenticate,
   validateRequest(getNotificationsSchema),
   async (req, res) => {
     try {
@@ -95,8 +95,8 @@ router.get(
         status: status as NotificationStatus,
         eventType: eventType as NotificationEventType,
         priority: priority as NotificationPriority,
-        limit: limit as number,
-        offset: offset as number,
+        limit: Number(limit) || 50,
+        offset: Number(offset) || 0,
         startDate: startDate ? new Date(startDate as string) : undefined,
         endDate: endDate ? new Date(endDate as string) : undefined,
       }
@@ -128,7 +128,7 @@ router.get(
 )
 
 // Get in-app notifications
-router.get('/in-app', authMiddleware, async (req, res) => {
+router.get('/in-app', authenticate, async (req, res) => {
   try {
     const userId = req.user!.id
     const limit = parseInt(req.query.limit as string) || 20
@@ -171,7 +171,7 @@ router.get('/in-app', authMiddleware, async (req, res) => {
 // Acknowledge notification
 router.post(
   '/:id/acknowledge',
-  authMiddleware,
+  authenticate,
   validateRequest(acknowledgeNotificationSchema),
   async (req, res) => {
     try {
@@ -200,7 +200,7 @@ router.post(
 // Mark in-app notification as read
 router.post(
   '/:id/read',
-  authMiddleware,
+  authenticate,
   validateRequest(markAsReadSchema),
   async (req, res) => {
     try {
@@ -229,7 +229,7 @@ router.post(
 // Create notification (admin only)
 router.post(
   '/',
-  authMiddleware,
+  authenticate,
   validateRequest(createNotificationSchema),
   async (req, res) => {
     try {
@@ -271,7 +271,7 @@ router.post(
 )
 
 // Get user notification preferences
-router.get('/preferences', authMiddleware, async (req, res) => {
+router.get('/preferences', authenticate, async (req, res) => {
   try {
     const userId = req.user!.id
     const preferences =
@@ -295,7 +295,7 @@ router.get('/preferences', authMiddleware, async (req, res) => {
 // Update notification preference
 router.put(
   '/preferences/:eventType',
-  authMiddleware,
+  authenticate,
   validateRequest(updatePreferenceSchema),
   async (req, res) => {
     try {

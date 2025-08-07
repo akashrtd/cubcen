@@ -5,8 +5,6 @@ import request from 'supertest'
 import { createServer } from 'http'
 import app from '@/server'
 import { initializeWebSocketService } from '@/services/websocket'
-import { generateToken } from '@/lib/jwt'
-import { prisma } from '@/lib/database'
 
 // Mock WebSocket service
 const mockWebSocketService = {

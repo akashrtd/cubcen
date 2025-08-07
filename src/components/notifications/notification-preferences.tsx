@@ -94,11 +94,7 @@ export function NotificationPreferences({
   const [testing, setTesting] = useState<NotificationChannelType | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    loadPreferences()
-  }, [userId])
-
-  const loadPreferences = async () => {
+  const loadPreferences = useCallback(async () => {
     try {
       setLoading(true)
       const response = await fetch('/api/cubcen/v1/notifications/preferences', {
@@ -120,7 +116,7 @@ export function NotificationPreferences({
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   const updatePreference = (
     eventType: NotificationEventType,

@@ -262,7 +262,7 @@ export function useIsTouchDevice(): boolean {
       setIsTouchDevice(
         'ontouchstart' in window ||
         navigator.maxTouchPoints > 0 ||
-        // @ts-ignore - for older browsers
+        // @ts-expect-error - msMaxTouchPoints is a legacy IE property not in TypeScript DOM types
         navigator.msMaxTouchPoints > 0
       )
     }

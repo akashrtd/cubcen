@@ -3,7 +3,6 @@
 
 import { Router, Request, Response } from 'express'
 import { authService } from '@/services/auth'
-import { prisma } from '@/lib/database'
 import { structuredLogger as logger } from '@/lib/logger'
 import {
   authenticate,

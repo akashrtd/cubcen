@@ -54,7 +54,7 @@ export function DashboardMigrationAdmin({ className }: MigrationAdminProps) {
     // Track the change
     MigrationAnalytics.trackComponentUsage(
       `Admin-${feature}`, 
-      enabled ? 'enabled' : 'disabled'
+      enabled ? 'new' : 'legacy'
     )
   }
 

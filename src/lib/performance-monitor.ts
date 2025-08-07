@@ -21,10 +21,23 @@ interface ComponentMetrics {
   updateCount: number
 }
 
+interface PerformanceAlert {
+  id: string
+  type: 'performance' | 'memory' | 'network'
+  severity: 'low' | 'medium' | 'high' | 'critical'
+  message: string
+  timestamp: Date
+  resolved: boolean
+  metric?: string
+  value?: number
+  threshold?: number
+}
+
 class PerformanceMonitor {
   private metrics: Map<string, PerformanceMetrics> = new Map()
   private componentMetrics: Map<string, ComponentMetrics> = new Map()
   private observers: Map<string, PerformanceObserver> = new Map()
+  private alerts: PerformanceAlert[] = []
 
   constructor() {
     if (typeof window !== 'undefined') {
@@ -272,6 +285,66 @@ class PerformanceMonitor {
       })
     } catch (error) {
       console.warn('Failed to send performance analytics:', error)
+    }
+  }
+
+  /**
+   * Get active performance alerts
+   */
+  getActiveAlerts(): PerformanceAlert[] {
+    return this.alerts.filter(alert => !alert.resolved)
+  }
+
+  /**
+   * Add a performance alert
+   */
+  addAlert(alert: Omit<PerformanceAlert, 'id' | 'timestamp'>): void {
+    const newAlert: PerformanceAlert = {
+      ...alert,
+      id: `alert-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      timestamp: new Date(),
+    }
+    this.alerts.push(newAlert)
+  }
+
+  /**
+   * Resolve a performance alert
+   */
+  resolveAlert(alertId: string): boolean {
+    const alert = this.alerts.find(a => a.id === alertId)
+    if (alert) {
+      alert.resolved = true
+      return true
+    }
+    return false
+  }
+
+  /**
+   * Start performance monitoring
+   */
+  startMonitoring(): void {
+    // Re-initialize observers if they were cleaned up
+    if (typeof window !== 'undefined' && this.observers.size === 0) {
+      this.initializeObservers()
+    }
+  }
+
+  /**
+   * Stop performance monitoring
+   */
+  stopMonitoring(): void {
+    this.cleanup()
+  }
+
+  /**
+   * Get current performance statistics
+   */
+  getCurrentStats() {
+    return {
+      metrics: this.getMetrics(),
+      componentMetrics: this.getComponentMetrics(),
+      coreWebVitals: this.getCoreWebVitals(),
+      alerts: this.getActiveAlerts(),
     }
   }
 

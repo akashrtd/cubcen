@@ -14,7 +14,7 @@ interface ScreenReaderAnnouncerProps {
 }
 
 // Global announcement queue to manage multiple announcements
-let announcementQueue: AnnouncementProps[] = []
+const announcementQueue: AnnouncementProps[] = []
 let isProcessing = false
 
 export function ScreenReaderAnnouncer({ className }: ScreenReaderAnnouncerProps) {

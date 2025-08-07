@@ -89,7 +89,7 @@ export function ErrorPatterns({ className, timeRange }: ErrorPatternsProps) {
       setLoading(false)
       setRefreshing(false)
     }
-  }, [effectiveTimeRange])
+  }, [effectiveTimeRange.from, effectiveTimeRange.to])
 
   // Initial load
   useEffect(() => {

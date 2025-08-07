@@ -89,11 +89,6 @@ export function ViewportSkeleton({
     onVisibilityChange?.(inView)
   }, [inView, onVisibilityChange])
 
-  // Render content if in view
-  if (inView) {
-    return <div className={className}>{children}</div>
-  }
-
   // Render appropriate skeleton based on variant
   const skeletonContent = useMemo(() => {
     const baseProps = {
@@ -120,6 +115,11 @@ export function ViewportSkeleton({
         return <CardSkeleton {...baseProps} height={height} />
     }
   }, [variant, height, rows, columns, animated, showShimmer, config, adaptiveComplexity])
+
+  // Render content if in view
+  if (inView) {
+    return <div className={className}>{children}</div>
+  }
 
   return (
     <div

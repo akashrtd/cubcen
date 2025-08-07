@@ -6,6 +6,7 @@ import { structuredLogger as logger } from '@/lib/logger'
 import { TaskService } from '@/services/task'
 import { AdapterManager } from '@/backend/adapters/adapter-factory'
 import { TaskStatus, TaskPriority } from '@/lib/database'
+import { PrismaClient } from '@/generated/prisma'
 import {
   authenticate,
   requireAuth,
@@ -29,10 +30,12 @@ let taskService: TaskService
 // Validation schemas
 // Initialize task service
 export function initializeTaskService(
+  prisma: PrismaClient,
   adapterManager: AdapterManager,
   webSocketService?: unknown
 ): void {
   taskService = new TaskService(
+    prisma,
     adapterManager,
     webSocketService as WebSocketService
   )

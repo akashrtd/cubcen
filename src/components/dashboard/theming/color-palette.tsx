@@ -287,7 +287,7 @@ export function ColorPalette({
           <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
             <p>• Colors with contrast ratios ≥4.5:1 meet WCAG AA standards</p>
             <p>• Colors with contrast ratios ≥7:1 meet WCAG AAA standards</p>
-            <p>• Red warning indicators show colors that don't meet AA standards</p>
+            <p>• Red warning indicators show colors that don&apos;t meet AA standards</p>
             {interactive && (
               <p>• Click on any color swatch to edit it</p>
             )}

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { MetricCard } from './metric-card'
 import { Activity, Users, TrendingUp, AlertCircle, DollarSign, Clock } from 'lucide-react'
 

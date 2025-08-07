@@ -3,7 +3,7 @@
 
 import { Router, Request, Response } from 'express'
 import { structuredLogger as logger } from '@/lib/logger'
-import { auditLogger, AuditEventType, AuditSeverity } from '@/lib/audit-logger'
+import { auditLogger, AuditEventType } from '@/lib/audit-logger'
 import {
   authenticate,
   requireAdmin,

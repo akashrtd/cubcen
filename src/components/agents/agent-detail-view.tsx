@@ -39,7 +39,7 @@ export interface AgentDetailViewProps {
   onStart?: (agent: Agent) => void
   onStop?: (agent: Agent) => void
   onRestart?: (agent: Agent) => void
-  onRefresh?: (agent: Agent) => void
+  onRefresh?: (agent: Agent) => Promise<void>
   className?: string
 }
 

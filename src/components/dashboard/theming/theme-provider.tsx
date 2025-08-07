@@ -205,7 +205,7 @@ export function DashboardThemeProvider({
     handleChange() // Initial check
 
     return () => mediaQuery.removeEventListener('change', handleChange)
-  }, [theme, enableColorSchemeDetection])
+  }, [theme, enableColorSchemeDetection, updateCSSVariables])
 
   // Update CSS variables when theme changes
   const updateCSSVariables = useCallback((currentTheme: 'dark' | 'light') => {

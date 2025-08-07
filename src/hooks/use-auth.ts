@@ -181,7 +181,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // Initialize auth state on mount
   useEffect(() => {
     validateToken()
-  }, [])
+  }, [validateToken])
 
   const authContextValue: AuthContextType = {
     user,

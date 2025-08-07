@@ -565,7 +565,7 @@ export function AgentMonitoringDashboard({
             loading={loading}
             onViewAgent={handleViewAgent}
             onConfigureAgent={handleConfigureAgent}
-            onRefreshAgent={refreshAgent as any}
+            onRefreshAgent={refreshAgent}
           />
         </TabsContent>
 
@@ -584,7 +584,7 @@ export function AgentMonitoringDashboard({
             agent={selectedAgent}
             loading={loading && !selectedAgent}
             onEdit={handleConfigureAgent}
-            onRefresh={refreshAgent}
+            onRefresh={selectedAgent ? async (agent: Agent) => await refreshAgent(agent.id) : undefined}
           />
         </TabsContent>
       </Tabs>

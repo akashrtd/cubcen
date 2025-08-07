@@ -27,7 +27,7 @@ export interface AgentStatusCardsProps {
   loading?: boolean
   onViewAgent?: (agent: Agent) => void
   onConfigureAgent?: (agent: Agent) => void
-  onRefreshAgent?: (agentId: string) => void
+  onRefreshAgent?: (agentId: string) => Promise<void>
   className?: string
 }
 
@@ -96,7 +96,7 @@ function AgentStatusCard({
   agent: Agent
   onViewAgent?: (agent: Agent) => void
   onConfigureAgent?: (agent: Agent) => void
-  onRefreshAgent?: (agentId: string) => void
+  onRefreshAgent?: (agentId: string) => Promise<void>
 }) {
   const [isRefreshing, setIsRefreshing] = useState(false)
   const statusInfo = statusConfig[agent.status]

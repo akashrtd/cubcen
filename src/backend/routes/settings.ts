@@ -7,19 +7,16 @@ import { structuredLogger as logger } from '@/lib/logger'
 import { auditLogger, AuditEventType } from '@/lib/audit-logger'
 import {
   authenticate,
-  requireSelfOrAdmin,
 } from '@/backend/middleware/auth'
 import {
   validateBody,
   validateParams,
-  idParamSchema,
 } from '@/backend/middleware/validation'
 import {
   asyncHandler,
   createSuccessResponse,
   APIError,
   APIErrorCode,
-  ValidationHelpers,
 } from '@/lib/api-error-handler'
 import { authService } from '@/services/auth'
 import { notificationPreferencesService } from '@/services/notification-preferences'

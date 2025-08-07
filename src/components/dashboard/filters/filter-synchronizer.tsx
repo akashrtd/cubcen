@@ -135,6 +135,7 @@ export function useFilterSync(
   // Call callback when filters change
   useEffect(() => {
     callbackRef.current(filters)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters, ...dependencies])
 }
 

@@ -321,7 +321,7 @@ export function TypographyScale({
               {dashboardTheme.typography.fontFamily.mono.join(', ')}
             </div>
             <div className="mt-2 text-lg font-mono">
-              const theme = 'dashboard'
+              const theme = &apos;dashboard&apos;
             </div>
           </div>
         </div>

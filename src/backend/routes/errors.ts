@@ -7,7 +7,7 @@ import { structuredLogger as logger } from '@/lib/logger'
 import { auditLogger, AuditEventType, AuditSeverity } from '@/lib/audit-logger'
 import { validateRequest } from '@/backend/middleware/validation'
 import { authenticate } from '@/backend/middleware/auth'
-import { APIErrorResponse, createErrorResponse, errorHandler, APIErrorCode } from '@/lib/api-error-handler'
+import { createErrorResponse, errorHandler, APIErrorCode } from '@/lib/api-error-handler'
 
 const router = express.Router()
 
@@ -188,7 +188,7 @@ router.get('/', authenticate, validateRequest({ query: ErrorQuerySchema }), asyn
       )
     }
 
-    const query = req.query as z.infer<typeof ErrorQuerySchema>
+    const query = ErrorQuerySchema.parse(req.query)
     const requestId = req.headers['x-request-id'] as string
 
     const errors = await getErrors({

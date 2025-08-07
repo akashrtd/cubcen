@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { DashboardGrid } from './dashboard-grid'
 import { GridItem } from './grid-item'
 import { DashboardCard } from '../cards/dashboard-card'

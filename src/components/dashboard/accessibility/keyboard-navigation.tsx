@@ -115,7 +115,7 @@ export function KeyboardNavigation({
         handleChartNavigation(event, currentElement)
       }
     }
-  }, [trapFocus, onEscape, getFocusableElements])
+  }, [trapFocus, onEscape, getFocusableElements, handleChartNavigation])
 
   // Handle chart-specific keyboard navigation
   const handleChartNavigation = useCallback((event: KeyboardEvent, currentElement: HTMLElement) => {

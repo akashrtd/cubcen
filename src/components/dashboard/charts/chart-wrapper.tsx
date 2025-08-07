@@ -96,6 +96,12 @@ export function ChartWrapper({
   const titleId = `${chartId}-title`
   const descriptionId = `${chartId}-description`
   const instructionsId = `${chartId}-instructions`
+
+  // Track chart load completion
+  useEffect(() => {
+    const performanceTracker = trackDynamicImportPerformance(`${type}-chart`)
+    performanceTracker.end()
+  }, [type])
   // Memoize the merged configuration with sensible defaults
   const mergedConfig = useMemo((): ChartConfiguration => ({
     colors: {
@@ -330,8 +336,6 @@ export function ChartWrapper({
 
   // Render appropriate chart component with performance tracking
   const renderChart = () => {
-    const performanceTracker = trackDynamicImportPerformance(`${type}-chart`)
-    
     const commonProps = {
       data,
       config: mergedConfig,
@@ -348,10 +352,7 @@ export function ChartWrapper({
       zoomLevel: isTouchDevice ? zoomLevel : 1,
     }
 
-    // Track chart load completion
-    useEffect(() => {
-      performanceTracker.end()
-    }, [performanceTracker])
+
 
     switch (type) {
       case 'line':

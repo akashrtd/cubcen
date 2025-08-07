@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { DashboardLayout } from './dashboard-layout'
 import { DashboardSidebar } from './dashboard-sidebar'
 import { MobileNavigation } from './mobile-navigation'

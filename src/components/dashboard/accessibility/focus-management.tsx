@@ -23,6 +23,18 @@ export function FocusManagement({
   const containerRef = useRef<HTMLDivElement>(null)
   const previousFocusRef = useRef<HTMLElement | null>(null)
 
+  // Check if an element is focusable
+  const isFocusable = useCallback((element: HTMLElement): boolean => {
+    if (element.hasAttribute('disabled')) return false
+    if (element.getAttribute('tabindex') === '-1') return false
+    if (element.offsetParent === null) return false // Hidden element
+    
+    const style = window.getComputedStyle(element)
+    if (style.display === 'none' || style.visibility === 'hidden') return false
+    
+    return true
+  }, [])
+
   // Focus management utility functions
   const findFocusableElement = useCallback(() => {
     if (!containerRef.current) return null
@@ -49,19 +61,7 @@ export function FocusManagement({
 
     const elements = containerRef.current.querySelectorAll(focusableSelectors)
     return elements.length > 0 ? (elements[0] as HTMLElement) : null
-  }, [focusSelector])
-
-  // Check if an element is focusable
-  const isFocusable = useCallback((element: HTMLElement): boolean => {
-    if (element.hasAttribute('disabled')) return false
-    if (element.getAttribute('tabindex') === '-1') return false
-    if (element.offsetParent === null) return false // Hidden element
-    
-    const style = window.getComputedStyle(element)
-    if (style.display === 'none' || style.visibility === 'hidden') return false
-    
-    return true
-  }, [])
+  }, [focusSelector, isFocusable])
 
   // Set focus to the appropriate element
   const setFocus = useCallback(() => {

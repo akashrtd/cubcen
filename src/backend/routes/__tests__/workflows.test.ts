@@ -7,14 +7,9 @@ import request from 'supertest'
 import express from 'express'
 import { createWorkflowRoutes } from '../workflows'
 import { WorkflowService } from '@/services/workflow'
-import { TaskService } from '@/services/task'
-import { AdapterManager } from '@/backend/adapters/adapter-factory'
-import { authenticate } from '@/backend/middleware/auth'
 import { logger } from '@/lib/logger'
 import {
   WorkflowDefinition,
-  WorkflowCreationData,
-  WorkflowUpdateData,
   WorkflowValidationResult,
   WorkflowExecution,
   WorkflowProgress,

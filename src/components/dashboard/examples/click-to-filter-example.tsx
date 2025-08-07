@@ -342,8 +342,8 @@ export function ClickToFilterExample() {
               <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
                 <li>Click on KPI cards to filter by category</li>
                 <li>Multiple filters can be active simultaneously</li>
-                <li>Click the × button on filter chips to remove individual filters</li>
-                <li>Use "Clear all" to remove all active filters</li>
+                <li>Click the &times; button on filter chips to remove individual filters</li>
+                <li>Use &quot;Clear all&quot; to remove all active filters</li>
               </ul>
             </div>
           </CardContent>

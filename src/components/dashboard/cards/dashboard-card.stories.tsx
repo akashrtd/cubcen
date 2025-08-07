@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { DashboardCard } from './dashboard-card'
 import { Activity, Users, TrendingUp, AlertCircle, BarChart3, PieChart } from 'lucide-react'
 import { Button } from '../../ui/button'

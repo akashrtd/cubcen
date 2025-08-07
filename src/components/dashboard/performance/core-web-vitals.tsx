@@ -212,7 +212,7 @@ function sendToAnalytics(metricName: string, value: number) {
 }
 
 // Debounce utility
-function debounce(func: Function, wait: number) {
+function debounce(func: (...args: any[]) => void, wait: number) {
   let timeout: NodeJS.Timeout
   return function executedFunction(...args: any[]) {
     const later = () => {

@@ -7,7 +7,7 @@ import { Router, Request, Response, NextFunction } from 'express'
 import { z } from 'zod'
 import { WorkflowService } from '@/services/workflow'
 import { authenticate } from '@/backend/middleware/auth'
-import { validateRequest } from '@/backend/middleware/validation'
+import { validateBody, validateQuery, validateParams } from '@/backend/middleware/validation'
 import { structuredLogger as logger } from '@/lib/logger'
 import {
   WorkflowExecutionOptions,
@@ -249,7 +249,7 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
   router.post(
     '/',
     authenticate,
-    validateRequest(createWorkflowSchema),
+    validateBody(createWorkflowSchema.shape.body),
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const { name, description, steps } = req.body
@@ -383,7 +383,7 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
   router.get(
     '/',
     authenticate,
-    validateRequest(getWorkflowsSchema),
+    validateQuery(getWorkflowsSchema.shape.query),
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const options: WorkflowListOptions = {
@@ -454,7 +454,7 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
   router.get(
     '/:id',
     authenticate,
-    validateRequest(workflowIdSchema),
+    validateParams(workflowIdSchema.shape.params),
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const { id } = req.params
@@ -593,7 +593,8 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
   router.put(
     '/:id',
     authenticate,
-    validateRequest(updateWorkflowSchema),
+    validateParams(updateWorkflowSchema.shape.params),
+    validateBody(updateWorkflowSchema.shape.body),
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const { id } = req.params
@@ -658,7 +659,7 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
   router.delete(
     '/:id',
     authenticate,
-    validateRequest(workflowIdSchema),
+    validateParams(workflowIdSchema.shape.params),
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const { id } = req.params
@@ -745,7 +746,7 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
   router.post(
     '/:id/validate',
     authenticate,
-    validateRequest(workflowIdSchema),
+    validateParams(workflowIdSchema.shape.params),
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const { id } = req.params
@@ -843,7 +844,8 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
   router.post(
     '/:id/execute',
     authenticate,
-    validateRequest(executeWorkflowSchema),
+    validateParams(executeWorkflowSchema.shape.params),
+    validateBody(executeWorkflowSchema.shape.body),
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const { id } = req.params
@@ -954,7 +956,7 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
   router.get(
     '/executions/:executionId',
     authenticate,
-    validateRequest(executionIdSchema),
+    validateParams(executionIdSchema.shape.params),
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const { executionId } = req.params
@@ -1024,7 +1026,7 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
   router.post(
     '/executions/:executionId/cancel',
     authenticate,
-    validateRequest(executionIdSchema),
+    validateParams(executionIdSchema.shape.params),
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const { executionId } = req.params
@@ -1107,7 +1109,7 @@ export function createWorkflowRoutes(workflowService: WorkflowService): Router {
   router.get(
     '/executions/:executionId/progress',
     authenticate,
-    validateRequest(executionIdSchema),
+    validateParams(executionIdSchema.shape.params),
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         const { executionId } = req.params

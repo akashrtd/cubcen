@@ -136,7 +136,7 @@ export function useMemoizedCalculation<T>(
     }
 
     return value
-  }, dependencies)
+  }, [calculation, dependencies, options?.key, options?.maxAge])
 }
 
 // Hook for memoizing callback functions

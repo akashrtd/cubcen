@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ChartCard } from './chart-card'
 import { BarChart3, LineChart, PieChart, Activity } from 'lucide-react'
 

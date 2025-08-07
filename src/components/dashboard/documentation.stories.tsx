@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { DashboardCard } from './cards/dashboard-card'
 import { MetricCard } from './cards/metric-card'
 import { ChartCard } from './cards/chart-card'

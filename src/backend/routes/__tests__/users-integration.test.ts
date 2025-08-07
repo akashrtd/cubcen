@@ -1,6 +1,5 @@
 import request from 'supertest'
 import express from 'express'
-import { PrismaClient } from '@prisma/client'
 import { usersRouter } from '../users'
 import { authMiddleware } from '../../middleware/auth'
 
