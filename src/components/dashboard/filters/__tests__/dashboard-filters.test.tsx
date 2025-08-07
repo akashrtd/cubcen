@@ -7,7 +7,10 @@ import { FilterProvider } from '../filter-context'
 // Mock Next.js navigation
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(() => ({ replace: jest.fn() })),
-  useSearchParams: jest.fn(() => ({ get: jest.fn(), toString: jest.fn(() => '') })),
+  useSearchParams: jest.fn(() => ({
+    get: jest.fn(),
+    toString: jest.fn(() => ''),
+  })),
 }))
 
 // Mock clipboard API
@@ -19,11 +22,7 @@ Object.assign(navigator, {
 
 // Test wrapper with FilterProvider
 function TestWrapper({ children, ...props }: any) {
-  return (
-    <FilterProvider {...props}>
-      {children}
-    </FilterProvider>
-  )
+  return <FilterProvider {...props}>{children}</FilterProvider>
 }
 
 describe('DashboardFilters', () => {
@@ -190,9 +189,10 @@ describe('DashboardFilters', () => {
     })
 
     // Find and click the X button to remove the filter
-    const removeButton = screen.getByRole('button', { name: /remove active filter/i }) ||
-                        screen.getByText('active').parentElement?.querySelector('svg')
-    
+    const removeButton =
+      screen.getByRole('button', { name: /remove active filter/i }) ||
+      screen.getByText('active').parentElement?.querySelector('svg')
+
     if (removeButton) {
       await user.click(removeButton)
     }

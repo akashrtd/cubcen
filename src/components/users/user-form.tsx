@@ -4,7 +4,15 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { User, UserPlus, Mail, Shield, Eye, EyeOff, Loader2 } from 'lucide-react'
+import {
+  User,
+  UserPlus,
+  Mail,
+  Shield,
+  Eye,
+  EyeOff,
+  Loader2,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -153,11 +161,14 @@ export function UserForm({
 
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-6"
+          >
             {/* Basic Information */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium">Basic Information</h3>
-              
+
               <FormField
                 control={form.control}
                 name="name"
@@ -181,11 +192,11 @@ export function UserForm({
                     <FormControl>
                       <div className="relative">
                         <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                        <Input 
-                          placeholder="Enter email address" 
+                        <Input
+                          placeholder="Enter email address"
                           className="pl-10"
                           disabled={mode === 'edit'}
-                          {...field} 
+                          {...field}
                         />
                       </div>
                     </FormControl>
@@ -208,14 +219,17 @@ export function UserForm({
                 <Shield className="h-5 w-5" />
                 Role and Permissions
               </h3>
-              
+
               <FormField
                 control={form.control}
                 name="role"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>User Role</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select a role" />
@@ -257,7 +271,10 @@ export function UserForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Account Status</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select status" />
@@ -296,7 +313,11 @@ export function UserForm({
                 {(isSubmitting || loading) && (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 )}
-                {mode === 'invite' ? 'Send Invitation' : mode === 'create' ? 'Create User' : 'Update User'}
+                {mode === 'invite'
+                  ? 'Send Invitation'
+                  : mode === 'create'
+                    ? 'Create User'
+                    : 'Update User'}
               </Button>
             </div>
           </form>

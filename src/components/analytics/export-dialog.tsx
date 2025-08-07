@@ -106,7 +106,7 @@ export function ExportDialog({
 
       if (!response.ok) {
         let errorMessage = `Export failed: ${response.statusText}`
-        
+
         try {
           const errorData = await response.json()
           if (errorData.error?.message) {
@@ -115,16 +115,19 @@ export function ExportDialog({
         } catch {
           // Use default error message if response is not JSON
         }
-        
+
         throw new Error(errorMessage)
       }
 
       // Validate response content type
       const contentType = response.headers.get('Content-Type')
-      const expectedContentType = format === 'csv' ? 'text/csv' : 'application/json'
-      
+      const expectedContentType =
+        format === 'csv' ? 'text/csv' : 'application/json'
+
       if (!contentType?.includes(expectedContentType.split('/')[0])) {
-        throw new Error(`Invalid response format. Expected ${expectedContentType}, got ${contentType}`)
+        throw new Error(
+          `Invalid response format. Expected ${expectedContentType}, got ${contentType}`
+        )
       }
 
       // Get the filename from the response headers
@@ -135,19 +138,21 @@ export function ExportDialog({
 
       // Create blob and download
       const blob = await response.blob()
-      
+
       // Validate blob size
       if (blob.size === 0) {
-        throw new Error('Export file is empty. No data available for the selected criteria.')
+        throw new Error(
+          'Export file is empty. No data available for the selected criteria.'
+        )
       }
-      
+
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
       a.download = filename
       document.body.appendChild(a)
       a.click()
-      
+
       // Cleanup
       setTimeout(() => {
         window.URL.revokeObjectURL(url)
@@ -161,17 +166,19 @@ export function ExportDialog({
       onOpenChange(false)
     } catch (error) {
       let errorMessage = 'Export failed'
-      
+
       if (error instanceof Error) {
         if (error.name === 'AbortError') {
-          errorMessage = 'Export timed out. Please try again with a smaller date range.'
+          errorMessage =
+            'Export timed out. Please try again with a smaller date range.'
         } else if (error.message.includes('Failed to fetch')) {
-          errorMessage = 'Network error. Please check your connection and try again.'
+          errorMessage =
+            'Network error. Please check your connection and try again.'
         } else {
           errorMessage = error.message
         }
       }
-      
+
       toast.error('Export failed', {
         description: errorMessage,
         duration: 5000,

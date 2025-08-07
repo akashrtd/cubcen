@@ -10,17 +10,17 @@ import { MetricCard } from './cards/metric-card'
 import { ChartCard } from './cards/chart-card'
 import { DataTableCard } from './cards/data-table-card'
 import { FilterProvider } from './filters/filter-context'
-import { 
-  Activity, 
-  Users, 
-  TrendingUp, 
-  AlertCircle, 
-  BarChart3, 
+import {
+  Activity,
+  Users,
+  TrendingUp,
+  AlertCircle,
+  BarChart3,
   PieChart,
   Server,
   Clock,
   DollarSign,
-  Zap
+  Zap,
 } from 'lucide-react'
 import { Button } from '../ui/button'
 
@@ -30,7 +30,8 @@ const meta: Meta = {
     layout: 'fullscreen',
     docs: {
       description: {
-        component: 'A comprehensive demonstration of the complete modular dashboard UI system with all components, theming, responsive design, and interactive features.',
+        component:
+          'A comprehensive demonstration of the complete modular dashboard UI system with all components, theming, responsive design, and interactive features.',
       },
     },
   },
@@ -102,11 +103,46 @@ const taskCompletionData = {
 }
 
 const sampleTableData = [
-  { id: 1, name: 'Agent Alpha', status: 'Active', platform: 'n8n', tasks: 156, success: '98.5%' },
-  { id: 2, name: 'Agent Beta', status: 'Active', platform: 'Make.com', tasks: 89, success: '97.2%' },
-  { id: 3, name: 'Agent Gamma', status: 'Inactive', platform: 'Zapier', tasks: 45, success: '95.8%' },
-  { id: 4, name: 'Agent Delta', status: 'Active', platform: 'n8n', tasks: 203, success: '99.1%' },
-  { id: 5, name: 'Agent Epsilon', status: 'Error', platform: 'Make.com', tasks: 12, success: '87.3%' },
+  {
+    id: 1,
+    name: 'Agent Alpha',
+    status: 'Active',
+    platform: 'n8n',
+    tasks: 156,
+    success: '98.5%',
+  },
+  {
+    id: 2,
+    name: 'Agent Beta',
+    status: 'Active',
+    platform: 'Make.com',
+    tasks: 89,
+    success: '97.2%',
+  },
+  {
+    id: 3,
+    name: 'Agent Gamma',
+    status: 'Inactive',
+    platform: 'Zapier',
+    tasks: 45,
+    success: '95.8%',
+  },
+  {
+    id: 4,
+    name: 'Agent Delta',
+    status: 'Active',
+    platform: 'n8n',
+    tasks: 203,
+    success: '99.1%',
+  },
+  {
+    id: 5,
+    name: 'Agent Epsilon',
+    status: 'Error',
+    platform: 'Make.com',
+    tasks: 12,
+    success: '87.3%',
+  },
 ]
 
 // Header component
@@ -115,15 +151,15 @@ const DashboardHeader = () => (
     <div className="flex items-center justify-between">
       <div>
         <h1 className="text-2xl font-bold text-foreground">Cubcen Dashboard</h1>
-        <p className="text-sm text-muted-foreground">AI Agent Management Platform</p>
+        <p className="text-sm text-muted-foreground">
+          AI Agent Management Platform
+        </p>
       </div>
       <div className="flex items-center gap-4">
         <Button variant="outline" size="sm">
           Export
         </Button>
-        <Button size="sm">
-          Add Agent
-        </Button>
+        <Button size="sm">Add Agent</Button>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <div className="w-2 h-2 bg-green-500 rounded-full"></div>
           All systems operational
@@ -151,28 +187,41 @@ const DashboardContent = () => (
   <FilterProvider>
     <DashboardGrid>
       {/* KPI Cards Row */}
-      <GridItem colSpan={{ desktop: 3, tablet: 2, mobile: 1 }} priority="critical">
+      <GridItem
+        colSpan={{ desktop: 3, tablet: 2, mobile: 1 }}
+        priority="critical"
+      >
         <DashboardCard
           title="Active Agents"
           subtitle="Currently running"
-          metric={{ value: 24, unit: 'agents', trend: 'up', trendValue: '+12%' }}
+          metric={{
+            value: 24,
+            unit: 'agents',
+            trend: 'up',
+            trendValue: '+12%',
+          }}
           icon={Activity}
           priority="high"
           interactive
         />
       </GridItem>
-      
+
       <GridItem colSpan={{ desktop: 3, tablet: 2, mobile: 1 }} priority="high">
         <DashboardCard
           title="Total Users"
           subtitle="Registered users"
-          metric={{ value: 1247, unit: 'users', trend: 'up', trendValue: '+5.2%' }}
+          metric={{
+            value: 1247,
+            unit: 'users',
+            trend: 'up',
+            trendValue: '+5.2%',
+          }}
           icon={Users}
           priority="medium"
           interactive
         />
       </GridItem>
-      
+
       <GridItem colSpan={{ desktop: 3, tablet: 2, mobile: 1 }} priority="high">
         <DashboardCard
           title="Success Rate"
@@ -183,8 +232,11 @@ const DashboardContent = () => (
           interactive
         />
       </GridItem>
-      
-      <GridItem colSpan={{ desktop: 3, tablet: 2, mobile: 1 }} priority="critical">
+
+      <GridItem
+        colSpan={{ desktop: 3, tablet: 2, mobile: 1 }}
+        priority="critical"
+      >
         <DashboardCard
           title="Active Alerts"
           subtitle="Requires attention"
@@ -203,10 +255,34 @@ const DashboardContent = () => (
           icon={Server}
           layout="vertical"
           metrics={[
-            { label: 'CPU Usage', value: '45%', trend: 'up', trendValue: '+5%', color: '#3F51B5' },
-            { label: 'Memory Usage', value: '67%', trend: 'down', trendValue: '-3%', color: '#B19ADA' },
-            { label: 'Disk Usage', value: '23%', trend: 'neutral', trendValue: '0%', color: '#FF6B35' },
-            { label: 'Network I/O', value: '156 MB/s', trend: 'up', trendValue: '+12%', color: '#10B981' },
+            {
+              label: 'CPU Usage',
+              value: '45%',
+              trend: 'up',
+              trendValue: '+5%',
+              color: '#3F51B5',
+            },
+            {
+              label: 'Memory Usage',
+              value: '67%',
+              trend: 'down',
+              trendValue: '-3%',
+              color: '#B19ADA',
+            },
+            {
+              label: 'Disk Usage',
+              value: '23%',
+              trend: 'neutral',
+              trendValue: '0%',
+              color: '#FF6B35',
+            },
+            {
+              label: 'Network I/O',
+              value: '156 MB/s',
+              trend: 'up',
+              trendValue: '+12%',
+              color: '#10B981',
+            },
           ]}
         />
       </GridItem>
@@ -218,10 +294,34 @@ const DashboardContent = () => (
           icon={DollarSign}
           layout="grid"
           metrics={[
-            { label: 'Revenue', value: '$12,450', trend: 'up', trendValue: '+8.5%', color: '#10B981' },
-            { label: 'Costs', value: '$3,200', trend: 'up', trendValue: '+2.1%', color: '#EF4444' },
-            { label: 'Profit', value: '$9,250', trend: 'up', trendValue: '+12.3%', color: '#3F51B5' },
-            { label: 'Margin', value: '74.3%', trend: 'up', trendValue: '+1.8%', color: '#F59E0B' },
+            {
+              label: 'Revenue',
+              value: '$12,450',
+              trend: 'up',
+              trendValue: '+8.5%',
+              color: '#10B981',
+            },
+            {
+              label: 'Costs',
+              value: '$3,200',
+              trend: 'up',
+              trendValue: '+2.1%',
+              color: '#EF4444',
+            },
+            {
+              label: 'Profit',
+              value: '$9,250',
+              trend: 'up',
+              trendValue: '+12.3%',
+              color: '#3F51B5',
+            },
+            {
+              label: 'Margin',
+              value: '74.3%',
+              trend: 'up',
+              trendValue: '+1.8%',
+              color: '#F59E0B',
+            },
           ]}
         />
       </GridItem>
@@ -233,9 +333,27 @@ const DashboardContent = () => (
           icon={Zap}
           layout="horizontal"
           metrics={[
-            { label: 'Avg Response', value: '245ms', trend: 'down', trendValue: '-15ms', color: '#10B981' },
-            { label: 'Throughput', value: '1.2k/s', trend: 'up', trendValue: '+200/s', color: '#3F51B5' },
-            { label: 'Uptime', value: '99.9%', trend: 'neutral', trendValue: '0%', color: '#F59E0B' },
+            {
+              label: 'Avg Response',
+              value: '245ms',
+              trend: 'down',
+              trendValue: '-15ms',
+              color: '#10B981',
+            },
+            {
+              label: 'Throughput',
+              value: '1.2k/s',
+              trend: 'up',
+              trendValue: '+200/s',
+              color: '#3F51B5',
+            },
+            {
+              label: 'Uptime',
+              value: '99.9%',
+              trend: 'neutral',
+              trendValue: '0%',
+              color: '#F59E0B',
+            },
           ]}
         />
       </GridItem>
@@ -295,10 +413,34 @@ const DashboardContent = () => (
           layout="vertical"
           size="lg"
           metrics={[
-            { label: 'Avg Processing Time', value: '2.3s', trend: 'down', trendValue: '-0.5s', color: '#10B981' },
-            { label: 'Queue Wait Time', value: '45ms', trend: 'down', trendValue: '-12ms', color: '#3F51B5' },
-            { label: 'Total Uptime', value: '99.8%', trend: 'up', trendValue: '+0.1%', color: '#F59E0B' },
-            { label: 'Peak Load Time', value: '14:30', trend: 'neutral', trendValue: 'Same', color: '#B19ADA' },
+            {
+              label: 'Avg Processing Time',
+              value: '2.3s',
+              trend: 'down',
+              trendValue: '-0.5s',
+              color: '#10B981',
+            },
+            {
+              label: 'Queue Wait Time',
+              value: '45ms',
+              trend: 'down',
+              trendValue: '-12ms',
+              color: '#3F51B5',
+            },
+            {
+              label: 'Total Uptime',
+              value: '99.8%',
+              trend: 'up',
+              trendValue: '+0.1%',
+              color: '#F59E0B',
+            },
+            {
+              label: 'Peak Load Time',
+              value: '14:30',
+              trend: 'neutral',
+              trendValue: 'Same',
+              color: '#B19ADA',
+            },
           ]}
         />
       </GridItem>
@@ -413,7 +555,14 @@ export const CustomBrandTheme: Story = {
             info: '#3F51B5',
           },
           chart: {
-            palette: ['#3F51B5', '#B19ADA', '#FF6B35', '#10B981', '#F59E0B', '#EF4444'],
+            palette: [
+              '#3F51B5',
+              '#B19ADA',
+              '#FF6B35',
+              '#10B981',
+              '#F59E0B',
+              '#EF4444',
+            ],
             gradients: {
               primary: 'linear-gradient(135deg, #3F51B5 0%, #B19ADA 100%)',
               secondary: 'linear-gradient(135deg, #FF6B35 0%, #10B981 100%)',
@@ -477,11 +626,7 @@ export const LoadingStates: Story = {
           <h1 className="text-3xl font-bold mb-6">Loading States Demo</h1>
           <DashboardGrid>
             <GridItem colSpan={3}>
-              <DashboardCard
-                title="Loading Card"
-                loading
-                icon={Activity}
-              />
+              <DashboardCard title="Loading Card" loading icon={Activity} />
             </GridItem>
             <GridItem colSpan={3}>
               <MetricCard

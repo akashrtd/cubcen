@@ -13,12 +13,12 @@ export async function POST(request: NextRequest) {
     // Basic validation
     if (!email || !password) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: { 
-            code: 'VALIDATION_ERROR', 
-            message: 'Email and password are required' 
-          } 
+        {
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'Email and password are required',
+          },
         },
         { status: 400 }
       )
@@ -31,12 +31,12 @@ export async function POST(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: { 
-            code: 'INVALID_CREDENTIALS', 
-            message: 'Invalid email or password' 
-          } 
+        {
+          success: false,
+          error: {
+            code: 'INVALID_CREDENTIALS',
+            message: 'Invalid email or password',
+          },
         },
         { status: 401 }
       )
@@ -46,12 +46,12 @@ export async function POST(request: NextRequest) {
     const isPasswordValid = await bcrypt.compare(password, user.password)
     if (!isPasswordValid) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: { 
-            code: 'INVALID_CREDENTIALS', 
-            message: 'Invalid email or password' 
-          } 
+        {
+          success: false,
+          error: {
+            code: 'INVALID_CREDENTIALS',
+            message: 'Invalid email or password',
+          },
         },
         { status: 401 }
       )
@@ -78,16 +78,15 @@ export async function POST(request: NextRequest) {
       },
       message: 'Login successful',
     })
-
   } catch (error) {
     console.error('Login error:', error)
     return NextResponse.json(
-      { 
-        success: false, 
-        error: { 
-          code: 'INTERNAL_ERROR', 
-          message: 'Internal server error' 
-        } 
+      {
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Internal server error',
+        },
       },
       { status: 500 }
     )

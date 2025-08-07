@@ -14,32 +14,27 @@ describe('MetricCard', () => {
       unit: 'users',
       trend: 'up' as const,
       trendValue: '+12%',
-      color: '#3F51B5'
+      color: '#3F51B5',
     },
     {
       label: 'Active Sessions',
       value: 567,
       unit: 'sessions',
       trend: 'down' as const,
-      trendValue: '-5%'
+      trendValue: '-5%',
     },
     {
       label: 'Revenue',
       value: '$89,123',
       trend: 'neutral' as const,
-      trendValue: '0%'
-    }
+      trendValue: '0%',
+    },
   ]
 
   describe('Basic Rendering', () => {
     it('renders with title and metrics', () => {
-      render(
-        <MetricCard
-          title="KPI Dashboard"
-          metrics={mockMetrics}
-        />
-      )
-      
+      render(<MetricCard title="KPI Dashboard" metrics={mockMetrics} />)
+
       expect(screen.getByText('KPI Dashboard')).toBeInTheDocument()
       expect(screen.getByText('Total Users')).toBeInTheDocument()
       expect(screen.getByText('1234')).toBeInTheDocument()
@@ -50,26 +45,17 @@ describe('MetricCard', () => {
 
     it('renders with icon', () => {
       render(
-        <MetricCard
-          title="Metrics"
-          icon={Activity}
-          metrics={mockMetrics}
-        />
+        <MetricCard title="Metrics" icon={Activity} metrics={mockMetrics} />
       )
-      
+
       expect(screen.getByText('Metrics')).toBeInTheDocument()
       const icon = document.querySelector('[aria-hidden="true"]')
       expect(icon).toBeInTheDocument()
     })
 
     it('renders empty state when no metrics provided', () => {
-      render(
-        <MetricCard
-          title="Empty Metrics"
-          metrics={[]}
-        />
-      )
-      
+      render(<MetricCard title="Empty Metrics" metrics={[]} />)
+
       expect(screen.getByText('Empty Metrics')).toBeInTheDocument()
       expect(screen.queryByText('Total Users')).not.toBeInTheDocument()
     })
@@ -77,13 +63,8 @@ describe('MetricCard', () => {
 
   describe('Layout Variants', () => {
     it('renders vertical layout by default', () => {
-      render(
-        <MetricCard
-          title="Vertical Layout"
-          metrics={mockMetrics}
-        />
-      )
-      
+      render(<MetricCard title="Vertical Layout" metrics={mockMetrics} />)
+
       const container = document.querySelector('.flex.flex-col.space-y-4')
       expect(container).toBeInTheDocument()
     })
@@ -96,20 +77,18 @@ describe('MetricCard', () => {
           layout="horizontal"
         />
       )
-      
-      const container = document.querySelector('.flex.flex-row.items-center.justify-between')
+
+      const container = document.querySelector(
+        '.flex.flex-row.items-center.justify-between'
+      )
       expect(container).toBeInTheDocument()
     })
 
     it('renders grid layout', () => {
       render(
-        <MetricCard
-          title="Grid Layout"
-          metrics={mockMetrics}
-          layout="grid"
-        />
+        <MetricCard title="Grid Layout" metrics={mockMetrics} layout="grid" />
       )
-      
+
       const container = document.querySelector('.grid')
       expect(container).toBeInTheDocument()
     })
@@ -122,56 +101,39 @@ describe('MetricCard', () => {
           layout="grid"
         />
       )
-      
+
       expect(document.querySelector('.grid-cols-2')).toBeInTheDocument()
 
       rerender(
-        <MetricCard
-          title="Grid Layout"
-          metrics={mockMetrics}
-          layout="grid"
-        />
+        <MetricCard title="Grid Layout" metrics={mockMetrics} layout="grid" />
       )
-      
+
       expect(document.querySelector('.grid-cols-3')).toBeInTheDocument()
     })
   })
 
   describe('Trend Indicators', () => {
     it('renders up trend with correct styling and icon', () => {
-      render(
-        <MetricCard
-          title="Trend Test"
-          metrics={[mockMetrics[0]]}
-        />
-      )
-      
+      render(<MetricCard title="Trend Test" metrics={[mockMetrics[0]]} />)
+
       const trendElement = screen.getByLabelText('Total Users trend: up, +12%')
       expect(trendElement).toBeInTheDocument()
       expect(trendElement).toHaveClass('text-green-600')
     })
 
     it('renders down trend with correct styling and icon', () => {
-      render(
-        <MetricCard
-          title="Trend Test"
-          metrics={[mockMetrics[1]]}
-        />
+      render(<MetricCard title="Trend Test" metrics={[mockMetrics[1]]} />)
+
+      const trendElement = screen.getByLabelText(
+        'Active Sessions trend: down, -5%'
       )
-      
-      const trendElement = screen.getByLabelText('Active Sessions trend: down, -5%')
       expect(trendElement).toBeInTheDocument()
       expect(trendElement).toHaveClass('text-red-600')
     })
 
     it('renders neutral trend with correct styling and icon', () => {
-      render(
-        <MetricCard
-          title="Trend Test"
-          metrics={[mockMetrics[2]]}
-        />
-      )
-      
+      render(<MetricCard title="Trend Test" metrics={[mockMetrics[2]]} />)
+
       const trendElement = screen.getByLabelText('Revenue trend: neutral, 0%')
       expect(trendElement).toBeInTheDocument()
       expect(trendElement).toHaveClass('text-gray-600')
@@ -180,29 +142,19 @@ describe('MetricCard', () => {
     it('does not render trend when not provided', () => {
       const metricWithoutTrend = {
         label: 'Simple Metric',
-        value: 100
+        value: 100,
       }
-      
-      render(
-        <MetricCard
-          title="No Trend"
-          metrics={[metricWithoutTrend]}
-        />
-      )
-      
+
+      render(<MetricCard title="No Trend" metrics={[metricWithoutTrend]} />)
+
       expect(screen.queryByLabelText(/trend:/)).not.toBeInTheDocument()
     })
   })
 
   describe('Custom Colors', () => {
     it('applies custom colors to metric values', () => {
-      render(
-        <MetricCard
-          title="Custom Colors"
-          metrics={[mockMetrics[0]]}
-        />
-      )
-      
+      render(<MetricCard title="Custom Colors" metrics={[mockMetrics[0]]} />)
+
       const valueElement = screen.getByText('1234')
       expect(valueElement).toHaveStyle({ color: '#3F51B5' })
     })
@@ -210,14 +162,8 @@ describe('MetricCard', () => {
 
   describe('Loading and Error States', () => {
     it('renders loading state', () => {
-      render(
-        <MetricCard
-          title="Loading Card"
-          metrics={mockMetrics}
-          loading
-        />
-      )
-      
+      render(<MetricCard title="Loading Card" metrics={mockMetrics} loading />)
+
       expect(screen.getByRole('status')).toBeInTheDocument()
       expect(screen.queryByText('Total Users')).not.toBeInTheDocument()
     })
@@ -230,7 +176,7 @@ describe('MetricCard', () => {
           error="Failed to load metrics"
         />
       )
-      
+
       expect(screen.getByRole('alert')).toBeInTheDocument()
       expect(screen.getByText('Failed to load metrics')).toBeInTheDocument()
       expect(screen.queryByText('Total Users')).not.toBeInTheDocument()
@@ -240,17 +186,13 @@ describe('MetricCard', () => {
   describe('Responsive Behavior', () => {
     it('handles long metric labels gracefully', () => {
       const longLabelMetric = {
-        label: 'This is a very long metric label that should be handled gracefully',
-        value: 100
+        label:
+          'This is a very long metric label that should be handled gracefully',
+        value: 100,
       }
-      
-      render(
-        <MetricCard
-          title="Long Labels"
-          metrics={[longLabelMetric]}
-        />
-      )
-      
+
+      render(<MetricCard title="Long Labels" metrics={[longLabelMetric]} />)
+
       const label = screen.getByText(/This is a very long metric label/)
       expect(label).toHaveClass('truncate')
     })
@@ -260,16 +202,11 @@ describe('MetricCard', () => {
         { label: 'Number', value: 1234 },
         { label: 'String', value: '1.2K' },
         { label: 'Currency', value: '$89,123' },
-        { label: 'Percentage', value: '95%' }
+        { label: 'Percentage', value: '95%' },
       ]
-      
-      render(
-        <MetricCard
-          title="Mixed Values"
-          metrics={mixedMetrics}
-        />
-      )
-      
+
+      render(<MetricCard title="Mixed Values" metrics={mixedMetrics} />)
+
       expect(screen.getByText('1234')).toBeInTheDocument()
       expect(screen.getByText('1.2K')).toBeInTheDocument()
       expect(screen.getByText('$89,123')).toBeInTheDocument()
@@ -287,36 +224,34 @@ describe('MetricCard', () => {
           metrics={mockMetrics}
         />
       )
-      
+
       const results = await axe(container)
       expect(results).toHaveNoViolations()
     })
 
     it('provides proper ARIA labels for trends', () => {
-      render(
-        <MetricCard
-          title="Trend Accessibility"
-          metrics={mockMetrics}
-        />
-      )
-      
-      expect(screen.getByLabelText('Total Users trend: up, +12%')).toBeInTheDocument()
-      expect(screen.getByLabelText('Active Sessions trend: down, -5%')).toBeInTheDocument()
-      expect(screen.getByLabelText('Revenue trend: neutral, 0%')).toBeInTheDocument()
+      render(<MetricCard title="Trend Accessibility" metrics={mockMetrics} />)
+
+      expect(
+        screen.getByLabelText('Total Users trend: up, +12%')
+      ).toBeInTheDocument()
+      expect(
+        screen.getByLabelText('Active Sessions trend: down, -5%')
+      ).toBeInTheDocument()
+      expect(
+        screen.getByLabelText('Revenue trend: neutral, 0%')
+      ).toBeInTheDocument()
     })
   })
 
   describe('Custom Content', () => {
     it('renders additional children content', () => {
       render(
-        <MetricCard
-          title="Custom Content"
-          metrics={mockMetrics}
-        >
+        <MetricCard title="Custom Content" metrics={mockMetrics}>
           <div>Additional content</div>
         </MetricCard>
       )
-      
+
       expect(screen.getByText('Additional content')).toBeInTheDocument()
     })
 
@@ -328,8 +263,10 @@ describe('MetricCard', () => {
           actions={<button>Custom Action</button>}
         />
       )
-      
-      expect(screen.getByRole('button', { name: 'Custom Action' })).toBeInTheDocument()
+
+      expect(
+        screen.getByRole('button', { name: 'Custom Action' })
+      ).toBeInTheDocument()
     })
   })
 })

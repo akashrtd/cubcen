@@ -1,18 +1,24 @@
 'use client'
 
 import React from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { 
-  AlertTriangle, 
-  RefreshCw, 
-  Home, 
-  BarChart3, 
-  Settings, 
-  Users, 
+import {
+  AlertTriangle,
+  RefreshCw,
+  Home,
+  BarChart3,
+  Settings,
+  Users,
   Layers,
-  ArrowLeft
+  ArrowLeft,
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
@@ -22,7 +28,11 @@ interface PageErrorFallbackProps {
   errorId?: string
 }
 
-export function AnalyticsErrorFallback({ error, resetError, errorId }: PageErrorFallbackProps) {
+export function AnalyticsErrorFallback({
+  error,
+  resetError,
+  errorId,
+}: PageErrorFallbackProps) {
   const router = useRouter()
 
   return (
@@ -34,7 +44,8 @@ export function AnalyticsErrorFallback({ error, resetError, errorId }: PageError
             Analytics Dashboard Error
           </CardTitle>
           <CardDescription>
-            There was an error loading the analytics dashboard. This might be due to data processing issues or API connectivity problems.
+            There was an error loading the analytics dashboard. This might be
+            due to data processing issues or API connectivity problems.
             {errorId && (
               <span className="block mt-1 text-xs text-muted-foreground">
                 Error ID: {errorId}
@@ -55,9 +66,13 @@ export function AnalyticsErrorFallback({ error, resetError, errorId }: PageError
               Common causes and solutions:
             </p>
             <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1">
-              <li>Analytics data is being processed - try again in a few moments</li>
+              <li>
+                Analytics data is being processed - try again in a few moments
+              </li>
               <li>API connection issues - check your network connection</li>
-              <li>Date range filters may be too broad - try a smaller time range</li>
+              <li>
+                Date range filters may be too broad - try a smaller time range
+              </li>
               <li>Database connectivity issues - our team has been notified</li>
             </ul>
           </div>
@@ -67,7 +82,11 @@ export function AnalyticsErrorFallback({ error, resetError, errorId }: PageError
               <RefreshCw className="mr-2 h-4 w-4" />
               Retry Analytics
             </Button>
-            <Button variant="outline" onClick={() => router.push('/dashboard')} className="flex-1">
+            <Button
+              variant="outline"
+              onClick={() => router.push('/dashboard')}
+              className="flex-1"
+            >
               <Home className="mr-2 h-4 w-4" />
               Back to Dashboard
             </Button>
@@ -78,7 +97,11 @@ export function AnalyticsErrorFallback({ error, resetError, errorId }: PageError
   )
 }
 
-export function PlatformsErrorFallback({ error, resetError, errorId }: PageErrorFallbackProps) {
+export function PlatformsErrorFallback({
+  error,
+  resetError,
+  errorId,
+}: PageErrorFallbackProps) {
   const router = useRouter()
 
   return (
@@ -90,7 +113,8 @@ export function PlatformsErrorFallback({ error, resetError, errorId }: PageError
             Platform Management Error
           </CardTitle>
           <CardDescription>
-            There was an error loading the platform management page. This might be due to platform connectivity issues or configuration problems.
+            There was an error loading the platform management page. This might
+            be due to platform connectivity issues or configuration problems.
             {errorId && (
               <span className="block mt-1 text-xs text-muted-foreground">
                 Error ID: {errorId}
@@ -123,7 +147,11 @@ export function PlatformsErrorFallback({ error, resetError, errorId }: PageError
               <RefreshCw className="mr-2 h-4 w-4" />
               Retry Platforms
             </Button>
-            <Button variant="outline" onClick={() => router.push('/dashboard')} className="flex-1">
+            <Button
+              variant="outline"
+              onClick={() => router.push('/dashboard')}
+              className="flex-1"
+            >
               <Home className="mr-2 h-4 w-4" />
               Back to Dashboard
             </Button>
@@ -134,7 +162,11 @@ export function PlatformsErrorFallback({ error, resetError, errorId }: PageError
   )
 }
 
-export function UsersErrorFallback({ error, resetError, errorId }: PageErrorFallbackProps) {
+export function UsersErrorFallback({
+  error,
+  resetError,
+  errorId,
+}: PageErrorFallbackProps) {
   const router = useRouter()
 
   return (
@@ -146,7 +178,8 @@ export function UsersErrorFallback({ error, resetError, errorId }: PageErrorFall
             User Management Error
           </CardTitle>
           <CardDescription>
-            There was an error loading the user management page. This might be due to permission issues or database connectivity problems.
+            There was an error loading the user management page. This might be
+            due to permission issues or database connectivity problems.
             {errorId && (
               <span className="block mt-1 text-xs text-muted-foreground">
                 Error ID: {errorId}
@@ -179,7 +212,11 @@ export function UsersErrorFallback({ error, resetError, errorId }: PageErrorFall
               <RefreshCw className="mr-2 h-4 w-4" />
               Retry Users
             </Button>
-            <Button variant="outline" onClick={() => router.push('/dashboard')} className="flex-1">
+            <Button
+              variant="outline"
+              onClick={() => router.push('/dashboard')}
+              className="flex-1"
+            >
               <Home className="mr-2 h-4 w-4" />
               Back to Dashboard
             </Button>
@@ -190,7 +227,11 @@ export function UsersErrorFallback({ error, resetError, errorId }: PageErrorFall
   )
 }
 
-export function SettingsErrorFallback({ error, resetError, errorId }: PageErrorFallbackProps) {
+export function SettingsErrorFallback({
+  error,
+  resetError,
+  errorId,
+}: PageErrorFallbackProps) {
   const router = useRouter()
 
   return (
@@ -202,7 +243,8 @@ export function SettingsErrorFallback({ error, resetError, errorId }: PageErrorF
             Settings Page Error
           </CardTitle>
           <CardDescription>
-            There was an error loading your settings. This might be due to profile data issues or preference loading problems.
+            There was an error loading your settings. This might be due to
+            profile data issues or preference loading problems.
             {errorId && (
               <span className="block mt-1 text-xs text-muted-foreground">
                 Error ID: {errorId}
@@ -235,7 +277,11 @@ export function SettingsErrorFallback({ error, resetError, errorId }: PageErrorF
               <RefreshCw className="mr-2 h-4 w-4" />
               Retry Settings
             </Button>
-            <Button variant="outline" onClick={() => router.push('/dashboard')} className="flex-1">
+            <Button
+              variant="outline"
+              onClick={() => router.push('/dashboard')}
+              className="flex-1"
+            >
               <Home className="mr-2 h-4 w-4" />
               Back to Dashboard
             </Button>
@@ -246,7 +292,11 @@ export function SettingsErrorFallback({ error, resetError, errorId }: PageErrorF
   )
 }
 
-export function DashboardErrorFallback({ error, resetError, errorId }: PageErrorFallbackProps) {
+export function DashboardErrorFallback({
+  error,
+  resetError,
+  errorId,
+}: PageErrorFallbackProps) {
   const router = useRouter()
 
   return (
@@ -258,7 +308,8 @@ export function DashboardErrorFallback({ error, resetError, errorId }: PageError
             Dashboard Error
           </CardTitle>
           <CardDescription>
-            There was a critical error loading the dashboard. This might be due to authentication issues or core system problems.
+            There was a critical error loading the dashboard. This might be due
+            to authentication issues or core system problems.
             {errorId && (
               <span className="block mt-1 text-xs text-muted-foreground">
                 Error ID: {errorId}
@@ -291,11 +342,19 @@ export function DashboardErrorFallback({ error, resetError, errorId }: PageError
               <RefreshCw className="mr-2 h-4 w-4" />
               Retry Dashboard
             </Button>
-            <Button variant="outline" onClick={() => window.location.reload()} className="flex-1">
+            <Button
+              variant="outline"
+              onClick={() => window.location.reload()}
+              className="flex-1"
+            >
               <RefreshCw className="mr-2 h-4 w-4" />
               Reload Page
             </Button>
-            <Button variant="outline" onClick={() => router.push('/auth/login')} className="flex-1">
+            <Button
+              variant="outline"
+              onClick={() => router.push('/auth/login')}
+              className="flex-1"
+            >
               <ArrowLeft className="mr-2 h-4 w-4" />
               Login Again
             </Button>

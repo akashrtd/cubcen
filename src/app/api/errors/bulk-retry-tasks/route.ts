@@ -8,7 +8,8 @@ export async function POST(request: NextRequest) {
     const results = taskIds.map((taskId: string) => ({
       taskId,
       success: Math.random() > 0.2, // 80% success rate
-      message: Math.random() > 0.2 ? 'Task queued for retry' : 'Failed to queue task',
+      message:
+        Math.random() > 0.2 ? 'Task queued for retry' : 'Failed to queue task',
     }))
 
     const successCount = results.filter((r: any) => r.success).length

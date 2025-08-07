@@ -4,7 +4,14 @@ import { GridItem } from './grid-item'
 import { DashboardCard } from '../cards/dashboard-card'
 import { MetricCard } from '../cards/metric-card'
 import { ChartCard } from '../cards/chart-card'
-import { Activity, Users, TrendingUp, AlertCircle, BarChart3, PieChart } from 'lucide-react'
+import {
+  Activity,
+  Users,
+  TrendingUp,
+  AlertCircle,
+  BarChart3,
+  PieChart,
+} from 'lucide-react'
 
 const meta: Meta<typeof DashboardGrid> = {
   title: 'Dashboard/Grid/DashboardGrid',
@@ -13,7 +20,8 @@ const meta: Meta<typeof DashboardGrid> = {
     layout: 'padded',
     docs: {
       description: {
-        component: 'A responsive 12-column grid system for organizing dashboard cards. Supports responsive breakpoints, custom column spans, and priority-based ordering.',
+        component:
+          'A responsive 12-column grid system for organizing dashboard cards. Supports responsive breakpoints, custom column spans, and priority-based ordering.',
       },
     },
   },
@@ -75,19 +83,29 @@ const samplePieData = {
 
 export const Default: Story = {
   args: {},
-  render: (args) => (
+  render: args => (
     <DashboardGrid {...args}>
       <GridItem colSpan={3}>
         <DashboardCard
           title="Active Agents"
-          metric={{ value: 24, unit: 'agents', trend: 'up', trendValue: '+12%' }}
+          metric={{
+            value: 24,
+            unit: 'agents',
+            trend: 'up',
+            trendValue: '+12%',
+          }}
           icon={Activity}
         />
       </GridItem>
       <GridItem colSpan={3}>
         <DashboardCard
           title="Total Users"
-          metric={{ value: 1247, unit: 'users', trend: 'up', trendValue: '+5%' }}
+          metric={{
+            value: 1247,
+            unit: 'users',
+            trend: 'up',
+            trendValue: '+5%',
+          }}
           icon={Users}
         />
       </GridItem>
@@ -112,19 +130,29 @@ export const Default: Story = {
 
 export const ResponsiveLayout: Story = {
   args: {},
-  render: (args) => (
+  render: args => (
     <DashboardGrid {...args}>
       <GridItem colSpan={{ desktop: 3, tablet: 2, mobile: 1 }}>
         <DashboardCard
           title="Active Agents"
-          metric={{ value: 24, unit: 'agents', trend: 'up', trendValue: '+12%' }}
+          metric={{
+            value: 24,
+            unit: 'agents',
+            trend: 'up',
+            trendValue: '+12%',
+          }}
           icon={Activity}
         />
       </GridItem>
       <GridItem colSpan={{ desktop: 3, tablet: 2, mobile: 1 }}>
         <DashboardCard
           title="Total Users"
-          metric={{ value: 1247, unit: 'users', trend: 'up', trendValue: '+5%' }}
+          metric={{
+            value: 1247,
+            unit: 'users',
+            trend: 'up',
+            trendValue: '+5%',
+          }}
           icon={Users}
         />
       </GridItem>
@@ -169,7 +197,7 @@ export const ResponsiveLayout: Story = {
 
 export const MixedSizes: Story = {
   args: {},
-  render: (args) => (
+  render: args => (
     <DashboardGrid {...args}>
       <GridItem colSpan={6}>
         <ChartCard
@@ -216,7 +244,8 @@ export const MixedSizes: Story = {
         >
           <div className="space-y-4">
             <p className="text-muted-foreground">
-              This is a larger card that spans 8 columns and contains more detailed information.
+              This is a larger card that spans 8 columns and contains more
+              detailed information.
             </p>
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center">
@@ -237,7 +266,7 @@ export const MixedSizes: Story = {
 
 export const PriorityOrdering: Story = {
   args: {},
-  render: (args) => (
+  render: args => (
     <DashboardGrid {...args}>
       <GridItem colSpan={3} priority="critical">
         <DashboardCard
@@ -279,7 +308,7 @@ export const CustomGap: Story = {
   args: {
     gap: 2,
   },
-  render: (args) => (
+  render: args => (
     <DashboardGrid {...args}>
       <GridItem colSpan={4}>
         <DashboardCard title="Card 1" icon={Activity} />
@@ -298,7 +327,7 @@ export const CustomColumns: Story = {
   args: {
     columns: 8,
   },
-  render: (args) => (
+  render: args => (
     <DashboardGrid {...args}>
       <GridItem colSpan={2}>
         <DashboardCard title="Card 1" icon={Activity} />
@@ -320,7 +349,7 @@ export const DenseLayout: Story = {
   args: {
     autoFlow: 'dense',
   },
-  render: (args) => (
+  render: args => (
     <DashboardGrid {...args}>
       <GridItem colSpan={6} rowSpan={2}>
         <ChartCard
@@ -357,19 +386,29 @@ export const MobileLayout: Story = {
       defaultViewport: 'mobile',
     },
   },
-  render: (args) => (
+  render: args => (
     <DashboardGrid {...args}>
       <GridItem colSpan={{ desktop: 3, tablet: 2, mobile: 1 }}>
         <DashboardCard
           title="Active Agents"
-          metric={{ value: 24, unit: 'agents', trend: 'up', trendValue: '+12%' }}
+          metric={{
+            value: 24,
+            unit: 'agents',
+            trend: 'up',
+            trendValue: '+12%',
+          }}
           icon={Activity}
         />
       </GridItem>
       <GridItem colSpan={{ desktop: 3, tablet: 2, mobile: 1 }}>
         <DashboardCard
           title="Total Users"
-          metric={{ value: 1247, unit: 'users', trend: 'up', trendValue: '+5%' }}
+          metric={{
+            value: 1247,
+            unit: 'users',
+            trend: 'up',
+            trendValue: '+5%',
+          }}
           icon={Users}
         />
       </GridItem>
@@ -400,19 +439,29 @@ export const TabletLayout: Story = {
       defaultViewport: 'tablet',
     },
   },
-  render: (args) => (
+  render: args => (
     <DashboardGrid {...args}>
       <GridItem colSpan={{ desktop: 3, tablet: 2, mobile: 1 }}>
         <DashboardCard
           title="Active Agents"
-          metric={{ value: 24, unit: 'agents', trend: 'up', trendValue: '+12%' }}
+          metric={{
+            value: 24,
+            unit: 'agents',
+            trend: 'up',
+            trendValue: '+12%',
+          }}
           icon={Activity}
         />
       </GridItem>
       <GridItem colSpan={{ desktop: 3, tablet: 2, mobile: 1 }}>
         <DashboardCard
           title="Total Users"
-          metric={{ value: 1247, unit: 'users', trend: 'up', trendValue: '+5%' }}
+          metric={{
+            value: 1247,
+            unit: 'users',
+            trend: 'up',
+            trendValue: '+5%',
+          }}
           icon={Users}
         />
       </GridItem>

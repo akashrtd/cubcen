@@ -11,30 +11,30 @@ export default function ErrorsPage() {
   return (
     <ProtectedRoute requiredResource="errors">
       <div className="space-y-6">
-      {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            Error Handling & Recovery
-          </h1>
-          <p className="text-gray-600 mt-2">
-            Monitor system errors, detect patterns, and manage recovery
-            operations
-          </p>
+        {/* Page Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Error Handling & Recovery
+            </h1>
+            <p className="text-gray-600 mt-2">
+              Monitor system errors, detect patterns, and manage recovery
+              operations
+            </p>
+          </div>
         </div>
-      </div>
 
-      {/* System Health Overview */}
-      {/* <SystemHealthIndicators /> */}
+        {/* System Health Overview */}
+        {/* <SystemHealthIndicators /> */}
 
-      {/* Error Patterns and Task Retry */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <ErrorPatterns />
-        <TaskRetryPanel />
-      </div>
+        {/* Error Patterns and Task Retry */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <ErrorPatterns />
+          <TaskRetryPanel />
+        </div>
 
-      {/* Error Log Viewer */}
-      <ErrorLogViewer />
+        {/* Error Log Viewer */}
+        <ErrorLogViewer />
       </div>
     </ProtectedRoute>
   )

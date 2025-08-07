@@ -30,21 +30,21 @@ describe('Dashboard Layout - Navigation Filtering', () => {
   describe('Admin User Navigation', () => {
     beforeEach(() => {
       mockUseAuth.mockReturnValue({
-        user: { 
-          id: '1', 
-          email: 'admin@test.com', 
-          name: 'Admin User', 
+        user: {
+          id: '1',
+          email: 'admin@test.com',
+          name: 'Admin User',
           role: UserRole.ADMIN,
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
         },
         isLoading: false,
         isAuthenticated: true,
-        hasAnyRole: jest.fn((roles) => roles.includes(UserRole.ADMIN)),
+        hasAnyRole: jest.fn(roles => roles.includes(UserRole.ADMIN)),
         canAccessResource: jest.fn(() => true), // Admin can access all resources
         login: jest.fn(),
         logout: jest.fn(),
-        hasRole: jest.fn((role) => role === UserRole.ADMIN),
+        hasRole: jest.fn(role => role === UserRole.ADMIN),
       })
     })
 
@@ -70,24 +70,24 @@ describe('Dashboard Layout - Navigation Filtering', () => {
   describe('Operator User Navigation', () => {
     beforeEach(() => {
       mockUseAuth.mockReturnValue({
-        user: { 
-          id: '2', 
-          email: 'operator@test.com', 
-          name: 'Operator User', 
+        user: {
+          id: '2',
+          email: 'operator@test.com',
+          name: 'Operator User',
           role: UserRole.OPERATOR,
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
         },
         isLoading: false,
         isAuthenticated: true,
-        hasAnyRole: jest.fn((roles) => roles.includes(UserRole.OPERATOR)),
-        canAccessResource: jest.fn((resource) => {
+        hasAnyRole: jest.fn(roles => roles.includes(UserRole.OPERATOR)),
+        canAccessResource: jest.fn(resource => {
           // Operator can access most resources except users
           return resource !== 'users'
         }),
         login: jest.fn(),
         logout: jest.fn(),
-        hasRole: jest.fn((role) => role === UserRole.OPERATOR),
+        hasRole: jest.fn(role => role === UserRole.OPERATOR),
       })
     })
 
@@ -106,7 +106,7 @@ describe('Dashboard Layout - Navigation Filtering', () => {
       expect(screen.getByText('Platforms')).toBeInTheDocument()
       expect(screen.getByText('Errors')).toBeInTheDocument()
       expect(screen.getByText('Settings')).toBeInTheDocument()
-      
+
       // Users should not be visible (admin only)
       expect(screen.queryByText('Users')).not.toBeInTheDocument()
     })
@@ -115,24 +115,24 @@ describe('Dashboard Layout - Navigation Filtering', () => {
   describe('Viewer User Navigation', () => {
     beforeEach(() => {
       mockUseAuth.mockReturnValue({
-        user: { 
-          id: '3', 
-          email: 'viewer@test.com', 
-          name: 'Viewer User', 
+        user: {
+          id: '3',
+          email: 'viewer@test.com',
+          name: 'Viewer User',
           role: UserRole.VIEWER,
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
         },
         isLoading: false,
         isAuthenticated: true,
-        hasAnyRole: jest.fn((roles) => roles.includes(UserRole.VIEWER)),
-        canAccessResource: jest.fn((resource) => {
+        hasAnyRole: jest.fn(roles => roles.includes(UserRole.VIEWER)),
+        canAccessResource: jest.fn(resource => {
           // Viewer can only access read-only resources
           return ['analytics', 'agents', 'tasks', 'settings'].includes(resource)
         }),
         login: jest.fn(),
         logout: jest.fn(),
-        hasRole: jest.fn((role) => role === UserRole.VIEWER),
+        hasRole: jest.fn(role => role === UserRole.VIEWER),
       })
     })
 
@@ -149,7 +149,7 @@ describe('Dashboard Layout - Navigation Filtering', () => {
       expect(screen.getByText('Tasks')).toBeInTheDocument()
       expect(screen.getByText('Analytics')).toBeInTheDocument()
       expect(screen.getByText('Settings')).toBeInTheDocument()
-      
+
       // These should not be visible for viewers
       expect(screen.queryByText('Users')).not.toBeInTheDocument()
       expect(screen.queryByText('Platforms')).not.toBeInTheDocument()
@@ -184,13 +184,13 @@ describe('Dashboard Layout - Navigation Filtering', () => {
   describe('User Profile Display', () => {
     it('should display user information in profile dropdown', () => {
       mockUseAuth.mockReturnValue({
-        user: { 
-          id: '1', 
-          email: 'test@example.com', 
-          name: 'Test User', 
+        user: {
+          id: '1',
+          email: 'test@example.com',
+          name: 'Test User',
           role: UserRole.ADMIN,
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
         },
         isLoading: false,
         isAuthenticated: true,

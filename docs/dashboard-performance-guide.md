@@ -9,7 +9,7 @@ The Cubcen Dashboard UI system is designed with performance as a core principle,
 The dashboard system is optimized to achieve excellent Core Web Vitals scores:
 
 - **Largest Contentful Paint (LCP)**: < 2.5 seconds
-- **First Input Delay (FID)**: < 100 milliseconds  
+- **First Input Delay (FID)**: < 100 milliseconds
 - **Cumulative Layout Shift (CLS)**: < 0.1
 
 ### Performance Monitoring
@@ -20,14 +20,12 @@ import { CoreWebVitals } from '@/components/dashboard/performance/core-web-vital
 function PerformanceMonitoredDashboard() {
   return (
     <CoreWebVitals
-      onLCP={(metric) => console.log('LCP:', metric)}
-      onFID={(metric) => console.log('FID:', metric)}
-      onCLS={(metric) => console.log('CLS:', metric)}
+      onLCP={metric => console.log('LCP:', metric)}
+      onFID={metric => console.log('FID:', metric)}
+      onCLS={metric => console.log('CLS:', metric)}
     >
       <DashboardLayout>
-        <DashboardGrid>
-          {/* Dashboard content */}
-        </DashboardGrid>
+        <DashboardGrid>{/* Dashboard content */}</DashboardGrid>
       </DashboardLayout>
     </CoreWebVitals>
   )
@@ -144,17 +142,14 @@ function DataProcessingCard({ rawData, filters }) {
   const processedData = useMemo(() => {
     return expensiveDataProcessing(rawData, filters)
   }, [rawData, filters])
-  
+
   return (
     <MemoizedComponent
       shouldUpdate={(prevProps, nextProps) => {
         return prevProps.data !== nextProps.data
       }}
     >
-      <ChartCard
-        title="Processed Data"
-        data={processedData}
-      />
+      <ChartCard title="Processed Data" data={processedData} />
     </MemoizedComponent>
   )
 }
@@ -177,11 +172,7 @@ function LargeDatasetDashboard({ items }) {
       containerHeight={600}
       overscan={5}
       renderItem={(item, index) => (
-        <DashboardCard
-          key={item.id}
-          title={item.title}
-          metric={item.metric}
-        />
+        <DashboardCard key={item.id} title={item.title} metric={item.metric} />
       )}
     />
   )
@@ -203,11 +194,7 @@ function VirtualizedList({ data }) {
       height={400}
       renderItem={({ item, index, style }) => (
         <div style={style}>
-          <DashboardCard
-            title={item.title}
-            metric={item.metric}
-            size="sm"
-          />
+          <DashboardCard title={item.title} metric={item.metric} size="sm" />
         </div>
       )}
     />
@@ -313,7 +300,7 @@ function DataOptimizedCard() {
     cacheTime: 10 * 60 * 1000, // 10 minutes
     refetchOnWindowFocus: false,
   })
-  
+
   return (
     <DashboardCard
       title="Metrics"
@@ -327,7 +314,7 @@ function DataOptimizedCard() {
 
 ### Batch API Requests
 
-```tsx
+````tsx
 function BatchedDataDashboard() {
   const { data } = useQuery({
     queryKey: ['dashboard-batch'],
@@ -342,7 +329,7 @@ function BatchedDataDashboard() {
       userData
     })
   })
-  
+
   return (
     <DashboardGrid>
       <DashboardCard metric={data?.metrics} />
@@ -365,7 +352,7 @@ import { ChartCard } from '@/components/dashboard/cards/chart-card'
 
 // ❌ Avoid: Importing entire modules
 import * as Dashboard from '@/components/dashboard'
-```
+````
 
 ### Dynamic Imports
 
@@ -374,8 +361,8 @@ Use dynamic imports for heavy components:
 ```tsx
 import { lazy, Suspense } from 'react'
 
-const HeavyAnalyticsChart = lazy(() => 
-  import('@/components/dashboard/charts/heavy-analytics-chart')
+const HeavyAnalyticsChart = lazy(
+  () => import('@/components/dashboard/charts/heavy-analytics-chart')
 )
 
 function OptimizedAnalytics() {
@@ -410,7 +397,7 @@ import { useEffect, useRef } from 'react'
 
 function MemoryOptimizedChart({ data }) {
   const chartRef = useRef(null)
-  
+
   useEffect(() => {
     // Chart cleanup is handled automatically
     return () => {
@@ -420,7 +407,7 @@ function MemoryOptimizedChart({ data }) {
       }
     }
   }, [])
-  
+
   return (
     <ChartCard
       ref={chartRef}
@@ -441,18 +428,18 @@ import { useCallback, useRef } from 'react'
 
 function LeakPreventionExample() {
   const timeoutRef = useRef(null)
-  
+
   const handleDelayedAction = useCallback(() => {
     // Clear existing timeout
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)
     }
-    
+
     timeoutRef.current = setTimeout(() => {
       // Action
     }, 1000)
   }, [])
-  
+
   useEffect(() => {
     return () => {
       // Cleanup on unmount
@@ -461,12 +448,9 @@ function LeakPreventionExample() {
       }
     }
   }, [])
-  
+
   return (
-    <DashboardCard
-      onClick={handleDelayedAction}
-      title="Memory Safe Card"
-    />
+    <DashboardCard onClick={handleDelayedAction} title="Memory Safe Card" />
   )
 }
 ```
@@ -484,20 +468,16 @@ function MonitoredDashboard() {
       trackRenderTime: true,
       trackMemoryUsage: true,
       trackInteractionLatency: true,
-      onMetric: (metric) => {
+      onMetric: metric => {
         console.log('Performance metric:', metric)
         // Send to analytics service
-      }
+      },
     })
-    
+
     return () => monitor.disconnect()
   }, [])
-  
-  return (
-    <DashboardLayout>
-      {/* Dashboard content */}
-    </DashboardLayout>
-  )
+
+  return <DashboardLayout>{/* Dashboard content */}</DashboardLayout>
 }
 ```
 
@@ -508,16 +488,16 @@ import { Benchmark } from '@/lib/benchmark'
 
 function BenchmarkedComponent() {
   const benchmark = new Benchmark('dashboard-render')
-  
+
   useEffect(() => {
     benchmark.start()
-    
+
     return () => {
       benchmark.end()
       console.log('Render time:', benchmark.duration)
     }
   }, [])
-  
+
   return <DashboardCard title="Benchmarked Card" />
 }
 ```
@@ -530,20 +510,15 @@ function BenchmarkedComponent() {
 // ✅ Good: Optimized component structure
 function OptimizedCard({ title, data, onUpdate }) {
   // Memoize expensive calculations
-  const processedData = useMemo(() => 
-    processData(data), [data]
-  )
-  
+  const processedData = useMemo(() => processData(data), [data])
+
   // Memoize callbacks
   const handleClick = useCallback(() => {
     onUpdate(processedData)
   }, [onUpdate, processedData])
-  
+
   return (
-    <DashboardCard
-      title={title}
-      onClick={handleClick}
-    >
+    <DashboardCard title={title} onClick={handleClick}>
       {processedData.map(item => (
         <DataItem key={item.id} {...item} />
       ))}
@@ -555,7 +530,7 @@ function OptimizedCard({ title, data, onUpdate }) {
 function UnoptimizedCard({ title, data, onUpdate }) {
   // Expensive calculation on every render
   const processedData = processData(data)
-  
+
   return (
     <DashboardCard
       title={title}
@@ -575,8 +550,8 @@ function UnoptimizedCard({ title, data, onUpdate }) {
 // ✅ Good: Efficient data updates
 function EfficientDataCard({ items }) {
   const [selectedItems, setSelectedItems] = useState(new Set())
-  
-  const handleToggle = useCallback((id) => {
+
+  const handleToggle = useCallback(id => {
     setSelectedItems(prev => {
       const next = new Set(prev)
       if (next.has(id)) {
@@ -587,7 +562,7 @@ function EfficientDataCard({ items }) {
       return next
     })
   }, [])
-  
+
   return (
     <DashboardCard title="Efficient Selection">
       {items.map(item => (
@@ -605,8 +580,8 @@ function EfficientDataCard({ items }) {
 // ❌ Avoid: Inefficient data updates
 function InefficientDataCard({ items }) {
   const [selectedItems, setSelectedItems] = useState([])
-  
-  const handleToggle = (id) => {
+
+  const handleToggle = id => {
     // Inefficient array operations
     if (selectedItems.includes(id)) {
       setSelectedItems(selectedItems.filter(item => item !== id))
@@ -614,7 +589,7 @@ function InefficientDataCard({ items }) {
       setSelectedItems([...selectedItems, id])
     }
   }
-  
+
   return (
     <DashboardCard title="Inefficient Selection">
       {items.map(item => (
@@ -635,18 +610,26 @@ function InefficientDataCard({ items }) {
 ```tsx
 // ✅ Good: Optimized chart data
 function OptimizedChart({ rawData }) {
-  const chartData = useMemo(() => ({
-    datasets: [{
-      label: 'Data',
-      data: rawData.map(({ x, y }) => ({ x, y })) // Only extract needed fields
-    }]
-  }), [rawData])
-  
-  const chartConfig = useMemo(() => ({
-    animations: { enabled: true, duration: 300 },
-    legend: { show: true, position: 'bottom' }
-  }), [])
-  
+  const chartData = useMemo(
+    () => ({
+      datasets: [
+        {
+          label: 'Data',
+          data: rawData.map(({ x, y }) => ({ x, y })), // Only extract needed fields
+        },
+      ],
+    }),
+    [rawData]
+  )
+
+  const chartConfig = useMemo(
+    () => ({
+      animations: { enabled: true, duration: 300 },
+      legend: { show: true, position: 'bottom' },
+    }),
+    []
+  )
+
   return (
     <ChartCard
       title="Optimized Chart"
@@ -664,13 +647,15 @@ function UnoptimizedChart({ rawData }) {
       title="Unoptimized Chart"
       chartType="line"
       data={{
-        datasets: [{
-          label: 'Data',
-          data: rawData // Entire objects passed, recalculated every render
-        }]
+        datasets: [
+          {
+            label: 'Data',
+            data: rawData, // Entire objects passed, recalculated every render
+          },
+        ],
       }}
       config={{
-        animations: { enabled: true, duration: 300 } // New object every render
+        animations: { enabled: true, duration: 300 }, // New object every render
       }}
     />
   )
@@ -690,11 +675,11 @@ describe('Dashboard Performance', () => {
     const largeDataset = Array.from({ length: 1000 }, (_, i) => ({
       id: i,
       title: `Item ${i}`,
-      value: Math.random() * 100
+      value: Math.random() * 100,
     }))
-    
+
     const startTime = performance.now()
-    
+
     render(
       <DashboardGrid>
         {largeDataset.map(item => (
@@ -702,21 +687,21 @@ describe('Dashboard Performance', () => {
         ))}
       </DashboardGrid>
     )
-    
+
     await waitFor(() => {
       const endTime = performance.now()
       const renderTime = endTime - startTime
-      
+
       // Should render within 100ms budget
       expect(renderTime).toBeLessThan(100)
     })
   })
-  
+
   test('chart loads within performance budget', async () => {
     const chartData = generateLargeChartData(10000)
-    
+
     const startTime = performance.now()
-    
+
     render(
       <ChartCard
         title="Performance Test Chart"
@@ -724,11 +709,11 @@ describe('Dashboard Performance', () => {
         data={chartData}
       />
     )
-    
+
     await waitFor(() => {
       const endTime = performance.now()
       const loadTime = endTime - startTime
-      
+
       // Chart should load within 200ms budget
       expect(loadTime).toBeLessThan(200)
     })
@@ -746,20 +731,20 @@ describe('Memory Usage', () => {
         <ChartCard data={largeDataset} />
       </DashboardLayout>
     )
-    
+
     const initialMemory = performance.memory?.usedJSHeapSize || 0
-    
+
     unmount()
-    
+
     // Force garbage collection if available
     if (global.gc) {
       global.gc()
     }
-    
+
     setTimeout(() => {
       const finalMemory = performance.memory?.usedJSHeapSize || 0
       const memoryDiff = finalMemory - initialMemory
-      
+
       // Memory usage should not increase significantly
       expect(memoryDiff).toBeLessThan(1024 * 1024) // 1MB threshold
     }, 100)
@@ -776,21 +761,17 @@ import { usePerformanceMonitor } from '@/hooks/use-performance-monitor'
 
 function MonitoredDashboard() {
   const { metrics, startMeasure, endMeasure } = usePerformanceMonitor()
-  
+
   useEffect(() => {
     startMeasure('dashboard-load')
-    
+
     return () => {
       endMeasure('dashboard-load')
       console.log('Dashboard metrics:', metrics)
     }
   }, [])
-  
-  return (
-    <DashboardLayout>
-      {/* Dashboard content */}
-    </DashboardLayout>
-  )
+
+  return <DashboardLayout>{/* Dashboard content */}</DashboardLayout>
 }
 ```
 
@@ -809,7 +790,7 @@ function reportWebVitals() {
 }
 
 // Performance Observer
-const observer = new PerformanceObserver((list) => {
+const observer = new PerformanceObserver(list => {
   for (const entry of list.getEntries()) {
     console.log('Performance entry:', entry)
   }
@@ -823,6 +804,7 @@ observer.observe({ entryTypes: ['measure', 'navigation', 'paint'] })
 ### Common Performance Problems
 
 #### Slow Initial Load
+
 - **Cause**: Large bundle size, synchronous loading
 - **Solution**: Implement code splitting and lazy loading
 
@@ -840,20 +822,20 @@ function OptimizedDashboard() {
 ```
 
 #### Sluggish Interactions
+
 - **Cause**: Expensive re-renders, missing memoization
 - **Solution**: Use React.memo and useMemo
 
 ```tsx
 const OptimizedCard = React.memo(({ data }) => {
-  const processedData = useMemo(() => 
-    expensiveProcessing(data), [data]
-  )
-  
+  const processedData = useMemo(() => expensiveProcessing(data), [data])
+
   return <DashboardCard data={processedData} />
 })
 ```
 
 #### Memory Leaks
+
 - **Cause**: Uncleaned event listeners, timers
 - **Solution**: Proper cleanup in useEffect
 
@@ -861,7 +843,7 @@ const OptimizedCard = React.memo(({ data }) => {
 useEffect(() => {
   const timer = setInterval(updateData, 1000)
   const listener = window.addEventListener('resize', handleResize)
-  
+
   return () => {
     clearInterval(timer)
     window.removeEventListener('resize', handleResize)
@@ -879,12 +861,10 @@ function ProfiledDashboard() {
   const onRenderCallback = (id, phase, actualDuration) => {
     console.log('Render:', { id, phase, actualDuration })
   }
-  
+
   return (
     <Profiler id="Dashboard" onRender={onRenderCallback}>
-      <DashboardLayout>
-        {/* Dashboard content */}
-      </DashboardLayout>
+      <DashboardLayout>{/* Dashboard content */}</DashboardLayout>
     </Profiler>
   )
 }
@@ -893,6 +873,7 @@ function ProfiledDashboard() {
 ## Performance Checklist
 
 ### Development
+
 - [ ] Use React.memo for pure components
 - [ ] Implement useMemo for expensive calculations
 - [ ] Use useCallback for event handlers
@@ -901,6 +882,7 @@ function ProfiledDashboard() {
 - [ ] Implement proper error boundaries
 
 ### Production
+
 - [ ] Enable gzip/brotli compression
 - [ ] Use CDN for static assets
 - [ ] Implement service worker caching
@@ -909,6 +891,7 @@ function ProfiledDashboard() {
 - [ ] Regular performance audits
 
 ### Monitoring
+
 - [ ] Track render times
 - [ ] Monitor memory usage
 - [ ] Measure interaction latency

@@ -78,20 +78,21 @@ const preview: Preview = {
     },
   },
   decorators: [
-    (Story) => React.createElement(
-      ThemeProvider,
-      {
-        attribute: 'class',
-        defaultTheme: 'light',
-        enableSystem: true,
-        disableTransitionOnChange: false,
-      },
+    Story =>
       React.createElement(
-        'div',
-        { className: 'min-h-screen bg-background text-foreground' },
-        React.createElement(Story)
-      )
-    ),
+        ThemeProvider,
+        {
+          attribute: 'class',
+          defaultTheme: 'light',
+          enableSystem: true,
+          disableTransitionOnChange: false,
+        },
+        React.createElement(
+          'div',
+          { className: 'min-h-screen bg-background text-foreground' },
+          React.createElement(Story)
+        )
+      ),
   ],
 }
 

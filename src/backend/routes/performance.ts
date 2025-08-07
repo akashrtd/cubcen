@@ -26,7 +26,7 @@ const benchmarkSchema = {
   body: z.object({
     name: z.string().min(1),
     iterations: z.number().min(1).max(10000).optional(),
-  })
+  }),
 }
 
 const loadTestSchema = {
@@ -36,7 +36,7 @@ const loadTestSchema = {
     concurrency: z.number().min(1).max(100),
     rampUpTime: z.number().min(0).optional(),
     warmupRuns: z.number().min(0).max(100).optional(),
-  })
+  }),
 }
 
 const metricsQuerySchema = z.object({
@@ -80,7 +80,7 @@ router.get('/metrics', async (req, res) => {
     const stats = {
       metrics: performanceMonitor.getMetrics(),
       componentMetrics: performanceMonitor.getComponentMetrics(),
-      coreWebVitals: performanceMonitor.getCoreWebVitals()
+      coreWebVitals: performanceMonitor.getCoreWebVitals(),
     }
     res.json({
       success: true,
@@ -88,7 +88,10 @@ router.get('/metrics', async (req, res) => {
       timestamp: new Date().toISOString(),
     })
   } catch (error) {
-    logger.error('Failed to get performance metrics', error instanceof Error ? error : new Error(String(error)))
+    logger.error(
+      'Failed to get performance metrics',
+      error instanceof Error ? error : new Error(String(error))
+    )
     res.status(500).json({
       success: false,
       error: 'Failed to retrieve performance metrics',
@@ -163,7 +166,10 @@ router.get(
         },
       })
     } catch (error) {
-      logger.error('Failed to get metrics history', error instanceof Error ? error : new Error(String(error)))
+      logger.error(
+        'Failed to get metrics history',
+        error instanceof Error ? error : new Error(String(error))
+      )
       res.status(500).json({
         success: false,
         error: 'Failed to retrieve metrics history',

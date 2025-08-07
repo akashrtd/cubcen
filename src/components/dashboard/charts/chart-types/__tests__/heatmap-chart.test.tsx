@@ -191,7 +191,11 @@ describe('HeatmapChart', () => {
   it('hides color legend when disabled', () => {
     const configWithoutLegend = {
       ...mockConfig,
-      legend: { show: false, position: 'bottom' as const, align: 'center' as const },
+      legend: {
+        show: false,
+        position: 'bottom' as const,
+        align: 'center' as const,
+      },
     }
 
     render(<HeatmapChart {...defaultProps} config={configWithoutLegend} />)
@@ -218,7 +222,7 @@ describe('HeatmapChart', () => {
     render(<HeatmapChart {...defaultProps} data={emptyData} />)
 
     expect(screen.getByTestId('responsive-container')).toBeInTheDocument()
-    
+
     // Should not render any cells
     const cells = document.querySelectorAll('rect')
     expect(cells.length).toBe(0)
@@ -241,7 +245,7 @@ describe('HeatmapChart', () => {
     render(<HeatmapChart {...defaultProps} data={invalidData} />)
 
     expect(screen.getByTestId('responsive-container')).toBeInTheDocument()
-    
+
     // Should handle gracefully without crashing
   })
 
@@ -258,9 +262,7 @@ describe('HeatmapChart', () => {
       datasets: [
         {
           label: 'Single Value',
-          data: [
-            { x: 'A', y: 'B', value: 50 },
-          ],
+          data: [{ x: 'A', y: 'B', value: 50 }],
         },
       ],
     }
@@ -325,7 +327,9 @@ describe('HeatmapChart', () => {
 
     render(<HeatmapChart {...defaultProps} data={dataWithoutTitle} />)
 
-    expect(screen.queryByText('Weekly Activity Heatmap')).not.toBeInTheDocument()
+    expect(
+      screen.queryByText('Weekly Activity Heatmap')
+    ).not.toBeInTheDocument()
     expect(screen.getByTestId('responsive-container')).toBeInTheDocument()
   })
 })

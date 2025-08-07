@@ -61,12 +61,15 @@ class PerformanceMonitor {
   }
 
   private observeNavigationTiming() {
-    const navigationEntries = performance.getEntriesByType('navigation') as PerformanceNavigationTiming[]
+    const navigationEntries = performance.getEntriesByType(
+      'navigation'
+    ) as PerformanceNavigationTiming[]
     if (navigationEntries.length > 0) {
       const entry = navigationEntries[0]
       const metrics: PerformanceMetrics = {
         pageLoadTime: entry.loadEventEnd - entry.navigationStart,
-        domContentLoaded: entry.domContentLoadedEventEnd - entry.navigationStart,
+        domContentLoaded:
+          entry.domContentLoadedEventEnd - entry.navigationStart,
       }
       this.metrics.set('navigation', metrics)
     }
@@ -74,10 +77,12 @@ class PerformanceMonitor {
 
   private observePaintTiming() {
     try {
-      const observer = new PerformanceObserver((list) => {
+      const observer = new PerformanceObserver(list => {
         for (const entry of list.getEntries()) {
           if (entry.name === 'first-contentful-paint') {
-            this.updateMetric('paint', { firstContentfulPaint: entry.startTime })
+            this.updateMetric('paint', {
+              firstContentfulPaint: entry.startTime,
+            })
           }
         }
       })
@@ -90,10 +95,12 @@ class PerformanceMonitor {
 
   private observeLargestContentfulPaint() {
     try {
-      const observer = new PerformanceObserver((list) => {
+      const observer = new PerformanceObserver(list => {
         const entries = list.getEntries()
         const lastEntry = entries[entries.length - 1]
-        this.updateMetric('lcp', { largestContentfulPaint: lastEntry.startTime })
+        this.updateMetric('lcp', {
+          largestContentfulPaint: lastEntry.startTime,
+        })
       })
       observer.observe({ entryTypes: ['largest-contentful-paint'] })
       this.observers.set('lcp', observer)
@@ -105,7 +112,7 @@ class PerformanceMonitor {
   private observeCumulativeLayoutShift() {
     try {
       let clsValue = 0
-      const observer = new PerformanceObserver((list) => {
+      const observer = new PerformanceObserver(list => {
         for (const entry of list.getEntries()) {
           if (!(entry as any).hadRecentInput) {
             clsValue += (entry as any).value
@@ -122,9 +129,11 @@ class PerformanceMonitor {
 
   private observeFirstInputDelay() {
     try {
-      const observer = new PerformanceObserver((list) => {
+      const observer = new PerformanceObserver(list => {
         for (const entry of list.getEntries()) {
-          this.updateMetric('fid', { firstInputDelay: (entry as any).processingStart - entry.startTime })
+          this.updateMetric('fid', {
+            firstInputDelay: (entry as any).processingStart - entry.startTime,
+          })
         }
       })
       observer.observe({ entryTypes: ['first-input'] })
@@ -135,17 +144,24 @@ class PerformanceMonitor {
   }
 
   private updateMetric(key: string, update: Partial<PerformanceMetrics>) {
-    const existing = this.metrics.get(key) || { pageLoadTime: 0, domContentLoaded: 0 }
+    const existing = this.metrics.get(key) || {
+      pageLoadTime: 0,
+      domContentLoaded: 0,
+    }
     this.metrics.set(key, { ...existing, ...update })
   }
 
   /**
    * Track component render performance
    */
-  trackComponentRender(componentName: string, renderStart: number, renderEnd: number) {
+  trackComponentRender(
+    componentName: string,
+    renderStart: number,
+    renderEnd: number
+  ) {
     const renderTime = renderEnd - renderStart
     const existing = this.componentMetrics.get(componentName)
-    
+
     if (existing) {
       existing.renderTime = renderTime
       existing.updateCount += 1
@@ -164,7 +180,7 @@ class PerformanceMonitor {
    */
   trackLazyComponentLoad(componentName: string, loadTime: number) {
     console.log(`Lazy component ${componentName} loaded in ${loadTime}ms`)
-    
+
     // Store in performance metrics
     this.updateMetric(`lazy-${componentName}`, {
       componentRenderTime: loadTime,
@@ -221,12 +237,24 @@ class PerformanceMonitor {
     const coreWebVitals = this.getCoreWebVitals()
 
     console.group('🚀 Performance Summary')
-    
+
     console.group('📊 Core Web Vitals')
-    console.log('First Contentful Paint (FCP):', coreWebVitals.fcp ? `${coreWebVitals.fcp.toFixed(2)}ms` : 'N/A')
-    console.log('Largest Contentful Paint (LCP):', coreWebVitals.lcp ? `${coreWebVitals.lcp.toFixed(2)}ms` : 'N/A')
-    console.log('Cumulative Layout Shift (CLS):', coreWebVitals.cls ? coreWebVitals.cls.toFixed(4) : 'N/A')
-    console.log('First Input Delay (FID):', coreWebVitals.fid ? `${coreWebVitals.fid.toFixed(2)}ms` : 'N/A')
+    console.log(
+      'First Contentful Paint (FCP):',
+      coreWebVitals.fcp ? `${coreWebVitals.fcp.toFixed(2)}ms` : 'N/A'
+    )
+    console.log(
+      'Largest Contentful Paint (LCP):',
+      coreWebVitals.lcp ? `${coreWebVitals.lcp.toFixed(2)}ms` : 'N/A'
+    )
+    console.log(
+      'Cumulative Layout Shift (CLS):',
+      coreWebVitals.cls ? coreWebVitals.cls.toFixed(4) : 'N/A'
+    )
+    console.log(
+      'First Input Delay (FID):',
+      coreWebVitals.fid ? `${coreWebVitals.fid.toFixed(2)}ms` : 'N/A'
+    )
     console.groupEnd()
 
     if (Object.keys(componentMetrics).length > 0) {
@@ -247,7 +275,10 @@ class PerformanceMonitor {
         console.log(`${key}:`, `${metric.componentRenderTime?.toFixed(2)}ms`)
       } else if (key === 'navigation') {
         console.log('Page Load Time:', `${metric.pageLoadTime.toFixed(2)}ms`)
-        console.log('DOM Content Loaded:', `${metric.domContentLoaded.toFixed(2)}ms`)
+        console.log(
+          'DOM Content Loaded:',
+          `${metric.domContentLoaded.toFixed(2)}ms`
+        )
       }
     })
     console.groupEnd()
@@ -369,7 +400,11 @@ export function usePerformanceTracking(componentName: string) {
   }
 
   const trackRender = (renderStart: number, renderEnd: number) => {
-    performanceMonitor.trackComponentRender(componentName, renderStart, renderEnd)
+    performanceMonitor.trackComponentRender(
+      componentName,
+      renderStart,
+      renderEnd
+    )
   }
 
   const trackMount = (mountTime: number) => {
@@ -388,10 +423,14 @@ export function withPerformanceTracking<P extends object>(
 ) {
   return function PerformanceTrackedComponent(props: P) {
     const renderStart = performance.now()
-    
+
     React.useEffect(() => {
       const renderEnd = performance.now()
-      performanceMonitor.trackComponentRender(componentName, renderStart, renderEnd)
+      performanceMonitor.trackComponentRender(
+        componentName,
+        renderStart,
+        renderEnd
+      )
     })
 
     return React.createElement(WrappedComponent, props)

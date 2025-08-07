@@ -353,12 +353,12 @@ describe('WorkflowService', () => {
       )
 
       expect(executionId).toBeDefined()
-      
+
       // Mock workflow update
       ;(prisma.workflow.findUnique as jest.Mock).mockResolvedValue({
-          id: 'workflow-1',
-          status: 'ACTIVE',
-        })
+        id: 'workflow-1',
+        status: 'ACTIVE',
+      })
 
       await expect(
         workflowService.updateWorkflow('workflow-1', { name: 'Updated' })

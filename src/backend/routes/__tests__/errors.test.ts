@@ -237,9 +237,7 @@ describe('Error Reporting API', () => {
       })
       nonAdminApp.use('/api/cubcen/v1/errors', errorsRouter)
 
-      await request(nonAdminApp)
-        .get('/api/cubcen/v1/errors')
-        .expect(403)
+      await request(nonAdminApp).get('/api/cubcen/v1/errors').expect(403)
     })
 
     it('should handle query parameters', async () => {

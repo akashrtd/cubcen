@@ -5,13 +5,8 @@ import { Router, Request, Response } from 'express'
 import { z } from 'zod'
 import { structuredLogger as logger } from '@/lib/logger'
 import { auditLogger, AuditEventType } from '@/lib/audit-logger'
-import {
-  authenticate,
-} from '@/backend/middleware/auth'
-import {
-  validateBody,
-  validateParams,
-} from '@/backend/middleware/validation'
+import { authenticate } from '@/backend/middleware/auth'
+import { validateBody, validateParams } from '@/backend/middleware/validation'
 import {
   asyncHandler,
   createSuccessResponse,
@@ -20,7 +15,10 @@ import {
 } from '@/lib/api-error-handler'
 import { authService } from '@/services/auth'
 import { notificationPreferencesService } from '@/services/notification-preferences'
-import { NotificationEventType, NotificationChannelType } from '@/types/notification'
+import {
+  NotificationEventType,
+  NotificationChannelType,
+} from '@/types/notification'
 
 const router = Router()
 
@@ -50,20 +48,22 @@ const updatePreferencesSchema = z.object({
     .optional(),
 })
 
-const changePasswordSchema = z.object({
-  currentPassword: z.string().min(1, 'Current password is required'),
-  newPassword: z
-    .string()
-    .min(8, 'Password must be at least 8 characters')
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-      'Password must contain at least one lowercase letter, one uppercase letter, and one number'
-    ),
-  confirmPassword: z.string().min(1, 'Password confirmation is required'),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ['confirmPassword'],
-})
+const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, 'Current password is required'),
+    newPassword: z
+      .string()
+      .min(8, 'Password must be at least 8 characters')
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+        'Password must contain at least one lowercase letter, one uppercase letter, and one number'
+      ),
+    confirmPassword: z.string().min(1, 'Password confirmation is required'),
+  })
+  .refine(data => data.newPassword === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  })
 
 const updateSecuritySettingsSchema = z.object({
   twoFactorEnabled: z.boolean().optional(),
@@ -87,7 +87,7 @@ router.get(
   asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user!.id
 
-    logger.info('Get profile settings request', { 
+    logger.info('Get profile settings request', {
       userId,
       requestId: req.headers['x-request-id'],
     })
@@ -106,11 +106,13 @@ router.get(
         updatedAt: new Date(),
       }
 
-      res.json(createSuccessResponse(
-        { profile: mockProfile },
-        'Profile settings retrieved successfully',
-        req.headers['x-request-id'] as string
-      ))
+      res.json(
+        createSuccessResponse(
+          { profile: mockProfile },
+          'Profile settings retrieved successfully',
+          req.headers['x-request-id'] as string
+        )
+      )
     } catch (error) {
       logger.error('Profile service error', error as Error, {
         userId,
@@ -376,60 +378,56 @@ router.post(
  * GET /api/cubcen/v1/settings/security
  * Get user security settings
  */
-router.get(
-  '/security',
-  authenticate,
-  async (req: Request, res: Response) => {
-    try {
-      const userId = req.user!.id
+router.get('/security', authenticate, async (req: Request, res: Response) => {
+  try {
+    const userId = req.user!.id
 
-      logger.info('Get security settings request', { userId })
+    logger.info('Get security settings request', { userId })
 
-      // TODO: Implement security service to fetch from database
-      // For now, return mock security settings
-      const mockSecuritySettings = {
-        twoFactorEnabled: false,
-        lastPasswordChange: new Date('2024-01-15'),
-        activeSessions: 1,
-        sessionTimeout: 60, // minutes
-        loginHistory: [
-          {
-            id: 'login_1',
-            timestamp: new Date(),
-            ipAddress: '192.168.1.1',
-            userAgent: 'Mozilla/5.0...',
-            success: true,
-          },
-          {
-            id: 'login_2',
-            timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000),
-            ipAddress: '192.168.1.1',
-            userAgent: 'Mozilla/5.0...',
-            success: true,
-          },
-        ],
-      }
-
-      res.status(200).json({
-        success: true,
-        data: { security: mockSecuritySettings },
-        message: 'Security settings retrieved successfully',
-      })
-    } catch (error) {
-      logger.error('Get security settings failed', error as Error, {
-        userId: req.user?.id,
-      })
-
-      res.status(500).json({
-        success: false,
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: 'Failed to retrieve security settings',
+    // TODO: Implement security service to fetch from database
+    // For now, return mock security settings
+    const mockSecuritySettings = {
+      twoFactorEnabled: false,
+      lastPasswordChange: new Date('2024-01-15'),
+      activeSessions: 1,
+      sessionTimeout: 60, // minutes
+      loginHistory: [
+        {
+          id: 'login_1',
+          timestamp: new Date(),
+          ipAddress: '192.168.1.1',
+          userAgent: 'Mozilla/5.0...',
+          success: true,
         },
-      })
+        {
+          id: 'login_2',
+          timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000),
+          ipAddress: '192.168.1.1',
+          userAgent: 'Mozilla/5.0...',
+          success: true,
+        },
+      ],
     }
+
+    res.status(200).json({
+      success: true,
+      data: { security: mockSecuritySettings },
+      message: 'Security settings retrieved successfully',
+    })
+  } catch (error) {
+    logger.error('Get security settings failed', error as Error, {
+      userId: req.user?.id,
+    })
+
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: 'Failed to retrieve security settings',
+      },
+    })
   }
-)
+})
 
 /**
  * PUT /api/cubcen/v1/settings/security
@@ -519,7 +517,8 @@ router.get(
       logger.info('Get notification preferences request', { userId })
 
       // Use existing notification preferences service
-      const preferences = await notificationPreferencesService.getUserPreferences(userId)
+      const preferences =
+        await notificationPreferencesService.getUserPreferences(userId)
 
       res.status(200).json({
         success: true,
@@ -564,11 +563,12 @@ router.put(
       })
 
       // Use existing notification preferences service
-      const preference = await notificationPreferencesService.updateUserPreference(
-        userId,
-        eventType,
-        { channels, enabled, escalationDelay }
-      )
+      const preference =
+        await notificationPreferencesService.updateUserPreference(
+          userId,
+          eventType,
+          { channels, enabled, escalationDelay }
+        )
 
       logger.info('Notification preference updated successfully', {
         userId,
@@ -604,11 +604,15 @@ router.put(
 router.post(
   '/notifications/bulk',
   authenticate,
-  validateBody(z.object({
-    preferences: z.array(updateNotificationPreferenceSchema.omit({ eventType: true }).extend({
-      eventType: z.nativeEnum(NotificationEventType),
-    })),
-  })),
+  validateBody(
+    z.object({
+      preferences: z.array(
+        updateNotificationPreferenceSchema.omit({ eventType: true }).extend({
+          eventType: z.nativeEnum(NotificationEventType),
+        })
+      ),
+    })
+  ),
   async (req: Request, res: Response) => {
     try {
       const userId = req.user!.id
@@ -620,7 +624,10 @@ router.post(
       })
 
       // Use existing notification preferences service
-      await notificationPreferencesService.bulkUpdatePreferences(userId, preferences)
+      await notificationPreferencesService.bulkUpdatePreferences(
+        userId,
+        preferences
+      )
 
       logger.info('Notification preferences bulk updated successfully', {
         userId,
@@ -632,10 +639,14 @@ router.post(
         message: 'Notification preferences updated successfully',
       })
     } catch (error) {
-      logger.error('Bulk update notification preferences failed', error as Error, {
-        userId: req.user?.id,
-        count: req.body.preferences?.length,
-      })
+      logger.error(
+        'Bulk update notification preferences failed',
+        error as Error,
+        {
+          userId: req.user?.id,
+          count: req.body.preferences?.length,
+        }
+      )
 
       res.status(500).json({
         success: false,
@@ -652,58 +663,56 @@ router.post(
  * GET /api/cubcen/v1/settings/sessions
  * Get user active sessions
  */
-router.get(
-  '/sessions',
-  authenticate,
-  async (req: Request, res: Response) => {
-    try {
-      const userId = req.user!.id
+router.get('/sessions', authenticate, async (req: Request, res: Response) => {
+  try {
+    const userId = req.user!.id
 
-      logger.info('Get active sessions request', { userId })
+    logger.info('Get active sessions request', { userId })
 
-      // TODO: Implement session service to fetch from database/cache
-      // For now, return mock session data
-      const mockSessions = [
-        {
-          id: 'session_1',
-          userId,
-          ipAddress: '192.168.1.1',
-          userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
-          createdAt: new Date(),
-          lastActivity: new Date(),
-          current: true,
-        },
-        {
-          id: 'session_2',
-          userId,
-          ipAddress: '192.168.1.100',
-          userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15',
-          createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
-          lastActivity: new Date(Date.now() - 30 * 60 * 1000),
-          current: false,
-        },
-      ]
+    // TODO: Implement session service to fetch from database/cache
+    // For now, return mock session data
+    const mockSessions = [
+      {
+        id: 'session_1',
+        userId,
+        ipAddress: '192.168.1.1',
+        userAgent:
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+        createdAt: new Date(),
+        lastActivity: new Date(),
+        current: true,
+      },
+      {
+        id: 'session_2',
+        userId,
+        ipAddress: '192.168.1.100',
+        userAgent:
+          'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15',
+        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
+        lastActivity: new Date(Date.now() - 30 * 60 * 1000),
+        current: false,
+      },
+    ]
 
-      res.status(200).json({
-        success: true,
-        data: { sessions: mockSessions },
-        message: 'Active sessions retrieved successfully',
-      })
-    } catch (error) {
-      logger.error('Get active sessions failed', error as Error, {
-        userId: req.user?.id,
-      })
+    res.status(200).json({
+      success: true,
+      data: { sessions: mockSessions },
+      message: 'Active sessions retrieved successfully',
+    })
+  } catch (error) {
+    logger.error('Get active sessions failed', error as Error, {
+      userId: req.user?.id,
+    })
 
-      res.status(500).json({
-        success: false,
-        error: {
-          code: 'INTERNAL_ERROR',
-          message: 'Failed to retrieve active sessions',
-        },
-      })
-    }
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: 'Failed to retrieve active sessions',
+      },
+    })
   }
-)
+})
 
 /**
  * DELETE /api/cubcen/v1/settings/sessions/:sessionId
@@ -719,7 +728,8 @@ router.delete(
       const { sessionId } = req.params
 
       // Prevent user from revoking their current session
-      if (sessionId === 'session_1') { // In real implementation, check against current session
+      if (sessionId === 'session_1') {
+        // In real implementation, check against current session
         res.status(400).json({
           success: false,
           error: {

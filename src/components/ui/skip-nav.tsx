@@ -7,10 +7,10 @@ interface SkipNavProps {
   className?: string
 }
 
-export function SkipNav({ 
-  href = '#main-content', 
+export function SkipNav({
+  href = '#main-content',
   children = 'Skip to main content',
-  className 
+  className,
 }: SkipNavProps) {
   return (
     <a
@@ -28,12 +28,12 @@ export function SkipNav({
   )
 }
 
-export function SkipNavTarget({ 
+export function SkipNavTarget({
   id = 'main-content',
-  className 
-}: { 
+  className,
+}: {
   id?: string
-  className?: string 
+  className?: string
 }) {
   return (
     <div

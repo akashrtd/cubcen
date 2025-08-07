@@ -41,7 +41,9 @@ describe('UserForm', () => {
       )
 
       expect(screen.getAllByText('Create User')).toHaveLength(2) // Title and button
-      expect(screen.getByRole('button', { name: 'Create User' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Create User' })
+      ).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
     })
 
@@ -73,7 +75,9 @@ describe('UserForm', () => {
       )
 
       expect(screen.getByText('Edit User')).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'Update User' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Update User' })
+      ).toBeInTheDocument()
     })
   })
 
@@ -88,7 +92,9 @@ describe('UserForm', () => {
       )
 
       expect(screen.getByText('Invite User')).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'Send Invitation' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Send Invitation' })
+      ).toBeInTheDocument()
     })
   })
 })

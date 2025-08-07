@@ -18,7 +18,7 @@ export function FocusManagement({
   focusOnMount = false,
   focusOnUpdate = false,
   focusSelector,
-  className
+  className,
 }: FocusManagementProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const previousFocusRef = useRef<HTMLElement | null>(null)
@@ -28,10 +28,10 @@ export function FocusManagement({
     if (element.hasAttribute('disabled')) return false
     if (element.getAttribute('tabindex') === '-1') return false
     if (element.offsetParent === null) return false // Hidden element
-    
+
     const style = window.getComputedStyle(element)
     if (style.display === 'none' || style.visibility === 'hidden') return false
-    
+
     return true
   }, [])
 
@@ -41,7 +41,9 @@ export function FocusManagement({
 
     // If a specific selector is provided, use it
     if (focusSelector) {
-      const element = containerRef.current.querySelector(focusSelector) as HTMLElement
+      const element = containerRef.current.querySelector(
+        focusSelector
+      ) as HTMLElement
       if (element && isFocusable(element)) {
         return element
       }
@@ -56,7 +58,7 @@ export function FocusManagement({
       'a[href]',
       '[tabindex]:not([tabindex="-1"])',
       '[role="button"]:not([disabled])',
-      '[role="link"]:not([disabled])'
+      '[role="link"]:not([disabled])',
     ].join(', ')
 
     const elements = containerRef.current.querySelectorAll(focusableSelectors)
@@ -93,7 +95,10 @@ export function FocusManagement({
 
     // Cleanup: restore focus when component unmounts
     return () => {
-      if (previousFocusRef.current && document.contains(previousFocusRef.current)) {
+      if (
+        previousFocusRef.current &&
+        document.contains(previousFocusRef.current)
+      ) {
         restoreFocus()
       }
     }
@@ -144,9 +149,9 @@ export function useFocusManagement() {
     const focusableElements = root.querySelectorAll(
       'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
     )
-    
+
     if (focusableElements.length > 0) {
-      (focusableElements[0] as HTMLElement).focus()
+      ;(focusableElements[0] as HTMLElement).focus()
     }
   }, [])
 
@@ -155,9 +160,9 @@ export function useFocusManagement() {
     const focusableElements = root.querySelectorAll(
       'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
     )
-    
+
     if (focusableElements.length > 0) {
-      (focusableElements[focusableElements.length - 1] as HTMLElement).focus()
+      ;(focusableElements[focusableElements.length - 1] as HTMLElement).focus()
     }
   }, [])
 
@@ -166,7 +171,7 @@ export function useFocusManagement() {
     popFocus,
     clearFocusHistory,
     focusFirst,
-    focusLast
+    focusLast,
   }
 }
 
@@ -184,7 +189,7 @@ export function ModalFocusManager({
   isOpen,
   onClose,
   initialFocus,
-  finalFocus
+  finalFocus,
 }: ModalFocusManagerProps) {
   const modalRef = useRef<HTMLDivElement>(null)
   const previousFocusRef = useRef<HTMLElement | null>(null)
@@ -218,7 +223,10 @@ export function ModalFocusManager({
           if (element) {
             element.focus()
           }
-        } else if (previousFocusRef.current && document.contains(previousFocusRef.current)) {
+        } else if (
+          previousFocusRef.current &&
+          document.contains(previousFocusRef.current)
+        ) {
           previousFocusRef.current.focus()
         }
       }, 0)
@@ -264,18 +272,20 @@ interface SkipLinksProps {
 
 export function SkipLinks({ links, className }: SkipLinksProps) {
   return (
-    <div className={cn('skip-links sr-only focus-within:not-sr-only', className)}>
+    <div
+      className={cn('skip-links sr-only focus-within:not-sr-only', className)}
+    >
       <div className="fixed top-0 left-0 z-50 bg-white border border-gray-300 shadow-lg">
         {links.map((link, index) => (
           <a
             key={index}
             href={link.href}
             className="block px-4 py-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-blue-50"
-            onClick={(e) => {
+            onClick={e => {
               e.preventDefault()
               const target = document.querySelector(link.href)
               if (target) {
-                (target as HTMLElement).focus()
+                ;(target as HTMLElement).focus()
                 target.scrollIntoView({ behavior: 'smooth' })
               }
             }}

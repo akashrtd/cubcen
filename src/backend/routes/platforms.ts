@@ -127,11 +127,13 @@ router.get(
         },
       }
 
-      res.json(createSuccessResponse(
-        responseData,
-        'Platforms retrieved successfully',
-        req.headers['x-request-id'] as string
-      ))
+      res.json(
+        createSuccessResponse(
+          responseData,
+          'Platforms retrieved successfully',
+          req.headers['x-request-id'] as string
+        )
+      )
     } catch (error) {
       logger.error('Platform service error', error as Error, {
         userId: req.user?.id,

@@ -175,8 +175,11 @@ export function createErrorResponse(
 /**
  * Handle Zod validation errors
  */
-export function handleValidationError(error: ZodError, requestId?: string): APIErrorResponse {
-  const validationErrors = error.issues.map((issue) => ({
+export function handleValidationError(
+  error: ZodError,
+  requestId?: string
+): APIErrorResponse {
+  const validationErrors = error.issues.map(issue => ({
     field: issue.path.join('.'),
     message: issue.message,
     code: issue.code,
@@ -193,7 +196,10 @@ export function handleValidationError(error: ZodError, requestId?: string): APIE
 /**
  * Handle authentication errors
  */
-export function handleAuthError(error: AuthenticationError, requestId?: string): APIErrorResponse {
+export function handleAuthError(
+  error: AuthenticationError,
+  requestId?: string
+): APIErrorResponse {
   const errorCodeMap: Record<string, APIErrorCode> = {
     INVALID_TOKEN: APIErrorCode.INVALID_TOKEN,
     TOKEN_EXPIRED: APIErrorCode.TOKEN_EXPIRED,
@@ -208,7 +214,10 @@ export function handleAuthError(error: AuthenticationError, requestId?: string):
 /**
  * Handle authorization errors
  */
-export function handleAuthzError(error: AuthorizationError, requestId?: string): APIErrorResponse {
+export function handleAuthzError(
+  error: AuthorizationError,
+  requestId?: string
+): APIErrorResponse {
   const errorCodeMap: Record<string, APIErrorCode> = {
     INSUFFICIENT_PERMISSIONS: APIErrorCode.INSUFFICIENT_PERMISSIONS,
     AUTHORIZATION_FAILED: APIErrorCode.AUTHORIZATION_FAILED,
@@ -222,7 +231,10 @@ export function handleAuthzError(error: AuthorizationError, requestId?: string):
 /**
  * Handle database errors
  */
-export function handleDatabaseError(error: Error, requestId?: string): APIErrorResponse {
+export function handleDatabaseError(
+  error: Error,
+  requestId?: string
+): APIErrorResponse {
   // Don't expose internal database errors to clients
   logger.error('Database error', error, { requestId })
 
@@ -264,8 +276,15 @@ export function handleDatabaseError(error: Error, requestId?: string): APIErrorR
 /**
  * Handle external service errors
  */
-export function handleExternalServiceError(error: Error, service: string, requestId?: string): APIErrorResponse {
-  logger.error(`External service error: ${service}`, error, { requestId, service })
+export function handleExternalServiceError(
+  error: Error,
+  service: string,
+  requestId?: string
+): APIErrorResponse {
+  logger.error(`External service error: ${service}`, error, {
+    requestId,
+    service,
+  })
 
   if (error.message.includes('timeout')) {
     return createErrorResponse(
@@ -314,9 +333,11 @@ export function errorHandler(
 
   // Handle specific error types
   if (error instanceof APIError) {
-    res.status(error.statusCode).json(
-      createErrorResponse(error.code, error.message, error.details, requestId)
-    )
+    res
+      .status(error.statusCode)
+      .json(
+        createErrorResponse(error.code, error.message, error.details, requestId)
+      )
     return
   }
 
@@ -342,14 +363,16 @@ export function errorHandler(
   }
 
   // Default to internal server error
-  res.status(500).json(
-    createErrorResponse(
-      APIErrorCode.INTERNAL_ERROR,
-      'Internal server error',
-      undefined,
-      requestId
+  res
+    .status(500)
+    .json(
+      createErrorResponse(
+        APIErrorCode.INTERNAL_ERROR,
+        'Internal server error',
+        undefined,
+        requestId
+      )
     )
-  )
 }
 
 /**
@@ -369,26 +392,33 @@ export function asyncHandler(
 export function notFoundHandler(req: Request, res: Response): void {
   const requestId = req.headers['x-request-id'] as string
 
-  res.status(404).json(
-    createErrorResponse(
-      APIErrorCode.RESOURCE_NOT_FOUND,
-      `API endpoint not found: ${req.method} ${req.path}`,
-      undefined,
-      requestId
+  res
+    .status(404)
+    .json(
+      createErrorResponse(
+        APIErrorCode.RESOURCE_NOT_FOUND,
+        `API endpoint not found: ${req.method} ${req.path}`,
+        undefined,
+        requestId
+      )
     )
-  )
 }
 
 /**
  * Request ID middleware
  */
-export function requestIdMiddleware(req: Request, res: Response, next: NextFunction): void {
-  const requestId = req.headers['x-request-id'] as string || 
+export function requestIdMiddleware(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void {
+  const requestId =
+    (req.headers['x-request-id'] as string) ||
     `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-  
+
   req.headers['x-request-id'] = requestId
   res.setHeader('X-Request-ID', requestId)
-  
+
   next()
 }
 
@@ -412,7 +442,10 @@ export const ValidationHelpers = {
   /**
    * Validate that a resource doesn't already exist
    */
-  requireUniqueResource<T>(resource: T | null | undefined, resourceType: string): void {
+  requireUniqueResource<T>(
+    resource: T | null | undefined,
+    resourceType: string
+  ): void {
     if (resource) {
       throw new APIError(
         APIErrorCode.RESOURCE_ALREADY_EXISTS,
@@ -426,10 +459,7 @@ export const ValidationHelpers = {
    */
   requirePermission(condition: boolean, message: string): void {
     if (!condition) {
-      throw new APIError(
-        APIErrorCode.INSUFFICIENT_PERMISSIONS,
-        message
-      )
+      throw new APIError(APIErrorCode.INSUFFICIENT_PERMISSIONS, message)
     }
   },
 
@@ -438,10 +468,7 @@ export const ValidationHelpers = {
    */
   requirePrecondition(condition: boolean, message: string): void {
     if (!condition) {
-      throw new APIError(
-        APIErrorCode.PRECONDITION_FAILED,
-        message
-      )
+      throw new APIError(APIErrorCode.PRECONDITION_FAILED, message)
     }
   },
 }

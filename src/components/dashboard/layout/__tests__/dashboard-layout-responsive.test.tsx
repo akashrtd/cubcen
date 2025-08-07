@@ -4,7 +4,7 @@ import { DashboardLayout } from '../dashboard-layout'
 
 // Mock the mobile hook
 jest.mock('../../mobile/touch-interactions', () => ({
-  useIsMobile: jest.fn(() => false)
+  useIsMobile: jest.fn(() => false),
 }))
 
 // Mock localStorage
@@ -12,17 +12,17 @@ const mockLocalStorage = {
   getItem: jest.fn(),
   setItem: jest.fn(),
   removeItem: jest.fn(),
-  clear: jest.fn()
+  clear: jest.fn(),
 }
 Object.defineProperty(window, 'localStorage', {
-  value: mockLocalStorage
+  value: mockLocalStorage,
 })
 
 // Mock window.innerWidth
 Object.defineProperty(window, 'innerWidth', {
   writable: true,
   configurable: true,
-  value: 1280
+  value: 1280,
 })
 
 describe('DashboardLayout Responsive Behavior', () => {
@@ -69,21 +69,20 @@ describe('DashboardLayout Responsive Behavior', () => {
       const layout = container.firstChild as HTMLElement
       expect(layout).toHaveStyle({
         gridTemplateColumns: '280px 1fr',
-        gridTemplateRows: '64px 1fr 48px'
+        gridTemplateRows: '64px 1fr 48px',
       })
     })
 
     it('shows sidebar toggle button', () => {
       render(
-        <DashboardLayout
-          header={mockHeader}
-          sidebar={mockSidebar}
-        >
+        <DashboardLayout header={mockHeader} sidebar={mockSidebar}>
           {mockChildren}
         </DashboardLayout>
       )
 
-      const toggleButton = screen.getByRole('button', { name: /collapse sidebar/i })
+      const toggleButton = screen.getByRole('button', {
+        name: /collapse sidebar/i,
+      })
       expect(toggleButton).toBeInTheDocument()
       expect(toggleButton).toHaveAttribute('aria-expanded', 'true')
     })
@@ -91,15 +90,14 @@ describe('DashboardLayout Responsive Behavior', () => {
     it('toggles sidebar when button is clicked', async () => {
       const user = userEvent.setup()
       const { container } = render(
-        <DashboardLayout
-          header={mockHeader}
-          sidebar={mockSidebar}
-        >
+        <DashboardLayout header={mockHeader} sidebar={mockSidebar}>
           {mockChildren}
         </DashboardLayout>
       )
 
-      const toggleButton = screen.getByRole('button', { name: /collapse sidebar/i })
+      const toggleButton = screen.getByRole('button', {
+        name: /collapse sidebar/i,
+      })
       await user.click(toggleButton)
 
       expect(toggleButton).toHaveAttribute('aria-expanded', 'false')
@@ -108,7 +106,7 @@ describe('DashboardLayout Responsive Behavior', () => {
       const layout = container.firstChild as HTMLElement
       await waitFor(() => {
         expect(layout).toHaveStyle({
-          gridTemplateColumns: '1fr'
+          gridTemplateColumns: '1fr',
         })
       })
     })
@@ -116,15 +114,14 @@ describe('DashboardLayout Responsive Behavior', () => {
     it('persists sidebar state to localStorage', async () => {
       const user = userEvent.setup()
       render(
-        <DashboardLayout
-          header={mockHeader}
-          sidebar={mockSidebar}
-        >
+        <DashboardLayout header={mockHeader} sidebar={mockSidebar}>
           {mockChildren}
         </DashboardLayout>
       )
 
-      const toggleButton = screen.getByRole('button', { name: /collapse sidebar/i })
+      const toggleButton = screen.getByRole('button', {
+        name: /collapse sidebar/i,
+      })
       await user.click(toggleButton)
 
       await waitFor(() => {
@@ -139,15 +136,14 @@ describe('DashboardLayout Responsive Behavior', () => {
       mockLocalStorage.getItem.mockReturnValue('true')
 
       render(
-        <DashboardLayout
-          header={mockHeader}
-          sidebar={mockSidebar}
-        >
+        <DashboardLayout header={mockHeader} sidebar={mockSidebar}>
           {mockChildren}
         </DashboardLayout>
       )
 
-      const toggleButton = screen.getByRole('button', { name: /expand sidebar/i })
+      const toggleButton = screen.getByRole('button', {
+        name: /expand sidebar/i,
+      })
       expect(toggleButton).toHaveAttribute('aria-expanded', 'false')
     })
   })
@@ -159,10 +155,7 @@ describe('DashboardLayout Responsive Behavior', () => {
 
     it('applies tablet-specific grid columns', async () => {
       const { container } = render(
-        <DashboardLayout
-          header={mockHeader}
-          sidebar={mockSidebar}
-        >
+        <DashboardLayout header={mockHeader} sidebar={mockSidebar}>
           {mockChildren}
         </DashboardLayout>
       )
@@ -173,7 +166,7 @@ describe('DashboardLayout Responsive Behavior', () => {
       await waitFor(() => {
         const layout = container.firstChild as HTMLElement
         expect(layout).toHaveStyle({
-          gridTemplateColumns: '240px 1fr'
+          gridTemplateColumns: '240px 1fr',
         })
       })
     })
@@ -181,10 +174,7 @@ describe('DashboardLayout Responsive Behavior', () => {
     it('maintains sidebar functionality on tablet', async () => {
       const user = userEvent.setup()
       render(
-        <DashboardLayout
-          header={mockHeader}
-          sidebar={mockSidebar}
-        >
+        <DashboardLayout header={mockHeader} sidebar={mockSidebar}>
           {mockChildren}
         </DashboardLayout>
       )
@@ -192,7 +182,9 @@ describe('DashboardLayout Responsive Behavior', () => {
       // Trigger resize to tablet
       fireEvent(window, new Event('resize'))
 
-      const toggleButton = screen.getByRole('button', { name: /collapse sidebar/i })
+      const toggleButton = screen.getByRole('button', {
+        name: /collapse sidebar/i,
+      })
       await user.click(toggleButton)
 
       expect(toggleButton).toHaveAttribute('aria-expanded', 'false')
@@ -209,10 +201,7 @@ describe('DashboardLayout Responsive Behavior', () => {
 
     it('hides sidebar on mobile', async () => {
       render(
-        <DashboardLayout
-          header={mockHeader}
-          sidebar={mockSidebar}
-        >
+        <DashboardLayout header={mockHeader} sidebar={mockSidebar}>
           {mockChildren}
         </DashboardLayout>
       )
@@ -227,10 +216,7 @@ describe('DashboardLayout Responsive Behavior', () => {
 
     it('applies single-column grid layout', async () => {
       const { container } = render(
-        <DashboardLayout
-          header={mockHeader}
-          sidebar={mockSidebar}
-        >
+        <DashboardLayout header={mockHeader} sidebar={mockSidebar}>
           {mockChildren}
         </DashboardLayout>
       )
@@ -241,17 +227,14 @@ describe('DashboardLayout Responsive Behavior', () => {
       await waitFor(() => {
         const layout = container.firstChild as HTMLElement
         expect(layout).toHaveStyle({
-          gridTemplateColumns: '1fr'
+          gridTemplateColumns: '1fr',
         })
       })
     })
 
     it('hides sidebar toggle button on mobile', async () => {
       render(
-        <DashboardLayout
-          header={mockHeader}
-          sidebar={mockSidebar}
-        >
+        <DashboardLayout header={mockHeader} sidebar={mockSidebar}>
           {mockChildren}
         </DashboardLayout>
       )
@@ -260,7 +243,9 @@ describe('DashboardLayout Responsive Behavior', () => {
       fireEvent(window, new Event('resize'))
 
       await waitFor(() => {
-        expect(screen.queryByRole('button', { name: /sidebar/i })).not.toBeInTheDocument()
+        expect(
+          screen.queryByRole('button', { name: /sidebar/i })
+        ).not.toBeInTheDocument()
       })
     })
 
@@ -286,10 +271,7 @@ describe('DashboardLayout Responsive Behavior', () => {
 
     it('adds bottom padding to main content for mobile nav', async () => {
       render(
-        <DashboardLayout
-          header={mockHeader}
-          showMobileNav={true}
-        >
+        <DashboardLayout header={mockHeader} showMobileNav={true}>
           {mockChildren}
         </DashboardLayout>
       )
@@ -307,10 +289,7 @@ describe('DashboardLayout Responsive Behavior', () => {
   describe('Responsive Transitions', () => {
     it('debounces resize events', async () => {
       const { container } = render(
-        <DashboardLayout
-          header={mockHeader}
-          sidebar={mockSidebar}
-        >
+        <DashboardLayout header={mockHeader} sidebar={mockSidebar}>
           {mockChildren}
         </DashboardLayout>
       )
@@ -324,26 +303,30 @@ describe('DashboardLayout Responsive Behavior', () => {
       fireEvent(window, new Event('resize'))
 
       // Wait for debounce delay
-      await waitFor(() => {
-        const layout = container.firstChild as HTMLElement
-        expect(layout).toHaveStyle({
-          gridTemplateColumns: '240px 1fr'
-        })
-      }, { timeout: 200 })
+      await waitFor(
+        () => {
+          const layout = container.firstChild as HTMLElement
+          expect(layout).toHaveStyle({
+            gridTemplateColumns: '240px 1fr',
+          })
+        },
+        { timeout: 200 }
+      )
     })
 
     it('applies transition classes for smooth animations', () => {
       const { container } = render(
-        <DashboardLayout
-          header={mockHeader}
-          sidebar={mockSidebar}
-        >
+        <DashboardLayout header={mockHeader} sidebar={mockSidebar}>
           {mockChildren}
         </DashboardLayout>
       )
 
       const layout = container.firstChild as HTMLElement
-      expect(layout).toHaveClass('transition-all', 'duration-300', 'ease-in-out')
+      expect(layout).toHaveClass(
+        'transition-all',
+        'duration-300',
+        'ease-in-out'
+      )
     })
   })
 
@@ -353,7 +336,7 @@ describe('DashboardLayout Responsive Behavior', () => {
         header: 'top',
         sidebar: 'nav',
         main: 'content',
-        footer: 'bottom'
+        footer: 'bottom',
       }
 
       render(
@@ -382,7 +365,7 @@ describe('DashboardLayout Responsive Behavior', () => {
       const customBreakpoints = {
         mobile: 600,
         tablet: 900,
-        desktop: 1200
+        desktop: 1200,
       }
 
       const { container } = render(
@@ -402,7 +385,7 @@ describe('DashboardLayout Responsive Behavior', () => {
       await waitFor(() => {
         const layout = container.firstChild as HTMLElement
         expect(layout).toHaveStyle({
-          gridTemplateColumns: '240px 1fr'
+          gridTemplateColumns: '240px 1fr',
         })
       })
     })
@@ -421,7 +404,10 @@ describe('DashboardLayout Responsive Behavior', () => {
       )
 
       expect(screen.getByRole('banner')).toBeInTheDocument()
-      expect(screen.getByRole('navigation')).toHaveAttribute('aria-label', 'Main navigation')
+      expect(screen.getByRole('navigation')).toHaveAttribute(
+        'aria-label',
+        'Main navigation'
+      )
       expect(screen.getByRole('main')).toBeInTheDocument()
       expect(screen.getByRole('contentinfo')).toBeInTheDocument()
     })
@@ -446,16 +432,15 @@ describe('DashboardLayout Responsive Behavior', () => {
     it('manages focus properly when sidebar is toggled', async () => {
       const user = userEvent.setup()
       render(
-        <DashboardLayout
-          header={mockHeader}
-          sidebar={mockSidebar}
-        >
+        <DashboardLayout header={mockHeader} sidebar={mockSidebar}>
           {mockChildren}
         </DashboardLayout>
       )
 
-      const toggleButton = screen.getByRole('button', { name: /collapse sidebar/i })
-      
+      const toggleButton = screen.getByRole('button', {
+        name: /collapse sidebar/i,
+      })
+
       // Focus the toggle button
       toggleButton.focus()
       expect(toggleButton).toHaveFocus()
@@ -478,10 +463,7 @@ describe('DashboardLayout Responsive Behavior', () => {
 
       expect(() => {
         render(
-          <DashboardLayout
-            header={mockHeader}
-            sidebar={mockSidebar}
-          >
+          <DashboardLayout header={mockHeader} sidebar={mockSidebar}>
             {mockChildren}
           </DashboardLayout>
         )
@@ -493,10 +475,7 @@ describe('DashboardLayout Responsive Behavior', () => {
 
       expect(() => {
         render(
-          <DashboardLayout
-            header={mockHeader}
-            sidebar={mockSidebar}
-          >
+          <DashboardLayout header={mockHeader} sidebar={mockSidebar}>
             {mockChildren}
           </DashboardLayout>
         )

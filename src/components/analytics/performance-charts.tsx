@@ -95,11 +95,19 @@ export function PerformanceCharts({ data, loading }: PerformanceChartsProps) {
 
   // Ensure required data arrays exist and have valid structure
   const safeData = {
-    dailyTaskTrends: Array.isArray(data.dailyTaskTrends) ? data.dailyTaskTrends : [],
+    dailyTaskTrends: Array.isArray(data.dailyTaskTrends)
+      ? data.dailyTaskTrends
+      : [],
     tasksByStatus: Array.isArray(data.tasksByStatus) ? data.tasksByStatus : [],
-    tasksByPriority: Array.isArray(data.tasksByPriority) ? data.tasksByPriority : [],
-    platformDistribution: Array.isArray(data.platformDistribution) ? data.platformDistribution : [],
-    agentPerformance: Array.isArray(data.agentPerformance) ? data.agentPerformance : [],
+    tasksByPriority: Array.isArray(data.tasksByPriority)
+      ? data.tasksByPriority
+      : [],
+    platformDistribution: Array.isArray(data.platformDistribution)
+      ? data.platformDistribution
+      : [],
+    agentPerformance: Array.isArray(data.agentPerformance)
+      ? data.agentPerformance
+      : [],
   }
 
   // Custom tooltip component
@@ -300,7 +308,10 @@ export function PerformanceCharts({ data, loading }: PerformanceChartsProps) {
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={safeData.platformDistribution} layout="horizontal">
+              <BarChart
+                data={safeData.platformDistribution}
+                layout="horizontal"
+              >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis type="number" />
                 <YAxis dataKey="platform" type="category" width={100} />

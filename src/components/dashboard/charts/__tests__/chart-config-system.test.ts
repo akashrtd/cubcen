@@ -68,10 +68,7 @@ describe('ChartConfigBuilder', () => {
 
   it('preserves colors when applying preset', () => {
     const builder = new ChartConfigBuilder()
-    const config = builder
-      .withTheme('dark')
-      .withPreset('line')
-      .build()
+    const config = builder.withTheme('dark').withPreset('line').build()
 
     expect(config.colors.primary).toBe(CHART_THEMES.dark.colors.primary)
     expect(config.legend.position).toBe('bottom') // From preset
@@ -91,7 +88,7 @@ describe('ChartConfigUtils', () => {
 
   it('creates quick configuration', () => {
     const config = ChartConfigUtils.quickConfig('pie', 'minimal')
-    
+
     expect(config.colors.primary).toBe(CHART_THEMES.minimal.colors.primary)
     expect(config.legend.position).toBe('right') // From pie preset
     expect(config.animations.duration).toBe(500) // From pie preset
@@ -190,7 +187,9 @@ describe('useChartConfig', () => {
       result.current.applyTheme('dark')
     })
 
-    expect(result.current.config.colors.primary).toBe(CHART_THEMES.dark.colors.primary)
+    expect(result.current.config.colors.primary).toBe(
+      CHART_THEMES.dark.colors.primary
+    )
   })
 
   it('applies preset', () => {

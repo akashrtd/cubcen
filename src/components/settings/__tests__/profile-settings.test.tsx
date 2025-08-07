@@ -142,7 +142,9 @@ describe('ProfileSettings', () => {
       />
     )
 
-    const changePasswordButton = screen.getByRole('button', { name: /change password/i })
+    const changePasswordButton = screen.getByRole('button', {
+      name: /change password/i,
+    })
     fireEvent.click(changePasswordButton)
 
     await waitFor(() => {
@@ -164,7 +166,9 @@ describe('ProfileSettings', () => {
       />
     )
 
-    const changePasswordButton = screen.getByRole('button', { name: /change password/i })
+    const changePasswordButton = screen.getByRole('button', {
+      name: /change password/i,
+    })
     fireEvent.click(changePasswordButton)
 
     await waitFor(() => {
@@ -196,7 +200,9 @@ describe('ProfileSettings', () => {
   })
 
   it('validates avatar file type', async () => {
-    const file = new File(['document'], 'document.pdf', { type: 'application/pdf' })
+    const file = new File(['document'], 'document.pdf', {
+      type: 'application/pdf',
+    })
 
     render(
       <ProfileSettings
@@ -216,7 +222,9 @@ describe('ProfileSettings', () => {
 
   it('validates avatar file size', async () => {
     // Create a file larger than 5MB
-    const largeFile = new File(['x'.repeat(6 * 1024 * 1024)], 'large.jpg', { type: 'image/jpeg' })
+    const largeFile = new File(['x'.repeat(6 * 1024 * 1024)], 'large.jpg', {
+      type: 'image/jpeg',
+    })
 
     render(
       <ProfileSettings
@@ -266,7 +274,9 @@ describe('ProfileSettings', () => {
     )
 
     const updateButton = screen.getByRole('button', { name: /update profile/i })
-    const changePasswordButton = screen.getByRole('button', { name: /change password/i })
+    const changePasswordButton = screen.getByRole('button', {
+      name: /change password/i,
+    })
 
     expect(updateButton).not.toBeDisabled()
     expect(changePasswordButton).not.toBeDisabled()

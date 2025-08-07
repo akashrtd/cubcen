@@ -273,7 +273,9 @@ export function AgentPerformanceTable({
                   <TableRow key={agent.agentId || `agent-${Math.random()}`}>
                     <TableCell className="font-medium">
                       <div>
-                        <div className="font-semibold">{agent.agentName || 'Unknown Agent'}</div>
+                        <div className="font-semibold">
+                          {agent.agentName || 'Unknown Agent'}
+                        </div>
                         <div className="text-xs text-muted-foreground">
                           ID: {(agent.agentId || 'unknown').slice(0, 8)}...
                         </div>
@@ -281,7 +283,9 @@ export function AgentPerformanceTable({
                     </TableCell>
                     <TableCell>
                       <div className="text-center">
-                        <div className="font-semibold">{agent.totalTasks || 0}</div>
+                        <div className="font-semibold">
+                          {agent.totalTasks || 0}
+                        </div>
                         <div className="text-xs text-muted-foreground">
                           tasks
                         </div>

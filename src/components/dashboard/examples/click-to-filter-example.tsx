@@ -2,7 +2,11 @@
 
 import React, { useState } from 'react'
 import { FilterProvider } from '../filters/filter-context'
-import { FilterSynchronizer, ActiveFiltersDisplay, useCrossCardFiltering } from '../filters/filter-synchronizer'
+import {
+  FilterSynchronizer,
+  ActiveFiltersDisplay,
+  useCrossCardFiltering,
+} from '../filters/filter-synchronizer'
 import { DashboardGrid } from '../grid/dashboard-grid'
 import { ChartCard } from '../cards/chart-card'
 import { MetricCard } from '../cards/metric-card'
@@ -10,7 +14,12 @@ import { FilterableCard } from '../filters/filterable-card'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { BarChart3, TrendingUp, Users, Activity } from 'lucide-react'
-import type { ChartData, ChartDataPoint, LegendItem, FilterValue } from '@/types/dashboard'
+import type {
+  ChartData,
+  ChartDataPoint,
+  LegendItem,
+  FilterValue,
+} from '@/types/dashboard'
 
 // Sample data for demonstration
 const sampleChartData: ChartData = {
@@ -18,23 +27,83 @@ const sampleChartData: ChartData = {
     {
       label: 'Sales',
       data: [
-        { x: 'Jan', y: 4000, label: 'January', metadata: { category: 'Q1', region: 'North' } },
-        { x: 'Feb', y: 3000, label: 'February', metadata: { category: 'Q1', region: 'North' } },
-        { x: 'Mar', y: 5000, label: 'March', metadata: { category: 'Q1', region: 'South' } },
-        { x: 'Apr', y: 4500, label: 'April', metadata: { category: 'Q2', region: 'South' } },
-        { x: 'May', y: 6000, label: 'May', metadata: { category: 'Q2', region: 'East' } },
-        { x: 'Jun', y: 5500, label: 'June', metadata: { category: 'Q2', region: 'East' } },
+        {
+          x: 'Jan',
+          y: 4000,
+          label: 'January',
+          metadata: { category: 'Q1', region: 'North' },
+        },
+        {
+          x: 'Feb',
+          y: 3000,
+          label: 'February',
+          metadata: { category: 'Q1', region: 'North' },
+        },
+        {
+          x: 'Mar',
+          y: 5000,
+          label: 'March',
+          metadata: { category: 'Q1', region: 'South' },
+        },
+        {
+          x: 'Apr',
+          y: 4500,
+          label: 'April',
+          metadata: { category: 'Q2', region: 'South' },
+        },
+        {
+          x: 'May',
+          y: 6000,
+          label: 'May',
+          metadata: { category: 'Q2', region: 'East' },
+        },
+        {
+          x: 'Jun',
+          y: 5500,
+          label: 'June',
+          metadata: { category: 'Q2', region: 'East' },
+        },
       ],
     },
     {
       label: 'Revenue',
       data: [
-        { x: 'Jan', y: 2400, label: 'January', metadata: { category: 'Q1', region: 'North' } },
-        { x: 'Feb', y: 1398, label: 'February', metadata: { category: 'Q1', region: 'North' } },
-        { x: 'Mar', y: 9800, label: 'March', metadata: { category: 'Q1', region: 'South' } },
-        { x: 'Apr', y: 3908, label: 'April', metadata: { category: 'Q2', region: 'South' } },
-        { x: 'May', y: 4800, label: 'May', metadata: { category: 'Q2', region: 'East' } },
-        { x: 'Jun', y: 3800, label: 'June', metadata: { category: 'Q2', region: 'East' } },
+        {
+          x: 'Jan',
+          y: 2400,
+          label: 'January',
+          metadata: { category: 'Q1', region: 'North' },
+        },
+        {
+          x: 'Feb',
+          y: 1398,
+          label: 'February',
+          metadata: { category: 'Q1', region: 'North' },
+        },
+        {
+          x: 'Mar',
+          y: 9800,
+          label: 'March',
+          metadata: { category: 'Q1', region: 'South' },
+        },
+        {
+          x: 'Apr',
+          y: 3908,
+          label: 'April',
+          metadata: { category: 'Q2', region: 'South' },
+        },
+        {
+          x: 'May',
+          y: 4800,
+          label: 'May',
+          metadata: { category: 'Q2', region: 'East' },
+        },
+        {
+          x: 'Jun',
+          y: 3800,
+          label: 'June',
+          metadata: { category: 'Q2', region: 'East' },
+        },
       ],
     },
   ],
@@ -45,10 +114,26 @@ const pieChartData: ChartData = {
     {
       label: 'Regions',
       data: [
-        { label: 'North', value: 35, metadata: { region: 'North', category: 'Q1' } },
-        { label: 'South', value: 25, metadata: { region: 'South', category: 'Q1' } },
-        { label: 'East', value: 30, metadata: { region: 'East', category: 'Q2' } },
-        { label: 'West', value: 10, metadata: { region: 'West', category: 'Q2' } },
+        {
+          label: 'North',
+          value: 35,
+          metadata: { region: 'North', category: 'Q1' },
+        },
+        {
+          label: 'South',
+          value: 25,
+          metadata: { region: 'South', category: 'Q1' },
+        },
+        {
+          label: 'East',
+          value: 30,
+          metadata: { region: 'East', category: 'Q2' },
+        },
+        {
+          label: 'West',
+          value: 10,
+          metadata: { region: 'West', category: 'Q2' },
+        },
       ],
     },
   ],
@@ -56,28 +141,63 @@ const pieChartData: ChartData = {
 
 // Sample table data
 const tableData = [
-  { id: 1, name: 'Product A', category: 'Q1', region: 'North', sales: 4000, revenue: 2400 },
-  { id: 2, name: 'Product B', category: 'Q1', region: 'South', sales: 3000, revenue: 1398 },
-  { id: 3, name: 'Product C', category: 'Q2', region: 'East', sales: 5000, revenue: 9800 },
-  { id: 4, name: 'Product D', category: 'Q2', region: 'West', sales: 4500, revenue: 3908 },
+  {
+    id: 1,
+    name: 'Product A',
+    category: 'Q1',
+    region: 'North',
+    sales: 4000,
+    revenue: 2400,
+  },
+  {
+    id: 2,
+    name: 'Product B',
+    category: 'Q1',
+    region: 'South',
+    sales: 3000,
+    revenue: 1398,
+  },
+  {
+    id: 3,
+    name: 'Product C',
+    category: 'Q2',
+    region: 'East',
+    sales: 5000,
+    revenue: 9800,
+  },
+  {
+    id: 4,
+    name: 'Product D',
+    category: 'Q2',
+    region: 'West',
+    sales: 4500,
+    revenue: 3908,
+  },
 ]
 
 function FilteredDataTable() {
-  const { filteredData, activeFilters, filterCount } = useCrossCardFiltering(tableData, {
-    searchFields: ['name', 'category', 'region'],
-    filterMappings: {
-      category: (item, filterValue) => item.category === filterValue.value,
-      region: (item, filterValue) => item.region === filterValue.value,
-      month: (item, filterValue) => {
-        // Map month names to categories for demo
-        const monthToCategory: Record<string, string> = {
-          'January': 'Q1', 'February': 'Q1', 'March': 'Q1',
-          'April': 'Q2', 'May': 'Q2', 'June': 'Q2',
-        }
-        return item.category === monthToCategory[filterValue.value as string]
+  const { filteredData, activeFilters, filterCount } = useCrossCardFiltering(
+    tableData,
+    {
+      searchFields: ['name', 'category', 'region'],
+      filterMappings: {
+        category: (item, filterValue) => item.category === filterValue.value,
+        region: (item, filterValue) => item.region === filterValue.value,
+        month: (item, filterValue) => {
+          // Map month names to categories for demo
+          const monthToCategory: Record<string, string> = {
+            January: 'Q1',
+            February: 'Q1',
+            March: 'Q1',
+            April: 'Q2',
+            May: 'Q2',
+            June: 'Q2',
+          }
+          return item.category === monthToCategory[filterValue.value as string]
+        },
       },
-    },
-  })
+    }
+  )
 
   return (
     <Card>
@@ -105,13 +225,17 @@ function FilteredDataTable() {
               </tr>
             </thead>
             <tbody>
-              {filteredData.map((item) => (
+              {filteredData.map(item => (
                 <tr key={item.id} className="border-b hover:bg-muted/50">
                   <td className="p-2 font-medium">{item.name}</td>
                   <td className="p-2">{item.category}</td>
                   <td className="p-2">{item.region}</td>
-                  <td className="p-2 text-right">{item.sales.toLocaleString()}</td>
-                  <td className="p-2 text-right">${item.revenue.toLocaleString()}</td>
+                  <td className="p-2 text-right">
+                    {item.sales.toLocaleString()}
+                  </td>
+                  <td className="p-2 text-right">
+                    ${item.revenue.toLocaleString()}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -134,7 +258,7 @@ export function ClickToFilterExample() {
   const barChartFilterMappings = {
     dataClick: (dataPoint: ChartDataPoint) => {
       const filters: Record<string, FilterValue> = {}
-      
+
       // Filter by month
       if (dataPoint.label) {
         filters.month = {
@@ -143,7 +267,7 @@ export function ClickToFilterExample() {
           operator: 'equals',
         }
       }
-      
+
       // Filter by category from metadata
       if (dataPoint.metadata?.category) {
         filters.category = {
@@ -152,7 +276,7 @@ export function ClickToFilterExample() {
           operator: 'equals',
         }
       }
-      
+
       return filters
     },
     legendClick: (legendItem: LegendItem) => ({
@@ -182,13 +306,11 @@ export function ClickToFilterExample() {
           <div>
             <h2 className="text-2xl font-bold">Click-to-Filter Dashboard</h2>
             <p className="text-muted-foreground">
-              Click on chart elements to filter data across all dashboard components
+              Click on chart elements to filter data across all dashboard
+              components
             </p>
           </div>
-          <Button
-            variant="outline"
-            onClick={() => setDebugMode(!debugMode)}
-          >
+          <Button variant="outline" onClick={() => setDebugMode(!debugMode)}>
             {debugMode ? 'Hide' : 'Show'} Debug Info
           </Button>
         </div>
@@ -201,7 +323,7 @@ export function ClickToFilterExample() {
           syncConfig={{
             syncAll: true,
             debounceMs: 100,
-            onSync: (filters) => {
+            onSync: filters => {
               if (debugMode) {
                 console.log('Filters synchronized:', filters)
               }
@@ -227,7 +349,7 @@ export function ClickToFilterExample() {
                 filterData={{ category: 'sales' }}
               />
             </div>
-            
+
             <div className="col-span-12 md:col-span-3">
               <FilterableCard
                 title="Revenue"
@@ -243,7 +365,7 @@ export function ClickToFilterExample() {
                 filterData={{ category: 'revenue' }}
               />
             </div>
-            
+
             <div className="col-span-12 md:col-span-3">
               <FilterableCard
                 title="Active Users"
@@ -258,7 +380,7 @@ export function ClickToFilterExample() {
                 filterData={{ category: 'users' }}
               />
             </div>
-            
+
             <div className="col-span-12 md:col-span-3">
               <FilterableCard
                 title="Conversion Rate"
@@ -336,13 +458,16 @@ export function ClickToFilterExample() {
                 <li>Filters are applied across all dashboard components</li>
               </ul>
             </div>
-            
+
             <div>
               <h4 className="font-semibold mb-2">Card Interactions:</h4>
               <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
                 <li>Click on KPI cards to filter by category</li>
                 <li>Multiple filters can be active simultaneously</li>
-                <li>Click the &times; button on filter chips to remove individual filters</li>
+                <li>
+                  Click the &times; button on filter chips to remove individual
+                  filters
+                </li>
                 <li>Use &quot;Clear all&quot; to remove all active filters</li>
               </ul>
             </div>

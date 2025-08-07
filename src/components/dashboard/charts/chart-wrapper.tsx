@@ -1,10 +1,26 @@
-import React, { Suspense, lazy, useMemo, useRef, useCallback, useEffect, useState } from 'react'
+import React, {
+  Suspense,
+  lazy,
+  useMemo,
+  useRef,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react'
 import { cn } from '@/lib/utils'
 import { ChartExportControls } from './chart-export-controls'
 import { KeyboardNavigation } from '../accessibility/keyboard-navigation'
 import { useAriaLabels, AriaDescription } from '../accessibility/aria-labels'
-import { useScreenReaderAnnouncer, DataAnnouncer, ChartAnnouncer } from '../accessibility/screen-reader-announcer'
-import { TouchInteraction, useIsTouchDevice, useIsMobile } from '../mobile/touch-interactions'
+import {
+  useScreenReaderAnnouncer,
+  DataAnnouncer,
+  ChartAnnouncer,
+} from '../accessibility/screen-reader-announcer'
+import {
+  TouchInteraction,
+  useIsTouchDevice,
+  useIsMobile,
+} from '../mobile/touch-interactions'
 import { ChartMobileTooltip } from '../mobile/mobile-tooltip'
 import type {
   ChartType,
@@ -36,9 +52,17 @@ interface ChartWrapperProps {
 }
 
 // Import dynamic chart components
-import { ChartBundle, trackDynamicImportPerformance } from '../performance/dynamic-imports'
+import {
+  ChartBundle,
+  trackDynamicImportPerformance,
+} from '../performance/dynamic-imports'
 
-const { LineChart: LazyLineChart, BarChart: LazyBarChart, PieChart: LazyPieChart, HeatmapChart: LazyHeatmapChart } = ChartBundle
+const {
+  LineChart: LazyLineChart,
+  BarChart: LazyBarChart,
+  PieChart: LazyPieChart,
+  HeatmapChart: LazyHeatmapChart,
+} = ChartBundle
 
 // Default color palette following Cubcen brand colors
 const DEFAULT_COLORS = {
@@ -73,7 +97,7 @@ export function ChartWrapper({
   interactive = true,
   exportable = false,
   exportFilename = 'chart',
-  onDataClick,
+      onDataClick, 
   onLegendClick,
   onExportStart,
   onExportComplete,
@@ -85,12 +109,12 @@ export function ChartWrapper({
   const [selectedElement, setSelectedElement] = useState<any>(null)
   const [zoomLevel, setZoomLevel] = useState(1)
   const [tooltipData, setTooltipData] = useState<any>(null)
-  
+
   const ariaLabels = useAriaLabels()
   const { announceChartInteraction } = useScreenReaderAnnouncer()
   const isTouchDevice = useIsTouchDevice()
   const isMobile = useIsMobile()
-  
+
   // Generate unique IDs for ARIA relationships
   const chartId = React.useId()
   const titleId = `${chartId}-title`
@@ -103,154 +127,178 @@ export function ChartWrapper({
     performanceTracker.end()
   }, [type])
   // Memoize the merged configuration with sensible defaults
-  const mergedConfig = useMemo((): ChartConfiguration => ({
-    colors: {
-      ...DEFAULT_COLORS,
-      ...config?.colors,
-    },
-    legend: {
-      show: true,
-      position: 'bottom',
-      align: 'center',
-      ...config?.legend,
-    },
-    tooltip: {
-      show: true,
-      ...config?.tooltip,
-    },
-    axes: {
-      x: {
-        show: true,
-        ...config?.axes?.x,
+  const mergedConfig = useMemo(
+    (): ChartConfiguration => ({
+      colors: {
+        ...DEFAULT_COLORS,
+        ...config?.colors,
       },
-      y: {
+      legend: {
         show: true,
-        ...config?.axes?.y,
+        position: 'bottom',
+        align: 'center',
+        ...config?.legend,
       },
-    },
-    animations: {
-      enabled: true,
-      duration: 300,
-      easing: 'ease-out',
-      ...config?.animations,
-    },
-    responsive: config?.responsive,
-  }), [config])
+      tooltip: {
+        show: true,
+        ...config?.tooltip,
+      },
+      axes: {
+        x: {
+          show: true,
+          ...config?.axes?.x,
+        },
+        y: {
+          show: true,
+          ...config?.axes?.y,
+        },
+      },
+      animations: {
+        enabled: true,
+        duration: 300,
+        easing: 'ease-out',
+        ...config?.animations,
+      },
+      responsive: config?.responsive,
+    }),
+    [config]
+  )
 
   // Memoize chart colors based on data
   const chartColors = useMemo(() => {
     if (!data?.datasets) return DEFAULT_CHART_PALETTE
 
-    return data.datasets.map((dataset, index) => 
-      dataset.color || DEFAULT_CHART_PALETTE[index % DEFAULT_CHART_PALETTE.length]
+    return data.datasets.map(
+      (dataset, index) =>
+        dataset.color ||
+        DEFAULT_CHART_PALETTE[index % DEFAULT_CHART_PALETTE.length]
     )
   }, [data])
 
   // Handle keyboard navigation for chart elements
-  const handleChartKeyDown = useCallback((event: React.KeyboardEvent) => {
-    if (!interactive) return
+  const handleChartKeyDown = useCallback(
+    (event: React.KeyboardEvent) => {
+      if (!interactive) return
 
-    const { key } = event
-    const chartElements = chartRef.current?.querySelectorAll('[data-chart-element]')
-    
-    if (!chartElements || chartElements.length === 0) return
+      const { key } = event
+      const chartElements = chartRef.current?.querySelectorAll(
+        '[data-chart-element]'
+      )
 
-    switch (key) {
-      case 'ArrowRight':
-      case 'ArrowDown':
-        event.preventDefault()
-        focusedElementRef.current = (focusedElementRef.current + 1) % chartElements.length
-        ;(chartElements[focusedElementRef.current] as HTMLElement).focus()
-        break
-      case 'ArrowLeft':
-      case 'ArrowUp':
-        event.preventDefault()
-        focusedElementRef.current = focusedElementRef.current === 0 
-          ? chartElements.length - 1 
-          : focusedElementRef.current - 1
-        ;(chartElements[focusedElementRef.current] as HTMLElement).focus()
-        break
-      case 'Enter':
-      case ' ':
-        event.preventDefault()
-        const activeElement = chartElements[focusedElementRef.current] as HTMLElement
-        if (activeElement) {
-          activeElement.click()
-        }
-        break
-      case 'Home':
-        event.preventDefault()
-        focusedElementRef.current = 0
-        ;(chartElements[0] as HTMLElement).focus()
-        break
-      case 'End':
-        event.preventDefault()
-        focusedElementRef.current = chartElements.length - 1
-        ;(chartElements[chartElements.length - 1] as HTMLElement).focus()
-        break
-    }
-  }, [interactive])
+      if (!chartElements || chartElements.length === 0) return
+
+      switch (key) {
+        case 'ArrowRight':
+        case 'ArrowDown':
+          event.preventDefault()
+          focusedElementRef.current =
+            (focusedElementRef.current + 1) % chartElements.length
+          ;(chartElements[focusedElementRef.current] as HTMLElement).focus()
+          break
+        case 'ArrowLeft':
+        case 'ArrowUp':
+          event.preventDefault()
+          focusedElementRef.current =
+            focusedElementRef.current === 0
+              ? chartElements.length - 1
+              : focusedElementRef.current - 1
+          ;(chartElements[focusedElementRef.current] as HTMLElement).focus()
+          break
+        case 'Enter':
+        case ' ':
+          event.preventDefault()
+          const activeElement = chartElements[
+            focusedElementRef.current
+          ] as HTMLElement
+          if (activeElement) {
+            activeElement.click()
+          }
+          break
+        case 'Home':
+          event.preventDefault()
+          focusedElementRef.current = 0
+          ;(chartElements[0] as HTMLElement).focus()
+          break
+        case 'End':
+          event.preventDefault()
+          focusedElementRef.current = chartElements.length - 1
+          ;(chartElements[chartElements.length - 1] as HTMLElement).focus()
+          break
+      }
+    },
+    [interactive]
+  )
 
   // Handle chart element click with keyboard support
-  const handleChartElementClick = useCallback((dataPoint: ChartDataPoint, index: number) => {
-    focusedElementRef.current = index
-    setSelectedElement(dataPoint)
-    
-    // Announce interaction to screen readers
-    announceChartInteraction(
-      'Selected',
-      'data point',
-      dataPoint.value || dataPoint.y,
-      `${type} chart`
-    )
-    
-    onDataClick?.(dataPoint)
-  }, [onDataClick, type, announceChartInteraction])
+  const handleChartElementClick = useCallback(
+    (dataPoint: ChartDataPoint, index: number) => {
+      focusedElementRef.current = index
+      setSelectedElement(dataPoint)
+
+      // Announce interaction to screen readers
+      announceChartInteraction(
+        'Selected',
+        'data point',
+        dataPoint.value || dataPoint.y,
+        `${type} chart`
+      )
+
+      onDataClick?.(dataPoint)
+    },
+    [onDataClick, type, announceChartInteraction]
+  )
 
   // Handle legend click with keyboard support
-  const handleLegendClick = useCallback((legendItem: LegendItem, index: number) => {
-    // Announce legend interaction
-    announceChartInteraction(
-      'Toggled',
-      'legend item',
-      legendItem.label,
-      `${type} chart`
-    )
-    
-    onLegendClick?.(legendItem)
-  }, [onLegendClick, type, announceChartInteraction])
+  const handleLegendClick = useCallback(
+    (legendItem: LegendItem, index: number) => {
+      // Announce legend interaction
+      announceChartInteraction(
+        'Toggled',
+        'legend item',
+        legendItem.label,
+        `${type} chart`
+      )
+
+      onLegendClick?.(legendItem)
+    },
+    [onLegendClick, type, announceChartInteraction]
+  )
 
   // Handle touch interactions for charts
-  const handleChartTap = useCallback((event: TouchEvent) => {
-    // For touch devices, show tooltip data on tap
-    if (selectedElement) {
-      setTooltipData(selectedElement)
-    }
-  }, [selectedElement])
+  const handleChartTap = useCallback(
+    (event: TouchEvent) => {
+      // For touch devices, show tooltip data on tap
+      if (selectedElement) {
+        setTooltipData(selectedElement)
+      }
+    },
+    [selectedElement]
+  )
 
-  const handleChartPinchZoom = useCallback((scale: number, event: TouchEvent) => {
-    // Handle pinch-to-zoom for charts
-    const newZoomLevel = Math.max(0.5, Math.min(3, zoomLevel * scale))
-    setZoomLevel(newZoomLevel)
-    
-    // Announce zoom level change
-    announceChartInteraction(
-      'Zoomed',
-      'chart',
-      `${Math.round(newZoomLevel * 100)}%`,
-      `${type} chart`
-    )
-  }, [zoomLevel, type, announceChartInteraction])
+  const handleChartPinchZoom = useCallback(
+    (scale: number, event: TouchEvent) => {
+      // Handle pinch-to-zoom for charts
+      const newZoomLevel = Math.max(0.5, Math.min(3, zoomLevel * scale))
+      setZoomLevel(newZoomLevel)
 
-  const handleChartSwipe = useCallback((direction: 'left' | 'right' | 'up' | 'down') => {
-    // Handle swipe gestures for chart navigation
-    announceChartInteraction(
-      'Swiped',
-      'chart',
-      direction,
-      `${type} chart`
-    )
-  }, [type, announceChartInteraction])
+      // Announce zoom level change
+      announceChartInteraction(
+        'Zoomed',
+        'chart',
+        `${Math.round(newZoomLevel * 100)}%`,
+        `${type} chart`
+      )
+    },
+    [zoomLevel, type, announceChartInteraction]
+  )
+
+  const handleChartSwipe = useCallback(
+    (direction: 'left' | 'right' | 'up' | 'down') => {
+      // Handle swipe gestures for chart navigation
+      announceChartInteraction('Swiped', 'chart', direction, `${type} chart`)
+    },
+    [type, announceChartInteraction]
+  )
 
   // Generate chart title for accessibility
   const getChartTitle = () => {
@@ -262,7 +310,7 @@ export function ChartWrapper({
   const getChartDescription = () => {
     const datasetCount = data?.datasets?.length || 0
     const dataPointCount = data?.datasets?.[0]?.data?.length || 0
-    
+
     let description = `${type} chart`
     if (datasetCount > 0) {
       description += ` with ${datasetCount} dataset${datasetCount !== 1 ? 's' : ''}`
@@ -270,7 +318,7 @@ export function ChartWrapper({
     if (dataPointCount > 0) {
       description += ` and ${dataPointCount} data point${dataPointCount !== 1 ? 's' : ''}`
     }
-    
+
     return description
   }
 
@@ -288,7 +336,9 @@ export function ChartWrapper({
           {`${type} chart is currently loading data`}
         </AriaDescription>
         <div className="flex items-center justify-center h-full">
-          <div className="animate-pulse text-muted-foreground">Loading chart...</div>
+          <div className="animate-pulse text-muted-foreground">
+            Loading chart...
+          </div>
         </div>
       </div>
     )
@@ -352,8 +402,6 @@ export function ChartWrapper({
       zoomLevel: isTouchDevice ? zoomLevel : 1,
     }
 
-
-
     switch (type) {
       case 'line':
         return <LazyLineChart {...commonProps} />
@@ -392,10 +440,8 @@ export function ChartWrapper({
       }}
     >
       {/* Chart title for screen readers */}
-      <AriaDescription id={titleId}>
-        {getChartTitle()}
-      </AriaDescription>
-      
+      <AriaDescription id={titleId}>{getChartTitle()}</AriaDescription>
+
       {/* Chart description for screen readers */}
       <AriaDescription id={descriptionId}>
         {getChartDescription()}
@@ -404,10 +450,9 @@ export function ChartWrapper({
       {/* Screen reader instructions for interactive charts */}
       {interactive && (
         <AriaDescription id={instructionsId}>
-          {isTouchDevice 
+          {isTouchDevice
             ? 'Interactive chart. Tap to select elements, pinch to zoom, swipe to navigate.'
-            : 'Interactive chart. Use arrow keys to navigate chart elements, Enter or Space to select, Home and End to go to first and last elements.'
-          }
+            : 'Interactive chart. Use arrow keys to navigate chart elements, Enter or Space to select, Home and End to go to first and last elements.'}
         </AriaDescription>
       )}
 
@@ -426,20 +471,19 @@ export function ChartWrapper({
 
       <Suspense
         fallback={
-          <div 
+          <div
             className="flex items-center justify-center h-full"
             style={{ height: `${height}px` }}
             role="status"
             aria-label="Loading chart"
           >
-            <div className="animate-pulse text-muted-foreground">Loading chart...</div>
+            <div className="animate-pulse text-muted-foreground">
+              Loading chart...
+            </div>
           </div>
         }
       >
-        <div 
-          ref={chartRef}
-          className="chart-container w-full h-full"
-        >
+        <div ref={chartRef} className="chart-container w-full h-full">
           {renderChart()}
         </div>
       </Suspense>

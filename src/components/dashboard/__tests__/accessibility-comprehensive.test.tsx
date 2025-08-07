@@ -1,5 +1,5 @@
 import './setup-accessibility-tests'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { axe, toHaveNoViolations } from 'jest-axe'
 import { DashboardLayout } from '../layout/dashboard-layout'
@@ -16,19 +16,21 @@ expect.extend(toHaveNoViolations)
 jest.mock('../mobile/touch-interactions', () => ({
   useIsMobile: jest.fn(() => false),
   useIsTouchDevice: jest.fn(() => false),
-  TouchInteraction: ({ children }: { children: React.ReactNode }) => <div>{children}</div>
+  TouchInteraction: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
 }))
 
 jest.mock('../charts/chart-types/line-chart', () => ({
   LineChart: ({ data }: any) => (
-    <div 
+    <div
       data-testid="line-chart"
       role="img"
       aria-label={`Line chart with ${data.datasets.length} datasets`}
     >
       Line Chart
     </div>
-  )
+  ),
 }))
 
 describe('Dashboard Accessibility Comprehensive Tests', () => {
@@ -39,10 +41,10 @@ describe('Dashboard Accessibility Comprehensive Tests', () => {
         data: [
           { x: 'Jan', y: 100 },
           { x: 'Feb', y: 150 },
-          { x: 'Mar', y: 120 }
-        ]
-      }
-    ]
+          { x: 'Mar', y: 120 },
+        ],
+      },
+    ],
   }
 
   describe('WCAG 2.1 AA Compliance', () => {
@@ -73,7 +75,7 @@ describe('Dashboard Accessibility Comprehensive Tests', () => {
               value: 1234,
               unit: 'users',
               trend: 'up',
-              trendValue: '+5%'
+              trendValue: '+5%',
             }}
           >
             <div>Card content</div>
@@ -111,7 +113,7 @@ describe('Dashboard Accessibility Comprehensive Tests', () => {
             data={mockData}
             config={{
               colors: { primary: '#3F51B5' },
-              legend: { show: true, position: 'bottom', align: 'center' }
+              legend: { show: true, position: 'bottom', align: 'center' },
             }}
           />
         </DashboardThemeProvider>
@@ -139,8 +141,12 @@ describe('Dashboard Accessibility Comprehensive Tests', () => {
               sidebar={
                 <nav aria-label="Main navigation">
                   <ul>
-                    <li><a href="#analytics">Analytics</a></li>
-                    <li><a href="#reports">Reports</a></li>
+                    <li>
+                      <a href="#analytics">Analytics</a>
+                    </li>
+                    <li>
+                      <a href="#reports">Reports</a>
+                    </li>
                   </ul>
                 </nav>
               }
@@ -179,10 +185,7 @@ describe('Dashboard Accessibility Comprehensive Tests', () => {
         <DashboardThemeProvider>
           <DashboardGrid>
             <GridItem>
-              <DashboardCard
-                title="Error Card"
-                error="Failed to load data"
-              />
+              <DashboardCard title="Error Card" error="Failed to load data" />
             </GridItem>
             <GridItem>
               <DashboardCard title="Chart Error">
@@ -206,18 +209,11 @@ describe('Dashboard Accessibility Comprehensive Tests', () => {
         <DashboardThemeProvider>
           <DashboardGrid>
             <GridItem>
-              <DashboardCard
-                title="Loading Card"
-                loading={true}
-              />
+              <DashboardCard title="Loading Card" loading={true} />
             </GridItem>
             <GridItem>
               <DashboardCard title="Chart Loading">
-                <ChartWrapper
-                  type="line"
-                  data={mockData}
-                  loading={true}
-                />
+                <ChartWrapper type="line" data={mockData} loading={true} />
               </DashboardCard>
             </GridItem>
           </DashboardGrid>
@@ -232,7 +228,7 @@ describe('Dashboard Accessibility Comprehensive Tests', () => {
   describe('Keyboard Navigation', () => {
     it('supports tab navigation through dashboard layout', async () => {
       const user = userEvent.setup()
-      
+
       render(
         <DashboardThemeProvider>
           <DashboardLayout
@@ -290,7 +286,7 @@ describe('Dashboard Accessibility Comprehensive Tests', () => {
       )
 
       const card = screen.getByRole('button', { name: /interactive card/i })
-      
+
       // Focus the card
       await user.tab()
       expect(card).toHaveFocus()
@@ -325,7 +321,7 @@ describe('Dashboard Accessibility Comprehensive Tests', () => {
       })
 
       const chartContainer = screen.getByRole('application')
-      
+
       // Focus the chart
       await user.tab()
       expect(chartContainer).toHaveFocus()
@@ -353,10 +349,13 @@ describe('Dashboard Accessibility Comprehensive Tests', () => {
 
       // Skip links should be the first focusable elements
       await user.tab()
-      
+
       // Look for skip link (implementation may vary)
       const skipLink = document.activeElement
-      expect(skipLink).toHaveAttribute('href', expect.stringContaining('#main-content'))
+      expect(skipLink).toHaveAttribute(
+        'href',
+        expect.stringContaining('#main-content')
+      )
     })
 
     it('manages focus properly when sidebar is toggled', async () => {
@@ -410,10 +409,7 @@ describe('Dashboard Accessibility Comprehensive Tests', () => {
     it('announces card state changes', async () => {
       const { rerender } = render(
         <DashboardThemeProvider>
-          <DashboardCard
-            title="Dynamic Card"
-            loading={true}
-          />
+          <DashboardCard title="Dynamic Card" loading={true} />
         </DashboardThemeProvider>
       )
 
@@ -423,10 +419,7 @@ describe('Dashboard Accessibility Comprehensive Tests', () => {
       // Change to error state
       rerender(
         <DashboardThemeProvider>
-          <DashboardCard
-            title="Dynamic Card"
-            error="Something went wrong"
-          />
+          <DashboardCard title="Dynamic Card" error="Something went wrong" />
         </DashboardThemeProvider>
       )
 
@@ -444,7 +437,7 @@ describe('Dashboard Accessibility Comprehensive Tests', () => {
               value: 1234,
               unit: 'sales',
               trend: 'up',
-              trendValue: '+12%'
+              trendValue: '+12%',
             }}
           />
         </DashboardThemeProvider>
@@ -468,10 +461,7 @@ describe('Dashboard Accessibility Comprehensive Tests', () => {
     it('provides chart descriptions for screen readers', async () => {
       render(
         <DashboardThemeProvider>
-          <ChartWrapper
-            type="line"
-            data={mockData}
-          />
+          <ChartWrapper type="line" data={mockData} />
         </DashboardThemeProvider>
       )
 
@@ -496,10 +486,7 @@ describe('Dashboard Accessibility Comprehensive Tests', () => {
       render(
         <DashboardThemeProvider>
           <FilterProvider>
-            <DashboardCard
-              title="Filterable Card"
-              onFilter={() => {}}
-            >
+            <DashboardCard title="Filterable Card" onFilter={() => {}}>
               <button onClick={() => {}}>Apply Filter</button>
             </DashboardCard>
           </FilterProvider>
@@ -533,7 +520,6 @@ describe('Dashboard Accessibility Comprehensive Tests', () => {
         </DashboardThemeProvider>
       )
 
-      const dialog = screen.getByRole('dialog')
       const dialogButton1 = screen.getByText('Dialog Button 1')
       const dialogButton2 = screen.getByText('Dialog Button 2')
       const closeButton = screen.getByText('Close')
@@ -570,7 +556,9 @@ describe('Dashboard Accessibility Comprehensive Tests', () => {
       )
 
       const triggerButton = screen.getByText('Trigger Button')
-      const interactiveCard = screen.getByRole('button', { name: /interactive card/i })
+      const interactiveCard = screen.getByRole('button', {
+        name: /interactive card/i,
+      })
 
       // Focus trigger button
       triggerButton.focus()
@@ -616,7 +604,7 @@ describe('Dashboard Accessibility Comprehensive Tests', () => {
               value: 100,
               unit: 'items',
               trend: 'up',
-              trendValue: '+5%'
+              trendValue: '+5%',
             }}
           >
             <p>Card content with text</p>
@@ -627,8 +615,8 @@ describe('Dashboard Accessibility Comprehensive Tests', () => {
       // Run accessibility check which includes color contrast
       const results = await axe(container, {
         rules: {
-          'color-contrast': { enabled: true }
-        }
+          'color-contrast': { enabled: true },
+        },
       })
       expect(results).toHaveNoViolations()
     })
@@ -642,7 +630,7 @@ describe('Dashboard Accessibility Comprehensive Tests', () => {
               value: 100,
               unit: 'items',
               trend: 'down',
-              trendValue: '-3%'
+              trendValue: '-3%',
             }}
           >
             <p>Card content with text</p>
@@ -653,8 +641,8 @@ describe('Dashboard Accessibility Comprehensive Tests', () => {
       // Run accessibility check which includes color contrast
       const results = await axe(container, {
         rules: {
-          'color-contrast': { enabled: true }
-        }
+          'color-contrast': { enabled: true },
+        },
       })
       expect(results).toHaveNoViolations()
     })
@@ -673,7 +661,7 @@ describe('Dashboard Accessibility Comprehensive Tests', () => {
               value: 75,
               unit: '%',
               trend: 'up',
-              trendValue: '+5%'
+              trendValue: '+5%',
             }}
           />
         </DashboardThemeProvider>
@@ -685,7 +673,10 @@ describe('Dashboard Accessibility Comprehensive Tests', () => {
 
       // Trend should have descriptive text
       const trendElement = screen.getByRole('img', { name: /trend/i })
-      expect(trendElement).toHaveAttribute('aria-label', expect.stringContaining('increasing'))
+      expect(trendElement).toHaveAttribute(
+        'aria-label',
+        expect.stringContaining('increasing')
+      )
     })
   })
 
@@ -695,7 +686,7 @@ describe('Dashboard Accessibility Comprehensive Tests', () => {
       Object.defineProperty(window, 'innerWidth', {
         writable: true,
         configurable: true,
-        value: 375
+        value: 375,
       })
 
       const { useIsMobile } = require('../mobile/touch-interactions')
@@ -738,7 +729,7 @@ describe('Dashboard Accessibility Comprehensive Tests', () => {
       )
 
       const card = screen.getByRole('button')
-      
+
       // Touch targets should be appropriately sized
       // This would be tested through computed styles or visual regression testing
       expect(card).toBeInTheDocument()
@@ -749,10 +740,7 @@ describe('Dashboard Accessibility Comprehensive Tests', () => {
     it('properly announces errors to assistive technology', () => {
       render(
         <DashboardThemeProvider>
-          <DashboardCard
-            title="Error Card"
-            error="Network connection failed"
-          />
+          <DashboardCard title="Error Card" error="Network connection failed" />
         </DashboardThemeProvider>
       )
 
@@ -763,13 +751,10 @@ describe('Dashboard Accessibility Comprehensive Tests', () => {
 
     it('provides error recovery options', () => {
       const onRetry = jest.fn()
-      
+
       render(
         <DashboardThemeProvider>
-          <DashboardCard
-            title="Recoverable Error"
-            error="Failed to load data"
-          >
+          <DashboardCard title="Recoverable Error" error="Failed to load data">
             <button onClick={onRetry}>Retry</button>
           </DashboardCard>
         </DashboardThemeProvider>

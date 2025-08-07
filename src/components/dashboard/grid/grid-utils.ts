@@ -38,7 +38,12 @@ export function calculateColSpan(
     return Math.min(colSpan, maxColumns)
   }
 
-  const value = colSpan[breakpoint] || colSpan.desktop || colSpan.tablet || colSpan.mobile || 1
+  const value =
+    colSpan[breakpoint] ||
+    colSpan.desktop ||
+    colSpan.tablet ||
+    colSpan.mobile ||
+    1
   return Math.min(value, maxColumns)
 }
 
@@ -54,7 +59,12 @@ export function calculateRowSpan(
     return Math.min(rowSpan, maxRows)
   }
 
-  const value = rowSpan[breakpoint] || rowSpan.desktop || rowSpan.tablet || rowSpan.mobile || 1
+  const value =
+    rowSpan[breakpoint] ||
+    rowSpan.desktop ||
+    rowSpan.tablet ||
+    rowSpan.mobile ||
+    1
   return Math.min(value, maxRows)
 }
 
@@ -66,7 +76,7 @@ export function calculateOrder(
   breakpoint: 'mobile' | 'tablet' | 'desktop'
 ): number | undefined {
   if (!order) return undefined
-  
+
   if (typeof order === 'number') {
     return order
   }
@@ -86,17 +96,17 @@ export function generateColSpanClasses(
   }
 
   const classes: string[] = []
-  
+
   if (colSpan.mobile) {
     const span = Math.min(colSpan.mobile, 1)
     classes.push(`col-span-${span}`)
   }
-  
+
   if (colSpan.tablet) {
     const span = Math.min(colSpan.tablet, 6)
     classes.push(`md:col-span-${span}`)
   }
-  
+
   if (colSpan.desktop) {
     const span = Math.min(colSpan.desktop, 12)
     classes.push(`lg:col-span-${span}`)
@@ -117,17 +127,17 @@ export function generateRowSpanClasses(
   }
 
   const classes: string[] = []
-  
+
   if (rowSpan.mobile && rowSpan.mobile > 1) {
     const span = Math.min(rowSpan.mobile, 6)
     classes.push(`row-span-${span}`)
   }
-  
+
   if (rowSpan.tablet && rowSpan.tablet > 1) {
     const span = Math.min(rowSpan.tablet, 6)
     classes.push(`md:row-span-${span}`)
   }
-  
+
   if (rowSpan.desktop && rowSpan.desktop > 1) {
     const span = Math.min(rowSpan.desktop, 6)
     classes.push(`lg:row-span-${span}`)
@@ -143,24 +153,24 @@ export function generateOrderClasses(
   order: number | ResponsiveValue<number> | undefined
 ): string {
   if (!order) return ''
-  
+
   if (typeof order === 'number') {
     const orderValue = Math.min(order, 12)
     return `order-${orderValue}`
   }
 
   const classes: string[] = []
-  
+
   if (order.mobile) {
     const orderValue = Math.min(order.mobile, 12)
     classes.push(`order-${orderValue}`)
   }
-  
+
   if (order.tablet) {
     const orderValue = Math.min(order.tablet, 12)
     classes.push(`md:order-${orderValue}`)
   }
-  
+
   if (order.desktop) {
     const orderValue = Math.min(order.desktop, 12)
     classes.push(`lg:order-${orderValue}`)
@@ -191,14 +201,16 @@ export function calculateOptimalCardSpan(
 
   const cards = cardsPerRow[breakpoint]
   const columns = maxColumns[breakpoint]
-  
+
   return Math.floor(columns / cards)
 }
 
 /**
  * Get current breakpoint based on window width
  */
-export function getCurrentBreakpoint(width: number): 'mobile' | 'tablet' | 'desktop' {
+export function getCurrentBreakpoint(
+  width: number
+): 'mobile' | 'tablet' | 'desktop' {
   if (width < DEFAULT_BREAKPOINTS.mobile) {
     return 'mobile'
   } else if (width < DEFAULT_BREAKPOINTS.desktop) {
@@ -229,7 +241,13 @@ export function resolveResponsiveValue<T>(
     return value
   }
 
-  return value[breakpoint] || value.desktop || value.tablet || value.mobile || fallback
+  return (
+    value[breakpoint] ||
+    value.desktop ||
+    value.tablet ||
+    value.mobile ||
+    fallback
+  )
 }
 
 /**
@@ -285,11 +303,14 @@ export function validateGridConfig(config: {
 export function autoArrangeCards(
   cardCount: number,
   breakpoint: 'mobile' | 'tablet' | 'desktop'
-): Array<{ colSpan: number; priority?: 'critical' | 'high' | 'medium' | 'low' }> {
+): Array<{
+  colSpan: number
+  priority?: 'critical' | 'high' | 'medium' | 'low'
+}> {
   const optimalSpan = calculateOptimalCardSpan(cardCount, breakpoint)
-  
+
   return Array.from({ length: cardCount }, (_, index) => ({
     colSpan: optimalSpan,
-    priority: index === 0 ? 'critical' : index < 3 ? 'high' : 'medium'
+    priority: index === 0 ? 'critical' : index < 3 ? 'high' : 'medium',
   }))
 }

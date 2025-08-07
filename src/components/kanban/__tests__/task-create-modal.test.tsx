@@ -82,7 +82,9 @@ describe('TaskCreateModal', () => {
     const descriptionInput = screen.getByLabelText('Description')
 
     fireEvent.change(titleInput, { target: { value: 'Test Task' } })
-    fireEvent.change(descriptionInput, { target: { value: 'Test Description' } })
+    fireEvent.change(descriptionInput, {
+      target: { value: 'Test Description' },
+    })
 
     expect(titleInput).toHaveValue('Test Task')
     expect(descriptionInput).toHaveValue('Test Description')

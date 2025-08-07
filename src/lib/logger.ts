@@ -3,7 +3,7 @@
  * Structured logging with Winston for the Cubcen platform
  */
 
-import path from 'path';
+import path from 'path'
 
 // Define a no-op logger for client-side to prevent bundling server-side dependencies
 const noOpLogger = {
@@ -12,14 +12,14 @@ const noOpLogger = {
   warn: () => {},
   error: () => {},
   fatal: () => {},
-};
+}
 
-let winstonLoggerInstance: any;
+let winstonLoggerInstance: any
 
 // Conditionally import winston only on the server side
 if (typeof window === 'undefined') {
   // This code runs only on the server
-  const winston = require('winston');
+  const winston = require('winston')
 
   // Define log levels
   const logLevels = {
@@ -28,7 +28,7 @@ if (typeof window === 'undefined') {
     warn: 2,
     info: 3,
     debug: 4,
-  };
+  }
 
   // Define log colors
   const logColors = {
@@ -37,12 +37,12 @@ if (typeof window === 'undefined') {
     warn: 'yellow',
     info: 'green',
     debug: 'blue',
-  };
+  }
 
-  winston.addColors(logColors);
+  winston.addColors(logColors)
 
   // Create logs directory if it doesn't exist
-  const logsDir = path.join(process.cwd(), 'logs');
+  const logsDir = path.join(process.cwd(), 'logs')
 
   // Winston logger configuration
   winstonLoggerInstance = winston.createLogger({
@@ -93,37 +93,37 @@ if (typeof window === 'undefined') {
         filename: path.join(logsDir, 'rejections.log'),
       }),
     ],
-  });
+  })
 } else {
   // This code runs only on the client
-  winstonLoggerInstance = noOpLogger;
+  winstonLoggerInstance = noOpLogger
 }
 
 // Create a structured logger interface
 interface LogContext {
-  [key: string]: unknown;
+  [key: string]: unknown
 }
 
 export interface Logger {
-  debug(message: string, context?: LogContext): void;
-  info(message: string, context?: LogContext): void;
-  warn(message: string, context?: LogContext): void;
-  error(message: string, error?: Error, context?: LogContext): void;
-  fatal(message: string, error?: Error, context?: LogContext): void;
+  debug(message: string, context?: LogContext): void
+  info(message: string, context?: LogContext): void
+  warn(message: string, context?: LogContext): void
+  error(message: string, error?: Error, context?: LogContext): void
+  fatal(message: string, error?: Error, context?: LogContext): void
 }
 
 // Enhanced logger with structured context
 export const structuredLogger: Logger = {
   debug(message: string, context?: LogContext): void {
-    winstonLoggerInstance.debug(message, context);
+    winstonLoggerInstance.debug(message, context)
   },
 
   info(message: string, context?: LogContext): void {
-    winstonLoggerInstance.info(message, context);
+    winstonLoggerInstance.info(message, context)
   },
 
   warn(message: string, context?: LogContext): void {
-    winstonLoggerInstance.warn(message, context);
+    winstonLoggerInstance.warn(message, context)
   },
 
   error(message: string, error?: Error, context?: LogContext): void {
@@ -136,8 +136,8 @@ export const structuredLogger: Logger = {
           stack: error.stack,
         },
       }),
-    };
-    winstonLoggerInstance.error(message, logData);
+    }
+    winstonLoggerInstance.error(message, logData)
   },
 
   fatal(message: string, error?: Error, context?: LogContext): void {
@@ -150,11 +150,11 @@ export const structuredLogger: Logger = {
           stack: error.stack,
         },
       }),
-    };
-    winstonLoggerInstance.log('fatal', message, logData);
+    }
+    winstonLoggerInstance.log('fatal', message, logData)
   },
-};
+}
 
 // Export both the winston logger and structured logger
-export { winstonLoggerInstance as winstonLogger };
-export default structuredLogger;
+export { winstonLoggerInstance as winstonLogger }
+export default structuredLogger

@@ -25,7 +25,7 @@ describe('Grid Utils', () => {
 
     it('calculates column span for responsive values', () => {
       const responsive = { mobile: 1, tablet: 3, desktop: 6 }
-      
+
       expect(calculateColSpan(responsive, 'mobile')).toBe(1)
       expect(calculateColSpan(responsive, 'tablet')).toBe(3)
       expect(calculateColSpan(responsive, 'desktop')).toBe(6)
@@ -33,14 +33,14 @@ describe('Grid Utils', () => {
 
     it('falls back to other breakpoints when value is missing', () => {
       const responsive = { desktop: 8 }
-      
+
       expect(calculateColSpan(responsive, 'mobile')).toBe(8)
       expect(calculateColSpan(responsive, 'tablet')).toBe(8)
     })
 
     it('uses fallback value when no responsive values match', () => {
       const responsive = {}
-      
+
       expect(calculateColSpan(responsive, 'mobile')).toBe(1)
     })
   })
@@ -53,7 +53,7 @@ describe('Grid Utils', () => {
 
     it('calculates row span for responsive values', () => {
       const responsive = { mobile: 1, tablet: 2, desktop: 3 }
-      
+
       expect(calculateRowSpan(responsive, 'mobile')).toBe(1)
       expect(calculateRowSpan(responsive, 'tablet')).toBe(2)
       expect(calculateRowSpan(responsive, 'desktop')).toBe(3)
@@ -68,7 +68,7 @@ describe('Grid Utils', () => {
 
     it('calculates order for responsive values', () => {
       const responsive = { mobile: 1, tablet: 2, desktop: 3 }
-      
+
       expect(calculateOrder(responsive, 'mobile')).toBe(1)
       expect(calculateOrder(responsive, 'tablet')).toBe(2)
       expect(calculateOrder(responsive, 'desktop')).toBe(3)
@@ -84,21 +84,21 @@ describe('Grid Utils', () => {
     it('generates classes for responsive column span', () => {
       const responsive = { mobile: 1, tablet: 3, desktop: 6 }
       const result = generateColSpanClasses(responsive)
-      
+
       expect(result).toBe('col-span-1 md:col-span-3 lg:col-span-6')
     })
 
     it('handles partial responsive values', () => {
       const responsive = { desktop: 8 }
       const result = generateColSpanClasses(responsive)
-      
+
       expect(result).toBe('lg:col-span-8')
     })
 
     it('clamps values to maximum limits', () => {
       const responsive = { mobile: 5, tablet: 10, desktop: 20 }
       const result = generateColSpanClasses(responsive)
-      
+
       expect(result).toBe('col-span-1 md:col-span-6 lg:col-span-12')
     })
   })
@@ -113,14 +113,14 @@ describe('Grid Utils', () => {
     it('generates classes for responsive row span', () => {
       const responsive = { mobile: 2, tablet: 3, desktop: 4 }
       const result = generateRowSpanClasses(responsive)
-      
+
       expect(result).toBe('row-span-2 md:row-span-3 lg:row-span-4')
     })
 
     it('skips classes for span value of 1', () => {
       const responsive = { mobile: 1, tablet: 2, desktop: 3 }
       const result = generateRowSpanClasses(responsive)
-      
+
       expect(result).toBe('md:row-span-2 lg:row-span-3')
     })
   })
@@ -135,7 +135,7 @@ describe('Grid Utils', () => {
     it('generates classes for responsive order', () => {
       const responsive = { mobile: 1, tablet: 2, desktop: 3 }
       const result = generateOrderClasses(responsive)
-      
+
       expect(result).toBe('order-1 md:order-2 lg:order-3')
     })
   })
@@ -180,7 +180,7 @@ describe('Grid Utils', () => {
   describe('resolveResponsiveValue', () => {
     it('resolves responsive values for specific breakpoints', () => {
       const responsive = { mobile: 1, tablet: 2, desktop: 3 }
-      
+
       expect(resolveResponsiveValue(responsive, 'mobile', 0)).toBe(1)
       expect(resolveResponsiveValue(responsive, 'tablet', 0)).toBe(2)
       expect(resolveResponsiveValue(responsive, 'desktop', 0)).toBe(3)
@@ -193,14 +193,18 @@ describe('Grid Utils', () => {
 
     it('uses fallback when no matching value found', () => {
       const responsive = {}
-      
-      expect(resolveResponsiveValue(responsive, 'mobile', 'fallback')).toBe('fallback')
+
+      expect(resolveResponsiveValue(responsive, 'mobile', 'fallback')).toBe(
+        'fallback'
+      )
     })
 
     it('falls back through breakpoints', () => {
       const responsive = { desktop: 'desktop-value' }
-      
-      expect(resolveResponsiveValue(responsive, 'mobile', 'fallback')).toBe('desktop-value')
+
+      expect(resolveResponsiveValue(responsive, 'mobile', 'fallback')).toBe(
+        'desktop-value'
+      )
     })
   })
 
@@ -208,11 +212,11 @@ describe('Grid Utils', () => {
     it('generates CSS custom properties for grid columns', () => {
       const responsive = { mobile: 1, tablet: 6, desktop: 12 }
       const result = generateGridCustomProperties(responsive)
-      
+
       expect(result).toEqual({
         '--dashboard-grid-columns-mobile': '1',
         '--dashboard-grid-columns-tablet': '6',
-        '--dashboard-grid-columns-desktop': '12'
+        '--dashboard-grid-columns-desktop': '12',
       })
     })
   })
@@ -220,41 +224,57 @@ describe('Grid Utils', () => {
   describe('validateGridConfig', () => {
     it('validates valid grid configurations', () => {
       expect(validateGridConfig({ columns: 12 })).toBe(true)
-      expect(validateGridConfig({ 
-        responsive: { mobile: 1, tablet: 6, desktop: 12 }
-      })).toBe(true)
+      expect(
+        validateGridConfig({
+          responsive: { mobile: 1, tablet: 6, desktop: 12 },
+        })
+      ).toBe(true)
     })
 
     it('rejects invalid column counts', () => {
       const consoleSpy = jest.spyOn(console, 'warn').mockImplementation()
-      
+
       expect(validateGridConfig({ columns: 0 })).toBe(false)
       expect(validateGridConfig({ columns: 25 })).toBe(false)
-      
-      expect(consoleSpy).toHaveBeenCalledWith('Grid columns should be between 1 and 24')
-      
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Grid columns should be between 1 and 24'
+      )
+
       consoleSpy.mockRestore()
     })
 
     it('rejects invalid responsive values', () => {
       const consoleSpy = jest.spyOn(console, 'warn').mockImplementation()
-      
-      expect(validateGridConfig({ 
-        responsive: { mobile: 0, tablet: 6, desktop: 12 }
-      })).toBe(false)
-      
-      expect(validateGridConfig({ 
-        responsive: { mobile: 1, tablet: 15, desktop: 12 }
-      })).toBe(false)
-      
-      expect(validateGridConfig({ 
-        responsive: { mobile: 1, tablet: 6, desktop: 30 }
-      })).toBe(false)
-      
-      expect(consoleSpy).toHaveBeenCalledWith('Mobile grid columns should be between 1 and 12')
-      expect(consoleSpy).toHaveBeenCalledWith('Tablet grid columns should be between 1 and 12')
-      expect(consoleSpy).toHaveBeenCalledWith('Desktop grid columns should be between 1 and 24')
-      
+
+      expect(
+        validateGridConfig({
+          responsive: { mobile: 0, tablet: 6, desktop: 12 },
+        })
+      ).toBe(false)
+
+      expect(
+        validateGridConfig({
+          responsive: { mobile: 1, tablet: 15, desktop: 12 },
+        })
+      ).toBe(false)
+
+      expect(
+        validateGridConfig({
+          responsive: { mobile: 1, tablet: 6, desktop: 30 },
+        })
+      ).toBe(false)
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Mobile grid columns should be between 1 and 12'
+      )
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Tablet grid columns should be between 1 and 12'
+      )
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Desktop grid columns should be between 1 and 24'
+      )
+
       consoleSpy.mockRestore()
     })
   })
@@ -262,7 +282,7 @@ describe('Grid Utils', () => {
   describe('autoArrangeCards', () => {
     it('auto-arranges cards with optimal spans', () => {
       const result = autoArrangeCards(6, 'desktop')
-      
+
       expect(result).toHaveLength(6)
       expect(result[0]).toEqual({ colSpan: 4, priority: 'critical' })
       expect(result[1]).toEqual({ colSpan: 4, priority: 'high' })
@@ -274,7 +294,7 @@ describe('Grid Utils', () => {
       const mobileResult = autoArrangeCards(3, 'mobile')
       const tabletResult = autoArrangeCards(3, 'tablet')
       const desktopResult = autoArrangeCards(3, 'desktop')
-      
+
       expect(mobileResult[0].colSpan).toBe(1)
       expect(tabletResult[0].colSpan).toBe(3)
       expect(desktopResult[0].colSpan).toBe(4)
@@ -282,7 +302,7 @@ describe('Grid Utils', () => {
 
     it('assigns priorities correctly', () => {
       const result = autoArrangeCards(5, 'desktop')
-      
+
       expect(result[0].priority).toBe('critical')
       expect(result[1].priority).toBe('high')
       expect(result[2].priority).toBe('high')
@@ -296,7 +316,7 @@ describe('Grid Utils', () => {
       expect(DEFAULT_BREAKPOINTS).toEqual({
         mobile: 768,
         tablet: 1024,
-        desktop: 1280
+        desktop: 1280,
       })
     })
 
@@ -304,7 +324,7 @@ describe('Grid Utils', () => {
       expect(DEFAULT_GRID_COLUMNS).toEqual({
         mobile: 1,
         tablet: 6,
-        desktop: 12
+        desktop: 12,
       })
     })
   })

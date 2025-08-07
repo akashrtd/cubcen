@@ -28,9 +28,9 @@ The theming system is built on CSS custom properties (variables) that provide:
 
 ```css
 :root {
-  --dashboard-primary: #3F51B5;    /* Cubcen Indigo */
-  --dashboard-secondary: #B19ADA;  /* Cubcen Light Purple */
-  --dashboard-accent: #FF6B35;     /* Cubcen Orange */
+  --dashboard-primary: #3f51b5; /* Cubcen Indigo */
+  --dashboard-secondary: #b19ada; /* Cubcen Light Purple */
+  --dashboard-accent: #ff6b35; /* Cubcen Orange */
 }
 ```
 
@@ -38,10 +38,10 @@ The theming system is built on CSS custom properties (variables) that provide:
 
 ```css
 :root {
-  --dashboard-success: #10B981;    /* Green */
-  --dashboard-warning: #F59E0B;    /* Amber */
-  --dashboard-error: #EF4444;      /* Red */
-  --dashboard-info: #3B82F6;       /* Blue */
+  --dashboard-success: #10b981; /* Green */
+  --dashboard-warning: #f59e0b; /* Amber */
+  --dashboard-error: #ef4444; /* Red */
+  --dashboard-info: #3b82f6; /* Blue */
 }
 ```
 
@@ -49,9 +49,9 @@ The theming system is built on CSS custom properties (variables) that provide:
 
 ```css
 :root {
-  --dashboard-background: #FFFFFF; /* Page background */
-  --dashboard-surface: #F8F9FA;    /* Card backgrounds */
-  --dashboard-border: #E5E7EB;     /* Borders and dividers */
+  --dashboard-background: #ffffff; /* Page background */
+  --dashboard-surface: #f8f9fa; /* Card backgrounds */
+  --dashboard-border: #e5e7eb; /* Borders and dividers */
 }
 ```
 
@@ -59,9 +59,9 @@ The theming system is built on CSS custom properties (variables) that provide:
 
 ```css
 :root {
-  --dashboard-text-primary: #1A1A1A;    /* Main text */
-  --dashboard-text-secondary: #6B7280;  /* Secondary text */
-  --dashboard-text-disabled: #9CA3AF;   /* Disabled text */
+  --dashboard-text-primary: #1a1a1a; /* Main text */
+  --dashboard-text-secondary: #6b7280; /* Secondary text */
+  --dashboard-text-disabled: #9ca3af; /* Disabled text */
 }
 ```
 
@@ -73,13 +73,13 @@ The typography system follows a modular scale based on WCAG accessibility guidel
 
 ```css
 :root {
-  --dashboard-text-xs: 0.75rem;    /* 12px */
-  --dashboard-text-sm: 0.875rem;   /* 14px - Labels */
-  --dashboard-text-base: 1rem;     /* 16px - Body text */
-  --dashboard-text-lg: 1.125rem;   /* 18px */
-  --dashboard-text-xl: 1.25rem;    /* 20px */
-  --dashboard-text-2xl: 1.5rem;    /* 24px - H2 Semibold */
-  --dashboard-text-3xl: 2rem;      /* 32px - H1 Bold */
+  --dashboard-text-xs: 0.75rem; /* 12px */
+  --dashboard-text-sm: 0.875rem; /* 14px - Labels */
+  --dashboard-text-base: 1rem; /* 16px - Body text */
+  --dashboard-text-lg: 1.125rem; /* 18px */
+  --dashboard-text-xl: 1.25rem; /* 20px */
+  --dashboard-text-2xl: 1.5rem; /* 24px - H2 Semibold */
+  --dashboard-text-3xl: 2rem; /* 32px - H1 Bold */
 }
 ```
 
@@ -87,10 +87,10 @@ The typography system follows a modular scale based on WCAG accessibility guidel
 
 ```css
 :root {
-  --dashboard-font-normal: 400;    /* Regular text */
-  --dashboard-font-medium: 500;    /* Emphasized text */
-  --dashboard-font-semibold: 600;  /* Headings */
-  --dashboard-font-bold: 700;      /* Strong emphasis */
+  --dashboard-font-normal: 400; /* Regular text */
+  --dashboard-font-medium: 500; /* Emphasized text */
+  --dashboard-font-semibold: 600; /* Headings */
+  --dashboard-font-bold: 700; /* Strong emphasis */
 }
 ```
 
@@ -98,9 +98,9 @@ The typography system follows a modular scale based on WCAG accessibility guidel
 
 ```css
 :root {
-  --dashboard-line-height-tight: 1.25;    /* Headings */
-  --dashboard-line-height-normal: 1.5;    /* Body text */
-  --dashboard-line-height-relaxed: 1.75;  /* Long-form content */
+  --dashboard-line-height-tight: 1.25; /* Headings */
+  --dashboard-line-height-normal: 1.5; /* Body text */
+  --dashboard-line-height-relaxed: 1.75; /* Long-form content */
 }
 ```
 
@@ -110,19 +110,19 @@ The typography system follows a modular scale based on WCAG accessibility guidel
 
 ```css
 :root {
-  --dashboard-grid-gap: 1.5rem;        /* 24px - Grid gap */
-  --dashboard-section-margin: 2rem;    /* 32px - Section spacing */
+  --dashboard-grid-gap: 1.5rem; /* 24px - Grid gap */
+  --dashboard-section-margin: 2rem; /* 32px - Section spacing */
   --dashboard-component-spacing: 1rem; /* 16px - Component spacing */
 }
 ```
 
 ### Card Spacing
 
-```css
+````css
 :root {
-  --dashboard-card-padding: 1.5rem;    /* Default card padding */
-  --dashboard-card-sm-padding: 1rem;   /* Small card padding */
-  --dashboard-card-lg-padding: 2rem;   /* Large card padding */
+  --dashboard-card-padding: 1.5rem; /* Default card padding */
+  --dashboard-card-sm-padding: 1rem; /* Small card padding */
+  --dashboard-card-lg-padding: 2rem; /* Large card padding */
   --dashboard-card-xl-padding: 2.5rem; /* Extra large card padding */
 }
 ```## 
@@ -134,27 +134,39 @@ The dashboard provides a 10-color palette optimized for data visualization:
 
 ```css
 :root {
-  --dashboard-chart-1: #3F51B5;  /* Primary */
-  --dashboard-chart-2: #B19ADA;  /* Secondary */
-  --dashboard-chart-3: #FF6B35;  /* Accent */
-  --dashboard-chart-4: #10B981;  /* Success */
-  --dashboard-chart-5: #F59E0B;  /* Warning */
-  --dashboard-chart-6: #EF4444;  /* Error */
-  --dashboard-chart-7: #3B82F6;  /* Info */
-  --dashboard-chart-8: #8B5CF6;  /* Purple */
-  --dashboard-chart-9: #EC4899;  /* Pink */
-  --dashboard-chart-10: #14B8A6; /* Teal */
+  --dashboard-chart-1: #3f51b5; /* Primary */
+  --dashboard-chart-2: #b19ada; /* Secondary */
+  --dashboard-chart-3: #ff6b35; /* Accent */
+  --dashboard-chart-4: #10b981; /* Success */
+  --dashboard-chart-5: #f59e0b; /* Warning */
+  --dashboard-chart-6: #ef4444; /* Error */
+  --dashboard-chart-7: #3b82f6; /* Info */
+  --dashboard-chart-8: #8b5cf6; /* Purple */
+  --dashboard-chart-9: #ec4899; /* Pink */
+  --dashboard-chart-10: #14b8a6; /* Teal */
 }
-```
+````
 
 ### Chart Gradients
 
 ```css
 :root {
-  --dashboard-gradient-primary: linear-gradient(135deg, #3F51B5 0%, #B19ADA 100%);
-  --dashboard-gradient-success: linear-gradient(135deg, #10B981 0%, #34D399 100%);
-  --dashboard-gradient-warning: linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%);
-  --dashboard-gradient-error: linear-gradient(135deg, #EF4444 0%, #F87171 100%);
+  --dashboard-gradient-primary: linear-gradient(
+    135deg,
+    #3f51b5 0%,
+    #b19ada 100%
+  );
+  --dashboard-gradient-success: linear-gradient(
+    135deg,
+    #10b981 0%,
+    #34d399 100%
+  );
+  --dashboard-gradient-warning: linear-gradient(
+    135deg,
+    #f59e0b 0%,
+    #fbbf24 100%
+  );
+  --dashboard-gradient-error: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
 }
 ```
 
@@ -174,14 +186,14 @@ The system automatically detects system preferences and applies appropriate them
 ### Dark Theme Variables
 
 ```css
-[data-theme="dark"] {
-  --dashboard-background: #0F172A;  /* Dark slate */
-  --dashboard-surface: #1E293B;     /* Lighter slate */
-  --dashboard-border: #334155;      /* Slate border */
-  
-  --dashboard-text-primary: #F1F5F9;    /* Light text */
-  --dashboard-text-secondary: #CBD5E1;  /* Muted light text */
-  --dashboard-text-disabled: #64748B;   /* Disabled light text */
+[data-theme='dark'] {
+  --dashboard-background: #0f172a; /* Dark slate */
+  --dashboard-surface: #1e293b; /* Lighter slate */
+  --dashboard-border: #334155; /* Slate border */
+
+  --dashboard-text-primary: #f1f5f9; /* Light text */
+  --dashboard-text-secondary: #cbd5e1; /* Muted light text */
+  --dashboard-text-disabled: #64748b; /* Disabled light text */
 }
 ```
 
@@ -191,10 +203,10 @@ The system automatically detects system preferences and applies appropriate them
 
 ```css
 :root {
-  --dashboard-mobile: 768px;   /* Mobile breakpoint */
-  --dashboard-tablet: 1024px;  /* Tablet breakpoint */
+  --dashboard-mobile: 768px; /* Mobile breakpoint */
+  --dashboard-tablet: 1024px; /* Tablet breakpoint */
   --dashboard-desktop: 1280px; /* Desktop breakpoint */
-  --dashboard-wide: 1536px;    /* Wide screen breakpoint */
+  --dashboard-wide: 1536px; /* Wide screen breakpoint */
 }
 ```
 
@@ -203,9 +215,9 @@ The system automatically detects system preferences and applies appropriate them
 ```css
 @media (max-width: 768px) {
   :root {
-    --dashboard-grid-gap: 1rem;        /* Reduced gap */
-    --dashboard-card-padding: 1rem;    /* Reduced padding */
-    --dashboard-section-margin: 1rem;  /* Reduced margin */
+    --dashboard-grid-gap: 1rem; /* Reduced gap */
+    --dashboard-card-padding: 1rem; /* Reduced padding */
+    --dashboard-section-margin: 1rem; /* Reduced margin */
   }
 }
 ```
@@ -216,9 +228,9 @@ The system automatically detects system preferences and applies appropriate them
 
 ```css
 :root {
-  --dashboard-transition-fast: 150ms ease-out;    /* Quick interactions */
-  --dashboard-transition-normal: 250ms ease-out;  /* Standard transitions */
-  --dashboard-transition-slow: 350ms ease-out;    /* Complex animations */
+  --dashboard-transition-fast: 150ms ease-out; /* Quick interactions */
+  --dashboard-transition-normal: 250ms ease-out; /* Standard transitions */
+  --dashboard-transition-slow: 350ms ease-out; /* Complex animations */
 }
 ```
 
@@ -226,9 +238,9 @@ The system automatically detects system preferences and applies appropriate them
 
 ```css
 :root {
-  --dashboard-ease: cubic-bezier(0.4, 0, 0.2, 1);      /* Standard easing */
-  --dashboard-ease-in: cubic-bezier(0.4, 0, 1, 1);     /* Ease in */
-  --dashboard-ease-out: cubic-bezier(0, 0, 0.2, 1);    /* Ease out */
+  --dashboard-ease: cubic-bezier(0.4, 0, 0.2, 1); /* Standard easing */
+  --dashboard-ease-in: cubic-bezier(0.4, 0, 1, 1); /* Ease in */
+  --dashboard-ease-out: cubic-bezier(0, 0, 0.2, 1); /* Ease out */
   --dashboard-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1); /* Ease in-out */
 }
 ```
@@ -253,11 +265,11 @@ The system automatically detects system preferences and applies appropriate them
 
 ```typescript
 const customColors = {
-  primary: '#2563EB',      // Custom blue
-  secondary: '#7C3AED',    // Custom purple
-  accent: '#DC2626',       // Custom red
-  background: '#FAFAFA',   // Custom background
-  surface: '#FFFFFF',      // Custom surface
+  primary: '#2563EB', // Custom blue
+  secondary: '#7C3AED', // Custom purple
+  accent: '#DC2626', // Custom red
+  background: '#FAFAFA', // Custom background
+  surface: '#FFFFFF', // Custom surface
 }
 ```
 
@@ -270,22 +282,29 @@ const myTheme: Partial<DashboardTheme> = {
     text: {
       primary: '#111827',
       secondary: '#6B7280',
-      disabled: '#9CA3AF'
+      disabled: '#9CA3AF',
     },
     status: {
       success: '#059669',
       warning: '#D97706',
       error: '#DC2626',
-      info: '#2563EB'
+      info: '#2563EB',
     },
     chart: {
       palette: [
-        '#2563EB', '#7C3AED', '#DC2626', '#059669',
-        '#D97706', '#7C2D12', '#1E40AF', '#6B21A8',
-        '#BE185D', '#0F766E'
-      ]
-    }
-  }
+        '#2563EB',
+        '#7C3AED',
+        '#DC2626',
+        '#059669',
+        '#D97706',
+        '#7C2D12',
+        '#1E40AF',
+        '#6B21A8',
+        '#BE185D',
+        '#0F766E',
+      ],
+    },
+  },
 }
 ```
 
@@ -296,10 +315,7 @@ import { DashboardThemeProvider } from '@/components/dashboard/theming/theme-pro
 
 function App() {
   return (
-    <DashboardThemeProvider 
-      theme={myTheme}
-      validateContrast={true}
-    >
+    <DashboardThemeProvider theme={myTheme} validateContrast={true}>
       <YourDashboard />
     </DashboardThemeProvider>
   )
@@ -308,7 +324,7 @@ function App() {
 
 #### 4. Use in Components
 
-```tsx
+````tsx
 function CustomCard() {
   return (
     <div className="bg-dashboard-surface text-dashboard-text-primary p-dashboard-card-padding">
@@ -339,14 +355,14 @@ You can create themes that only apply to specific components:
   --dashboard-chart-2: #EF4444;
   --dashboard-chart-3: #F87171;
 }
-```
+````
 
 ### Dynamic Theme Switching
 
 ```typescript
 function ThemeSwitcher() {
   const { setDashboardTheme } = useDashboardTheme()
-  
+
   const applyAnalyticsTheme = () => {
     setDashboardTheme({
       colors: {
@@ -357,7 +373,7 @@ function ThemeSwitcher() {
       }
     })
   }
-  
+
   const applyErrorTheme = () => {
     setDashboardTheme({
       colors: {
@@ -368,7 +384,7 @@ function ThemeSwitcher() {
       }
     })
   }
-  
+
   return (
     <div>
       <button onClick={applyAnalyticsTheme}>Analytics Theme</button>
@@ -392,11 +408,11 @@ const ThemedCard = styled.div`
   border-radius: var(--dashboard-radius-lg);
   padding: var(--dashboard-card-padding);
   transition: box-shadow var(--dashboard-transition-normal);
-  
+
   &:hover {
     box-shadow: var(--dashboard-shadow-md);
   }
-  
+
   .metric-value {
     font-size: var(--dashboard-text-2xl);
     font-weight: var(--dashboard-font-bold);
@@ -432,9 +448,9 @@ const ratio = getContrastRatio('#6B7280', '#F8F9FA') // 4.52:1
     --dashboard-border: #000000;
     --dashboard-text-secondary: var(--dashboard-text-primary);
   }
-  
-  [data-theme="dark"] {
-    --dashboard-border: #FFFFFF;
+
+  [data-theme='dark'] {
+    --dashboard-border: #ffffff;
     --dashboard-text-secondary: var(--dashboard-text-primary);
   }
 }
@@ -457,12 +473,15 @@ The theme provider caches CSS variable updates to prevent unnecessary DOM manipu
 
 ```typescript
 // Efficient theme updates
-const updateTheme = useCallback((newColors: Partial<Colors>) => {
-  setDashboardTheme(prevTheme => ({
-    ...prevTheme,
-    colors: { ...prevTheme.colors, ...newColors }
-  }))
-}, [setDashboardTheme])
+const updateTheme = useCallback(
+  (newColors: Partial<Colors>) => {
+    setDashboardTheme(prevTheme => ({
+      ...prevTheme,
+      colors: { ...prevTheme.colors, ...newColors },
+    }))
+  },
+  [setDashboardTheme]
+)
 ```
 
 ### Minimal Repaints
@@ -478,7 +497,7 @@ CSS variables minimize repaints by avoiding JavaScript style updates:
 
 /* Avoid: Direct style manipulation */
 .card.dynamic-bg {
-  background-color: #F8F9FA; /* Hard-coded value */
+  background-color: #f8f9fa; /* Hard-coded value */
 }
 ```
 
@@ -512,7 +531,7 @@ CSS variables minimize repaints by avoiding JavaScript style updates:
 ```typescript
 function ThemeDebugger() {
   const { dashboardTheme, resolvedTheme, getContrastRatio } = useDashboardTheme()
-  
+
   return (
     <div>
       <h3>Current Theme: {resolvedTheme}</h3>

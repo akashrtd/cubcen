@@ -2,14 +2,14 @@
 export {
   KeyboardNavigation,
   useFocusManagement,
-  FocusTrap
+  FocusTrap,
 } from './keyboard-navigation'
 
 // Focus Management
 export {
   FocusManagement,
   ModalFocusManager,
-  SkipLinks
+  SkipLinks,
 } from './focus-management'
 
 // Screen Reader Support
@@ -18,7 +18,7 @@ export {
   useScreenReaderAnnouncer,
   DataAnnouncer,
   ChartAnnouncer,
-  FilterAnnouncer
+  FilterAnnouncer,
 } from './screen-reader-announcer'
 
 // ARIA Labels
@@ -31,5 +31,5 @@ export {
   generateChartAriaLabel,
   generateTableCellAriaLabel,
   generateFormFieldAriaLabel,
-  generateNavigationAriaLabel
+  generateNavigationAriaLabel,
 } from './aria-labels'

@@ -45,26 +45,35 @@ export function SwipeNavigation({
   const currentSection = sections[currentSectionIndex]
 
   // Navigate to a specific section
-  const navigateToSection = useCallback((index: number) => {
-    if (
-      index < 0 || 
-      index >= sections.length || 
-      index === currentSectionIndex ||
-      isTransitioning ||
-      sections[index]?.disabled
-    ) {
-      return
-    }
+  const navigateToSection = useCallback(
+    (index: number) => {
+      if (
+        index < 0 ||
+        index >= sections.length ||
+        index === currentSectionIndex ||
+        isTransitioning ||
+        sections[index]?.disabled
+      ) {
+        return
+      }
 
-    setIsTransitioning(true)
-    setCurrentSectionIndex(index)
-    onSectionChange?.(sections[index].id)
+      setIsTransitioning(true)
+      setCurrentSectionIndex(index)
+      onSectionChange?.(sections[index].id)
 
-    // Reset transition state after animation
-    setTimeout(() => {
-      setIsTransitioning(false)
-    }, animationDuration)
-  }, [sections, currentSectionIndex, isTransitioning, onSectionChange, animationDuration])
+      // Reset transition state after animation
+      setTimeout(() => {
+        setIsTransitioning(false)
+      }, animationDuration)
+    },
+    [
+      sections,
+      currentSectionIndex,
+      isTransitioning,
+      onSectionChange,
+      animationDuration,
+    ]
+  )
 
   // Handle swipe gestures
   const handleSwipeLeft = useCallback(() => {
@@ -76,28 +85,37 @@ export function SwipeNavigation({
   }, [currentSectionIndex, navigateToSection])
 
   // Handle keyboard navigation
-  const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
-    if (!enableKeyboardNavigation || isTransitioning) return
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent) => {
+      if (!enableKeyboardNavigation || isTransitioning) return
 
-    switch (event.key) {
-      case 'ArrowLeft':
-        event.preventDefault()
-        navigateToSection(currentSectionIndex - 1)
-        break
-      case 'ArrowRight':
-        event.preventDefault()
-        navigateToSection(currentSectionIndex + 1)
-        break
-      case 'Home':
-        event.preventDefault()
-        navigateToSection(0)
-        break
-      case 'End':
-        event.preventDefault()
-        navigateToSection(sections.length - 1)
-        break
-    }
-  }, [enableKeyboardNavigation, isTransitioning, currentSectionIndex, navigateToSection, sections.length])
+      switch (event.key) {
+        case 'ArrowLeft':
+          event.preventDefault()
+          navigateToSection(currentSectionIndex - 1)
+          break
+        case 'ArrowRight':
+          event.preventDefault()
+          navigateToSection(currentSectionIndex + 1)
+          break
+        case 'Home':
+          event.preventDefault()
+          navigateToSection(0)
+          break
+        case 'End':
+          event.preventDefault()
+          navigateToSection(sections.length - 1)
+          break
+      }
+    },
+    [
+      enableKeyboardNavigation,
+      isTransitioning,
+      currentSectionIndex,
+      navigateToSection,
+      sections.length,
+    ]
+  )
 
   // Update section when initialSection prop changes
   useEffect(() => {
@@ -178,19 +196,19 @@ export function SwipeNavigation({
                 index === currentSectionIndex && [
                   'bg-white',
                   'scale-125',
-                  'shadow-sm'
+                  'shadow-sm',
                 ],
                 // Inactive state
                 index !== currentSectionIndex && [
                   'bg-white/50',
                   'hover:bg-white/75',
-                  'active:scale-90'
+                  'active:scale-90',
                 ],
                 // Disabled state
                 section.disabled && [
                   'opacity-30',
                   'cursor-not-allowed',
-                  'hover:bg-white/50'
+                  'hover:bg-white/50',
                 ]
               )}
               role="tab"
@@ -223,7 +241,9 @@ export function SwipeNavigation({
           )}
           style={{
             transform: `translateX(-${currentSectionIndex * 100}%)`,
-            transitionDuration: isTransitioning ? `${animationDuration}ms` : '0ms',
+            transitionDuration: isTransitioning
+              ? `${animationDuration}ms`
+              : '0ms',
           }}
         >
           {sections.map((section, index) => (
@@ -254,11 +274,12 @@ export function SwipeNavigation({
       <div className="sr-only" aria-live="polite">
         {enableKeyboardNavigation && (
           <>
-            Use arrow keys to navigate between sections. 
-            Press Home to go to first section, End to go to last section.
+            Use arrow keys to navigate between sections. Press Home to go to
+            first section, End to go to last section.
           </>
         )}
-        Current section: {currentSection?.title} ({currentSectionIndex + 1} of {sections.length})
+        Current section: {currentSection?.title} ({currentSectionIndex + 1} of{' '}
+        {sections.length})
       </div>
 
       {/* Section title overlay for accessibility */}
@@ -293,18 +314,24 @@ export function SwipeNavigation({
 }
 
 // Hook for managing swipe navigation state
-export function useSwipeNavigation(sections: SwipeNavigationSection[], initialSection?: string) {
+export function useSwipeNavigation(
+  sections: SwipeNavigationSection[],
+  initialSection?: string
+) {
   const [currentSectionId, setCurrentSectionId] = useState(
     initialSection || sections[0]?.id || ''
   )
   const [history, setHistory] = useState<string[]>([currentSectionId])
 
-  const navigateToSection = useCallback((sectionId: string) => {
-    if (sectionId !== currentSectionId) {
-      setCurrentSectionId(sectionId)
-      setHistory(prev => [...prev.slice(-9), sectionId]) // Keep last 10 entries
-    }
-  }, [currentSectionId])
+  const navigateToSection = useCallback(
+    (sectionId: string) => {
+      if (sectionId !== currentSectionId) {
+        setCurrentSectionId(sectionId)
+        setHistory(prev => [...prev.slice(-9), sectionId]) // Keep last 10 entries
+      }
+    },
+    [currentSectionId]
+  )
 
   const goBack = useCallback(() => {
     if (history.length > 1) {
@@ -326,12 +353,14 @@ export function useSwipeNavigation(sections: SwipeNavigationSection[], initialSe
 }
 
 // Utility function to create sections from dashboard pages
-export function createDashboardSections(pages: Array<{
-  id: string
-  title: string
-  component: React.ComponentType
-  disabled?: boolean
-}>): SwipeNavigationSection[] {
+export function createDashboardSections(
+  pages: Array<{
+    id: string
+    title: string
+    component: React.ComponentType
+    disabled?: boolean
+  }>
+): SwipeNavigationSection[] {
   return pages.map(page => ({
     id: page.id,
     title: page.title,

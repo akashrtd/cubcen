@@ -29,7 +29,7 @@ test.describe('Dashboard Pages E2E Workflow', () => {
     await page.fill('[data-testid="email-input"]', testUser.email)
     await page.fill('[data-testid="password-input"]', testUser.password)
     await page.click('[data-testid="login-button"]')
-    
+
     // Wait for redirect to dashboard
     await expect(page).toHaveURL('/dashboard')
   })
@@ -52,15 +52,23 @@ test.describe('Dashboard Pages E2E Workflow', () => {
 
     // Test connection
     await page.click('[data-testid="test-connection-button"]')
-    await expect(page.locator('[data-testid="connection-status"]')).toContainText('Connected')
+    await expect(
+      page.locator('[data-testid="connection-status"]')
+    ).toContainText('Connected')
 
     // Save platform
     await page.click('[data-testid="save-platform-button"]')
-    await expect(page.locator('[data-testid="platform-modal"]')).not.toBeVisible()
+    await expect(
+      page.locator('[data-testid="platform-modal"]')
+    ).not.toBeVisible()
 
     // Verify platform appears in list
-    await expect(page.locator(`[data-testid="platform-${testPlatform.name}"]`)).toBeVisible()
-    await expect(page.locator(`[data-testid="platform-${testPlatform.name}"] .status`)).toContainText('Connected')
+    await expect(
+      page.locator(`[data-testid="platform-${testPlatform.name}"]`)
+    ).toBeVisible()
+    await expect(
+      page.locator(`[data-testid="platform-${testPlatform.name}"] .status`)
+    ).toContainText('Connected')
 
     // Edit platform
     await page.click(`[data-testid="edit-platform-${testPlatform.name}"]`)
@@ -71,7 +79,9 @@ test.describe('Dashboard Pages E2E Workflow', () => {
     await page.click('[data-testid="save-platform-button"]')
 
     // Verify updated name
-    await expect(page.locator(`[data-testid="platform-${updatedName}"]`)).toBeVisible()
+    await expect(
+      page.locator(`[data-testid="platform-${updatedName}"]`)
+    ).toBeVisible()
 
     // Delete platform
     await page.click(`[data-testid="delete-platform-${updatedName}"]`)
@@ -79,7 +89,9 @@ test.describe('Dashboard Pages E2E Workflow', () => {
     await page.click('[data-testid="confirm-delete-button"]')
 
     // Verify platform is removed
-    await expect(page.locator(`[data-testid="platform-${updatedName}"]`)).not.toBeVisible()
+    await expect(
+      page.locator(`[data-testid="platform-${updatedName}"]`)
+    ).not.toBeVisible()
   })
 
   test('complete user management workflow', async ({ page }) => {
@@ -97,29 +109,46 @@ test.describe('Dashboard Pages E2E Workflow', () => {
     await page.fill('[data-testid="user-email"]', testNewUser.email)
     await page.selectOption('[data-testid="user-role"]', testNewUser.role)
     await page.fill('[data-testid="user-password"]', testNewUser.password)
-    await page.fill('[data-testid="user-confirm-password"]', testNewUser.password)
+    await page.fill(
+      '[data-testid="user-confirm-password"]',
+      testNewUser.password
+    )
 
     // Save user
     await page.click('[data-testid="save-user-button"]')
     await expect(page.locator('[data-testid="user-modal"]')).not.toBeVisible()
 
     // Verify user appears in list
-    await expect(page.locator(`[data-testid="user-${testNewUser.email}"]`)).toBeVisible()
-    await expect(page.locator(`[data-testid="user-${testNewUser.email}"] .role`)).toContainText('Operator')
-    await expect(page.locator(`[data-testid="user-${testNewUser.email}"] .status`)).toContainText('Active')
+    await expect(
+      page.locator(`[data-testid="user-${testNewUser.email}"]`)
+    ).toBeVisible()
+    await expect(
+      page.locator(`[data-testid="user-${testNewUser.email}"] .role`)
+    ).toContainText('Operator')
+    await expect(
+      page.locator(`[data-testid="user-${testNewUser.email}"] .status`)
+    ).toContainText('Active')
 
     // Search for user
     await page.fill('[data-testid="user-search"]', testNewUser.name)
-    await expect(page.locator(`[data-testid="user-${testNewUser.email}"]`)).toBeVisible()
-    await expect(page.locator('[data-testid="user-list"] .user-row')).toHaveCount(1)
+    await expect(
+      page.locator(`[data-testid="user-${testNewUser.email}"]`)
+    ).toBeVisible()
+    await expect(
+      page.locator('[data-testid="user-list"] .user-row')
+    ).toHaveCount(1)
 
     // Clear search
     await page.fill('[data-testid="user-search"]', '')
-    await expect(page.locator('[data-testid="user-list"] .user-row')).toHaveCount.toBeGreaterThan(1)
+    await expect(
+      page.locator('[data-testid="user-list"] .user-row')
+    ).toHaveCount.toBeGreaterThan(1)
 
     // Filter by role
     await page.selectOption('[data-testid="role-filter"]', 'OPERATOR')
-    await expect(page.locator(`[data-testid="user-${testNewUser.email}"]`)).toBeVisible()
+    await expect(
+      page.locator(`[data-testid="user-${testNewUser.email}"]`)
+    ).toBeVisible()
 
     // Reset filters
     await page.selectOption('[data-testid="role-filter"]', 'ALL')
@@ -134,8 +163,12 @@ test.describe('Dashboard Pages E2E Workflow', () => {
     await page.click('[data-testid="save-user-button"]')
 
     // Verify updated user
-    await expect(page.locator(`[data-testid="user-${testNewUser.email}"] .name`)).toContainText(updatedName)
-    await expect(page.locator(`[data-testid="user-${testNewUser.email}"] .role`)).toContainText('Admin')
+    await expect(
+      page.locator(`[data-testid="user-${testNewUser.email}"] .name`)
+    ).toContainText(updatedName)
+    await expect(
+      page.locator(`[data-testid="user-${testNewUser.email}"] .role`)
+    ).toContainText('Admin')
 
     // Deactivate user
     await page.click(`[data-testid="deactivate-user-${testNewUser.email}"]`)
@@ -143,11 +176,15 @@ test.describe('Dashboard Pages E2E Workflow', () => {
     await page.click('[data-testid="confirm-deactivate-button"]')
 
     // Verify user is deactivated
-    await expect(page.locator(`[data-testid="user-${testNewUser.email}"] .status`)).toContainText('Inactive')
+    await expect(
+      page.locator(`[data-testid="user-${testNewUser.email}"] .status`)
+    ).toContainText('Inactive')
 
     // Reactivate user
     await page.click(`[data-testid="activate-user-${testNewUser.email}"]`)
-    await expect(page.locator(`[data-testid="user-${testNewUser.email}"] .status`)).toContainText('Active')
+    await expect(
+      page.locator(`[data-testid="user-${testNewUser.email}"] .status`)
+    ).toContainText('Active')
   })
 
   test('complete settings workflow', async ({ page }) => {
@@ -166,15 +203,21 @@ test.describe('Dashboard Pages E2E Workflow', () => {
     await page.click('[data-testid="save-profile-button"]')
 
     // Verify success message
-    await expect(page.locator('[data-testid="success-message"]')).toContainText('Profile updated successfully')
+    await expect(page.locator('[data-testid="success-message"]')).toContainText(
+      'Profile updated successfully'
+    )
 
     // Test notification settings
     await page.click('[data-testid="notification-settings-tab"]')
-    await expect(page.locator('[data-testid="notification-form"]')).toBeVisible()
+    await expect(
+      page.locator('[data-testid="notification-form"]')
+    ).toBeVisible()
 
     // Toggle email notifications
     await page.click('[data-testid="email-notifications-toggle"]')
-    await expect(page.locator('[data-testid="email-notifications-toggle"]')).toBeChecked()
+    await expect(
+      page.locator('[data-testid="email-notifications-toggle"]')
+    ).toBeChecked()
 
     // Configure notification types
     await page.click('[data-testid="task-completion-email"]')
@@ -185,7 +228,9 @@ test.describe('Dashboard Pages E2E Workflow', () => {
 
     // Save notification settings
     await page.click('[data-testid="save-notifications-button"]')
-    await expect(page.locator('[data-testid="success-message"]')).toContainText('Notification preferences saved')
+    await expect(page.locator('[data-testid="success-message"]')).toContainText(
+      'Notification preferences saved'
+    )
 
     // Test security settings
     await page.click('[data-testid="security-settings-tab"]')
@@ -198,7 +243,9 @@ test.describe('Dashboard Pages E2E Workflow', () => {
     await page.click('[data-testid="change-password-button"]')
 
     // Verify password change success
-    await expect(page.locator('[data-testid="success-message"]')).toContainText('Password changed successfully')
+    await expect(page.locator('[data-testid="success-message"]')).toContainText(
+      'Password changed successfully'
+    )
 
     // Enable two-factor authentication
     await page.click('[data-testid="enable-2fa-button"]')
@@ -224,30 +271,48 @@ test.describe('Dashboard Pages E2E Workflow', () => {
 
     // Verify KPI cards are loaded
     await expect(page.locator('[data-testid="total-agents-kpi"]')).toBeVisible()
-    await expect(page.locator('[data-testid="active-agents-kpi"]')).toBeVisible()
+    await expect(
+      page.locator('[data-testid="active-agents-kpi"]')
+    ).toBeVisible()
     await expect(page.locator('[data-testid="total-tasks-kpi"]')).toBeVisible()
     await expect(page.locator('[data-testid="success-rate-kpi"]')).toBeVisible()
 
     // Verify charts are loaded
-    await expect(page.locator('[data-testid="task-status-chart"]')).toBeVisible()
-    await expect(page.locator('[data-testid="platform-distribution-chart"]')).toBeVisible()
-    await expect(page.locator('[data-testid="daily-trends-chart"]')).toBeVisible()
+    await expect(
+      page.locator('[data-testid="task-status-chart"]')
+    ).toBeVisible()
+    await expect(
+      page.locator('[data-testid="platform-distribution-chart"]')
+    ).toBeVisible()
+    await expect(
+      page.locator('[data-testid="daily-trends-chart"]')
+    ).toBeVisible()
 
     // Test date range filter
     await page.click('[data-testid="date-range-picker"]')
-    await expect(page.locator('[data-testid="date-picker-calendar"]')).toBeVisible()
+    await expect(
+      page.locator('[data-testid="date-picker-calendar"]')
+    ).toBeVisible()
 
     // Select last 7 days
     await page.click('[data-testid="last-7-days-preset"]')
-    
+
     // Verify data updates
-    await expect(page.locator('[data-testid="loading-indicator"]')).toBeVisible()
-    await expect(page.locator('[data-testid="loading-indicator"]')).not.toBeVisible()
+    await expect(
+      page.locator('[data-testid="loading-indicator"]')
+    ).toBeVisible()
+    await expect(
+      page.locator('[data-testid="loading-indicator"]')
+    ).not.toBeVisible()
 
     // Test refresh functionality
     await page.click('[data-testid="refresh-button"]')
-    await expect(page.locator('[data-testid="loading-indicator"]')).toBeVisible()
-    await expect(page.locator('[data-testid="loading-indicator"]')).not.toBeVisible()
+    await expect(
+      page.locator('[data-testid="loading-indicator"]')
+    ).toBeVisible()
+    await expect(
+      page.locator('[data-testid="loading-indicator"]')
+    ).not.toBeVisible()
 
     // Test export functionality
     await page.click('[data-testid="export-button"]')
@@ -282,11 +347,13 @@ test.describe('Dashboard Pages E2E Workflow', () => {
 
     // Navigate to analytics and verify platform appears in distribution
     await page.click('[data-testid="nav-analytics"]')
-    await expect(page.locator('[data-testid="platform-distribution-chart"]')).toBeVisible()
-    
+    await expect(
+      page.locator('[data-testid="platform-distribution-chart"]')
+    ).toBeVisible()
+
     // Wait for chart to load and check if new platform is included
     await page.waitForTimeout(2000) // Allow time for data to load
-    
+
     // Navigate to users page
     await page.click('[data-testid="nav-users"]')
     await page.click('[data-testid="add-user-button"]')
@@ -299,8 +366,12 @@ test.describe('Dashboard Pages E2E Workflow', () => {
 
     // Navigate back to dashboard and verify summary data is updated
     await page.click('[data-testid="nav-dashboard"]')
-    await expect(page.locator('[data-testid="platforms-summary"]')).toContainText('Navigation Test Platform')
-    await expect(page.locator('[data-testid="users-summary"]')).toContainText('Navigation Test User')
+    await expect(
+      page.locator('[data-testid="platforms-summary"]')
+    ).toContainText('Navigation Test Platform')
+    await expect(page.locator('[data-testid="users-summary"]')).toContainText(
+      'Navigation Test User'
+    )
 
     // Use breadcrumb navigation
     await page.click('[data-testid="nav-platforms"]')
@@ -310,7 +381,7 @@ test.describe('Dashboard Pages E2E Workflow', () => {
     // Test browser back/forward navigation
     await page.goBack()
     await expect(page).toHaveURL('/dashboard/platforms')
-    
+
     await page.goForward()
     await expect(page).toHaveURL('/dashboard')
   })
@@ -320,8 +391,12 @@ test.describe('Dashboard Pages E2E Workflow', () => {
     await page.setViewportSize({ width: 375, height: 667 })
 
     // Verify mobile navigation
-    await expect(page.locator('[data-testid="mobile-menu-toggle"]')).toBeVisible()
-    await expect(page.locator('[data-testid="desktop-sidebar"]')).not.toBeVisible()
+    await expect(
+      page.locator('[data-testid="mobile-menu-toggle"]')
+    ).toBeVisible()
+    await expect(
+      page.locator('[data-testid="desktop-sidebar"]')
+    ).not.toBeVisible()
 
     // Open mobile menu
     await page.click('[data-testid="mobile-menu-toggle"]')
@@ -333,25 +408,34 @@ test.describe('Dashboard Pages E2E Workflow', () => {
     await expect(page.locator('[data-testid="mobile-menu"]')).not.toBeVisible()
 
     // Verify responsive layout on analytics page
-    await expect(page.locator('[data-testid="kpi-cards"]')).toHaveCSS('flex-direction', 'column')
-    await expect(page.locator('[data-testid="charts-container"]')).toHaveCSS('flex-direction', 'column')
+    await expect(page.locator('[data-testid="kpi-cards"]')).toHaveCSS(
+      'flex-direction',
+      'column'
+    )
+    await expect(page.locator('[data-testid="charts-container"]')).toHaveCSS(
+      'flex-direction',
+      'column'
+    )
 
     // Test mobile-friendly interactions
     await page.click('[data-testid="mobile-menu-toggle"]')
     await page.click('[data-testid="mobile-nav-platforms"]')
-    
+
     // Verify mobile table scrolling
-    await expect(page.locator('[data-testid="platforms-table"]')).toHaveCSS('overflow-x', 'auto')
+    await expect(page.locator('[data-testid="platforms-table"]')).toHaveCSS(
+      'overflow-x',
+      'auto'
+    )
 
     // Test mobile form interactions
     await page.click('[data-testid="add-platform-button"]')
     await expect(page.locator('[data-testid="platform-modal"]')).toBeVisible()
-    
+
     // Verify modal is full-screen on mobile
     const modal = page.locator('[data-testid="platform-modal"]')
     const modalBox = await modal.boundingBox()
     const viewport = page.viewportSize()
-    
+
     expect(modalBox?.width).toBeCloseTo(viewport?.width || 375, 50)
   })
 
@@ -366,9 +450,11 @@ test.describe('Dashboard Pages E2E Workflow', () => {
     })
 
     await page.click('[data-testid="nav-platforms"]')
-    
+
     // Verify error state is displayed
-    await expect(page.locator('[data-testid="error-message"]')).toContainText('Failed to load platforms')
+    await expect(page.locator('[data-testid="error-message"]')).toContainText(
+      'Failed to load platforms'
+    )
     await expect(page.locator('[data-testid="retry-button"]')).toBeVisible()
 
     // Test retry functionality
@@ -382,7 +468,9 @@ test.describe('Dashboard Pages E2E Workflow', () => {
     })
 
     await page.click('[data-testid="retry-button"]')
-    await expect(page.locator('[data-testid="error-message"]')).not.toBeVisible()
+    await expect(
+      page.locator('[data-testid="error-message"]')
+    ).not.toBeVisible()
     await expect(page.locator('[data-testid="platforms-table"]')).toBeVisible()
 
     // Test form validation errors
@@ -390,9 +478,15 @@ test.describe('Dashboard Pages E2E Workflow', () => {
     await page.click('[data-testid="save-platform-button"]') // Submit empty form
 
     // Verify validation errors
-    await expect(page.locator('[data-testid="name-error"]')).toContainText('Name is required')
-    await expect(page.locator('[data-testid="type-error"]')).toContainText('Type is required')
-    await expect(page.locator('[data-testid="url-error"]')).toContainText('URL is required')
+    await expect(page.locator('[data-testid="name-error"]')).toContainText(
+      'Name is required'
+    )
+    await expect(page.locator('[data-testid="type-error"]')).toContainText(
+      'Type is required'
+    )
+    await expect(page.locator('[data-testid="url-error"]')).toContainText(
+      'URL is required'
+    )
 
     // Test connection error handling
     await page.fill('[data-testid="platform-name"]', 'Test Platform')
@@ -404,15 +498,19 @@ test.describe('Dashboard Pages E2E Workflow', () => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ 
-          success: true, 
-          data: { connected: false, error: 'Connection failed' } 
+        body: JSON.stringify({
+          success: true,
+          data: { connected: false, error: 'Connection failed' },
         }),
       })
     })
 
     await page.click('[data-testid="test-connection-button"]')
-    await expect(page.locator('[data-testid="connection-error"]')).toContainText('Connection failed')
-    await expect(page.locator('[data-testid="connection-status"]')).toContainText('Failed')
+    await expect(
+      page.locator('[data-testid="connection-error"]')
+    ).toContainText('Connection failed')
+    await expect(
+      page.locator('[data-testid="connection-status"]')
+    ).toContainText('Failed')
   })
 })

@@ -1,6 +1,6 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-import { 
+import {
   ariaLabels,
   useAriaLabels,
   AriaDescription,
@@ -9,7 +9,7 @@ import {
   generateChartAriaLabel,
   generateTableCellAriaLabel,
   generateFormFieldAriaLabel,
-  generateNavigationAriaLabel
+  generateNavigationAriaLabel,
 } from '../aria-labels'
 
 describe('ariaLabels utility', () => {
@@ -43,7 +43,9 @@ describe('ariaLabels utility', () => {
 
     it('generates interactive chart label', () => {
       const label = ariaLabels.chart.interactive('line')
-      expect(label).toBe('Interactive line chart. Use arrow keys to navigate, Enter to select')
+      expect(label).toBe(
+        'Interactive line chart. Use arrow keys to navigate, Enter to select'
+      )
     })
 
     it('generates chart element label', () => {
@@ -81,7 +83,10 @@ describe('ariaLabels utility', () => {
     })
 
     it('generates invalid field label', () => {
-      const label = ariaLabels.form.invalid('Password', 'Must be at least 8 characters')
+      const label = ariaLabels.form.invalid(
+        'Password',
+        'Must be at least 8 characters'
+      )
       expect(label).toBe('Password, invalid: Must be at least 8 characters')
     })
 
@@ -145,7 +150,9 @@ describe('AriaDescription component', () => {
     expect(description).toBeInTheDocument()
     expect(description).toHaveClass('sr-only')
     expect(description).toHaveAttribute('role', 'text')
-    expect(description).toHaveTextContent('This is a description for screen readers')
+    expect(description).toHaveTextContent(
+      'This is a description for screen readers'
+    )
   })
 
   it('applies custom className', () => {
@@ -221,9 +228,11 @@ describe('AccessibleElement component', () => {
 
     const button = screen.getByRole('button')
     const descriptionId = button.getAttribute('aria-describedby')
-    
+
     expect(descriptionId).toBeTruthy()
-    expect(document.getElementById(descriptionId!)).toHaveTextContent('This button performs an action')
+    expect(document.getElementById(descriptionId!)).toHaveTextContent(
+      'This button performs an action'
+    )
   })
 
   it('adds multiple ARIA attributes', () => {
@@ -269,21 +278,23 @@ describe('utility functions', () => {
     it('generates label with all properties', () => {
       const element = { label: 'Q1 Sales', value: 1500, x: 'January', y: 1500 }
       const label = generateChartAriaLabel(element, 0, 4, 'bar')
-      
+
       expect(label).toBe('bar element 1 of 4: Q1 Sales, value 1500')
     })
 
     it('generates label with y value when no value', () => {
       const element = { label: 'Data Point', y: 250, x: 'Feb' }
       const label = generateChartAriaLabel(element, 1, 5, 'line')
-      
-      expect(label).toBe('line element 2 of 5: Data Point, y value 250, x value Feb')
+
+      expect(label).toBe(
+        'line element 2 of 5: Data Point, y value 250, x value Feb'
+      )
     })
 
     it('generates label with data property', () => {
       const element = { data: 'Custom data' }
       const label = generateChartAriaLabel(element, 2, 3, 'pie')
-      
+
       expect(label).toBe('pie element 3 of 3, data Custom data')
     })
   })
@@ -304,7 +315,9 @@ describe('utility functions', () => {
         'Invalid email format',
         'Enter your work email'
       )
-      expect(label).toBe('Email, required, invalid: Invalid email format. Enter your work email')
+      expect(label).toBe(
+        'Email, required, invalid: Invalid email format. Enter your work email'
+      )
     })
 
     it('generates simple label', () => {

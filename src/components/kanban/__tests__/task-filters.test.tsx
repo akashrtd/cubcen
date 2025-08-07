@@ -174,10 +174,16 @@ describe('TaskFilters', () => {
     )
 
     const statusSelect = screen.getByLabelText('Filter by status')
-    expect(statusSelect).toContainHTML('<option value="ALL">All Statuses</option>')
+    expect(statusSelect).toContainHTML(
+      '<option value="ALL">All Statuses</option>'
+    )
     expect(statusSelect).toContainHTML('<option value="TODO">To Do</option>')
-    expect(statusSelect).toContainHTML('<option value="IN_PROGRESS">In Progress</option>')
-    expect(statusSelect).toContainHTML('<option value="COMPLETED">Completed</option>')
+    expect(statusSelect).toContainHTML(
+      '<option value="IN_PROGRESS">In Progress</option>'
+    )
+    expect(statusSelect).toContainHTML(
+      '<option value="COMPLETED">Completed</option>'
+    )
     expect(statusSelect).toContainHTML('<option value="FAILED">Failed</option>')
   })
 
@@ -192,11 +198,17 @@ describe('TaskFilters', () => {
     )
 
     const prioritySelect = screen.getByLabelText('Filter by priority')
-    expect(prioritySelect).toContainHTML('<option value="ALL">All Priorities</option>')
+    expect(prioritySelect).toContainHTML(
+      '<option value="ALL">All Priorities</option>'
+    )
     expect(prioritySelect).toContainHTML('<option value="LOW">Low</option>')
-    expect(prioritySelect).toContainHTML('<option value="MEDIUM">Medium</option>')
+    expect(prioritySelect).toContainHTML(
+      '<option value="MEDIUM">Medium</option>'
+    )
     expect(prioritySelect).toContainHTML('<option value="HIGH">High</option>')
-    expect(prioritySelect).toContainHTML('<option value="CRITICAL">Critical</option>')
+    expect(prioritySelect).toContainHTML(
+      '<option value="CRITICAL">Critical</option>'
+    )
   })
 
   it('displays agent options', () => {
@@ -211,8 +223,12 @@ describe('TaskFilters', () => {
 
     const agentSelect = screen.getByLabelText('Filter by agent')
     expect(agentSelect).toContainHTML('<option value="ALL">All Agents</option>')
-    expect(agentSelect).toContainHTML('<option value="agent-1">Test Agent 1</option>')
-    expect(agentSelect).toContainHTML('<option value="agent-2">Test Agent 2</option>')
+    expect(agentSelect).toContainHTML(
+      '<option value="agent-1">Test Agent 1</option>'
+    )
+    expect(agentSelect).toContainHTML(
+      '<option value="agent-2">Test Agent 2</option>'
+    )
   })
 
   it('displays platform options', () => {
@@ -226,9 +242,15 @@ describe('TaskFilters', () => {
     )
 
     const platformSelect = screen.getByLabelText('Filter by platform')
-    expect(platformSelect).toContainHTML('<option value="ALL">All Platforms</option>')
-    expect(platformSelect).toContainHTML('<option value="platform-1">n8n Instance</option>')
-    expect(platformSelect).toContainHTML('<option value="platform-2">Make Scenario</option>')
+    expect(platformSelect).toContainHTML(
+      '<option value="ALL">All Platforms</option>'
+    )
+    expect(platformSelect).toContainHTML(
+      '<option value="platform-1">n8n Instance</option>'
+    )
+    expect(platformSelect).toContainHTML(
+      '<option value="platform-2">Make Scenario</option>'
+    )
   })
 
   it('handles empty agents list', () => {
@@ -258,7 +280,9 @@ describe('TaskFilters', () => {
     )
 
     const platformSelect = screen.getByLabelText('Filter by platform')
-    expect(platformSelect).toContainHTML('<option value="ALL">All Platforms</option>')
+    expect(platformSelect).toContainHTML(
+      '<option value="ALL">All Platforms</option>'
+    )
     // Should only have the "All Platforms" option
     expect(platformSelect.children).toHaveLength(1)
   })
@@ -304,7 +328,9 @@ describe('TaskFilters', () => {
     )
 
     // Should not show clear button when no filters applied
-    expect(screen.queryByRole('button', { name: /clear filters/i })).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: /clear filters/i })
+    ).not.toBeInTheDocument()
 
     // Should show clear button when filters are applied
     const filtersWithValues = {
@@ -321,7 +347,9 @@ describe('TaskFilters', () => {
       />
     )
 
-    expect(screen.getByRole('button', { name: /clear filters/i })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /clear filters/i })
+    ).toBeInTheDocument()
   })
 
   it('applies custom className', () => {
@@ -351,7 +379,7 @@ describe('TaskFilters', () => {
     )
 
     const searchInput = screen.getByPlaceholderText('Search tasks...')
-    
+
     // Type multiple characters quickly
     fireEvent.change(searchInput, { target: { value: 'a' } })
     fireEvent.change(searchInput, { target: { value: 'ab' } })

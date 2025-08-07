@@ -38,6 +38,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -106,11 +107,13 @@ GET /api/cubcen/v1/analytics/dashboard
 ```
 
 **Query Parameters:**
+
 - `startDate` (optional): Start date for analytics (ISO 8601)
 - `endDate` (optional): End date for analytics (ISO 8601)
 - `agentIds` (optional): Comma-separated list of agent IDs to filter
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -168,6 +171,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -189,12 +193,14 @@ GET /api/cubcen/v1/platforms
 ```
 
 **Query Parameters:**
+
 - `page` (optional): Page number (default: 1)
 - `limit` (optional): Items per page (default: 20, max: 100)
 - `status` (optional): Filter by status (connected, disconnected, error)
 - `type` (optional): Filter by platform type (n8n, make, zapier)
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -250,6 +256,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -287,6 +294,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -330,6 +338,7 @@ DELETE /api/cubcen/v1/platforms/{platformId}
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -348,6 +357,7 @@ GET /api/cubcen/v1/users
 ```
 
 **Query Parameters:**
+
 - `page` (optional): Page number (default: 1)
 - `limit` (optional): Items per page (default: 20, max: 100)
 - `role` (optional): Filter by role (ADMIN, OPERATOR, VIEWER)
@@ -355,6 +365,7 @@ GET /api/cubcen/v1/users
 - `search` (optional): Search by name or email
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -412,6 +423,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -476,6 +488,7 @@ GET /api/cubcen/v1/users/profile
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -516,6 +529,7 @@ GET /api/cubcen/v1/users/preferences/notifications
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -579,6 +593,7 @@ GET /api/cubcen/v1/users/security
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -625,17 +640,14 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
   "data": {
     "qrCode": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...",
     "secret": "JBSWY3DPEHPK3PXP",
-    "backupCodes": [
-      "12345678",
-      "87654321",
-      "11223344"
-    ]
+    "backupCodes": ["12345678", "87654321", "11223344"]
   }
 }
 ```
@@ -684,6 +696,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -713,6 +726,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -733,6 +747,7 @@ GET /api/cubcen/v1/errors
 ```
 
 **Query Parameters:**
+
 - `page` (optional): Page number (default: 1)
 - `limit` (optional): Items per page (default: 20, max: 100)
 - `severity` (optional): Filter by severity (low, medium, high, critical)
@@ -742,6 +757,7 @@ GET /api/cubcen/v1/errors
 - `resolved` (optional): Filter by resolution status (true/false)
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -782,6 +798,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -854,20 +871,20 @@ import { CubcenClient } from '@cubcen/sdk'
 
 const client = new CubcenClient({
   baseUrl: 'https://api.cubcen.com',
-  apiKey: 'your-api-key'
+  apiKey: 'your-api-key',
 })
 
 // Get analytics data
 const analytics = await client.analytics.getDashboard({
   startDate: '2023-11-01',
-  endDate: '2023-12-01'
+  endDate: '2023-12-01',
 })
 
 // Report an error
 await client.errors.report({
   errorId: 'error_123',
   message: 'Something went wrong',
-  pageName: 'Dashboard'
+  pageName: 'Dashboard',
 })
 
 // Create a platform connection
@@ -877,8 +894,8 @@ const platform = await client.platforms.create({
   baseUrl: 'https://n8n.example.com',
   authConfig: {
     type: 'api_key',
-    credentials: { apiKey: 'your-key' }
-  }
+    credentials: { apiKey: 'your-key' },
+  },
 })
 ```
 

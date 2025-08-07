@@ -1,11 +1,11 @@
 import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { 
-  FocusManagement, 
-  useFocusManagement, 
-  ModalFocusManager, 
-  SkipLinks 
+import {
+  FocusManagement,
+  useFocusManagement,
+  ModalFocusManager,
+  SkipLinks,
 } from '../focus-management'
 
 describe('FocusManagement', () => {
@@ -15,7 +15,7 @@ describe('FocusManagement', () => {
         <div>Test content</div>
       </FocusManagement>
     )
-    
+
     expect(screen.getByText('Test content')).toBeInTheDocument()
   })
 
@@ -75,7 +75,7 @@ describe('FocusManagement', () => {
     })
 
     unmount()
-    
+
     await waitFor(() => {
       expect(initialButton).toHaveFocus()
     })
@@ -112,14 +112,23 @@ describe('FocusManagement', () => {
 
 describe('useFocusManagement hook', () => {
   function TestComponent() {
-    const { pushFocus, popFocus, clearFocusHistory, focusFirst, focusLast } = useFocusManagement()
+    const { pushFocus, popFocus, clearFocusHistory, focusFirst, focusLast } =
+      useFocusManagement()
 
     return (
       <div>
-        <button onClick={() => pushFocus(document.getElementById('target1') as HTMLElement)}>
+        <button
+          onClick={() =>
+            pushFocus(document.getElementById('target1') as HTMLElement)
+          }
+        >
           Push Focus 1
         </button>
-        <button onClick={() => pushFocus(document.getElementById('target2') as HTMLElement)}>
+        <button
+          onClick={() =>
+            pushFocus(document.getElementById('target2') as HTMLElement)
+          }
+        >
           Push Focus 2
         </button>
         <button onClick={popFocus}>Pop Focus</button>
@@ -306,7 +315,7 @@ describe('SkipLinks', () => {
   it('renders skip links correctly', () => {
     const links = [
       { href: '#main', label: 'Skip to main content' },
-      { href: '#nav', label: 'Skip to navigation' }
+      { href: '#nav', label: 'Skip to navigation' },
     ]
 
     render(<SkipLinks links={links} />)
@@ -317,25 +326,23 @@ describe('SkipLinks', () => {
 
   it('handles skip link clicks', async () => {
     const user = userEvent.setup()
-    
+
     // Create target elements
     const mainElement = document.createElement('main')
     mainElement.id = 'main'
     mainElement.tabIndex = -1
     document.body.appendChild(mainElement)
 
-    const links = [
-      { href: '#main', label: 'Skip to main content' }
-    ]
+    const links = [{ href: '#main', label: 'Skip to main content' }]
 
     render(<SkipLinks links={links} />)
 
     const skipLink = screen.getByText('Skip to main content')
-    
+
     // Mock scrollIntoView
     const scrollIntoViewMock = jest.fn()
     mainElement.scrollIntoView = scrollIntoViewMock
-    
+
     await user.click(skipLink)
 
     expect(mainElement).toHaveFocus()
@@ -346,9 +353,9 @@ describe('SkipLinks', () => {
 
   it('applies custom className', () => {
     const links = [{ href: '#main', label: 'Skip to main' }]
-    
+
     render(<SkipLinks links={links} className="custom-class" />)
-    
+
     const container = screen.getByText('Skip to main').closest('.skip-links')
     expect(container).toHaveClass('custom-class')
   })

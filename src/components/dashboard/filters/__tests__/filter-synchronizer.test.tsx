@@ -1,27 +1,26 @@
 import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { 
-  FilterSynchronizer, 
-  useFilterSync, 
-  useSyncedFilteredData, 
-  FilterDebugger 
+import {
+  FilterSynchronizer,
+  useFilterSync,
+  useSyncedFilteredData,
+  FilterDebugger,
 } from '../filter-synchronizer'
 import { FilterProvider, useFilters } from '../filter-context'
 
 // Mock Next.js navigation
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(() => ({ replace: jest.fn() })),
-  useSearchParams: jest.fn(() => ({ get: jest.fn(), toString: jest.fn(() => '') })),
+  useSearchParams: jest.fn(() => ({
+    get: jest.fn(),
+    toString: jest.fn(() => ''),
+  })),
 }))
 
 // Test wrapper with FilterProvider
 function TestWrapper({ children, ...props }: any) {
-  return (
-    <FilterProvider {...props}>
-      {children}
-    </FilterProvider>
-  )
+  return <FilterProvider {...props}>{children}</FilterProvider>
 }
 
 // Test component that uses filters
@@ -32,7 +31,13 @@ function TestFilterComponent() {
     <div>
       <button
         data-testid="set-custom-filter"
-        onClick={() => setFilter('test', { type: 'string', value: 'test-value', operator: 'equals' })}
+        onClick={() =>
+          setFilter('test', {
+            type: 'string',
+            value: 'test-value',
+            operator: 'equals',
+          })
+        }
       >
         Set Custom Filter
       </button>
@@ -42,16 +47,10 @@ function TestFilterComponent() {
       >
         Set Categories
       </button>
-      <button
-        data-testid="set-status"
-        onClick={() => setStatus(['active'])}
-      >
+      <button data-testid="set-status" onClick={() => setStatus(['active'])}>
         Set Status
       </button>
-      <button
-        data-testid="clear-filters"
-        onClick={clearFilters}
-      >
+      <button data-testid="clear-filters" onClick={clearFilters}>
         Clear Filters
       </button>
     </div>
@@ -65,17 +64,17 @@ function FilterSyncTest({ callback }: { callback: (filters: any) => void }) {
 }
 
 // Test component for useSyncedFilteredData hook
-function SyncedFilteredDataTest({ 
-  data, 
-  searchFields, 
-  customLogic 
-}: { 
-  data: any[], 
-  searchFields?: string[], 
-  customLogic?: (item: any, filters: any) => boolean 
+function SyncedFilteredDataTest({
+  data,
+  searchFields,
+  customLogic,
+}: {
+  data: any[]
+  searchFields?: string[]
+  customLogic?: (item: any, filters: any) => boolean
 }) {
   const filteredData = useSyncedFilteredData(data, searchFields, customLogic)
-  
+
   return (
     <div>
       <div data-testid="filtered-count">{filteredData.length}</div>
@@ -143,10 +142,11 @@ describe('FilterSynchronizer', () => {
     await user.click(screen.getByTestId('set-custom-filter'))
 
     await waitFor(() => {
-      expect(onFilterApplied).toHaveBeenCalledWith(
-        'test',
-        { type: 'string', value: 'test-value', operator: 'equals' }
-      )
+      expect(onFilterApplied).toHaveBeenCalledWith('test', {
+        type: 'string',
+        value: 'test-value',
+        operator: 'equals',
+      })
     })
   })
 
@@ -186,10 +186,11 @@ describe('FilterSynchronizer', () => {
     await user.click(screen.getByTestId('set-categories'))
 
     await waitFor(() => {
-      expect(onFilterApplied).toHaveBeenCalledWith(
-        'categories',
-        { type: 'array', value: ['cat1', 'cat2'], operator: 'equals' }
-      )
+      expect(onFilterApplied).toHaveBeenCalledWith('categories', {
+        type: 'array',
+        value: ['cat1', 'cat2'],
+        operator: 'equals',
+      })
     })
   })
 
@@ -261,8 +262,8 @@ describe('useFilterSync', () => {
       expect(callback).toHaveBeenLastCalledWith(
         expect.objectContaining({
           customFilters: expect.objectContaining({
-            test: { type: 'string', value: 'test-value', operator: 'equals' }
-          })
+            test: { type: 'string', value: 'test-value', operator: 'equals' },
+          }),
         })
       )
     })
@@ -312,12 +313,18 @@ describe('useSyncedFilteredData', () => {
   it('filters data based on search filter', async () => {
     const TestComponent = () => {
       const { setFilter } = useFilters()
-      
+
       return (
         <div>
           <button
             data-testid="set-search"
-            onClick={() => setFilter('search', { type: 'string', value: 'John', operator: 'contains' })}
+            onClick={() =>
+              setFilter('search', {
+                type: 'string',
+                value: 'John',
+                operator: 'contains',
+              })
+            }
           >
             Set Search
           </button>
@@ -342,7 +349,7 @@ describe('useSyncedFilteredData', () => {
   it('filters data based on status filter', async () => {
     const TestComponent = () => {
       const { setStatus } = useFilters()
-      
+
       return (
         <div>
           <button
@@ -374,10 +381,7 @@ describe('useSyncedFilteredData', () => {
 
     render(
       <TestWrapper>
-        <SyncedFilteredDataTest 
-          data={testData} 
-          customLogic={customLogic}
-        />
+        <SyncedFilteredDataTest data={testData} customLogic={customLogic} />
       </TestWrapper>
     )
 
@@ -408,13 +412,17 @@ describe('useSyncedFilteredData', () => {
   it('filters by multiple criteria', async () => {
     const TestComponent = () => {
       const { setFilter, setStatus } = useFilters()
-      
+
       return (
         <div>
           <button
             data-testid="set-multiple-filters"
             onClick={() => {
-              setFilter('search', { type: 'string', value: 'John', operator: 'contains' })
+              setFilter('search', {
+                type: 'string',
+                value: 'John',
+                operator: 'contains',
+              })
               setStatus(['active'])
             }}
           >

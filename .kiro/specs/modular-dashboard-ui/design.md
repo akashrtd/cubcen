@@ -57,15 +57,15 @@ graph TD
     C --> D[Dashboard Cards]
     D --> E[Chart Wrapper]
     E --> F[Lazy Chart Components]
-    
+
     G[Theme Provider] --> A
     G --> D
     G --> E
-    
+
     H[Accessibility Provider] --> A
     H --> I[Screen Reader Announcer]
     H --> J[Keyboard Navigation]
-    
+
     K[Performance Monitor] --> E
     K --> F
 ```
@@ -116,6 +116,7 @@ interface GridConfiguration {
 ```
 
 **Features**:
+
 - CSS Grid-based layout with customizable areas
 - Responsive breakpoints with smooth transitions
 - Collapsible sidebar with state persistence
@@ -442,21 +443,21 @@ interface PerformanceThresholds {
 ```css
 :root {
   /* Color Palette */
-  --dashboard-primary: #3F51B5;
-  --dashboard-secondary: #B19ADA;
-  --dashboard-accent: #FF6B35;
-  --dashboard-background: #FFFFFF;
-  --dashboard-surface: #F8F9FA;
-  --dashboard-text-primary: #1A1A1A;
-  --dashboard-text-secondary: #6B7280;
-  --dashboard-text-disabled: #9CA3AF;
-  
+  --dashboard-primary: #3f51b5;
+  --dashboard-secondary: #b19ada;
+  --dashboard-accent: #ff6b35;
+  --dashboard-background: #ffffff;
+  --dashboard-surface: #f8f9fa;
+  --dashboard-text-primary: #1a1a1a;
+  --dashboard-text-secondary: #6b7280;
+  --dashboard-text-disabled: #9ca3af;
+
   /* Status Colors */
-  --dashboard-success: #10B981;
-  --dashboard-warning: #F59E0B;
-  --dashboard-error: #EF4444;
-  --dashboard-info: #3B82F6;
-  
+  --dashboard-success: #10b981;
+  --dashboard-warning: #f59e0b;
+  --dashboard-error: #ef4444;
+  --dashboard-info: #3b82f6;
+
   /* Chart Colors */
   --dashboard-chart-1: var(--dashboard-primary);
   --dashboard-chart-2: var(--dashboard-secondary);
@@ -465,33 +466,33 @@ interface PerformanceThresholds {
   --dashboard-chart-5: var(--dashboard-warning);
   --dashboard-chart-6: var(--dashboard-error);
   --dashboard-chart-7: var(--dashboard-info);
-  --dashboard-chart-8: #8B5CF6;
-  
+  --dashboard-chart-8: #8b5cf6;
+
   /* Typography Scale */
-  --dashboard-text-xs: 0.75rem;    /* 12px */
-  --dashboard-text-sm: 0.875rem;   /* 14px */
-  --dashboard-text-base: 1rem;     /* 16px */
-  --dashboard-text-lg: 1.125rem;   /* 18px */
-  --dashboard-text-xl: 1.25rem;    /* 20px */
-  --dashboard-text-2xl: 1.5rem;    /* 24px */
-  --dashboard-text-3xl: 2rem;      /* 32px */
-  
+  --dashboard-text-xs: 0.75rem; /* 12px */
+  --dashboard-text-sm: 0.875rem; /* 14px */
+  --dashboard-text-base: 1rem; /* 16px */
+  --dashboard-text-lg: 1.125rem; /* 18px */
+  --dashboard-text-xl: 1.25rem; /* 20px */
+  --dashboard-text-2xl: 1.5rem; /* 24px */
+  --dashboard-text-3xl: 2rem; /* 32px */
+
   /* Font Weights */
   --dashboard-font-normal: 400;
   --dashboard-font-medium: 500;
   --dashboard-font-semibold: 600;
   --dashboard-font-bold: 700;
-  
+
   /* Spacing */
   --dashboard-grid-gap: 1.5rem;
   --dashboard-card-padding: 1.5rem;
   --dashboard-section-margin: 2rem;
-  
+
   /* Breakpoints */
   --dashboard-mobile: 768px;
   --dashboard-tablet: 1024px;
   --dashboard-desktop: 1280px;
-  
+
   /* Animations */
   --dashboard-transition-fast: 150ms ease-out;
   --dashboard-transition-normal: 250ms ease-out;
@@ -499,12 +500,12 @@ interface PerformanceThresholds {
 }
 
 /* Dark Theme */
-[data-theme="dark"] {
-  --dashboard-background: #0F172A;
-  --dashboard-surface: #1E293B;
-  --dashboard-text-primary: #F1F5F9;
-  --dashboard-text-secondary: #CBD5E1;
-  --dashboard-text-disabled: #64748B;
+[data-theme='dark'] {
+  --dashboard-background: #0f172a;
+  --dashboard-surface: #1e293b;
+  --dashboard-text-primary: #f1f5f9;
+  --dashboard-text-secondary: #cbd5e1;
+  --dashboard-text-disabled: #64748b;
 }
 ```
 
@@ -533,12 +534,24 @@ interface PerformanceThresholds {
 }
 
 /* Grid Item Utilities */
-.grid-span-1 { grid-column: span 1; }
-.grid-span-2 { grid-column: span 2; }
-.grid-span-3 { grid-column: span 3; }
-.grid-span-4 { grid-column: span 4; }
-.grid-span-6 { grid-column: span 6; }
-.grid-span-12 { grid-column: span 12; }
+.grid-span-1 {
+  grid-column: span 1;
+}
+.grid-span-2 {
+  grid-column: span 2;
+}
+.grid-span-3 {
+  grid-column: span 3;
+}
+.grid-span-4 {
+  grid-column: span 4;
+}
+.grid-span-6 {
+  grid-column: span 6;
+}
+.grid-span-12 {
+  grid-column: span 12;
+}
 
 @media (max-width: 768px) {
   .grid-span-1,
@@ -663,11 +676,11 @@ describe('DashboardCard', () => {
         onFilter={onFilter}
       />
     )
-    
+
     const card = screen.getByRole('button')
     await user.tab()
     expect(card).toHaveFocus()
-    
+
     await user.keyboard('{Enter}')
     expect(onFilter).toHaveBeenCalled()
   })
@@ -687,11 +700,11 @@ describe('Dashboard Accessibility', () => {
 
   it('supports keyboard navigation', async () => {
     render(<DashboardLayout />)
-    
+
     // Test tab order
     await user.tab()
     expect(screen.getByRole('banner')).toContainElement(document.activeElement)
-    
+
     await user.tab()
     expect(screen.getByRole('navigation')).toContainElement(document.activeElement)
   })
@@ -700,9 +713,9 @@ describe('Dashboard Accessibility', () => {
     const { rerender } = render(
       <DashboardCard data={[{ value: 100 }]} />
     )
-    
+
     rerender(<DashboardCard data={[{ value: 200 }]} />)
-    
+
     expect(screen.getByRole('status')).toHaveTextContent('Data updated')
   })
 })
@@ -715,7 +728,7 @@ describe('Dashboard Accessibility', () => {
 describe('Dashboard Performance', () => {
   it('renders within performance budget', async () => {
     const startTime = performance.now()
-    
+
     render(
       <DashboardLayout>
         <DashboardGrid>
@@ -725,7 +738,7 @@ describe('Dashboard Performance', () => {
         </DashboardGrid>
       </DashboardLayout>
     )
-    
+
     const endTime = performance.now()
     expect(endTime - startTime).toBeLessThan(100) // 100ms budget
   })
@@ -734,10 +747,10 @@ describe('Dashboard Performance', () => {
     const { container } = render(
       <ChartCard chartType="line" data={mockData} />
     )
-    
+
     // Chart should not be loaded initially
     expect(container.querySelector('.recharts-wrapper')).not.toBeInTheDocument()
-    
+
     // Chart should load after intersection
     await waitFor(() => {
       expect(container.querySelector('.recharts-wrapper')).toBeInTheDocument()

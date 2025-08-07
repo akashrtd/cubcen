@@ -506,8 +506,8 @@ router.delete(
           code: 'BACKUP_DELETE_FAILED',
           message: 'Failed to delete backup',
           timestamp: new Date().toISOString(),
-          },
-        })
+        },
+      })
     }
   }
 )

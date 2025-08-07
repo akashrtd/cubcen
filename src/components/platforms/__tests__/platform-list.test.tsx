@@ -63,7 +63,7 @@ describe('PlatformList', () => {
 
   it('renders loading state initially', () => {
     render(<PlatformList />)
-    
+
     expect(screen.getByText('Platforms')).toBeInTheDocument()
     // Check for skeleton elements by class name since they don't have testId
     const skeletons = document.querySelectorAll('[class*="animate-pulse"]')
@@ -72,7 +72,7 @@ describe('PlatformList', () => {
 
   it('renders platforms after loading', async () => {
     render(<PlatformList />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Main n8n Instance')).toBeInTheDocument()
       expect(screen.getByText('Make.com Integration')).toBeInTheDocument()
@@ -83,7 +83,7 @@ describe('PlatformList', () => {
 
   it('displays platform information correctly', async () => {
     render(<PlatformList />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Main n8n Instance')).toBeInTheDocument()
     })
@@ -99,7 +99,7 @@ describe('PlatformList', () => {
 
   it('handles search filtering', async () => {
     render(<PlatformList />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Main n8n Instance')).toBeInTheDocument()
     })
@@ -113,7 +113,7 @@ describe('PlatformList', () => {
 
   it('handles type filtering', async () => {
     render(<PlatformList />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Main n8n Instance')).toBeInTheDocument()
     })
@@ -121,7 +121,7 @@ describe('PlatformList', () => {
     // Open type filter dropdown
     const typeFilter = screen.getByLabelText('Filter by type')
     fireEvent.click(typeFilter)
-    
+
     // Select n8n type - get the option from the dropdown, not the badge
     await waitFor(() => {
       const n8nOptions = screen.getAllByText('n8n')
@@ -135,7 +135,7 @@ describe('PlatformList', () => {
 
   it('handles status filtering', async () => {
     render(<PlatformList />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Main n8n Instance')).toBeInTheDocument()
     })
@@ -143,7 +143,7 @@ describe('PlatformList', () => {
     // Open status filter dropdown
     const statusFilter = screen.getByLabelText('Filter by status')
     fireEvent.click(statusFilter)
-    
+
     // Select connected status
     const connectedOption = screen.getByText('Connected')
     fireEvent.click(connectedOption)
@@ -154,13 +154,13 @@ describe('PlatformList', () => {
 
   it('handles sorting by name', async () => {
     render(<PlatformList />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Main n8n Instance')).toBeInTheDocument()
     })
 
     const nameHeader = screen.getByText('Platform Name')
-    
+
     // Initially should be sorted by name ascending (default)
     const rows = screen.getAllByRole('row')
     const firstDataRow = rows[1] // Skip header row
@@ -168,7 +168,7 @@ describe('PlatformList', () => {
 
     // Click to change sort order
     fireEvent.click(nameHeader)
-    
+
     // The component should still work (we're testing the click handler works)
     expect(nameHeader).toBeInTheDocument()
   })
@@ -176,7 +176,7 @@ describe('PlatformList', () => {
   it('calls onPlatformSelect when platform row is clicked', async () => {
     const onPlatformSelect = jest.fn()
     render(<PlatformList onPlatformSelect={onPlatformSelect} />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Main n8n Instance')).toBeInTheDocument()
     })
@@ -190,7 +190,7 @@ describe('PlatformList', () => {
   it('calls onPlatformEdit when edit button is clicked', async () => {
     const onPlatformEdit = jest.fn()
     render(<PlatformList onPlatformEdit={onPlatformEdit} />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Main n8n Instance')).toBeInTheDocument()
     })
@@ -204,7 +204,7 @@ describe('PlatformList', () => {
   it('calls onPlatformDelete when delete button is clicked', async () => {
     const onPlatformDelete = jest.fn()
     render(<PlatformList onPlatformDelete={onPlatformDelete} />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Main n8n Instance')).toBeInTheDocument()
     })
@@ -218,7 +218,7 @@ describe('PlatformList', () => {
   it('handles refresh functionality', async () => {
     const onRefresh = jest.fn()
     render(<PlatformList onRefresh={onRefresh} />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Main n8n Instance')).toBeInTheDocument()
     })
@@ -232,9 +232,9 @@ describe('PlatformList', () => {
 
   it('displays error state when fetch fails', async () => {
     ;(fetch as jest.Mock).mockRejectedValue(new Error('Network error'))
-    
+
     render(<PlatformList />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Network error')).toBeInTheDocument()
     })
@@ -260,15 +260,17 @@ describe('PlatformList', () => {
     })
 
     render(<PlatformList />)
-    
+
     await waitFor(() => {
-      expect(screen.getByText('No platforms configured yet')).toBeInTheDocument()
+      expect(
+        screen.getByText('No platforms configured yet')
+      ).toBeInTheDocument()
     })
   })
 
   it('displays filtered empty state when no platforms match filters', async () => {
     render(<PlatformList />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Main n8n Instance')).toBeInTheDocument()
     })
@@ -276,19 +278,21 @@ describe('PlatformList', () => {
     const searchInput = screen.getByPlaceholderText('Search platforms...')
     fireEvent.change(searchInput, { target: { value: 'nonexistent' } })
 
-    expect(screen.getByText('No platforms match your filters')).toBeInTheDocument()
+    expect(
+      screen.getByText('No platforms match your filters')
+    ).toBeInTheDocument()
   })
 
   it('formats last sync time correctly', async () => {
     render(<PlatformList />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Main n8n Instance')).toBeInTheDocument()
     })
 
     // Should show formatted date for platform with lastSyncAt
     expect(screen.getByText(/ago|Just now|\d+\/\d+\/\d+/)).toBeInTheDocument()
-    
+
     // Should show "Never" for platform without lastSyncAt
     expect(screen.getByText('Never')).toBeInTheDocument()
   })

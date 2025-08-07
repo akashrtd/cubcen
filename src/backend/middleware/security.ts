@@ -574,7 +574,11 @@ export class AdvancedRateLimiter {
   }
 
   public middleware() {
-    return (req: Request, res: Response, next: NextFunction): void | Response => {
+    return (
+      req: Request,
+      res: Response,
+      next: NextFunction
+    ): void | Response => {
       const key = this.getKey(req)
       const now = new Date()
       const attempt = this.attempts.get(key)

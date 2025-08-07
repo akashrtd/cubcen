@@ -56,7 +56,9 @@ export class AnalyticsService {
           // Use optimized queries for better performance
           const taskStats = await OptimizedQueries.getTaskStatistics(
             undefined,
-            dateRange ? { start: dateRange.startDate, end: dateRange.endDate } : undefined
+            dateRange
+              ? { start: dateRange.startDate, end: dateRange.endDate }
+              : undefined
           )
 
           // Get basic counts with optimized queries
@@ -125,7 +127,10 @@ export class AnalyticsService {
             errorPatterns,
           }
         } catch (error) {
-          logger.error('Failed to get analytics data', error instanceof Error ? error : undefined)
+          logger.error(
+            'Failed to get analytics data',
+            error instanceof Error ? error : undefined
+          )
           throw new Error('Failed to retrieve analytics data')
         }
       },
@@ -347,7 +352,10 @@ export class AnalyticsService {
       }
       throw new Error('Unsupported export format')
     } catch (error) {
-      logger.error('Failed to export analytics data', error instanceof Error ? error : undefined)
+      logger.error(
+        'Failed to export analytics data',
+        error instanceof Error ? error : undefined
+      )
       throw new Error('Failed to export data')
     }
   }

@@ -8,7 +8,10 @@ import { ChartData, ChartDataPoint, LegendItem } from '@/types/dashboard'
 // Mock Next.js navigation
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(() => ({ replace: jest.fn() })),
-  useSearchParams: jest.fn(() => ({ get: jest.fn(), toString: jest.fn(() => '') })),
+  useSearchParams: jest.fn(() => ({
+    get: jest.fn(),
+    toString: jest.fn(() => ''),
+  })),
 }))
 
 // Mock ChartWrapper
@@ -17,37 +20,37 @@ jest.mock('../charts/chart-wrapper', () => ({
     <div data-testid="chart-wrapper" {...props}>
       <button
         data-testid="data-point"
-        onClick={() => onDataClick?.({
-          x: 'Category A',
-          y: 100,
-          value: 100,
-          label: 'Category A',
-          metadata: { category: 'Category A', series: 'Series 1' }
-        })}
+        onClick={() =>
+          onDataClick?.({
+            x: 'Category A',
+            y: 100,
+            value: 100,
+            label: 'Category A',
+            metadata: { category: 'Category A', series: 'Series 1' },
+          })
+        }
       >
         Click Data Point
       </button>
       <button
         data-testid="legend-item"
-        onClick={() => onLegendClick?.({
-          label: 'Series 1',
-          color: '#3F51B5',
-          visible: true
-        })}
+        onClick={() =>
+          onLegendClick?.({
+            label: 'Series 1',
+            color: '#3F51B5',
+            visible: true,
+          })
+        }
       >
         Click Legend
       </button>
     </div>
-  )
+  ),
 }))
 
 // Test wrapper with FilterProvider
 function TestWrapper({ children, ...props }: any) {
-  return (
-    <FilterProvider {...props}>
-      {children}
-    </FilterProvider>
-  )
+  return <FilterProvider {...props}>{children}</FilterProvider>
 }
 
 const mockChartData: ChartData = {
@@ -57,9 +60,9 @@ const mockChartData: ChartData = {
       data: [
         { x: 'Category A', y: 100, label: 'Category A' },
         { x: 'Category B', y: 200, label: 'Category B' },
-      ]
-    }
-  ]
+      ],
+    },
+  ],
 }
 
 describe('FilterableChart', () => {
@@ -72,11 +75,7 @@ describe('FilterableChart', () => {
   it('renders chart wrapper with props', () => {
     render(
       <TestWrapper>
-        <FilterableChart
-          type="bar"
-          data={mockChartData}
-          height={300}
-        />
+        <FilterableChart type="bar" data={mockChartData} height={300} />
       </TestWrapper>
     )
 
@@ -86,11 +85,7 @@ describe('FilterableChart', () => {
   it('handles data point clicks with default filtering', async () => {
     render(
       <TestWrapper>
-        <FilterableChart
-          type="bar"
-          data={mockChartData}
-          enableFiltering
-        />
+        <FilterableChart type="bar" data={mockChartData} enableFiltering />
       </TestWrapper>
     )
 
@@ -105,11 +100,7 @@ describe('FilterableChart', () => {
   it('handles legend clicks with default filtering', async () => {
     render(
       <TestWrapper>
-        <FilterableChart
-          type="bar"
-          data={mockChartData}
-          enableFiltering
-        />
+        <FilterableChart type="bar" data={mockChartData} enableFiltering />
       </TestWrapper>
     )
 
@@ -125,7 +116,7 @@ describe('FilterableChart', () => {
         type: 'string' as const,
         value: 'custom-value',
         operator: 'equals' as const,
-      }
+      },
     }))
 
     render(
@@ -135,7 +126,7 @@ describe('FilterableChart', () => {
           data={mockChartData}
           enableFiltering
           filterMappings={{
-            dataClick: customDataMapping
+            dataClick: customDataMapping,
           }}
         />
       </TestWrapper>
@@ -148,7 +139,7 @@ describe('FilterableChart', () => {
       y: 100,
       value: 100,
       label: 'Category A',
-      metadata: { category: 'Category A', series: 'Series 1' }
+      metadata: { category: 'Category A', series: 'Series 1' },
     })
   })
 
@@ -158,7 +149,7 @@ describe('FilterableChart', () => {
         type: 'string' as const,
         value: 'legend-value',
         operator: 'equals' as const,
-      }
+      },
     }))
 
     render(
@@ -168,7 +159,7 @@ describe('FilterableChart', () => {
           data={mockChartData}
           enableFiltering
           filterMappings={{
-            legendClick: customLegendMapping
+            legendClick: customLegendMapping,
           }}
         />
       </TestWrapper>
@@ -179,7 +170,7 @@ describe('FilterableChart', () => {
     expect(customLegendMapping).toHaveBeenCalledWith({
       label: 'Series 1',
       color: '#3F51B5',
-      visible: true
+      visible: true,
     })
   })
 
@@ -262,22 +253,26 @@ describe('withFiltering HOC', () => {
     <div data-testid="mock-chart" {...props}>
       <button
         data-testid="hoc-data-point"
-        onClick={() => onDataClick?.({
-          x: 'HOC Category',
-          y: 150,
-          value: 150,
-          label: 'HOC Category'
-        })}
+        onClick={() =>
+          onDataClick?.({
+            x: 'HOC Category',
+            y: 150,
+            value: 150,
+            label: 'HOC Category',
+          })
+        }
       >
         HOC Data Point
       </button>
       <button
         data-testid="hoc-legend-item"
-        onClick={() => onLegendClick?.({
-          label: 'HOC Series',
-          color: '#FF6B35',
-          visible: true
-        })}
+        onClick={() =>
+          onLegendClick?.({
+            label: 'HOC Series',
+            color: '#FF6B35',
+            visible: true,
+          })
+        }
       >
         HOC Legend
       </button>
@@ -289,10 +284,7 @@ describe('withFiltering HOC', () => {
 
     render(
       <TestWrapper>
-        <FilterableMockChart
-          data={mockChartData}
-          enableFiltering
-        />
+        <FilterableMockChart data={mockChartData} enableFiltering />
       </TestWrapper>
     )
 
@@ -309,18 +301,15 @@ describe('withFiltering HOC', () => {
           type: 'string' as const,
           value: 'default-value',
           operator: 'equals' as const,
-        }
-      }))
+        },
+      })),
     }
 
     const FilterableMockChart = withFiltering(MockChart, defaultMappings)
 
     render(
       <TestWrapper>
-        <FilterableMockChart
-          data={mockChartData}
-          enableFiltering
-        />
+        <FilterableMockChart data={mockChartData} enableFiltering />
       </TestWrapper>
     )
 
@@ -331,11 +320,23 @@ describe('withFiltering HOC', () => {
 
   it('allows overriding default mappings', async () => {
     const defaultMappings = {
-      dataClick: jest.fn(() => ({ default: { type: 'string' as const, value: 'default', operator: 'equals' as const } }))
+      dataClick: jest.fn(() => ({
+        default: {
+          type: 'string' as const,
+          value: 'default',
+          operator: 'equals' as const,
+        },
+      })),
     }
 
     const overrideMappings = {
-      dataClick: jest.fn(() => ({ override: { type: 'string' as const, value: 'override', operator: 'equals' as const } }))
+      dataClick: jest.fn(() => ({
+        override: {
+          type: 'string' as const,
+          value: 'override',
+          operator: 'equals' as const,
+        },
+      })),
     }
 
     const FilterableMockChart = withFiltering(MockChart, defaultMappings)

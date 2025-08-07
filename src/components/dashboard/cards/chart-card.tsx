@@ -14,7 +14,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Skeleton } from '@/components/ui/skeleton'
-import type { ChartCardProps, ChartDataPoint, LegendItem, FilterValue } from '@/types/dashboard'
+import type {
+  ChartCardProps,
+  ChartDataPoint,
+  LegendItem,
+  FilterValue,
+} from '@/types/dashboard'
 
 interface EnhancedChartCardProps extends ChartCardProps {
   // Enhanced filtering props
@@ -57,30 +62,36 @@ export function ChartCard({
   onFilter,
 }: EnhancedChartCardProps) {
   // Handle chart data clicks for filtering
-  const handleDataClick = useCallback((dataPoint: ChartDataPoint) => {
-    if (onFilter) {
-      // Create a filter based on the clicked data point
-      const filterValue: FilterValue = {
-        type: 'string',
-        value: dataPoint.label || dataPoint.x?.toString() || '',
-        operator: 'equals'
+  const handleDataClick = useCallback(
+    (dataPoint: ChartDataPoint) => {
+      if (onFilter) {
+        // Create a filter based on the clicked data point
+        const filterValue: FilterValue = {
+          type: 'string',
+          value: dataPoint.label || dataPoint.x?.toString() || '',
+          operator: 'equals',
+        }
+        onFilter(filterValue)
       }
-      onFilter(filterValue)
-    }
-  }, [onFilter])
+    },
+    [onFilter]
+  )
 
   // Handle legend clicks for filtering
-  const handleLegendClick = useCallback((legendItem: LegendItem) => {
-    if (onFilter) {
-      // Create a filter based on the clicked legend item
-      const filterValue: FilterValue = {
-        type: 'string',
-        value: legendItem.label,
-        operator: 'equals'
+  const handleLegendClick = useCallback(
+    (legendItem: LegendItem) => {
+      if (onFilter) {
+        // Create a filter based on the clicked legend item
+        const filterValue: FilterValue = {
+          type: 'string',
+          value: legendItem.label,
+          operator: 'equals',
+        }
+        onFilter(filterValue)
       }
-      onFilter(filterValue)
-    }
-  }, [onFilter])
+    },
+    [onFilter]
+  )
 
   const handleExport = (format: 'png' | 'svg' | 'pdf') => {
     onExportStart?.(format)
@@ -95,7 +106,7 @@ export function ChartCard({
       onFilter({
         type: 'string',
         value: title || 'chart',
-        operator: 'equals'
+        operator: 'equals',
       })
     }
   }
@@ -116,7 +127,7 @@ export function ChartCard({
             <Filter className="h-4 w-4" />
           </Button>
         )}
-        
+
         {exportable && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -142,7 +153,7 @@ export function ChartCard({
             </DropdownMenuContent>
           </DropdownMenu>
         )}
-        
+
         {actions && (
           <>
             {(exportable || filterable) && (

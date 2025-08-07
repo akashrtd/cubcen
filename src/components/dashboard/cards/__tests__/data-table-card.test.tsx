@@ -16,13 +16,13 @@ const mockClick = jest.fn()
 const mockAnchor = {
   href: '',
   download: '',
-  click: mockClick
+  click: mockClick,
 }
 
 // Store original createElement
 const originalCreateElement = document.createElement
 
-jest.spyOn(document, 'createElement').mockImplementation((tagName) => {
+jest.spyOn(document, 'createElement').mockImplementation(tagName => {
   if (tagName === 'a') {
     return mockAnchor as any
   }
@@ -31,28 +31,43 @@ jest.spyOn(document, 'createElement').mockImplementation((tagName) => {
 
 describe('DataTableCard', () => {
   const user = userEvent.setup()
-  
+
   const mockColumns = [
     { key: 'id', label: 'ID', sortable: true },
     { key: 'name', label: 'Name', sortable: true, searchable: true },
     { key: 'email', label: 'Email', sortable: true, searchable: true },
     { key: 'status', label: 'Status', sortable: false },
-    { 
-      key: 'actions', 
-      label: 'Actions', 
+    {
+      key: 'actions',
+      label: 'Actions',
       sortable: false,
       render: (value: any, row: any) => (
         <button data-testid={`action-${row.id}`}>Edit</button>
-      )
-    }
+      ),
+    },
   ]
 
   const mockData = [
     { id: 1, name: 'John Doe', email: 'john@example.com', status: 'Active' },
-    { id: 2, name: 'Jane Smith', email: 'jane@example.com', status: 'Inactive' },
+    {
+      id: 2,
+      name: 'Jane Smith',
+      email: 'jane@example.com',
+      status: 'Inactive',
+    },
     { id: 3, name: 'Bob Johnson', email: 'bob@example.com', status: 'Active' },
-    { id: 4, name: 'Alice Brown', email: 'alice@example.com', status: 'Pending' },
-    { id: 5, name: 'Charlie Wilson', email: 'charlie@example.com', status: 'Active' }
+    {
+      id: 4,
+      name: 'Alice Brown',
+      email: 'alice@example.com',
+      status: 'Pending',
+    },
+    {
+      id: 5,
+      name: 'Charlie Wilson',
+      email: 'charlie@example.com',
+      status: 'Active',
+    },
   ]
 
   beforeEach(() => {
@@ -68,7 +83,7 @@ describe('DataTableCard', () => {
           data={mockData}
         />
       )
-      
+
       expect(screen.getByText('User Table')).toBeInTheDocument()
       expect(screen.getByText('John Doe')).toBeInTheDocument()
       expect(screen.getByText('jane@example.com')).toBeInTheDocument()
@@ -85,10 +100,10 @@ describe('DataTableCard', () => {
           data={mockData}
         />
       )
-      
+
       expect(screen.getByText('Data Table')).toBeInTheDocument()
       expect(screen.getByText('User management')).toBeInTheDocument()
-      
+
       const icon = document.querySelector('[aria-hidden="true"]')
       expect(icon).toBeInTheDocument()
     })
@@ -101,7 +116,7 @@ describe('DataTableCard', () => {
           data={mockData}
         />
       )
-      
+
       expect(screen.getByText('ID')).toBeInTheDocument()
       expect(screen.getByText('Name')).toBeInTheDocument()
       expect(screen.getByText('Email')).toBeInTheDocument()
@@ -117,7 +132,7 @@ describe('DataTableCard', () => {
           data={mockData}
         />
       )
-      
+
       expect(screen.getByTestId('action-1')).toBeInTheDocument()
       expect(screen.getByTestId('action-2')).toBeInTheDocument()
     })
@@ -133,7 +148,7 @@ describe('DataTableCard', () => {
           searchable
         />
       )
-      
+
       const searchInput = screen.getByPlaceholderText('Search...')
       expect(searchInput).toBeInTheDocument()
     })
@@ -147,10 +162,10 @@ describe('DataTableCard', () => {
           searchable
         />
       )
-      
+
       const searchInput = screen.getByPlaceholderText('Search...')
       await user.type(searchInput, 'john')
-      
+
       expect(screen.getByText('John Doe')).toBeInTheDocument()
       expect(screen.getByText('Bob Johnson')).toBeInTheDocument()
       expect(screen.queryByText('Jane Smith')).not.toBeInTheDocument()
@@ -165,10 +180,10 @@ describe('DataTableCard', () => {
           searchable
         />
       )
-      
+
       const searchInput = screen.getByPlaceholderText('Search...')
       await user.type(searchInput, 'Active')
-      
+
       // Should not find results since 'status' column is not marked as searchable
       expect(screen.getByText('No data available')).toBeInTheDocument()
     })
@@ -182,7 +197,7 @@ describe('DataTableCard', () => {
           searchable={false}
         />
       )
-      
+
       expect(screen.queryByPlaceholderText('Search...')).not.toBeInTheDocument()
     })
   })
@@ -197,7 +212,7 @@ describe('DataTableCard', () => {
           sortable
         />
       )
-      
+
       // Check for sort icons in sortable columns
       const nameHeader = screen.getByText('Name').closest('th')
       expect(nameHeader).toHaveClass('cursor-pointer')
@@ -212,10 +227,10 @@ describe('DataTableCard', () => {
           sortable
         />
       )
-      
+
       const nameHeader = screen.getByText('Name').closest('th')
       await user.click(nameHeader!)
-      
+
       // Should sort alphabetically - Alice should be first
       const rows = screen.getAllByRole('row')
       expect(rows[1]).toHaveTextContent('Alice Brown')
@@ -230,19 +245,19 @@ describe('DataTableCard', () => {
           sortable
         />
       )
-      
+
       const nameHeader = screen.getByText('Name').closest('th')
-      
+
       // First click - ascending
       await user.click(nameHeader!)
       let rows = screen.getAllByRole('row')
       expect(rows[1]).toHaveTextContent('Alice Brown')
-      
+
       // Second click - descending
       await user.click(nameHeader!)
       rows = screen.getAllByRole('row')
       expect(rows[1]).toHaveTextContent('John Doe')
-      
+
       // Third click - no sort
       await user.click(nameHeader!)
       rows = screen.getAllByRole('row')
@@ -258,7 +273,7 @@ describe('DataTableCard', () => {
           sortable
         />
       )
-      
+
       const statusHeader = screen.getByText('Status').closest('th')
       expect(statusHeader).not.toHaveClass('cursor-pointer')
     })
@@ -269,7 +284,7 @@ describe('DataTableCard', () => {
       id: i + 1,
       name: `User ${i + 1}`,
       email: `user${i + 1}@example.com`,
-      status: i % 2 === 0 ? 'Active' : 'Inactive'
+      status: i % 2 === 0 ? 'Active' : 'Inactive',
     }))
 
     it('paginates data when dataset is large', () => {
@@ -281,12 +296,14 @@ describe('DataTableCard', () => {
           pageSize={10}
         />
       )
-      
+
       expect(screen.getByText('User 1')).toBeInTheDocument()
       expect(screen.getByText('User 10')).toBeInTheDocument()
       expect(screen.queryByText('User 11')).not.toBeInTheDocument()
-      
-      expect(screen.getByText('Showing 1 to 10 of 25 entries')).toBeInTheDocument()
+
+      expect(
+        screen.getByText('Showing 1 to 10 of 25 entries')
+      ).toBeInTheDocument()
       expect(screen.getByText('Page 1 of 3')).toBeInTheDocument()
     })
 
@@ -299,15 +316,17 @@ describe('DataTableCard', () => {
           pageSize={10}
         />
       )
-      
+
       const nextButton = screen.getByText('Next')
       await user.click(nextButton)
-      
+
       expect(screen.getByText('User 11')).toBeInTheDocument()
       expect(screen.getByText('User 20')).toBeInTheDocument()
       expect(screen.queryByText('User 1')).not.toBeInTheDocument()
-      
-      expect(screen.getByText('Showing 11 to 20 of 25 entries')).toBeInTheDocument()
+
+      expect(
+        screen.getByText('Showing 11 to 20 of 25 entries')
+      ).toBeInTheDocument()
       expect(screen.getByText('Page 2 of 3')).toBeInTheDocument()
     })
 
@@ -320,17 +339,17 @@ describe('DataTableCard', () => {
           pageSize={10}
         />
       )
-      
+
       const prevButton = screen.getByText('Previous')
       const nextButton = screen.getByText('Next')
-      
+
       expect(prevButton).toBeDisabled()
       expect(nextButton).not.toBeDisabled()
-      
+
       // Go to last page
       await user.click(nextButton)
       await user.click(nextButton)
-      
+
       expect(prevButton).not.toBeDisabled()
       expect(nextButton).toBeDisabled()
     })
@@ -346,7 +365,7 @@ describe('DataTableCard', () => {
           exportable
         />
       )
-      
+
       const exportButton = screen.getByLabelText('Export table data')
       expect(exportButton).toBeInTheDocument()
     })
@@ -360,10 +379,10 @@ describe('DataTableCard', () => {
           exportable
         />
       )
-      
+
       const exportButton = screen.getByLabelText('Export table data')
       await user.click(exportButton)
-      
+
       expect(screen.getByText('Export as CSV')).toBeInTheDocument()
       expect(screen.getByText('Export as JSON')).toBeInTheDocument()
     })
@@ -377,13 +396,13 @@ describe('DataTableCard', () => {
           exportable
         />
       )
-      
+
       const exportButton = screen.getByLabelText('Export table data')
       await user.click(exportButton)
-      
+
       const csvOption = screen.getByText('Export as CSV')
       await user.click(csvOption)
-      
+
       expect(mockClick).toHaveBeenCalled()
       expect(mockAnchor.download).toBe('exportable_table.csv')
     })
@@ -397,20 +416,20 @@ describe('DataTableCard', () => {
           exportable
         />
       )
-      
+
       const exportButton = screen.getByLabelText('Export table data')
       await user.click(exportButton)
-      
+
       const jsonOption = screen.getByText('Export as JSON')
       await user.click(jsonOption)
-      
+
       expect(mockClick).toHaveBeenCalled()
       expect(mockAnchor.download).toBe('exportable_table.json')
     })
 
     it('calls custom export handler when provided', async () => {
       const mockOnExport = jest.fn()
-      
+
       render(
         <DataTableCard
           title="Custom Export Table"
@@ -420,13 +439,13 @@ describe('DataTableCard', () => {
           onExport={mockOnExport}
         />
       )
-      
+
       const exportButton = screen.getByLabelText('Export table data')
       await user.click(exportButton)
-      
+
       const csvOption = screen.getByText('Export as CSV')
       await user.click(csvOption)
-      
+
       expect(mockOnExport).toHaveBeenCalledWith('csv')
     })
   })
@@ -434,7 +453,7 @@ describe('DataTableCard', () => {
   describe('Row Interaction', () => {
     it('handles row clicks when onRowClick is provided', async () => {
       const mockOnRowClick = jest.fn()
-      
+
       render(
         <DataTableCard
           title="Interactive Table"
@@ -443,10 +462,10 @@ describe('DataTableCard', () => {
           onRowClick={mockOnRowClick}
         />
       )
-      
+
       const firstRow = screen.getAllByRole('row')[1] // Skip header row
       await user.click(firstRow)
-      
+
       expect(mockOnRowClick).toHaveBeenCalledWith(mockData[0])
     })
 
@@ -459,7 +478,7 @@ describe('DataTableCard', () => {
           onRowClick={() => {}}
         />
       )
-      
+
       const firstRow = screen.getAllByRole('row')[1]
       expect(firstRow).toHaveClass('cursor-pointer')
     })
@@ -475,10 +494,10 @@ describe('DataTableCard', () => {
           loading
         />
       )
-      
+
       const skeletons = document.querySelectorAll('.animate-pulse')
       expect(skeletons.length).toBeGreaterThan(0)
-      
+
       expect(screen.queryByText('John Doe')).not.toBeInTheDocument()
     })
 
@@ -491,10 +510,10 @@ describe('DataTableCard', () => {
           error="Failed to load table data"
         />
       )
-      
+
       expect(screen.getByText('Unable to load table data')).toBeInTheDocument()
       expect(screen.getByText('Failed to load table data')).toBeInTheDocument()
-      
+
       expect(screen.queryByText('John Doe')).not.toBeInTheDocument()
     })
 
@@ -507,7 +526,7 @@ describe('DataTableCard', () => {
           emptyMessage="No users found"
         />
       )
-      
+
       expect(screen.getByText('No users found')).toBeInTheDocument()
     })
   })
@@ -526,7 +545,7 @@ describe('DataTableCard', () => {
           exportable
         />
       )
-      
+
       const results = await axe(container)
       expect(results).toHaveNoViolations()
     })
@@ -541,7 +560,7 @@ describe('DataTableCard', () => {
           exportable
         />
       )
-      
+
       expect(screen.getByLabelText('Export table data')).toBeInTheDocument()
       expect(screen.getByPlaceholderText('Search...')).toBeInTheDocument()
     })
@@ -557,7 +576,7 @@ describe('DataTableCard', () => {
           className="custom-table-class"
         />
       )
-      
+
       const card = document.querySelector('.data-table-card')
       expect(card).toHaveClass('custom-table-class')
     })
@@ -565,9 +584,9 @@ describe('DataTableCard', () => {
     it('applies column-specific classes', () => {
       const columnsWithClasses = [
         { key: 'id', label: 'ID', className: 'text-center' },
-        { key: 'name', label: 'Name', className: 'font-bold' }
+        { key: 'name', label: 'Name', className: 'font-bold' },
       ]
-      
+
       render(
         <DataTableCard
           title="Styled Columns"
@@ -575,10 +594,10 @@ describe('DataTableCard', () => {
           data={mockData}
         />
       )
-      
+
       const idHeader = screen.getByText('ID').closest('th')
       const nameHeader = screen.getByText('Name').closest('th')
-      
+
       expect(idHeader).toHaveClass('text-center')
       expect(nameHeader).toHaveClass('font-bold')
     })

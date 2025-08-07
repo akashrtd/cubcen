@@ -1,6 +1,10 @@
 import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { TouchInteraction, useIsTouchDevice, useIsMobile } from '../touch-interactions'
+import {
+  TouchInteraction,
+  useIsTouchDevice,
+  useIsMobile,
+} from '../touch-interactions'
 
 // Mock the hooks
 jest.mock('../touch-interactions', () => ({
@@ -9,7 +13,9 @@ jest.mock('../touch-interactions', () => ({
   useIsMobile: jest.fn(),
 }))
 
-const mockUseIsTouchDevice = useIsTouchDevice as jest.MockedFunction<typeof useIsTouchDevice>
+const mockUseIsTouchDevice = useIsTouchDevice as jest.MockedFunction<
+  typeof useIsTouchDevice
+>
 const mockUseIsMobile = useIsMobile as jest.MockedFunction<typeof useIsMobile>
 
 describe('TouchInteraction', () => {
@@ -44,7 +50,7 @@ describe('TouchInteraction', () => {
 
   it('handles tap events', async () => {
     const onTap = jest.fn()
-    
+
     const { container } = render(
       <TouchInteraction onTap={onTap}>
         <div>Tap me</div>
@@ -65,14 +71,17 @@ describe('TouchInteraction', () => {
     fireEvent(element, touchEnd)
 
     // Wait for tap delay
-    await waitFor(() => {
-      expect(onTap).toHaveBeenCalledWith(expect.any(TouchEvent))
-    }, { timeout: 400 })
+    await waitFor(
+      () => {
+        expect(onTap).toHaveBeenCalledWith(expect.any(TouchEvent))
+      },
+      { timeout: 400 }
+    )
   })
 
   it('handles double tap events', async () => {
     const onDoubleTap = jest.fn()
-    
+
     const { container } = render(
       <TouchInteraction onDoubleTap={onDoubleTap}>
         <div>Double tap me</div>
@@ -110,7 +119,7 @@ describe('TouchInteraction', () => {
 
   it('handles long press events', async () => {
     const onLongPress = jest.fn()
-    
+
     const { container } = render(
       <TouchInteraction onLongPress={onLongPress} longPressDelay={100}>
         <div>Long press me</div>
@@ -125,17 +134,20 @@ describe('TouchInteraction', () => {
 
     fireEvent(element, touchStart)
 
-    await waitFor(() => {
-      expect(onLongPress).toHaveBeenCalledWith(expect.any(TouchEvent))
-    }, { timeout: 200 })
+    await waitFor(
+      () => {
+        expect(onLongPress).toHaveBeenCalledWith(expect.any(TouchEvent))
+      },
+      { timeout: 200 }
+    )
   })
 
   it('handles swipe gestures', () => {
     const onSwipeRight = jest.fn()
     const onSwipeLeft = jest.fn()
-    
+
     const { container } = render(
-      <TouchInteraction 
+      <TouchInteraction
         onSwipeRight={onSwipeRight}
         onSwipeLeft={onSwipeLeft}
         swipeThreshold={30}
@@ -175,7 +187,7 @@ describe('TouchInteraction', () => {
 
   it('handles pinch zoom gestures', () => {
     const onPinchZoom = jest.fn()
-    
+
     const { container } = render(
       <TouchInteraction onPinchZoom={onPinchZoom}>
         <div>Pinch me</div>
@@ -211,7 +223,7 @@ describe('TouchInteraction', () => {
 
   it('respects disabled prop', () => {
     const onTap = jest.fn()
-    
+
     const { container } = render(
       <TouchInteraction onTap={onTap} disabled>
         <div>Disabled</div>
@@ -278,14 +290,14 @@ describe('useIsMobile', () => {
 
     const TestComponent = () => {
       const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768)
-      
+
       React.useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth < 768)
         handleResize() // Call immediately
         window.addEventListener('resize', handleResize)
         return () => window.removeEventListener('resize', handleResize)
       }, [])
-      
+
       return <div>{isMobile ? 'Mobile' : 'Desktop'}</div>
     }
 

@@ -445,18 +445,21 @@ The new platform management system provides comprehensive control over your auto
 ### Platform Management Actions
 
 **Edit Platform:**
+
 - Update connection details
 - Modify authentication credentials
 - Change platform name or description
 - Update health check intervals
 
 **Delete Platform:**
+
 - Confirmation dialog with impact assessment
 - Shows number of connected agents
 - Audit trail logging
 - Graceful disconnection process
 
 **Refresh Platform:**
+
 - Force synchronization with platform
 - Rediscover agents and capabilities
 - Update health status
@@ -474,12 +477,14 @@ Cubcen supports a plugin architecture for adding new platforms:
 6. **Production Deployment**: New platform support is deployed
 
 **Currently Supported Platforms:**
+
 - n8n (Full support)
 - Make.com (Full support)
 - Zapier (Full support)
 - Custom REST APIs (Beta)
 
 **Planned Platform Support:**
+
 - Microsoft Power Automate
 - Integromat
 - Workato
@@ -503,6 +508,7 @@ The user management system provides comprehensive control over user accounts, ro
 #### User Roles and Permissions
 
 **Administrator (ADMIN):**
+
 - Full system access
 - User management capabilities
 - Platform configuration
@@ -511,6 +517,7 @@ The user management system provides comprehensive control over user accounts, ro
 - Audit log access
 
 **Operator (OPERATOR):**
+
 - Agent management
 - Task creation and monitoring
 - Analytics viewing
@@ -518,6 +525,7 @@ The user management system provides comprehensive control over user accounts, ro
 - Limited settings access
 
 **Viewer (VIEWER):**
+
 - Read-only access to dashboards
 - View agent status
 - View task status
@@ -545,18 +553,21 @@ The user management system provides comprehensive control over user accounts, ro
 #### Managing Users
 
 **Edit User:**
+
 - Update user information
 - Change user role
 - Modify permissions
 - Update contact details
 
 **Suspend/Reactivate User:**
+
 - Temporarily disable user access
 - Maintain audit trail
 - Preserve user data and settings
 - Reactivate when needed
 
 **Delete User:**
+
 - Permanently remove user account
 - Transfer ownership of created resources
 - Complete audit trail logging
@@ -565,6 +576,7 @@ The user management system provides comprehensive control over user accounts, ro
 #### User Activity Monitoring
 
 **Activity Statistics:**
+
 - Total login count
 - Last login timestamp
 - Tasks created and managed
@@ -572,6 +584,7 @@ The user management system provides comprehensive control over user accounts, ro
 - Platform interactions
 
 **Audit Trail:**
+
 - All user actions logged
 - Login/logout events
 - Permission changes
@@ -583,6 +596,7 @@ The user management system provides comprehensive control over user accounts, ro
 #### Personal Settings
 
 **Profile Settings:**
+
 - Update personal information
 - Change display name
 - Upload profile avatar
@@ -590,6 +604,7 @@ The user management system provides comprehensive control over user accounts, ro
 - Set timezone and language
 
 **Password Management:**
+
 - Change account password
 - Password strength requirements
 - Password history tracking
@@ -598,18 +613,21 @@ The user management system provides comprehensive control over user accounts, ro
 #### Notification Preferences
 
 **Notification Channels:**
+
 - **Email Notifications**: Configure email alerts
 - **Push Notifications**: Browser and mobile push alerts
 - **Slack Integration**: Direct Slack notifications
 - **Webhook Notifications**: Custom webhook endpoints
 
 **Notification Types:**
+
 - **Agent Alerts**: Agent status changes and errors
 - **Task Updates**: Task completion and failure notifications
 - **System Notifications**: System maintenance and updates
 - **Security Alerts**: Login attempts and security events
 
 **Notification Frequency:**
+
 - **Immediate**: Real-time notifications
 - **Hourly**: Batched hourly summaries
 - **Daily**: Daily digest emails
@@ -618,18 +636,21 @@ The user management system provides comprehensive control over user accounts, ro
 #### Security Settings
 
 **Two-Factor Authentication (2FA):**
+
 - Enable/disable 2FA
 - QR code setup for authenticator apps
 - Backup code generation
 - Recovery options
 
 **Active Sessions:**
+
 - View all active login sessions
 - Session details (device, location, browser)
 - Terminate individual sessions
 - Terminate all sessions except current
 
 **Security Audit Log:**
+
 - Login/logout events
 - Password changes
 - 2FA setup/changes
@@ -637,6 +658,7 @@ The user management system provides comprehensive control over user accounts, ro
 - IP address tracking
 
 **Account Security:**
+
 - Password change history
 - Failed login attempt tracking
 - Account lockout settings
@@ -645,18 +667,21 @@ The user management system provides comprehensive control over user accounts, ro
 #### Dashboard Preferences
 
 **Theme Settings:**
+
 - Light/dark mode toggle
 - System theme following
 - Custom color schemes
 - High contrast options
 
 **Dashboard Layout:**
+
 - Default page on login
 - Widget arrangements
 - Refresh intervals
 - Data display preferences
 
 **Accessibility Options:**
+
 - Screen reader compatibility
 - Keyboard navigation
 - Font size adjustments
@@ -679,6 +704,7 @@ The new error management system provides comprehensive error tracking and resolu
 #### Error Details
 
 **Error Information:**
+
 - Error message and stack trace
 - Timestamp and frequency
 - Affected users and sessions
@@ -686,6 +712,7 @@ The new error management system provides comprehensive error tracking and resolu
 - Page or component where error occurred
 
 **User Reports:**
+
 - User-submitted error descriptions
 - Reproduction steps
 - Expected vs actual behavior
@@ -694,6 +721,7 @@ The new error management system provides comprehensive error tracking and resolu
 #### Error Resolution
 
 **Admin Actions:**
+
 - Mark errors as resolved
 - Add resolution notes
 - Assign errors to team members
@@ -701,6 +729,7 @@ The new error management system provides comprehensive error tracking and resolu
 - Create bug reports
 
 **Automatic Features:**
+
 - Error grouping and deduplication
 - Severity classification
 - Impact assessment

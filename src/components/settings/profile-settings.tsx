@@ -7,30 +7,52 @@ import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
 import { Separator } from '@/components/ui/separator'
 import { toast } from 'sonner'
 import { Upload, User, Lock, Save } from 'lucide-react'
 
 // Profile update schema
 const profileSchema = z.object({
-  name: z.string().min(1, 'Name is required').max(100, 'Name must be less than 100 characters'),
+  name: z
+    .string()
+    .min(1, 'Name is required')
+    .max(100, 'Name must be less than 100 characters'),
   email: z.string().email('Invalid email address'),
 })
 
 // Password change schema
-const passwordSchema = z.object({
-  currentPassword: z.string().min(1, 'Current password is required'),
-  newPassword: z.string()
-    .min(8, 'Password must be at least 8 characters')
-    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Password must contain at least one uppercase letter, one lowercase letter, and one number'),
-  confirmPassword: z.string().min(1, 'Please confirm your password'),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-})
+const passwordSchema = z
+  .object({
+    currentPassword: z.string().min(1, 'Current password is required'),
+    newPassword: z
+      .string()
+      .min(8, 'Password must be at least 8 characters')
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+        'Password must contain at least one uppercase letter, one lowercase letter, and one number'
+      ),
+    confirmPassword: z.string().min(1, 'Please confirm your password'),
+  })
+  .refine(data => data.newPassword === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  })
 
 type ProfileFormData = z.infer<typeof profileSchema>
 type PasswordFormData = z.infer<typeof passwordSchema>
@@ -46,15 +68,17 @@ interface User {
 interface ProfileSettingsProps {
   user: User
   onProfileUpdate?: (data: ProfileFormData) => Promise<void>
-  onPasswordChange?: (data: Omit<PasswordFormData, 'confirmPassword'>) => Promise<void>
+  onPasswordChange?: (
+    data: Omit<PasswordFormData, 'confirmPassword'>
+  ) => Promise<void>
   onAvatarUpload?: (file: File) => Promise<string>
 }
 
-export function ProfileSettings({ 
-  user, 
-  onProfileUpdate, 
-  onPasswordChange, 
-  onAvatarUpload 
+export function ProfileSettings({
+  user,
+  onProfileUpdate,
+  onPasswordChange,
+  onAvatarUpload,
 }: ProfileSettingsProps) {
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false)
   const [isChangingPassword, setIsChangingPassword] = useState(false)
@@ -114,7 +138,9 @@ export function ProfileSettings({
     }
   }
 
-  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0]
     if (!file || !onAvatarUpload) return
 
@@ -207,7 +233,10 @@ export function ProfileSettings({
 
           {/* Profile Form */}
           <Form {...profileForm}>
-            <form onSubmit={profileForm.handleSubmit(handleProfileSubmit)} className="space-y-4">
+            <form
+              onSubmit={profileForm.handleSubmit(handleProfileSubmit)}
+              className="space-y-4"
+            >
               <FormField
                 control={profileForm.control}
                 name="name"
@@ -229,10 +258,10 @@ export function ProfileSettings({
                   <FormItem>
                     <FormLabel>Email Address</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="email" 
-                        placeholder="Enter your email address" 
-                        {...field} 
+                      <Input
+                        type="email"
+                        placeholder="Enter your email address"
+                        {...field}
                       />
                     </FormControl>
                     <FormMessage />
@@ -241,8 +270,8 @@ export function ProfileSettings({
               />
 
               <div className="flex justify-end">
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   disabled={isUpdatingProfile || !profileForm.formState.isDirty}
                 >
                   <Save className="h-4 w-4 mr-2" />
@@ -267,7 +296,10 @@ export function ProfileSettings({
         </CardHeader>
         <CardContent>
           <Form {...passwordForm}>
-            <form onSubmit={passwordForm.handleSubmit(handlePasswordSubmit)} className="space-y-4">
+            <form
+              onSubmit={passwordForm.handleSubmit(handlePasswordSubmit)}
+              className="space-y-4"
+            >
               <FormField
                 control={passwordForm.control}
                 name="currentPassword"
@@ -275,10 +307,10 @@ export function ProfileSettings({
                   <FormItem>
                     <FormLabel>Current Password</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="password" 
-                        placeholder="Enter your current password" 
-                        {...field} 
+                      <Input
+                        type="password"
+                        placeholder="Enter your current password"
+                        {...field}
                       />
                     </FormControl>
                     <FormMessage />
@@ -293,10 +325,10 @@ export function ProfileSettings({
                   <FormItem>
                     <FormLabel>New Password</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="password" 
-                        placeholder="Enter your new password" 
-                        {...field} 
+                      <Input
+                        type="password"
+                        placeholder="Enter your new password"
+                        {...field}
                       />
                     </FormControl>
                     <FormMessage />
@@ -311,10 +343,10 @@ export function ProfileSettings({
                   <FormItem>
                     <FormLabel>Confirm New Password</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="password" 
-                        placeholder="Confirm your new password" 
-                        {...field} 
+                      <Input
+                        type="password"
+                        placeholder="Confirm your new password"
+                        {...field}
                       />
                     </FormControl>
                     <FormMessage />
@@ -323,9 +355,11 @@ export function ProfileSettings({
               />
 
               <div className="flex justify-end">
-                <Button 
-                  type="submit" 
-                  disabled={isChangingPassword || !passwordForm.formState.isDirty}
+                <Button
+                  type="submit"
+                  disabled={
+                    isChangingPassword || !passwordForm.formState.isDirty
+                  }
                 >
                   <Lock className="h-4 w-4 mr-2" />
                   {isChangingPassword ? 'Changing...' : 'Change Password'}

@@ -20,18 +20,18 @@ import {
   CardDescription,
 } from '@/components/ui/card'
 import { DatePickerWithRange } from '@/components/analytics/date-range-picker'
-import { 
+import {
   LazyAgentPerformanceTableWithSuspense,
   LazyErrorPatternsChartWithSuspense,
-  LazyExportDialogWithSuspense
+  LazyExportDialogWithSuspense,
 } from '@/components/analytics/lazy-components'
 import { ErrorBoundary } from '@/components/error-boundary'
-import { 
-  BarChart3, 
-  Download, 
-  RefreshCw, 
-  AlertTriangle, 
-  Wifi, 
+import {
+  BarChart3,
+  Download,
+  RefreshCw,
+  AlertTriangle,
+  Wifi,
   WifiOff,
   Clock,
   AlertCircle,
@@ -42,7 +42,7 @@ import {
   TrendingUp,
   Target,
   Zap,
-  PieChart as PieChartIcon
+  PieChart as PieChartIcon,
 } from 'lucide-react'
 import { DateRange } from 'react-day-picker'
 import { AnalyticsData } from '@/services/analytics'
@@ -78,154 +78,178 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
   const [isOnline, setIsOnline] = useState(true)
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
   const [retryTimeout, setRetryTimeout] = useState<NodeJS.Timeout | null>(null)
-  
+
   const abortControllerRef = useRef<AbortController | null>(null)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
-  const fetchAnalyticsData = useCallback(async (range?: DateRange, isRetry = false) => {
-    try {
-      // Cancel any existing request
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort()
-      }
-      
-      // Create new abort controller
-      abortControllerRef.current = new AbortController()
-      
-      if (!isRetry) {
-        setLoading(true)
-      }
-      setError(null)
-
-      const params = new URLSearchParams()
-      if (range?.from) {
-        params.append('startDate', range.from.toISOString())
-      }
-      if (range?.to) {
-        params.append('endDate', range.to.toISOString())
-      }
-
-      const response = await fetch(`/api/analytics?${params}`, {
-        signal: abortControllerRef.current.signal,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-
-      if (!response.ok) {
-        let errorMessage = `HTTP ${response.status}: ${response.statusText}`
-        let errorCode = 'HTTP_ERROR'
-        
-        try {
-          const errorData = await response.json()
-          if (errorData.error) {
-            errorMessage = errorData.error.message || errorMessage
-            errorCode = errorData.error.code || errorCode
-          }
-        } catch {
-          // If we can't parse the error response, use the default message
+  const fetchAnalyticsData = useCallback(
+    async (range?: DateRange, isRetry = false) => {
+      try {
+        // Cancel any existing request
+        if (abortControllerRef.current) {
+          abortControllerRef.current.abort()
         }
-        
-        throw new Error(errorMessage)
-      }
 
-      const result = await response.json()
+        // Create new abort controller
+        abortControllerRef.current = new AbortController()
 
-      if (!result.success) {
-        throw new Error(
-          result.error?.message || 'Failed to fetch analytics data'
-        )
-      }
+        if (!isRetry) {
+          setLoading(true)
+        }
+        setError(null)
 
-      setData(result.data)
-      setLastUpdated(new Date())
-      setIsOnline(true)
-      
-      // Clear any retry timeout
-      if (retryTimeout) {
-        clearTimeout(retryTimeout)
-        setRetryTimeout(null)
-      }
-      
-      if (isRetry) {
-        toast.success('Analytics data refreshed successfully')
-      }
-      
-    } catch (err) {
-      if (err instanceof Error && err.name === 'AbortError') {
-        // Request was cancelled, don't show error
-        return
-      }
-      
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred'
-      const currentError = error || { message: '', code: '', timestamp: '', retryCount: 0 }
-      
-      const newError: ErrorState = {
-        message: errorMessage,
-        code: errorMessage.includes('HTTP') ? 'HTTP_ERROR' : 'NETWORK_ERROR',
-        timestamp: new Date().toISOString(),
-        retryCount: isRetry ? currentError.retryCount + 1 : 0
-      }
-      
-      setError(newError)
-      setIsOnline(false)
-      
-      // Show different toast messages based on error type
-      if (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError')) {
-        toast.error('Network connection error', {
-          description: 'Please check your internet connection and try again.',
+        const params = new URLSearchParams()
+        if (range?.from) {
+          params.append('startDate', range.from.toISOString())
+        }
+        if (range?.to) {
+          params.append('endDate', range.to.toISOString())
+        }
+
+        const response = await fetch(`/api/analytics?${params}`, {
+          signal: abortControllerRef.current.signal,
+          headers: {
+            'Content-Type': 'application/json',
+          },
         })
-      } else if (errorMessage.includes('HTTP 5')) {
-        toast.error('Server error', {
-          description: 'The server is experiencing issues. Please try again later.',
-        })
-      } else {
-        toast.error('Failed to load analytics data', {
-          description: errorMessage,
-        })
+
+        if (!response.ok) {
+          let errorMessage = `HTTP ${response.status}: ${response.statusText}`
+          let errorCode = 'HTTP_ERROR'
+
+          try {
+            const errorData = await response.json()
+            if (errorData.error) {
+              errorMessage = errorData.error.message || errorMessage
+              errorCode = errorData.error.code || errorCode
+            }
+          } catch {
+            // If we can't parse the error response, use the default message
+          }
+
+          throw new Error(errorMessage)
+        }
+
+        const result = await response.json()
+
+        if (!result.success) {
+          throw new Error(
+            result.error?.message || 'Failed to fetch analytics data'
+          )
+        }
+
+        setData(result.data)
+        setLastUpdated(new Date())
+        setIsOnline(true)
+
+        // Clear any retry timeout
+        if (retryTimeout) {
+          clearTimeout(retryTimeout)
+          setRetryTimeout(null)
+        }
+
+        if (isRetry) {
+          toast.success('Analytics data refreshed successfully')
+        }
+      } catch (err) {
+        if (err instanceof Error && err.name === 'AbortError') {
+          // Request was cancelled, don't show error
+          return
+        }
+
+        const errorMessage =
+          err instanceof Error ? err.message : 'Unknown error occurred'
+        const currentError = error || {
+          message: '',
+          code: '',
+          timestamp: '',
+          retryCount: 0,
+        }
+
+        const newError: ErrorState = {
+          message: errorMessage,
+          code: errorMessage.includes('HTTP') ? 'HTTP_ERROR' : 'NETWORK_ERROR',
+          timestamp: new Date().toISOString(),
+          retryCount: isRetry ? currentError.retryCount + 1 : 0,
+        }
+
+        setError(newError)
+        setIsOnline(false)
+
+        // Show different toast messages based on error type
+        if (
+          errorMessage.includes('Failed to fetch') ||
+          errorMessage.includes('NetworkError')
+        ) {
+          toast.error('Network connection error', {
+            description: 'Please check your internet connection and try again.',
+          })
+        } else if (errorMessage.includes('HTTP 5')) {
+          toast.error('Server error', {
+            description:
+              'The server is experiencing issues. Please try again later.',
+          })
+        } else {
+          toast.error('Failed to load analytics data', {
+            description: errorMessage,
+          })
+        }
+
+        // Auto-retry for network errors (max 3 times)
+        if (
+          newError.retryCount < 3 &&
+          (errorMessage.includes('Failed to fetch') ||
+            errorMessage.includes('NetworkError'))
+        ) {
+          const retryDelay = Math.min(
+            1000 * Math.pow(2, newError.retryCount),
+            10000
+          ) // Exponential backoff, max 10s
+          const timeout = setTimeout(() => {
+            fetchAnalyticsData(range, true)
+          }, retryDelay)
+          setRetryTimeout(timeout)
+        }
+      } finally {
+        setLoading(false)
       }
-      
-      // Auto-retry for network errors (max 3 times)
-      if (newError.retryCount < 3 && (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError'))) {
-        const retryDelay = Math.min(1000 * Math.pow(2, newError.retryCount), 10000) // Exponential backoff, max 10s
-        const timeout = setTimeout(() => {
-          fetchAnalyticsData(range, true)
-        }, retryDelay)
-        setRetryTimeout(timeout)
-      }
-      
-    } finally {
-      setLoading(false)
-    }
-  }, [error, retryTimeout])
+    },
+    [error, retryTimeout]
+  )
 
   const handleRefresh = useCallback(() => {
     fetchAnalyticsData(dateRange)
   }, [fetchAnalyticsData, dateRange])
 
-  const handleDateRangeChange = useCallback((range: DateRange | undefined) => {
-    setDateRange(range)
-    fetchAnalyticsData(range)
-  }, [fetchAnalyticsData])
+  const handleDateRangeChange = useCallback(
+    (range: DateRange | undefined) => {
+      setDateRange(range)
+      fetchAnalyticsData(range)
+    },
+    [fetchAnalyticsData]
+  )
 
-  const handleRefreshIntervalChange = useCallback((interval: string) => {
-    setRefreshInterval(interval)
+  const handleRefreshIntervalChange = useCallback(
+    (interval: string) => {
+      setRefreshInterval(interval)
 
-    // Clear existing interval
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current)
-      intervalRef.current = null
-    }
+      // Clear existing interval
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+        intervalRef.current = null
+      }
 
-    // Set new interval
-    if (interval !== 'manual') {
-      const intervalMs =
-        interval === '30s' ? 30000 : interval === '1m' ? 60000 : 300000 // 5m
-      intervalRef.current = setInterval(() => {
-        fetchAnalyticsData(dateRange)
-      }, intervalMs)
-    }
-  }, [fetchAnalyticsData, dateRange])
+      // Set new interval
+      if (interval !== 'manual') {
+        const intervalMs =
+          interval === '30s' ? 30000 : interval === '1m' ? 60000 : 300000 // 5m
+        intervalRef.current = setInterval(() => {
+          fetchAnalyticsData(dateRange)
+        }, intervalMs)
+      }
+    },
+    [fetchAnalyticsData, dateRange]
+  )
 
   const handleRetry = useCallback(() => {
     if (retryTimeout) {
@@ -243,7 +267,7 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
         fetchAnalyticsData(dateRange)
       }
     }
-    
+
     const handleOffline = () => {
       setIsOnline(false)
     }
@@ -281,7 +305,8 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
           <p className="text-muted-foreground">
-            View comprehensive analytics and performance metrics for your AI agents.
+            View comprehensive analytics and performance metrics for your AI
+            agents.
           </p>
         </div>
         <div className="flex items-center space-x-2">
@@ -357,7 +382,8 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
           <p className="text-muted-foreground">
-            View comprehensive analytics and performance metrics for your AI agents.
+            View comprehensive analytics and performance metrics for your AI
+            agents.
           </p>
         </div>
         <div className="flex items-center space-x-2">
@@ -381,8 +407,11 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
         <AlertDescription className="flex items-center justify-between">
           <div>
             <div className="font-medium mb-1">
-              {error.code === 'NETWORK_ERROR' ? 'Connection Error' : 
-               error.code === 'HTTP_ERROR' ? 'Server Error' : 'Error Loading Analytics'}
+              {error.code === 'NETWORK_ERROR'
+                ? 'Connection Error'
+                : error.code === 'HTTP_ERROR'
+                  ? 'Server Error'
+                  : 'Error Loading Analytics'}
             </div>
             <div className="text-sm">{error.message}</div>
             {error.retryCount > 0 && (
@@ -401,11 +430,11 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
             Unable to Load Analytics Data
           </CardTitle>
           <CardDescription>
-            {error.code === 'NETWORK_ERROR' 
+            {error.code === 'NETWORK_ERROR'
               ? 'Please check your internet connection and try again.'
               : error.code === 'HTTP_ERROR'
-              ? 'The server is experiencing issues. Please try again later.'
-              : 'An unexpected error occurred while loading analytics data.'}
+                ? 'The server is experiencing issues. Please try again later.'
+                : 'An unexpected error occurred while loading analytics data.'}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -419,27 +448,29 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                 Occurred at: {new Date(error.timestamp).toLocaleString()}
               </div>
             </div>
-            
+
             <div className="flex items-center justify-center space-x-3">
-              <Button 
-                onClick={handleRetry} 
+              <Button
+                onClick={handleRetry}
                 disabled={loading}
                 className="bg-cubcen-primary hover:bg-cubcen-primary-hover"
               >
-                <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                <RefreshCw
+                  className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`}
+                />
                 {loading ? 'Retrying...' : 'Retry Now'}
               </Button>
-              
-              <Button 
-                variant="outline" 
+
+              <Button
+                variant="outline"
                 onClick={() => window.location.reload()}
               >
                 Reload Page
               </Button>
-              
+
               {error.code === 'NETWORK_ERROR' && (
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   onClick={() => {
                     // Test network connectivity
                     fetch('/api/health')
@@ -474,7 +505,8 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
             <p className="text-muted-foreground">
-              View comprehensive analytics and performance metrics for your AI agents.
+              View comprehensive analytics and performance metrics for your AI
+              agents.
             </p>
             {lastUpdated && (
               <div className="flex items-center text-xs text-muted-foreground mt-1">
@@ -491,7 +523,7 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                 Offline
               </Badge>
             )}
-            
+
             {/* Error indicator */}
             {error && data && (
               <Badge variant="secondary" className="flex items-center">
@@ -499,7 +531,7 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                 Partial Data
               </Badge>
             )}
-            
+
             <Select
               value={refreshInterval}
               onValueChange={handleRefreshIntervalChange}
@@ -515,7 +547,7 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                 <SelectItem value="5m">5 minutes</SelectItem>
               </SelectContent>
             </Select>
-            
+
             <Button
               onClick={handleRefresh}
               variant="outline"
@@ -527,7 +559,7 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
               />
               {loading ? 'Loading...' : 'Refresh'}
             </Button>
-            
+
             <Button
               onClick={() => setExportDialogOpen(true)}
               variant="outline"
@@ -546,16 +578,20 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription className="flex items-center justify-between">
               <div>
-                <div className="font-medium">Warning: Displaying cached data</div>
+                <div className="font-medium">
+                  Warning: Displaying cached data
+                </div>
                 <div className="text-sm">{error.message}</div>
               </div>
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={handleRetry}
                 disabled={loading}
               >
-                <RefreshCw className={`mr-1 h-3 w-3 ${loading ? 'animate-spin' : ''}`} />
+                <RefreshCw
+                  className={`mr-1 h-3 w-3 ${loading ? 'animate-spin' : ''}`}
+                />
                 Retry
               </Button>
             </AlertDescription>
@@ -587,30 +623,37 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
         </DashboardCard>
 
         {/* KPI Cards using new MetricCard components */}
-        <ErrorBoundary fallback={({ error, resetError }) => (
-          <DashboardCard
-            title="KPI Cards Error"
-            icon={AlertTriangle}
-            error={error.message}
-            actions={
-              <Button onClick={resetError} size="sm" variant="outline">
-                <RefreshCw className="mr-2 h-3 w-3" />
-                Retry
-              </Button>
-            }
-          />
-        )}>
+        <ErrorBoundary
+          fallback={({ error, resetError }) => (
+            <DashboardCard
+              title="KPI Cards Error"
+              icon={AlertTriangle}
+              error={error.message}
+              actions={
+                <Button onClick={resetError} size="sm" variant="outline">
+                  <RefreshCw className="mr-2 h-3 w-3" />
+                  Retry
+                </Button>
+              }
+            />
+          )}
+        >
           {data && (
             <DashboardGrid columns={6} className="mb-6">
               <MetricCard
                 title="Total Agents"
-                metrics={[{
-                  label: "Total",
-                  value: data.totalAgents,
-                  unit: "agents",
-                  trend: data.activeAgents > data.totalAgents * 0.8 ? 'up' : 'neutral',
-                  color: "text-blue-600"
-                }]}
+                metrics={[
+                  {
+                    label: 'Total',
+                    value: data.totalAgents,
+                    unit: 'agents',
+                    trend:
+                      data.activeAgents > data.totalAgents * 0.8
+                        ? 'up'
+                        : 'neutral',
+                    color: 'text-blue-600',
+                  },
+                ]}
                 icon={Users}
                 size="sm"
                 priority="high"
@@ -618,13 +661,15 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
               />
               <MetricCard
                 title="Active Agents"
-                metrics={[{
-                  label: "Active",
-                  value: data.activeAgents,
-                  unit: "running",
-                  trend: data.activeAgents > 0 ? 'up' : 'down',
-                  color: "text-cubcen-primary"
-                }]}
+                metrics={[
+                  {
+                    label: 'Active',
+                    value: data.activeAgents,
+                    unit: 'running',
+                    trend: data.activeAgents > 0 ? 'up' : 'down',
+                    color: 'text-cubcen-primary',
+                  },
+                ]}
                 icon={Zap}
                 size="sm"
                 priority="critical"
@@ -632,12 +677,14 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
               />
               <MetricCard
                 title="Total Tasks"
-                metrics={[{
-                  label: "All time",
-                  value: data.totalTasks,
-                  unit: "tasks",
-                  color: "text-purple-600"
-                }]}
+                metrics={[
+                  {
+                    label: 'All time',
+                    value: data.totalTasks,
+                    unit: 'tasks',
+                    color: 'text-purple-600',
+                  },
+                ]}
                 icon={Activity}
                 size="sm"
                 priority="medium"
@@ -645,13 +692,20 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
               />
               <MetricCard
                 title="Success Rate"
-                metrics={[{
-                  label: "Completed",
-                  value: `${data.successRate}%`,
-                  trend: data.successRate >= 90 ? 'up' : data.successRate >= 70 ? 'neutral' : 'down',
-                  trendValue: `${data.completedTasks} completed`,
-                  color: "text-green-600"
-                }]}
+                metrics={[
+                  {
+                    label: 'Completed',
+                    value: `${data.successRate}%`,
+                    trend:
+                      data.successRate >= 90
+                        ? 'up'
+                        : data.successRate >= 70
+                          ? 'neutral'
+                          : 'down',
+                    trendValue: `${data.completedTasks} completed`,
+                    color: 'text-green-600',
+                  },
+                ]}
                 icon={Target}
                 size="sm"
                 priority="critical"
@@ -659,13 +713,15 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
               />
               <MetricCard
                 title="Failed Tasks"
-                metrics={[{
-                  label: "Needs attention",
-                  value: data.failedTasks,
-                  unit: "failed",
-                  trend: data.failedTasks > 0 ? 'down' : 'neutral',
-                  color: "text-red-600"
-                }]}
+                metrics={[
+                  {
+                    label: 'Needs attention',
+                    value: data.failedTasks,
+                    unit: 'failed',
+                    trend: data.failedTasks > 0 ? 'down' : 'neutral',
+                    color: 'text-red-600',
+                  },
+                ]}
                 icon={XCircle}
                 size="sm"
                 priority="high"
@@ -673,13 +729,20 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
               />
               <MetricCard
                 title="Avg Response Time"
-                metrics={[{
-                  label: "Performance",
-                  value: data.averageResponseTime,
-                  unit: "ms",
-                  trend: data.averageResponseTime < 1000 ? 'up' : data.averageResponseTime < 3000 ? 'neutral' : 'down',
-                  color: "text-orange-600"
-                }]}
+                metrics={[
+                  {
+                    label: 'Performance',
+                    value: data.averageResponseTime,
+                    unit: 'ms',
+                    trend:
+                      data.averageResponseTime < 1000
+                        ? 'up'
+                        : data.averageResponseTime < 3000
+                          ? 'neutral'
+                          : 'down',
+                    color: 'text-orange-600',
+                  },
+                ]}
                 icon={Clock}
                 size="sm"
                 priority="medium"
@@ -690,19 +753,21 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
         </ErrorBoundary>
 
         {/* Performance Charts using new ChartCard components */}
-        <ErrorBoundary fallback={({ error, resetError }) => (
-          <DashboardCard
-            title="Charts Error"
-            icon={AlertTriangle}
-            error={error.message}
-            actions={
-              <Button onClick={resetError} size="sm" variant="outline">
-                <RefreshCw className="mr-2 h-3 w-3" />
-                Retry
-              </Button>
-            }
-          />
-        )}>
+        <ErrorBoundary
+          fallback={({ error, resetError }) => (
+            <DashboardCard
+              title="Charts Error"
+              icon={AlertTriangle}
+              error={error.message}
+              actions={
+                <Button onClick={resetError} size="sm" variant="outline">
+                  <RefreshCw className="mr-2 h-3 w-3" />
+                  Retry
+                </Button>
+              }
+            />
+          )}
+        >
           {data && (
             <DashboardGrid className="space-y-6">
               {/* Daily Task Trends */}
@@ -711,7 +776,9 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                 subtitle="Daily completed and failed tasks over the selected period"
                 icon={TrendingUp}
                 chartType="area"
-                data={DashboardDataTransforms.transformDailyTaskTrends(data.dailyTaskTrends)}
+                data={DashboardDataTransforms.transformDailyTaskTrends(
+                  data.dailyTaskTrends
+                )}
                 chartConfig={{
                   colors: {
                     primary: '#4CAF50',
@@ -719,15 +786,21 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                     accent: '#3F51B5',
                     success: '#4CAF50',
                     warning: '#FF9800',
-                    error: '#F44336'
+                    error: '#F44336',
                   },
                   legend: { show: true, position: 'bottom', align: 'center' },
                   tooltip: { show: true },
                   responsive: {
                     breakpoints: {
-                      mobile: { legend: { show: true, position: 'top', align: 'center' } }
-                    }
-                  }
+                      mobile: {
+                        legend: {
+                          show: true,
+                          position: 'top',
+                          align: 'center',
+                        },
+                      },
+                    },
+                  },
                 }}
                 size="lg"
                 priority="high"
@@ -742,7 +815,9 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                   subtitle="Breakdown of tasks by current status"
                   icon={PieChartIcon}
                   chartType="pie"
-                  data={DashboardDataTransforms.transformTasksByStatus(data.tasksByStatus)}
+                  data={DashboardDataTransforms.transformTasksByStatus(
+                    data.tasksByStatus
+                  )}
                   chartConfig={{
                     colors: {
                       primary: '#4CAF50',
@@ -750,9 +825,9 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                       accent: '#FF9800',
                       success: '#4CAF50',
                       warning: '#FF9800',
-                      error: '#F44336'
+                      error: '#F44336',
                     },
-                    legend: { show: true, position: 'bottom', align: 'center' }
+                    legend: { show: true, position: 'bottom', align: 'center' },
                   }}
                   size="md"
                   priority="medium"
@@ -766,7 +841,9 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                   subtitle="Tasks organized by priority level"
                   icon={BarChart3}
                   chartType="bar"
-                  data={DashboardDataTransforms.transformTasksByPriority(data.tasksByPriority)}
+                  data={DashboardDataTransforms.transformTasksByPriority(
+                    data.tasksByPriority
+                  )}
                   chartConfig={{
                     colors: {
                       primary: '#3F51B5',
@@ -774,9 +851,13 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                       accent: '#FF6B35',
                       success: '#4CAF50',
                       warning: '#FF9800',
-                      error: '#F44336'
+                      error: '#F44336',
                     },
-                    legend: { show: false }
+                    legend: {
+                      show: false,
+                      position: 'bottom',
+                      align: 'center',
+                    },
                   }}
                   size="md"
                   priority="medium"
@@ -790,7 +871,9 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                   subtitle="Agents distributed across platforms"
                   icon={Activity}
                   chartType="bar"
-                  data={DashboardDataTransforms.transformPlatformDistribution(data.platformDistribution)}
+                  data={DashboardDataTransforms.transformPlatformDistribution(
+                    data.platformDistribution
+                  )}
                   chartConfig={{
                     colors: {
                       primary: '#B19ADA',
@@ -798,9 +881,13 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                       accent: '#FF6B35',
                       success: '#4CAF50',
                       warning: '#FF9800',
-                      error: '#F44336'
+                      error: '#F44336',
                     },
-                    legend: { show: false }
+                    legend: {
+                      show: false,
+                      position: 'bottom',
+                      align: 'center',
+                    },
                   }}
                   size="md"
                   priority="low"
@@ -831,7 +918,8 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
                               {agent.agentName}
                             </div>
                             <div className="text-xs text-muted-foreground">
-                              {agent.totalTasks} tasks • {agent.averageResponseTime}ms avg
+                              {agent.totalTasks} tasks •{' '}
+                              {agent.averageResponseTime}ms avg
                             </div>
                           </div>
                           <div className="flex items-center space-x-2">
@@ -863,40 +951,50 @@ export function AnalyticsDashboard({ className }: AnalyticsDashboardProps) {
         </ErrorBoundary>
 
         {/* Agent Performance Table */}
-        <ErrorBoundary fallback={({ error, resetError }) => (
-          <DashboardCard
-            title="Agent Performance Error"
-            icon={AlertTriangle}
-            error={error.message}
-            actions={
-              <Button onClick={resetError} size="sm" variant="outline">
-                <RefreshCw className="mr-2 h-3 w-3" />
-                Retry
-              </Button>
-            }
-          />
-        )}>
+        <ErrorBoundary
+          fallback={({ error, resetError }) => (
+            <DashboardCard
+              title="Agent Performance Error"
+              icon={AlertTriangle}
+              error={error.message}
+              actions={
+                <Button onClick={resetError} size="sm" variant="outline">
+                  <RefreshCw className="mr-2 h-3 w-3" />
+                  Retry
+                </Button>
+              }
+            />
+          )}
+        >
           {data && (
-            <LazyAgentPerformanceTableWithSuspense data={data.agentPerformance} loading={loading} />
+            <LazyAgentPerformanceTableWithSuspense
+              data={data.agentPerformance}
+              loading={loading}
+            />
           )}
         </ErrorBoundary>
 
         {/* Error Patterns */}
-        <ErrorBoundary fallback={({ error, resetError }) => (
-          <DashboardCard
-            title="Error Patterns Error"
-            icon={AlertTriangle}
-            error={error.message}
-            actions={
-              <Button onClick={resetError} size="sm" variant="outline">
-                <RefreshCw className="mr-2 h-3 w-3" />
-                Retry
-              </Button>
-            }
-          />
-        )}>
+        <ErrorBoundary
+          fallback={({ error, resetError }) => (
+            <DashboardCard
+              title="Error Patterns Error"
+              icon={AlertTriangle}
+              error={error.message}
+              actions={
+                <Button onClick={resetError} size="sm" variant="outline">
+                  <RefreshCw className="mr-2 h-3 w-3" />
+                  Retry
+                </Button>
+              }
+            />
+          )}
+        >
           {data && (
-            <LazyErrorPatternsChartWithSuspense data={data.errorPatterns} loading={loading} />
+            <LazyErrorPatternsChartWithSuspense
+              data={data.errorPatterns}
+              loading={loading}
+            />
           )}
         </ErrorBoundary>
 

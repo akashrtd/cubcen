@@ -9,10 +9,10 @@ const mockPlatform = {
   authConfig: {
     type: 'api_key' as const,
     credentials: {
-      apiKey: 'test-api-key'
-    }
+      apiKey: 'test-api-key',
+    },
   },
-  status: 'connected' as const
+  status: 'connected' as const,
 }
 
 const mockConnectionTestResult = {
@@ -20,7 +20,7 @@ const mockConnectionTestResult = {
   responseTime: 200,
   version: '1.0.0',
   capabilities: ['workflows', 'executions'],
-  agentCount: 5
+  agentCount: 5,
 }
 
 describe('PlatformForm', () => {
@@ -60,16 +60,13 @@ describe('PlatformForm', () => {
 
     expect(screen.getByText('Edit Platform')).toBeInTheDocument()
     expect(screen.getByDisplayValue('Test Platform')).toBeInTheDocument()
-    expect(screen.getByDisplayValue('https://n8n.example.com')).toBeInTheDocument()
+    expect(
+      screen.getByDisplayValue('https://n8n.example.com')
+    ).toBeInTheDocument()
   })
 
   it('validates required fields', async () => {
-    render(
-      <PlatformForm
-        onSave={mockOnSave}
-        onCancel={mockOnCancel}
-      />
-    )
+    render(<PlatformForm onSave={mockOnSave} onCancel={mockOnCancel} />)
 
     const submitButton = screen.getByRole('button', { name: /add platform/i })
     fireEvent.click(submitButton)
@@ -84,12 +81,7 @@ describe('PlatformForm', () => {
   })
 
   it('validates URL format', async () => {
-    render(
-      <PlatformForm
-        onSave={mockOnSave}
-        onCancel={mockOnCancel}
-      />
-    )
+    render(<PlatformForm onSave={mockOnSave} onCancel={mockOnCancel} />)
 
     const nameInput = screen.getByLabelText('Platform Name')
     const urlInput = screen.getByLabelText('Base URL')
@@ -108,12 +100,7 @@ describe('PlatformForm', () => {
   })
 
   it('handles form submission with valid data', async () => {
-    render(
-      <PlatformForm
-        onSave={mockOnSave}
-        onCancel={mockOnCancel}
-      />
-    )
+    render(<PlatformForm onSave={mockOnSave} onCancel={mockOnCancel} />)
 
     const nameInput = screen.getByLabelText('Platform Name')
     const urlInput = screen.getByLabelText('Base URL')
@@ -121,7 +108,9 @@ describe('PlatformForm', () => {
     const submitButton = screen.getByRole('button', { name: /add platform/i })
 
     fireEvent.change(nameInput, { target: { value: 'Test Platform' } })
-    fireEvent.change(urlInput, { target: { value: 'https://test.example.com' } })
+    fireEvent.change(urlInput, {
+      target: { value: 'https://test.example.com' },
+    })
     fireEvent.change(apiKeyInput, { target: { value: 'test-api-key' } })
     fireEvent.click(submitButton)
 
@@ -133,20 +122,15 @@ describe('PlatformForm', () => {
         authConfig: {
           type: 'api_key',
           credentials: {
-            apiKey: 'test-api-key'
-          }
-        }
+            apiKey: 'test-api-key',
+          },
+        },
       })
     })
   })
 
   it('handles platform type change', async () => {
-    render(
-      <PlatformForm
-        onSave={mockOnSave}
-        onCancel={mockOnCancel}
-      />
-    )
+    render(<PlatformForm onSave={mockOnSave} onCancel={mockOnCancel} />)
 
     // Open platform type dropdown
     const typeSelect = screen.getByLabelText('Platform Type')
@@ -161,12 +145,7 @@ describe('PlatformForm', () => {
   })
 
   it('handles authentication type change', async () => {
-    render(
-      <PlatformForm
-        onSave={mockOnSave}
-        onCancel={mockOnCancel}
-      />
-    )
+    render(<PlatformForm onSave={mockOnSave} onCancel={mockOnCancel} />)
 
     // Open auth type dropdown
     const authSelect = screen.getByLabelText('Authentication Type')
@@ -185,12 +164,7 @@ describe('PlatformForm', () => {
   })
 
   it('toggles password visibility', () => {
-    render(
-      <PlatformForm
-        onSave={mockOnSave}
-        onCancel={mockOnCancel}
-      />
-    )
+    render(<PlatformForm onSave={mockOnSave} onCancel={mockOnCancel} />)
 
     const apiKeyInput = screen.getByLabelText('API Key')
     const toggleButton = screen.getByLabelText('Show password')
@@ -225,7 +199,9 @@ describe('PlatformForm', () => {
     const apiKeyInput = screen.getByLabelText('API Key')
 
     fireEvent.change(nameInput, { target: { value: 'Test Platform' } })
-    fireEvent.change(urlInput, { target: { value: 'https://test.example.com' } })
+    fireEvent.change(urlInput, {
+      target: { value: 'https://test.example.com' },
+    })
     fireEvent.change(apiKeyInput, { target: { value: 'test-api-key' } })
 
     // Click test connection
@@ -250,16 +226,16 @@ describe('PlatformForm', () => {
       authConfig: {
         type: 'api_key',
         credentials: {
-          apiKey: 'test-api-key'
-        }
-      }
+          apiKey: 'test-api-key',
+        },
+      },
     })
   })
 
   it('handles connection test failure', async () => {
     const errorResult = {
       success: false,
-      error: 'Invalid API key'
+      error: 'Invalid API key',
     }
     mockOnTestConnection.mockResolvedValue(errorResult)
 
@@ -277,7 +253,9 @@ describe('PlatformForm', () => {
     const apiKeyInput = screen.getByLabelText('API Key')
 
     fireEvent.change(nameInput, { target: { value: 'Test Platform' } })
-    fireEvent.change(urlInput, { target: { value: 'https://test.example.com' } })
+    fireEvent.change(urlInput, {
+      target: { value: 'https://test.example.com' },
+    })
     fireEvent.change(apiKeyInput, { target: { value: 'invalid-key' } })
 
     // Click test connection
@@ -311,12 +289,7 @@ describe('PlatformForm', () => {
   })
 
   it('calls onCancel when cancel button is clicked', () => {
-    render(
-      <PlatformForm
-        onSave={mockOnSave}
-        onCancel={mockOnCancel}
-      />
-    )
+    render(<PlatformForm onSave={mockOnSave} onCancel={mockOnCancel} />)
 
     const cancelButton = screen.getByRole('button', { name: /cancel/i })
     fireEvent.click(cancelButton)
@@ -325,12 +298,7 @@ describe('PlatformForm', () => {
   })
 
   it('clears credentials when auth type changes', async () => {
-    render(
-      <PlatformForm
-        onSave={mockOnSave}
-        onCancel={mockOnCancel}
-      />
-    )
+    render(<PlatformForm onSave={mockOnSave} onCancel={mockOnCancel} />)
 
     // Fill API key
     const apiKeyInput = screen.getByLabelText('API Key')
@@ -339,7 +307,7 @@ describe('PlatformForm', () => {
     // Change auth type to OAuth
     const authSelect = screen.getByLabelText('Authentication Type')
     fireEvent.click(authSelect)
-    
+
     const oauthOption = screen.getByText('OAuth 2.0')
     fireEvent.click(oauthOption)
 
@@ -353,17 +321,12 @@ describe('PlatformForm', () => {
   })
 
   it('shows different credential fields for different auth types', async () => {
-    render(
-      <PlatformForm
-        onSave={mockOnSave}
-        onCancel={mockOnCancel}
-      />
-    )
+    render(<PlatformForm onSave={mockOnSave} onCancel={mockOnCancel} />)
 
     // Test Basic Auth
     const authSelect = screen.getByLabelText('Authentication Type')
     fireEvent.click(authSelect)
-    
+
     const basicOption = screen.getByText('Basic Auth')
     fireEvent.click(basicOption)
 

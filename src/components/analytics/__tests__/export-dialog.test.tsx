@@ -20,7 +20,7 @@ const mockAnchorElement = {
   click: mockClick,
 }
 
-jest.spyOn(document, 'createElement').mockImplementation((tagName) => {
+jest.spyOn(document, 'createElement').mockImplementation(tagName => {
   if (tagName === 'a') {
     return mockAnchorElement as any
   }
@@ -76,7 +76,9 @@ describe('ExportDialog', () => {
     )
 
     expect(screen.getByText('Export Analytics Data')).toBeInTheDocument()
-    expect(screen.getByText('Choose what data to export and in which format.')).toBeInTheDocument()
+    expect(
+      screen.getByText('Choose what data to export and in which format.')
+    ).toBeInTheDocument()
   })
 
   it('does not render when open is false', () => {
@@ -274,8 +276,10 @@ describe('ExportDialog', () => {
 
     // Select multiple data types
     const overviewCheckbox = screen.getByRole('checkbox', { name: /overview/i })
-    const agentsCheckbox = screen.getByRole('checkbox', { name: /agent performance/i })
-    
+    const agentsCheckbox = screen.getByRole('checkbox', {
+      name: /agent performance/i,
+    })
+
     fireEvent.click(overviewCheckbox)
     fireEvent.click(agentsCheckbox)
 

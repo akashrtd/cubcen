@@ -35,36 +35,39 @@ export function MobileNavigation({
 
   // Update active item based on current pathname
   useEffect(() => {
-    const currentItem = items.find(item => 
-      pathname === item.href || pathname.startsWith(item.href + '/')
+    const currentItem = items.find(
+      item => pathname === item.href || pathname.startsWith(item.href + '/')
     )
     if (currentItem) {
       setActiveItem(currentItem.id)
     }
   }, [pathname, items])
 
-  const handleItemClick = useCallback((item: MobileNavigationItem) => {
-    if (item.disabled || isTransitioning) return
-    
-    setIsTransitioning(true)
-    setActiveItem(item.id)
-    onItemClick?.(item)
-    
-    if (item.href) {
-      router.push(item.href)
-      // Reset transition state after navigation
-      setTimeout(() => setIsTransitioning(false), 300)
-    } else {
-      setIsTransitioning(false)
-    }
-  }, [router, onItemClick, isTransitioning])
+  const handleItemClick = useCallback(
+    (item: MobileNavigationItem) => {
+      if (item.disabled || isTransitioning) return
+
+      setIsTransitioning(true)
+      setActiveItem(item.id)
+      onItemClick?.(item)
+
+      if (item.href) {
+        router.push(item.href)
+        // Reset transition state after navigation
+        setTimeout(() => setIsTransitioning(false), 300)
+      } else {
+        setIsTransitioning(false)
+      }
+    },
+    [router, onItemClick, isTransitioning]
+  )
 
   // Handle swipe navigation between sections
   const handleSwipeLeft = useCallback(() => {
     const currentIndex = items.findIndex(item => item.id === activeItem)
     const nextIndex = (currentIndex + 1) % items.length
     const nextItem = items[nextIndex]
-    
+
     if (nextItem && !nextItem.disabled) {
       handleItemClick(nextItem)
     }
@@ -74,7 +77,7 @@ export function MobileNavigation({
     const currentIndex = items.findIndex(item => item.id === activeItem)
     const prevIndex = currentIndex === 0 ? items.length - 1 : currentIndex - 1
     const prevItem = items[prevIndex]
-    
+
     if (prevItem && !prevItem.disabled) {
       handleItemClick(prevItem)
     }
@@ -167,7 +170,7 @@ export function MobileNavigation({
                     'opacity-50',
                     'cursor-not-allowed',
                     'hover:bg-transparent',
-                    'hover:text-dashboard-text-secondary'
+                    'hover:text-dashboard-text-secondary',
                   ],
                   // Focus styles
                   'focus:outline-none',
@@ -186,7 +189,7 @@ export function MobileNavigation({
               >
                 {/* Icon */}
                 <div className="relative">
-                  <Icon 
+                  <Icon
                     className={cn(
                       'w-5 h-5',
                       'transition-all',
@@ -196,7 +199,7 @@ export function MobileNavigation({
                     )}
                     aria-hidden="true"
                   />
-                  
+
                   {/* Badge */}
                   {item.badge && (
                     <span
@@ -220,11 +223,13 @@ export function MobileNavigation({
                       )}
                       aria-label={`${item.badge} notifications`}
                     >
-                      {typeof item.badge === 'number' && item.badge > 99 ? '99+' : item.badge}
+                      {typeof item.badge === 'number' && item.badge > 99
+                        ? '99+'
+                        : item.badge}
                     </span>
                   )}
                 </div>
-                
+
                 {/* Label */}
                 <span
                   className={cn(
@@ -246,7 +251,9 @@ export function MobileNavigation({
                   id={`nav-item-${item.id}-description`}
                   className="sr-only"
                 >
-                  {isActive ? `Current page: ${item.label}` : `Navigate to ${item.label}`}
+                  {isActive
+                    ? `Current page: ${item.label}`
+                    : `Navigate to ${item.label}`}
                   {item.badge ? `. ${item.badge} notifications` : ''}
                 </span>
               </button>
@@ -278,16 +285,15 @@ export function MobileNavigation({
         </div>
 
         {/* Swipe indicator */}
-        <div 
+        <div
           className="absolute top-1 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-dashboard-text-disabled/30 rounded-full"
           aria-hidden="true"
         />
 
         {/* Navigation instructions for screen readers */}
         <div className="sr-only" aria-live="polite">
-          Swipe left or right to navigate between sections. Current section: {
-            items.find(item => item.id === activeItem)?.label || 'Unknown'
-          }
+          Swipe left or right to navigate between sections. Current section:{' '}
+          {items.find(item => item.id === activeItem)?.label || 'Unknown'}
         </div>
       </nav>
     </TouchInteraction>
@@ -301,9 +307,24 @@ export const defaultMobileNavItems: MobileNavigationItem[] = [
     label: 'Dashboard',
     href: '/dashboard',
     icon: ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5a2 2 0 012-2h4a2 2 0 012 2v6H8V5z" />
+      <svg
+        className={className}
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"
+        />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M8 5a2 2 0 012-2h4a2 2 0 012 2v6H8V5z"
+        />
       </svg>
     ),
   },
@@ -312,8 +333,18 @@ export const defaultMobileNavItems: MobileNavigationItem[] = [
     label: 'Agents',
     href: '/dashboard/agents',
     icon: ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      <svg
+        className={className}
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
       </svg>
     ),
   },
@@ -322,8 +353,18 @@ export const defaultMobileNavItems: MobileNavigationItem[] = [
     label: 'Tasks',
     href: '/dashboard/tasks',
     icon: ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+      <svg
+        className={className}
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+        />
       </svg>
     ),
   },
@@ -332,8 +373,18 @@ export const defaultMobileNavItems: MobileNavigationItem[] = [
     label: 'Analytics',
     href: '/dashboard/analytics',
     icon: ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+      <svg
+        className={className}
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+        />
       </svg>
     ),
   },
@@ -342,9 +393,24 @@ export const defaultMobileNavItems: MobileNavigationItem[] = [
     label: 'Settings',
     href: '/dashboard/settings',
     icon: ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+      <svg
+        className={className}
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+        />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+        />
       </svg>
     ),
   },
@@ -358,20 +424,20 @@ export function useMobileNavigation() {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY
-      
+
       // Show navigation when scrolling up, hide when scrolling down
       if (currentScrollY < lastScrollY || currentScrollY < 100) {
         setIsVisible(true)
       } else {
         setIsVisible(false)
       }
-      
+
       setLastScrollY(currentScrollY)
     }
 
     // Show navigation by default
     setIsVisible(true)
-    
+
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [lastScrollY])

@@ -7,14 +7,17 @@ import { FilterProvider } from '../filter-context'
 // Mock Next.js navigation
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(() => ({ replace: jest.fn() })),
-  useSearchParams: jest.fn(() => ({ get: jest.fn(), toString: jest.fn(() => '') })),
+  useSearchParams: jest.fn(() => ({
+    get: jest.fn(),
+    toString: jest.fn(() => ''),
+  })),
 }))
 
 // Mock DashboardCard
 jest.mock('../cards/dashboard-card', () => ({
   DashboardCard: ({ onClick, onFilter, interactive, title, ...props }: any) => (
-    <div 
-      data-testid="dashboard-card" 
+    <div
+      data-testid="dashboard-card"
       onClick={onClick}
       role={interactive ? 'button' : undefined}
       {...props}
@@ -22,21 +25,19 @@ jest.mock('../cards/dashboard-card', () => ({
       <div data-testid="card-title">{title}</div>
       <button
         data-testid="trigger-filter"
-        onClick={() => onFilter?.({ type: 'string', value: 'test', operator: 'equals' })}
+        onClick={() =>
+          onFilter?.({ type: 'string', value: 'test', operator: 'equals' })
+        }
       >
         Trigger Filter
       </button>
     </div>
-  )
+  ),
 }))
 
 // Test wrapper with FilterProvider
 function TestWrapper({ children, ...props }: any) {
-  return (
-    <FilterProvider {...props}>
-      {children}
-    </FilterProvider>
-  )
+  return <FilterProvider {...props}>{children}</FilterProvider>
 }
 
 describe('FilterableCard', () => {
@@ -63,10 +64,7 @@ describe('FilterableCard', () => {
   it('makes card interactive when filtering is enabled', () => {
     render(
       <TestWrapper>
-        <FilterableCard
-          title="Test Card"
-          enableFiltering
-        />
+        <FilterableCard title="Test Card" enableFiltering />
       </TestWrapper>
     )
 
@@ -78,7 +76,7 @@ describe('FilterableCard', () => {
     const filterData = {
       category: 'test-category',
       status: 'active',
-      priority: 'high'
+      priority: 'high',
     }
 
     render(
@@ -105,7 +103,7 @@ describe('FilterableCard', () => {
         type: 'string' as const,
         value: 'custom-value',
         operator: 'equals' as const,
-      }
+      },
     }))
 
     render(
@@ -114,7 +112,7 @@ describe('FilterableCard', () => {
           title="Test Card"
           enableFiltering
           filterMappings={{
-            cardClick: customMapping
+            cardClick: customMapping,
           }}
         />
       </TestWrapper>
@@ -128,10 +126,7 @@ describe('FilterableCard', () => {
   it('falls back to title-based filtering when no filterData or mappings', async () => {
     render(
       <TestWrapper>
-        <FilterableCard
-          title="Fallback Card"
-          enableFiltering
-        />
+        <FilterableCard title="Fallback Card" enableFiltering />
       </TestWrapper>
     )
 
@@ -179,7 +174,7 @@ describe('FilterableCard', () => {
     expect(onFilter).toHaveBeenCalledWith({
       type: 'string',
       value: 'test',
-      operator: 'equals'
+      operator: 'equals',
     })
   })
 
@@ -211,7 +206,7 @@ describe('FilterableCard', () => {
       numberField: 42,
       booleanField: true,
       nullField: null,
-      undefinedField: undefined
+      undefinedField: undefined,
     }
 
     render(
@@ -259,9 +254,15 @@ describe('withCardFiltering HOC', () => {
   const user = userEvent.setup()
 
   // Mock component to wrap
-  const MockCard = ({ onClick, onFilter, interactive, title, ...props }: any) => (
-    <div 
-      data-testid="mock-card" 
+  const MockCard = ({
+    onClick,
+    onFilter,
+    interactive,
+    title,
+    ...props
+  }: any) => (
+    <div
+      data-testid="mock-card"
       onClick={onClick}
       role={interactive ? 'button' : undefined}
       {...props}
@@ -275,10 +276,7 @@ describe('withCardFiltering HOC', () => {
 
     render(
       <TestWrapper>
-        <FilterableMockCard
-          title="HOC Card"
-          enableFiltering
-        />
+        <FilterableMockCard title="HOC Card" enableFiltering />
       </TestWrapper>
     )
 
@@ -299,18 +297,15 @@ describe('withCardFiltering HOC', () => {
           type: 'string' as const,
           value: 'default-value',
           operator: 'equals' as const,
-        }
-      }))
+        },
+      })),
     }
 
     const FilterableMockCard = withCardFiltering(MockCard, defaultMappings)
 
     render(
       <TestWrapper>
-        <FilterableMockCard
-          title="HOC Card"
-          enableFiltering
-        />
+        <FilterableMockCard title="HOC Card" enableFiltering />
       </TestWrapper>
     )
 
@@ -321,11 +316,23 @@ describe('withCardFiltering HOC', () => {
 
   it('allows overriding default mappings', async () => {
     const defaultMappings = {
-      cardClick: jest.fn(() => ({ default: { type: 'string' as const, value: 'default', operator: 'equals' as const } }))
+      cardClick: jest.fn(() => ({
+        default: {
+          type: 'string' as const,
+          value: 'default',
+          operator: 'equals' as const,
+        },
+      })),
     }
 
     const overrideMappings = {
-      cardClick: jest.fn(() => ({ override: { type: 'string' as const, value: 'override', operator: 'equals' as const } }))
+      cardClick: jest.fn(() => ({
+        override: {
+          type: 'string' as const,
+          value: 'override',
+          operator: 'equals' as const,
+        },
+      })),
     }
 
     const FilterableMockCard = withCardFiltering(MockCard, defaultMappings)

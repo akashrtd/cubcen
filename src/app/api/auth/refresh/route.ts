@@ -11,12 +11,12 @@ export async function POST(request: NextRequest) {
 
     if (!refreshToken) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: { 
-            code: 'MISSING_TOKEN', 
-            message: 'Refresh token required' 
-          } 
+        {
+          success: false,
+          error: {
+            code: 'MISSING_TOKEN',
+            message: 'Refresh token required',
+          },
         },
         { status: 400 }
       )
@@ -32,12 +32,12 @@ export async function POST(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: { 
-            code: 'USER_NOT_FOUND', 
-            message: 'User not found' 
-          } 
+        {
+          success: false,
+          error: {
+            code: 'USER_NOT_FOUND',
+            message: 'User not found',
+          },
         },
         { status: 404 }
       )
@@ -51,16 +51,15 @@ export async function POST(request: NextRequest) {
       data: { tokens },
       message: 'Token refreshed successfully',
     })
-
   } catch (error) {
     console.error('Token refresh error:', error)
     return NextResponse.json(
-      { 
-        success: false, 
-        error: { 
-          code: 'INVALID_TOKEN', 
-          message: 'Invalid or expired refresh token' 
-        } 
+      {
+        success: false,
+        error: {
+          code: 'INVALID_TOKEN',
+          message: 'Invalid or expired refresh token',
+        },
       },
       { status: 401 }
     )

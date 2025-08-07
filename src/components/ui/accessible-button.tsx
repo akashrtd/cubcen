@@ -2,7 +2,11 @@ import * as React from 'react'
 import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
-import { AriaUtils, KeyboardNavigation, announceToScreenReader } from '@/lib/accessibility'
+import {
+  AriaUtils,
+  KeyboardNavigation,
+  announceToScreenReader,
+} from '@/lib/accessibility'
 
 const buttonVariants = cva(
   'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
@@ -46,7 +50,10 @@ export interface AccessibleButtonProps
   expanded?: boolean
 }
 
-const AccessibleButton = React.forwardRef<HTMLButtonElement, AccessibleButtonProps>(
+const AccessibleButton = React.forwardRef<
+  HTMLButtonElement,
+  AccessibleButtonProps
+>(
   (
     {
       className,
@@ -132,7 +139,15 @@ const AccessibleButton = React.forwardRef<HTMLButtonElement, AccessibleButtonPro
       if (labelledBy) {
         button.setAttribute('aria-labelledby', labelledBy)
       }
-    }, [pressed, expanded, loading, disabled, describedBy, labelledBy, combinedRef])
+    }, [
+      pressed,
+      expanded,
+      loading,
+      disabled,
+      describedBy,
+      labelledBy,
+      combinedRef,
+    ])
 
     const buttonContent = React.useMemo(() => {
       if (loading) {

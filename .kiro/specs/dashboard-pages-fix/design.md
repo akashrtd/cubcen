@@ -7,7 +7,9 @@ This design addresses the missing and non-functional dashboard pages in the Cubc
 ## Architecture
 
 ### Page Structure
+
 The dashboard pages follow the established Next.js App Router pattern:
+
 ```
 src/app/dashboard/
 ├── platforms/
@@ -21,13 +23,17 @@ src/app/dashboard/
 ```
 
 ### Component Architecture
+
 Each page follows the established component pattern:
+
 - **Page Component**: Main page wrapper with data fetching and state management
 - **Feature Components**: Reusable components for specific functionality
 - **UI Components**: shadcn/ui components for consistent styling
 
 ### API Integration
+
 The pages integrate with existing backend APIs:
+
 - **Analytics API**: `/api/cubcen/v1/analytics` (existing)
 - **Platforms API**: `/api/cubcen/v1/platforms` (existing)
 - **Users API**: `/api/cubcen/v1/users` (existing)
@@ -39,12 +45,14 @@ The pages integrate with existing backend APIs:
 
 **Component**: `src/app/dashboard/analytics/page.tsx` (existing)
 **Issues to Fix**:
+
 - API error handling improvements
 - Loading state optimization
 - Date range filter persistence
 - Export functionality validation
 
 **Dependencies**:
+
 - Existing analytics components in `src/components/analytics/`
 - Analytics service in `src/services/analytics.ts`
 - Analytics API routes in `src/backend/routes/analytics.ts`
@@ -53,6 +61,7 @@ The pages integrate with existing backend APIs:
 
 **Component**: `src/app/dashboard/platforms/page.tsx` (new)
 **Features**:
+
 - Platform list with status indicators
 - Add/edit platform configuration
 - Connection testing
@@ -60,6 +69,7 @@ The pages integrate with existing backend APIs:
 - Agent synchronization
 
 **Supporting Components**:
+
 ```typescript
 // src/components/platforms/platform-list.tsx
 interface Platform {
@@ -91,6 +101,7 @@ interface Platform {
 
 **Component**: `src/app/dashboard/users/page.tsx` (new)
 **Features**:
+
 - User list with roles and status
 - User profile management
 - Role assignment (admin only)
@@ -98,6 +109,7 @@ interface Platform {
 - User statistics
 
 **Supporting Components**:
+
 ```typescript
 // src/components/users/user-list.tsx
 interface User {
@@ -135,6 +147,7 @@ interface User {
 
 **Component**: `src/app/dashboard/settings/page.tsx` (new)
 **Features**:
+
 - Personal profile settings
 - Notification preferences
 - Dashboard customization
@@ -142,6 +155,7 @@ interface User {
 - Theme preferences
 
 **Supporting Components**:
+
 ```typescript
 // src/components/settings/profile-settings.tsx
 // src/components/settings/notification-settings.tsx
@@ -179,6 +193,7 @@ interface UserSettings {
 ## Data Models
 
 ### Platform Model
+
 ```typescript
 interface Platform {
   id: string
@@ -212,6 +227,7 @@ interface Platform {
 ```
 
 ### User Model
+
 ```typescript
 interface User {
   id: string
@@ -255,7 +271,9 @@ interface UserActivityStats {
 ## Error Handling
 
 ### API Error Handling
+
 All pages implement consistent error handling:
+
 ```typescript
 interface APIError {
   code: string
@@ -274,12 +292,14 @@ interface APIResponse<T> {
 ```
 
 ### Error States
+
 - **Loading States**: Skeleton components during data fetching
 - **Error States**: User-friendly error messages with retry options
 - **Empty States**: Helpful messages when no data is available
 - **Network Errors**: Offline detection and retry mechanisms
 
 ### Validation
+
 - **Client-side**: Form validation using zod schemas
 - **Server-side**: API validation using existing middleware
 - **Real-time**: Live validation feedback for forms
@@ -287,24 +307,28 @@ interface APIResponse<T> {
 ## Testing Strategy
 
 ### Unit Tests
+
 - Component rendering tests using React Testing Library
 - API service tests using Jest and MSW
 - Form validation tests
 - Error handling tests
 
 ### Integration Tests
+
 - Page navigation tests
 - API integration tests
 - User workflow tests
 - Permission-based access tests
 
 ### E2E Tests
+
 - Complete user journeys
 - Cross-browser compatibility
 - Mobile responsiveness
 - Performance testing
 
 ### Test Coverage
+
 - Maintain 90% test coverage requirement
 - Focus on critical user paths
 - Test error scenarios and edge cases
@@ -312,18 +336,21 @@ interface APIResponse<T> {
 ## Security Considerations
 
 ### Authentication & Authorization
+
 - All pages require authentication
 - Role-based access control (RBAC)
 - Admin-only features properly protected
 - Session management and timeout handling
 
 ### Data Protection
+
 - Sensitive data masking in logs
 - Secure credential storage
 - Input sanitization and validation
 - CSRF protection for forms
 
 ### API Security
+
 - Rate limiting on sensitive endpoints
 - Request validation and sanitization
 - Audit logging for admin actions
@@ -332,18 +359,21 @@ interface APIResponse<T> {
 ## Performance Optimization
 
 ### Client-side Performance
+
 - Code splitting for each page
 - Lazy loading of components
 - Optimized bundle sizes
 - Efficient re-rendering patterns
 
 ### Server-side Performance
+
 - API response caching where appropriate
 - Database query optimization
 - Pagination for large datasets
 - Background data synchronization
 
 ### User Experience
+
 - Progressive loading states
 - Optimistic updates where safe
 - Offline capability indicators
@@ -352,18 +382,21 @@ interface APIResponse<T> {
 ## Accessibility
 
 ### WCAG Compliance
+
 - Semantic HTML structure
 - Proper ARIA labels and roles
 - Keyboard navigation support
 - Screen reader compatibility
 
 ### Visual Design
+
 - High contrast color schemes
 - Scalable text and UI elements
 - Focus indicators
 - Color-blind friendly palettes
 
 ### Interaction Design
+
 - Clear navigation patterns
 - Consistent UI behavior
 - Error message clarity

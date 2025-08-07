@@ -22,10 +22,15 @@ A comprehensive error boundary component that catches JavaScript errors anywhere
 **Location:** `src/components/error-boundary.tsx`
 
 **Props:**
+
 ```typescript
 interface ErrorBoundaryProps {
   children: React.ReactNode
-  fallback?: React.ComponentType<{ error: Error; resetError: () => void; errorId?: string }>
+  fallback?: React.ComponentType<{
+    error: Error
+    resetError: () => void
+    errorId?: string
+  }>
   onError?: (error: Error, errorInfo: React.ErrorInfo) => void
   showDetails?: boolean
   className?: string
@@ -34,13 +39,14 @@ interface ErrorBoundaryProps {
 ```
 
 **Usage:**
+
 ```tsx
 import { ErrorBoundary } from '@/components/error-boundary'
 import { AnalyticsErrorFallback } from '@/components/error-boundary/page-error-fallbacks'
 
 function AnalyticsPage() {
   return (
-    <ErrorBoundary 
+    <ErrorBoundary
       fallback={AnalyticsErrorFallback}
       pageName="Analytics Dashboard"
       showDetails={false}
@@ -55,6 +61,7 @@ function AnalyticsPage() {
 ```
 
 **Features:**
+
 - Automatic error reporting to backend
 - Customizable fallback UI
 - Error ID generation for tracking
@@ -70,6 +77,7 @@ Pre-built error fallback components for different dashboard pages.
 **Location:** `src/components/error-boundary/page-error-fallbacks.tsx`
 
 **Available Fallbacks:**
+
 - `AnalyticsErrorFallback` - For analytics dashboard errors
 - `PlatformsErrorFallback` - For platform management errors
 - `UsersErrorFallback` - For user management errors
@@ -77,6 +85,7 @@ Pre-built error fallback components for different dashboard pages.
 - `DashboardErrorFallback` - For general dashboard errors
 
 **Props:**
+
 ```typescript
 interface PageErrorFallbackProps {
   error: Error
@@ -86,10 +95,11 @@ interface PageErrorFallbackProps {
 ```
 
 **Usage:**
+
 ```tsx
 import { AnalyticsErrorFallback } from '@/components/error-boundary/page-error-fallbacks'
 
-<ErrorBoundary fallback={AnalyticsErrorFallback}>
+;<ErrorBoundary fallback={AnalyticsErrorFallback}>
   <AnalyticsContent />
 </ErrorBoundary>
 ```
@@ -101,6 +111,7 @@ A hook for programmatically triggering error boundaries from functional componen
 **Location:** `src/components/error-boundary.tsx`
 
 **Usage:**
+
 ```tsx
 import { useErrorBoundary } from '@/components/error-boundary'
 
@@ -117,9 +128,7 @@ function MyComponent() {
 
   return (
     <div>
-      <button onClick={handleAsyncError}>
-        Trigger Async Operation
-      </button>
+      <button onClick={handleAsyncError}>Trigger Async Operation</button>
     </div>
   )
 }
@@ -134,6 +143,7 @@ Comprehensive analytics dashboard with KPIs, charts, and data export functionali
 **Location:** `src/components/analytics/analytics-dashboard.tsx`
 
 **Props:**
+
 ```typescript
 interface AnalyticsDashboardProps {
   className?: string
@@ -146,15 +156,16 @@ interface AnalyticsDashboardProps {
 ```
 
 **Usage:**
+
 ```tsx
 import { AnalyticsDashboard } from '@/components/analytics/analytics-dashboard'
 
 function AnalyticsPage() {
   return (
-    <AnalyticsDashboard 
+    <AnalyticsDashboard
       dateRange={{
         startDate: new Date('2023-11-01'),
-        endDate: new Date('2023-12-01')
+        endDate: new Date('2023-12-01'),
       }}
       agentIds={['agent-1', 'agent-2']}
     />
@@ -163,6 +174,7 @@ function AnalyticsPage() {
 ```
 
 **Features:**
+
 - Real-time KPI cards
 - Interactive performance charts
 - Error pattern analysis
@@ -177,6 +189,7 @@ Displays and manages automation platform connections.
 **Location:** `src/components/platforms/platform-list.tsx`
 
 **Props:**
+
 ```typescript
 interface PlatformListProps {
   onPlatformEdit?: (platform: Platform) => void
@@ -187,20 +200,21 @@ interface PlatformListProps {
 ```
 
 **Usage:**
+
 ```tsx
 import { PlatformList } from '@/components/platforms/platform-list'
 
 function PlatformsPage() {
-  const handleEdit = (platform) => {
+  const handleEdit = platform => {
     // Handle platform editing
   }
 
-  const handleDelete = (platform) => {
+  const handleDelete = platform => {
     // Handle platform deletion
   }
 
   return (
-    <PlatformList 
+    <PlatformList
       onPlatformEdit={handleEdit}
       onPlatformDelete={handleDelete}
       onRefresh={() => window.location.reload()}
@@ -210,6 +224,7 @@ function PlatformsPage() {
 ```
 
 **Features:**
+
 - Platform status indicators
 - Health monitoring display
 - Connection testing
@@ -224,31 +239,35 @@ Form component for creating and editing platform connections.
 **Location:** `src/components/platforms/platform-form.tsx`
 
 **Props:**
+
 ```typescript
 interface PlatformFormProps {
   platform?: Platform
   onSave: (platformData: Platform) => Promise<void>
   onCancel: () => void
-  onTestConnection: (connectionData: ConnectionData) => Promise<ConnectionTestResult>
+  onTestConnection: (
+    connectionData: ConnectionData
+  ) => Promise<ConnectionTestResult>
   className?: string
 }
 ```
 
 **Usage:**
+
 ```tsx
 import { PlatformForm } from '@/components/platforms/platform-form'
 
 function PlatformDialog() {
-  const handleSave = async (data) => {
+  const handleSave = async data => {
     await savePlatform(data)
   }
 
-  const handleTest = async (connectionData) => {
+  const handleTest = async connectionData => {
     return await testConnection(connectionData)
   }
 
   return (
-    <PlatformForm 
+    <PlatformForm
       platform={selectedPlatform}
       onSave={handleSave}
       onCancel={() => setDialogOpen(false)}
@@ -259,6 +278,7 @@ function PlatformDialog() {
 ```
 
 **Features:**
+
 - Multi-platform support (n8n, Make.com, Zapier)
 - Real-time connection testing
 - Form validation
@@ -272,6 +292,7 @@ Displays and manages system users with role-based access control.
 **Location:** `src/components/users/user-list.tsx`
 
 **Props:**
+
 ```typescript
 interface UserListProps {
   users: User[]
@@ -286,6 +307,7 @@ interface UserListProps {
 ```
 
 **Usage:**
+
 ```tsx
 import { UserList } from '@/components/users/user-list'
 
@@ -294,7 +316,7 @@ function UsersPage() {
   const [loading, setLoading] = useState(false)
 
   return (
-    <UserList 
+    <UserList
       users={users}
       loading={loading}
       onUserEdit={handleUserEdit}
@@ -306,6 +328,7 @@ function UsersPage() {
 ```
 
 **Features:**
+
 - Role-based filtering
 - User status management
 - Activity statistics
@@ -320,6 +343,7 @@ Form component for creating and editing user accounts.
 **Location:** `src/components/users/user-form.tsx`
 
 **Props:**
+
 ```typescript
 interface UserFormProps {
   user?: User
@@ -332,16 +356,17 @@ interface UserFormProps {
 ```
 
 **Usage:**
+
 ```tsx
 import { UserForm } from '@/components/users/user-form'
 
 function UserDialog() {
-  const handleSubmit = async (userData) => {
+  const handleSubmit = async userData => {
     await saveUser(userData)
   }
 
   return (
-    <UserForm 
+    <UserForm
       user={selectedUser}
       mode="edit"
       onSubmit={handleSubmit}
@@ -353,6 +378,7 @@ function UserDialog() {
 ```
 
 **Features:**
+
 - Multiple form modes (create, edit, invite)
 - Role assignment
 - Password generation
@@ -368,21 +394,26 @@ Component for managing user profile information.
 **Location:** `src/components/settings/profile-settings.tsx`
 
 **Props:**
+
 ```typescript
 interface ProfileSettingsProps {
   profile: UserProfile
   onProfileUpdate: (profileData: Partial<UserProfile>) => Promise<void>
-  onPasswordChange: (currentPassword: string, newPassword: string) => Promise<void>
+  onPasswordChange: (
+    currentPassword: string,
+    newPassword: string
+  ) => Promise<void>
   className?: string
 }
 ```
 
 **Usage:**
+
 ```tsx
 import { ProfileSettings } from '@/components/settings/profile-settings'
 
 function SettingsPage() {
-  const handleProfileUpdate = async (data) => {
+  const handleProfileUpdate = async data => {
     await updateProfile(data)
   }
 
@@ -391,7 +422,7 @@ function SettingsPage() {
   }
 
   return (
-    <ProfileSettings 
+    <ProfileSettings
       profile={userProfile}
       onProfileUpdate={handleProfileUpdate}
       onPasswordChange={handlePasswordChange}
@@ -401,6 +432,7 @@ function SettingsPage() {
 ```
 
 **Features:**
+
 - Profile information editing
 - Avatar upload
 - Password change functionality
@@ -414,6 +446,7 @@ Component for managing notification preferences.
 **Location:** `src/components/settings/notification-settings.tsx`
 
 **Props:**
+
 ```typescript
 interface NotificationSettingsProps {
   preferences: NotificationPreferences
@@ -423,16 +456,17 @@ interface NotificationSettingsProps {
 ```
 
 **Usage:**
+
 ```tsx
 import { NotificationSettings } from '@/components/settings/notification-settings'
 
 function SettingsPage() {
-  const handleUpdate = async (preferences) => {
+  const handleUpdate = async preferences => {
     await updateNotificationPreferences(preferences)
   }
 
   return (
-    <NotificationSettings 
+    <NotificationSettings
       preferences={notificationPreferences}
       onPreferencesUpdate={handleUpdate}
     />
@@ -441,6 +475,7 @@ function SettingsPage() {
 ```
 
 **Features:**
+
 - Multi-channel notification configuration
 - Frequency settings
 - Notification type filtering
@@ -454,6 +489,7 @@ Component for managing security settings and two-factor authentication.
 **Location:** `src/components/settings/security-settings.tsx`
 
 **Props:**
+
 ```typescript
 interface SecuritySettingsProps {
   twoFactorEnabled: boolean
@@ -468,16 +504,17 @@ interface SecuritySettingsProps {
 ```
 
 **Usage:**
+
 ```tsx
 import { SecuritySettings } from '@/components/settings/security-settings'
 
 function SettingsPage() {
-  const handleTwoFactorToggle = async (enabled) => {
+  const handleTwoFactorToggle = async enabled => {
     return await toggleTwoFactor(enabled)
   }
 
   return (
-    <SecuritySettings 
+    <SecuritySettings
       twoFactorEnabled={twoFactorEnabled}
       activeSessions={sessions}
       auditLogs={auditLogs}
@@ -491,6 +528,7 @@ function SettingsPage() {
 ```
 
 **Features:**
+
 - Two-factor authentication setup
 - Active session management
 - Security audit log display
@@ -506,6 +544,7 @@ Displays key performance indicators in card format.
 **Location:** `src/components/analytics/kpi-cards.tsx`
 
 **Props:**
+
 ```typescript
 interface KPICardsProps {
   kpis: {
@@ -521,16 +560,12 @@ interface KPICardsProps {
 ```
 
 **Usage:**
+
 ```tsx
 import { KPICards } from '@/components/analytics/kpi-cards'
 
 function AnalyticsDashboard() {
-  return (
-    <KPICards 
-      kpis={analyticsData.kpis}
-      loading={isLoading}
-    />
-  )
+  return <KPICards kpis={analyticsData.kpis} loading={isLoading} />
 }
 ```
 
@@ -541,6 +576,7 @@ Interactive charts for displaying performance metrics.
 **Location:** `src/components/analytics/performance-charts.tsx`
 
 **Props:**
+
 ```typescript
 interface PerformanceChartsProps {
   data: ChartData[]
@@ -552,12 +588,13 @@ interface PerformanceChartsProps {
 ```
 
 **Usage:**
+
 ```tsx
 import { PerformanceCharts } from '@/components/analytics/performance-charts'
 
 function AnalyticsDashboard() {
   return (
-    <PerformanceCharts 
+    <PerformanceCharts
       data={chartData}
       type="line"
       title="Execution Trends"
@@ -574,6 +611,7 @@ Dialog component for exporting analytics data.
 **Location:** `src/components/analytics/export-dialog.tsx`
 
 **Props:**
+
 ```typescript
 interface ExportDialogProps {
   open: boolean
@@ -584,18 +622,19 @@ interface ExportDialogProps {
 ```
 
 **Usage:**
+
 ```tsx
 import { ExportDialog } from '@/components/analytics/export-dialog'
 
 function AnalyticsDashboard() {
   const [exportOpen, setExportOpen] = useState(false)
 
-  const handleExport = async (options) => {
+  const handleExport = async options => {
     await exportData(options)
   }
 
   return (
-    <ExportDialog 
+    <ExportDialog
       open={exportOpen}
       onOpenChange={setExportOpen}
       onExport={handleExport}
@@ -614,9 +653,17 @@ Enhanced button component with accessibility features.
 **Location:** `src/components/ui/accessible-button.tsx`
 
 **Props:**
+
 ```typescript
-interface AccessibleButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link'
+interface AccessibleButtonProps
+  extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?:
+    | 'default'
+    | 'destructive'
+    | 'outline'
+    | 'secondary'
+    | 'ghost'
+    | 'link'
   size?: 'default' | 'sm' | 'lg' | 'icon'
   loading?: boolean
   loadingText?: string
@@ -625,12 +672,13 @@ interface AccessibleButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> 
 ```
 
 **Usage:**
+
 ```tsx
 import { AccessibleButton } from '@/components/ui/accessible-button'
 
 function MyComponent() {
   return (
-    <AccessibleButton 
+    <AccessibleButton
       variant="default"
       size="lg"
       loading={isLoading}
@@ -651,6 +699,7 @@ Form wrapper with enhanced accessibility features.
 **Location:** `src/components/ui/accessible-form.tsx`
 
 **Props:**
+
 ```typescript
 interface AccessibleFormProps extends FormHTMLAttributes<HTMLFormElement> {
   onSubmit: (event: FormEvent<HTMLFormElement>) => void
@@ -660,6 +709,7 @@ interface AccessibleFormProps extends FormHTMLAttributes<HTMLFormElement> {
 ```
 
 **Usage:**
+
 ```tsx
 import { AccessibleForm } from '@/components/ui/accessible-form'
 
@@ -667,7 +717,7 @@ function MyForm() {
   const [errors, setErrors] = useState([])
 
   return (
-    <AccessibleForm 
+    <AccessibleForm
       onSubmit={handleSubmit}
       errorSummary={errors}
       successMessage="Form submitted successfully"
@@ -685,6 +735,7 @@ Table component with enhanced accessibility and keyboard navigation.
 **Location:** `src/components/ui/accessible-table.tsx`
 
 **Props:**
+
 ```typescript
 interface AccessibleTableProps {
   data: any[]
@@ -698,6 +749,7 @@ interface AccessibleTableProps {
 ```
 
 **Usage:**
+
 ```tsx
 import { AccessibleTable } from '@/components/ui/accessible-table'
 
@@ -705,11 +757,11 @@ function DataTable() {
   const columns = [
     { key: 'name', label: 'Name', sortable: true },
     { key: 'status', label: 'Status', sortable: false },
-    { key: 'actions', label: 'Actions', sortable: false }
+    { key: 'actions', label: 'Actions', sortable: false },
   ]
 
   return (
-    <AccessibleTable 
+    <AccessibleTable
       data={tableData}
       columns={columns}
       caption="List of users"
@@ -728,16 +780,18 @@ function DataTable() {
 Lazy-loaded component wrappers with Suspense boundaries.
 
 **Locations:**
+
 - `src/components/analytics/lazy-components.tsx`
 - `src/components/platforms/lazy-components.tsx`
 - `src/components/users/lazy-components.tsx`
 - `src/components/settings/lazy-components.tsx`
 
 **Usage:**
+
 ```tsx
-import { 
+import {
   LazyAnalyticsDashboardWithSuspense,
-  LazyKPICardsWithSuspense 
+  LazyKPICardsWithSuspense,
 } from '@/components/analytics/lazy-components'
 
 function AnalyticsPage() {
@@ -751,6 +805,7 @@ function AnalyticsPage() {
 ```
 
 **Features:**
+
 - Automatic code splitting
 - Loading states
 - Error boundaries
@@ -793,7 +848,7 @@ interface UserFormProps {
 // Good: Proper error boundary usage
 function MyPage() {
   return (
-    <ErrorBoundary 
+    <ErrorBoundary
       fallback={MyPageErrorFallback}
       pageName="My Page"
       onError={logError}
@@ -813,7 +868,7 @@ function MyPage() {
 
 ```tsx
 // Good: Accessible component with proper ARIA labels
-<AccessibleButton 
+<AccessibleButton
   ariaLabel="Delete user account"
   onClick={handleDelete}
   variant="destructive"
@@ -832,13 +887,15 @@ function MyPage() {
 
 ```tsx
 // Good: Lazy loading for heavy components
-const LazyAnalyticsDashboard = lazy(() => 
+const LazyAnalyticsDashboard = lazy(() =>
   import('./analytics-dashboard').then(module => ({
-    default: module.AnalyticsDashboard
+    default: module.AnalyticsDashboard,
   }))
 )
 
-export function LazyAnalyticsDashboardWithSuspense(props: AnalyticsDashboardProps) {
+export function LazyAnalyticsDashboardWithSuspense(
+  props: AnalyticsDashboardProps
+) {
   return (
     <Suspense fallback={<AnalyticsDashboardSkeleton />}>
       <LazyAnalyticsDashboard {...props} />
@@ -891,21 +948,15 @@ import { UserForm } from '../user-form'
 describe('UserForm', () => {
   it('should submit form with valid data', async () => {
     const mockSubmit = jest.fn()
-    
-    render(
-      <UserForm 
-        mode="create"
-        onSubmit={mockSubmit}
-        onCancel={() => {}}
-      />
-    )
+
+    render(<UserForm mode="create" onSubmit={mockSubmit} onCancel={() => {}} />)
 
     fireEvent.change(screen.getByLabelText(/name/i), {
-      target: { value: 'John Doe' }
+      target: { value: 'John Doe' },
     })
-    
+
     fireEvent.change(screen.getByLabelText(/email/i), {
-      target: { value: 'john@example.com' }
+      target: { value: 'john@example.com' },
     })
 
     fireEvent.click(screen.getByRole('button', { name: /create user/i }))
@@ -913,7 +964,7 @@ describe('UserForm', () => {
     await waitFor(() => {
       expect(mockSubmit).toHaveBeenCalledWith({
         name: 'John Doe',
-        email: 'john@example.com'
+        email: 'john@example.com',
       })
     })
   })

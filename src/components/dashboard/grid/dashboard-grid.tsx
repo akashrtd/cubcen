@@ -18,7 +18,7 @@ export function DashboardGrid({
   justifyItems = 'stretch',
 }: DashboardGridProps) {
   const isMobile = useIsMobile()
-  
+
   // Use CSS custom properties for responsive behavior
   const gridStyle = {
     '--dashboard-grid-columns-mobile': responsive.mobile.toString(),
@@ -53,4 +53,3 @@ export function DashboardGrid({
     </div>
   )
 }
-

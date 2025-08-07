@@ -1,6 +1,6 @@
 /**
  * Dashboard Grid System
- * 
+ *
  * A comprehensive 12-column responsive grid system for dashboard layouts.
  * Supports responsive breakpoints, priority-based ordering, and flexible
  * column/row spanning.

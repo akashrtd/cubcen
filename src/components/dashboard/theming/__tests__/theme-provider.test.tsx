@@ -32,14 +32,14 @@ Object.defineProperty(window, 'matchMedia', {
 
 // Test component that uses the theme
 function TestComponent() {
-  const { 
-    theme, 
-    resolvedTheme, 
-    dashboardTheme, 
-    setTheme, 
+  const {
+    theme,
+    resolvedTheme,
+    dashboardTheme,
+    setTheme,
     setDashboardTheme,
     validateContrast,
-    getContrastRatio
+    getContrastRatio,
   } = useDashboardTheme()
 
   return (
@@ -47,46 +47,43 @@ function TestComponent() {
       <div data-testid="theme">{theme}</div>
       <div data-testid="resolved-theme">{resolvedTheme}</div>
       <div data-testid="primary-color">{dashboardTheme.colors.primary}</div>
-      <div data-testid="background-color">{dashboardTheme.colors.background}</div>
-      <div data-testid="font-size-base">{dashboardTheme.typography.fontSize.base}</div>
-      
-      <button 
-        data-testid="set-dark-theme" 
-        onClick={() => setTheme('dark')}
-      >
+      <div data-testid="background-color">
+        {dashboardTheme.colors.background}
+      </div>
+      <div data-testid="font-size-base">
+        {dashboardTheme.typography.fontSize.base}
+      </div>
+
+      <button data-testid="set-dark-theme" onClick={() => setTheme('dark')}>
         Set Dark
       </button>
-      
-      <button 
-        data-testid="set-light-theme" 
-        onClick={() => setTheme('light')}
-      >
+
+      <button data-testid="set-light-theme" onClick={() => setTheme('light')}>
         Set Light
       </button>
-      
-      <button 
-        data-testid="set-system-theme" 
-        onClick={() => setTheme('system')}
-      >
+
+      <button data-testid="set-system-theme" onClick={() => setTheme('system')}>
         Set System
       </button>
-      
-      <button 
-        data-testid="change-primary-color" 
-        onClick={() => setDashboardTheme({ 
-          colors: { 
-            ...dashboardTheme.colors, 
-            primary: '#FF0000' 
-          } 
-        })}
+
+      <button
+        data-testid="change-primary-color"
+        onClick={() =>
+          setDashboardTheme({
+            colors: {
+              ...dashboardTheme.colors,
+              primary: '#FF0000',
+            },
+          })
+        }
       >
         Change Primary
       </button>
-      
+
       <div data-testid="contrast-valid">
         {validateContrast('#000000', '#FFFFFF').toString()}
       </div>
-      
+
       <div data-testid="contrast-ratio">
         {getContrastRatio('#000000', '#FFFFFF').toFixed(2)}
       </div>
@@ -98,7 +95,7 @@ describe('DashboardThemeProvider', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     mockLocalStorage.getItem.mockReturnValue(null)
-    
+
     // Reset document classes
     document.documentElement.className = ''
     document.documentElement.removeAttribute('data-theme')
@@ -154,12 +151,15 @@ describe('DashboardThemeProvider', () => {
       expect(screen.getByTestId('resolved-theme')).toHaveTextContent('dark')
     })
 
-    expect(mockLocalStorage.setItem).toHaveBeenCalledWith('cubcen-dashboard-theme', 'dark')
+    expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
+      'cubcen-dashboard-theme',
+      'dark'
+    )
   })
 
   it('applies custom storage key', () => {
     const customKey = 'custom-theme-key'
-    
+
     render(
       <DashboardThemeProvider storageKey={customKey}>
         <TestComponent />
@@ -182,21 +182,21 @@ describe('DashboardThemeProvider', () => {
         text: {
           primary: '#333333',
           secondary: '#666666',
-          disabled: '#999999'
+          disabled: '#999999',
         },
         status: {
           success: '#00AA00',
           warning: '#FFAA00',
           error: '#AA0000',
-          info: '#0000AA'
+          info: '#0000AA',
         },
         chart: {
           palette: ['#FF0000', '#00FF00', '#0000FF'],
           gradients: {
-            primary: 'linear-gradient(135deg, #FF0000 0%, #00FF00 100%)'
-          }
-        }
-      }
+            primary: 'linear-gradient(135deg, #FF0000 0%, #00FF00 100%)',
+          },
+        },
+      },
     }
 
     render(
@@ -307,7 +307,7 @@ describe('DashboardThemeProvider', () => {
 
     const TestComponentWithBadContrast = () => {
       const { setDashboardTheme, dashboardTheme } = useDashboardTheme()
-      
+
       React.useEffect(() => {
         // Set a color combination with poor contrast
         setDashboardTheme({
@@ -316,9 +316,9 @@ describe('DashboardThemeProvider', () => {
             background: '#FFFFFF',
             text: {
               ...dashboardTheme.colors.text,
-              primary: '#CCCCCC' // Poor contrast against white
-            }
-          }
+              primary: '#CCCCCC', // Poor contrast against white
+            },
+          },
         })
       }, [setDashboardTheme, dashboardTheme])
 

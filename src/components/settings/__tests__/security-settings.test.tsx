@@ -13,11 +13,17 @@ jest.mock('sonner', () => ({
 // Mock form components
 jest.mock('@/components/ui/form', () => ({
   Form: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  FormField: ({ render }: { render: (props: any) => React.ReactNode }) => 
+  FormField: ({ render }: { render: (props: any) => React.ReactNode }) =>
     render({ field: { value: false, onChange: jest.fn() } }),
-  FormItem: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-  FormLabel: ({ children }: { children: React.ReactNode }) => <label>{children}</label>,
-  FormControl: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  FormItem: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
+  FormLabel: ({ children }: { children: React.ReactNode }) => (
+    <label>{children}</label>
+  ),
+  FormControl: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
 }))
 
 // Mock react-hook-form
@@ -125,7 +131,9 @@ describe('SecuritySettings', () => {
       />
     )
 
-    expect(screen.getByText('Two-factor authentication is enabled')).toBeInTheDocument()
+    expect(
+      screen.getByText('Two-factor authentication is enabled')
+    ).toBeInTheDocument()
     expect(screen.getByText('Download Backup Codes')).toBeInTheDocument()
   })
 
@@ -154,7 +162,9 @@ describe('SecuritySettings', () => {
       expect(mockOnToggleTwoFactor).toHaveBeenCalledWith(true)
     })
 
-    expect(toast.success).toHaveBeenCalledWith('Two-factor authentication enabled successfully')
+    expect(toast.success).toHaveBeenCalledWith(
+      'Two-factor authentication enabled successfully'
+    )
   })
 
   it('handles two-factor authentication toggle error', async () => {
@@ -176,7 +186,9 @@ describe('SecuritySettings', () => {
     fireEvent.click(toggleSwitch)
 
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith('Failed to update two-factor authentication')
+      expect(toast.error).toHaveBeenCalledWith(
+        'Failed to update two-factor authentication'
+      )
     })
   })
 
@@ -195,7 +207,9 @@ describe('SecuritySettings', () => {
 
     expect(screen.getByText('MacBook Pro')).toBeInTheDocument()
     expect(screen.getByText('iPhone 15')).toBeInTheDocument()
-    expect(screen.getByText('Chrome 120 • San Francisco, CA')).toBeInTheDocument()
+    expect(
+      screen.getByText('Chrome 120 • San Francisco, CA')
+    ).toBeInTheDocument()
     expect(screen.getByText('Safari 17 • New York, NY')).toBeInTheDocument()
     expect(screen.getByText('Current')).toBeInTheDocument()
   })
@@ -222,7 +236,9 @@ describe('SecuritySettings', () => {
       expect(mockOnTerminateSession).toHaveBeenCalledWith('2')
     })
 
-    expect(toast.success).toHaveBeenCalledWith('Session terminated successfully')
+    expect(toast.success).toHaveBeenCalledWith(
+      'Session terminated successfully'
+    )
   })
 
   it('handles terminate all sessions', async () => {
@@ -247,7 +263,9 @@ describe('SecuritySettings', () => {
       expect(mockOnTerminateAllSessions).toHaveBeenCalled()
     })
 
-    expect(toast.success).toHaveBeenCalledWith('All sessions terminated successfully')
+    expect(toast.success).toHaveBeenCalledWith(
+      'All sessions terminated successfully'
+    )
   })
 
   it('displays audit logs correctly', () => {
@@ -265,8 +283,12 @@ describe('SecuritySettings', () => {
 
     expect(screen.getByText('Login')).toBeInTheDocument()
     expect(screen.getByText('Failed Login')).toBeInTheDocument()
-    expect(screen.getByText('Successful login from new device')).toBeInTheDocument()
-    expect(screen.getByText('Failed login attempt with incorrect password')).toBeInTheDocument()
+    expect(
+      screen.getByText('Successful login from new device')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Failed login attempt with incorrect password')
+    ).toBeInTheDocument()
     expect(screen.getByText('San Francisco, CA')).toBeInTheDocument()
     expect(screen.getByText('Unknown')).toBeInTheDocument()
   })
@@ -319,8 +341,12 @@ describe('SecuritySettings', () => {
     const copyButton = screen.getByText('Copy Codes')
     fireEvent.click(copyButton)
 
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith('code1\ncode2\ncode3')
-    expect(toast.success).toHaveBeenCalledWith('Backup codes copied to clipboard')
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
+      'code1\ncode2\ncode3'
+    )
+    expect(toast.success).toHaveBeenCalledWith(
+      'Backup codes copied to clipboard'
+    )
   })
 
   it('shows severity badges for audit logs', () => {

@@ -9,7 +9,9 @@ jest.mock('../touch-interactions', () => ({
   useIsTouchDevice: jest.fn(),
 }))
 
-const mockUseIsTouchDevice = useIsTouchDevice as jest.MockedFunction<typeof useIsTouchDevice>
+const mockUseIsTouchDevice = useIsTouchDevice as jest.MockedFunction<
+  typeof useIsTouchDevice
+>
 
 describe('MobileTooltip', () => {
   beforeEach(() => {
@@ -35,7 +37,7 @@ describe('MobileTooltip', () => {
     )
 
     const trigger = screen.getByText('Trigger').parentElement!
-    
+
     // Simulate touch start
     fireEvent.touchStart(trigger)
 
@@ -46,7 +48,7 @@ describe('MobileTooltip', () => {
 
   it('shows tooltip on hover for non-touch devices', async () => {
     mockUseIsTouchDevice.mockReturnValue(false)
-    
+
     render(
       <MobileTooltip content="Tooltip content">
         <button>Trigger</button>
@@ -54,7 +56,7 @@ describe('MobileTooltip', () => {
     )
 
     const trigger = screen.getByText('Trigger').parentElement!
-    
+
     fireEvent.mouseEnter(trigger)
 
     await waitFor(() => {
@@ -70,10 +72,10 @@ describe('MobileTooltip', () => {
     )
 
     const trigger = screen.getByText('Trigger').parentElement!
-    
+
     // Show tooltip
     fireEvent.touchStart(trigger)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Tooltip content')).toBeInTheDocument()
     })
@@ -88,7 +90,7 @@ describe('MobileTooltip', () => {
 
   it('shows tooltip on focus for keyboard accessibility', async () => {
     const user = userEvent.setup()
-    
+
     render(
       <MobileTooltip content="Tooltip content">
         <button>Trigger</button>
@@ -96,7 +98,7 @@ describe('MobileTooltip', () => {
     )
 
     const wrapper = screen.getByText('Trigger').parentElement!
-    
+
     await user.click(wrapper)
 
     await waitFor(() => {
@@ -106,7 +108,7 @@ describe('MobileTooltip', () => {
 
   it('hides tooltip on blur', async () => {
     const user = userEvent.setup()
-    
+
     render(
       <div>
         <MobileTooltip content="Tooltip content">
@@ -118,7 +120,7 @@ describe('MobileTooltip', () => {
 
     const wrapper = screen.getByText('Trigger').parentElement!
     const otherButton = screen.getByRole('button', { name: 'Other button' })
-    
+
     // Focus trigger to show tooltip
     fireEvent.focus(wrapper)
 
@@ -137,7 +139,7 @@ describe('MobileTooltip', () => {
 
   it('hides tooltip on escape key', async () => {
     const user = userEvent.setup()
-    
+
     render(
       <MobileTooltip content="Tooltip content">
         <button>Trigger</button>
@@ -145,7 +147,7 @@ describe('MobileTooltip', () => {
     )
 
     const wrapper = screen.getByText('Trigger').parentElement!
-    
+
     // Show tooltip
     fireEvent.focus(wrapper)
 
@@ -169,7 +171,7 @@ describe('MobileTooltip', () => {
     )
 
     const wrapper = screen.getByText('Trigger').parentElement!
-    
+
     fireEvent.touchStart(wrapper)
     fireEvent.mouseEnter(wrapper)
 
@@ -187,7 +189,7 @@ describe('MobileTooltip', () => {
     )
 
     const wrapper = screen.getByText('Trigger').parentElement!
-    
+
     fireEvent.touchStart(wrapper)
 
     await waitFor(() => {
@@ -208,7 +210,7 @@ describe('MobileTooltip', () => {
 
     const wrapper = screen.getByText('Trigger').parentElement!
     const outside = screen.getByTestId('outside')
-    
+
     // Show tooltip
     fireEvent.touchStart(wrapper)
 

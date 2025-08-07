@@ -5,26 +5,52 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from '@/components/ui/form'
 import { Switch } from '@/components/ui/switch'
 import { Badge } from '@/components/ui/badge'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { toast } from 'sonner'
-import { 
-  Shield, 
-  Smartphone, 
-  Key, 
-  Monitor, 
-  MapPin, 
-  Clock, 
-  AlertTriangle, 
-  CheckCircle, 
+import {
+  Shield,
+  Smartphone,
+  Key,
+  Monitor,
+  MapPin,
+  Clock,
+  AlertTriangle,
+  CheckCircle,
   X,
   Copy,
   Download,
-  Trash2
+  Trash2,
 } from 'lucide-react'
 
 // Two-factor authentication setup schema
@@ -60,7 +86,9 @@ interface SecuritySettingsProps {
   twoFactorEnabled: boolean
   activeSessions: ActiveSession[]
   auditLogs: SecurityAuditLog[]
-  onToggleTwoFactor?: (enabled: boolean) => Promise<{ qrCode?: string; backupCodes?: string[] }>
+  onToggleTwoFactor?: (
+    enabled: boolean
+  ) => Promise<{ qrCode?: string; backupCodes?: string[] }>
   onTerminateSession?: (sessionId: string) => Promise<void>
   onTerminateAllSessions?: () => Promise<void>
   onDownloadBackupCodes?: () => Promise<string[]>
@@ -94,12 +122,12 @@ export function SecuritySettings({
     setIsUpdating(true)
     try {
       const result = await onToggleTwoFactor(enabled)
-      
+
       if (enabled && result.qrCode) {
         setQrCodeUrl(result.qrCode)
         setShowQrCode(true)
       }
-      
+
       if (result.backupCodes) {
         setBackupCodes(result.backupCodes)
         setShowBackupCodes(true)
@@ -107,8 +135,8 @@ export function SecuritySettings({
 
       form.setValue('enabled', enabled)
       toast.success(
-        enabled 
-          ? 'Two-factor authentication enabled successfully' 
+        enabled
+          ? 'Two-factor authentication enabled successfully'
           : 'Two-factor authentication disabled successfully'
       )
     } catch (error) {
@@ -222,7 +250,8 @@ export function SecuritySettings({
             Two-Factor Authentication
           </CardTitle>
           <CardDescription>
-            Add an extra layer of security to your account with two-factor authentication
+            Add an extra layer of security to your account with two-factor
+            authentication
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -298,7 +327,7 @@ export function SecuritySettings({
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {activeSessions.map((session) => {
+            {activeSessions.map(session => {
               const DeviceIcon = getDeviceIcon(session.deviceType)
               return (
                 <div
@@ -309,7 +338,9 @@ export function SecuritySettings({
                     <DeviceIcon className="h-5 w-5 text-muted-foreground" />
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-medium">{session.deviceName}</span>
+                        <span className="font-medium">
+                          {session.deviceName}
+                        </span>
                         {session.current && (
                           <Badge variant="secondary" className="text-xs">
                             Current
@@ -370,7 +401,7 @@ export function SecuritySettings({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {auditLogs.map((log) => (
+              {auditLogs.map(log => (
                 <TableRow key={log.id}>
                   <TableCell>
                     <div className="space-y-1">
@@ -418,9 +449,7 @@ export function SecuritySettings({
             )}
           </div>
           <DialogFooter>
-            <Button onClick={() => setShowQrCode(false)}>
-              Done
-            </Button>
+            <Button onClick={() => setShowQrCode(false)}>Done</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -431,7 +460,8 @@ export function SecuritySettings({
           <DialogHeader>
             <DialogTitle>Backup Codes</DialogTitle>
             <DialogDescription>
-              Save these backup codes in a safe place. You can use them to access your account if you lose your authenticator device.
+              Save these backup codes in a safe place. You can use them to
+              access your account if you lose your authenticator device.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">

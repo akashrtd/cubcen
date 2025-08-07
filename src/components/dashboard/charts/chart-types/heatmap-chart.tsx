@@ -1,6 +1,11 @@
 import React from 'react'
 import { ResponsiveContainer } from 'recharts'
-import type { ChartData, ChartConfiguration, ChartDataPoint, LegendItem } from '@/types/dashboard'
+import type {
+  ChartData,
+  ChartConfiguration,
+  ChartDataPoint,
+  LegendItem,
+} from '@/types/dashboard'
 
 interface HeatmapChartProps {
   data: ChartData
@@ -33,80 +38,94 @@ export function HeatmapChart({
   colors,
 }: HeatmapChartProps) {
   // Transform data for heatmap format
-  const { heatmapData, xLabels, yLabels, minValue, maxValue } = React.useMemo(() => {
-    if (!data.datasets || data.datasets.length === 0) {
-      return { heatmapData: [], xLabels: [], yLabels: [], minValue: 0, maxValue: 0 }
-    }
-
-    const allData: HeatmapCell[] = []
-    const xSet = new Set<string | number>()
-    const ySet = new Set<string | number>()
-    let min = Infinity
-    let max = -Infinity
-
-    // Collect all data points
-    data.datasets.forEach(dataset => {
-      dataset.data.forEach(point => {
-        if (point.x !== undefined && point.y !== undefined) {
-          const value = point.value || 0
-          xSet.add(point.x)
-          ySet.add(point.y)
-          min = Math.min(min, value)
-          max = Math.max(max, value)
-          
-          allData.push({
-            x: point.x,
-            y: point.y,
-            value,
-            color: point.color || '',
-            originalData: point,
-          })
+  const { heatmapData, xLabels, yLabels, minValue, maxValue } =
+    React.useMemo(() => {
+      if (!data.datasets || data.datasets.length === 0) {
+        return {
+          heatmapData: [],
+          xLabels: [],
+          yLabels: [],
+          minValue: 0,
+          maxValue: 0,
         }
+      }
+
+      const allData: HeatmapCell[] = []
+      const xSet = new Set<string | number>()
+      const ySet = new Set<string | number>()
+      let min = Infinity
+      let max = -Infinity
+
+      // Collect all data points
+      data.datasets.forEach(dataset => {
+        dataset.data.forEach(point => {
+          if (point.x !== undefined && point.y !== undefined) {
+            let value = point.value;
+            // Coerce to number, fallback to 0 if not a valid number
+            if (typeof value === 'string') {
+              value = Number(value);
+            }
+            if (typeof value !== 'number' || isNaN(value)) {
+              value = 0;
+            }
+            xSet.add(point.x)
+            ySet.add(point.y)
+            min = Math.min(min, value)
+            max = Math.max(max, value)
+
+            allData.push({
+              x: point.x,
+              y: point.y,
+              value,
+              color: point.color || '',
+              originalData: point,
+            })
+          }
+        })
       })
-    })
 
-    const xLabels = Array.from(xSet).sort((a, b) => {
-      if (typeof a === 'number' && typeof b === 'number') return a - b
-      return String(a).localeCompare(String(b))
-    })
+      const xLabels = Array.from(xSet).sort((a, b) => {
+        if (typeof a === 'number' && typeof b === 'number') return a - b
+        return String(a).localeCompare(String(b))
+      })
 
-    const yLabels = Array.from(ySet).sort((a, b) => {
-      if (typeof a === 'number' && typeof b === 'number') return a - b
-      return String(a).localeCompare(String(b))
-    })
+      const yLabels = Array.from(ySet).sort((a, b) => {
+        if (typeof a === 'number' && typeof b === 'number') return a - b
+        return String(a).localeCompare(String(b))
+      })
 
-    return {
-      heatmapData: allData,
-      xLabels,
-      yLabels,
-      minValue: min === Infinity ? 0 : min,
-      maxValue: max === -Infinity ? 0 : max,
-    }
-  }, [data])
+      return {
+        heatmapData: allData,
+        xLabels,
+        yLabels,
+        minValue: min === Infinity ? 0 : min,
+        maxValue: max === -Infinity ? 0 : max,
+      }
+    }, [data])
 
   // Generate color based on value
   const getColorForValue = (value: number): string => {
     if (maxValue === minValue) return colors[0] || '#3F51B5'
-    
+
     const normalizedValue = (value - minValue) / (maxValue - minValue)
-    
+
     // Use a gradient from light to dark based on the primary color
     const baseColor = colors[0] || '#3F51B5'
-    const opacity = 0.2 + (normalizedValue * 0.8) // Range from 0.2 to 1.0
-    
+    const opacity = 0.2 + normalizedValue * 0.8 // Range from 0.2 to 1.0
+
     // Convert hex to rgba
     const hex = baseColor.replace('#', '')
     const r = parseInt(hex.substr(0, 2), 16)
     const g = parseInt(hex.substr(2, 2), 16)
     const b = parseInt(hex.substr(4, 2), 16)
-    
+
     return `rgba(${r}, ${g}, ${b}, ${opacity})`
   }
 
   // Handle cell click
   const handleCellClick = (cell: HeatmapCell) => {
     if (!interactive || !onDataClick) return
-    
+
     const chartDataPoint: ChartDataPoint = {
       x: cell.x,
       y: cell.y,
@@ -118,7 +137,10 @@ export function HeatmapChart({
   }
 
   // Calculate cell dimensions
-  const cellWidth = Math.max(40, (responsive ? 600 : 600) / Math.max(xLabels.length, 1))
+  const cellWidth = Math.max(
+    40,
+    (responsive ? 600 : 600) / Math.max(xLabels.length, 1)
+  )
   const cellHeight = Math.max(30, (height - 100) / Math.max(yLabels.length, 1))
   const chartWidth = cellWidth * xLabels.length + 100 // Add margin for labels
   const chartHeight = cellHeight * yLabels.length + 100 // Add margin for labels
@@ -138,7 +160,7 @@ export function HeatmapChart({
 
   const handleMouseEnter = (event: React.MouseEvent, cell: HeatmapCell) => {
     if (!config.tooltip?.show) return
-    
+
     setTooltip({
       visible: true,
       x: event.clientX,
@@ -163,7 +185,7 @@ export function HeatmapChart({
               {data.metadata.title}
             </h3>
           )}
-          
+
           {/* Heatmap Grid */}
           <div className="relative">
             <svg
@@ -185,7 +207,7 @@ export function HeatmapChart({
                   {yLabel}
                 </text>
               ))}
-              
+
               {/* X-axis labels */}
               {xLabels.map((xLabel, xIndex) => (
                 <text
@@ -201,14 +223,16 @@ export function HeatmapChart({
                   {xLabel}
                 </text>
               ))}
-              
+
               {/* Heatmap cells */}
               {yLabels.map((yLabel, yIndex) =>
                 xLabels.map((xLabel, xIndex) => {
-                  const cell = heatmapData.find(d => d.x === xLabel && d.y === yLabel)
+                  const cell = heatmapData.find(
+                    d => d.x === xLabel && d.y === yLabel
+                  )
                   const value = cell?.value || 0
                   const color = cell?.color || getColorForValue(value)
-                  
+
                   return (
                     <rect
                       key={`cell-${xIndex}-${yIndex}`}
@@ -221,7 +245,7 @@ export function HeatmapChart({
                       strokeWidth={0.5}
                       style={{ cursor: interactive ? 'pointer' : 'default' }}
                       onClick={() => cell && handleCellClick(cell)}
-                      onMouseEnter={(e) => cell && handleMouseEnter(e, cell)}
+                      onMouseEnter={e => cell && handleMouseEnter(e, cell)}
                       onMouseLeave={handleMouseLeave}
                     />
                   )
@@ -229,12 +253,14 @@ export function HeatmapChart({
               )}
             </svg>
           </div>
-          
+
           {/* Color Legend */}
           {config.legend?.show && (
             <div className="flex items-center gap-4 mt-4">
               <span className="text-sm text-muted-foreground">
-                {config.tooltip?.format ? config.tooltip.format(minValue) : minValue}
+                {config.tooltip?.format
+                  ? config.tooltip.format(minValue)
+                  : minValue}
               </span>
               <div className="flex">
                 {Array.from({ length: 10 }).map((_, index) => {
@@ -249,13 +275,15 @@ export function HeatmapChart({
                 })}
               </div>
               <span className="text-sm text-muted-foreground">
-                {config.tooltip?.format ? config.tooltip.format(maxValue) : maxValue}
+                {config.tooltip?.format
+                  ? config.tooltip.format(maxValue)
+                  : maxValue}
               </span>
             </div>
           )}
         </div>
       </ResponsiveContainer>
-      
+
       {/* Custom Tooltip */}
       {tooltip.visible && tooltip.data && (
         <div
@@ -270,11 +298,11 @@ export function HeatmapChart({
               {tooltip.data.x} × {tooltip.data.y}
             </div>
             <div className="text-muted-foreground">
-              Value: <span className="font-medium text-foreground">
-                {config.tooltip?.format 
-                  ? config.tooltip.format(tooltip.data.value) 
-                  : tooltip.data.value
-                }
+              Value:{' '}
+              <span className="font-medium text-foreground">
+                {config.tooltip?.format
+                  ? config.tooltip.format(tooltip.data.value)
+                  : tooltip.data.value}
               </span>
             </div>
           </div>

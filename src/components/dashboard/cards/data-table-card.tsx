@@ -105,16 +105,24 @@ export function DataTableCard({
       filtered = [...filtered].sort((a, b) => {
         const aValue = a[sortColumn]
         const bValue = b[sortColumn]
-        
+
         if (aValue === bValue) return 0
-        
+
         const comparison = aValue < bValue ? -1 : 1
         return sortDirection === 'asc' ? comparison : -comparison
       })
     }
 
     return filtered
-  }, [data, searchTerm, sortColumn, sortDirection, columns, searchable, sortable])
+  }, [
+    data,
+    searchTerm,
+    sortColumn,
+    sortDirection,
+    columns,
+    searchable,
+    sortable,
+  ])
 
   // Paginate data
   const paginatedData = useMemo(() => {
@@ -126,12 +134,12 @@ export function DataTableCard({
 
   const handleSort = (columnKey: string) => {
     if (!sortable) return
-    
+
     const column = columns.find(col => col.key === columnKey)
     if (!column?.sortable) return
 
     if (sortColumn === columnKey) {
-      setSortDirection(prev => 
+      setSortDirection(prev =>
         prev === 'asc' ? 'desc' : prev === 'desc' ? null : 'asc'
       )
       if (sortDirection === 'desc') {
@@ -150,14 +158,14 @@ export function DataTableCard({
       // Default export implementation
       const dataToExport = processedData
       const filename = `${title?.replace(/\s+/g, '_').toLowerCase() || 'data'}.${format}`
-      
+
       if (format === 'csv') {
         const headers = columns.map(col => col.label).join(',')
-        const rows = dataToExport.map(row =>
-          columns.map(col => `"${row[col.key] || ''}"`).join(',')
-        ).join('\n')
+        const rows = dataToExport
+          .map(row => columns.map(col => `"${row[col.key] || ''}"`).join(','))
+          .join('\n')
         const csv = `${headers}\n${rows}`
-        
+
         const blob = new Blob([csv], { type: 'text/csv' })
         const url = URL.createObjectURL(blob)
         const a = document.createElement('a')
@@ -187,12 +195,12 @@ export function DataTableCard({
             <Input
               placeholder="Search..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
               className="pl-8 h-8 w-32"
             />
           </div>
         )}
-        
+
         {exportable && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -215,7 +223,7 @@ export function DataTableCard({
             </DropdownMenuContent>
           </DropdownMenu>
         )}
-        
+
         {actions && (
           <>
             {(searchable || exportable) && (
@@ -275,12 +283,14 @@ export function DataTableCard({
           <Table>
             <TableHeader>
               <TableRow>
-                {columns.map((column) => (
+                {columns.map(column => (
                   <TableHead
                     key={column.key}
                     className={cn(
                       column.className,
-                      sortable && column.sortable !== false && 'cursor-pointer hover:bg-muted/50'
+                      sortable &&
+                        column.sortable !== false &&
+                        'cursor-pointer hover:bg-muted/50'
                     )}
                     onClick={() => handleSort(column.key)}
                   >
@@ -307,7 +317,7 @@ export function DataTableCard({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {paginatedData.map((row) => (
+              {paginatedData.map(row => (
                 <TableRow
                   key={row.id}
                   className={cn(
@@ -315,15 +325,11 @@ export function DataTableCard({
                   )}
                   onClick={() => onRowClick?.(row)}
                 >
-                  {columns.map((column) => (
-                    <TableCell
-                      key={column.key}
-                      className={column.className}
-                    >
+                  {columns.map(column => (
+                    <TableCell key={column.key} className={column.className}>
                       {column.render
                         ? column.render(row[column.key], row)
-                        : row[column.key]
-                      }
+                        : row[column.key]}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -335,7 +341,7 @@ export function DataTableCard({
         {totalPages > 1 && (
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
-              Showing {((currentPage - 1) * pageSize) + 1} to{' '}
+              Showing {(currentPage - 1) * pageSize + 1} to{' '}
               {Math.min(currentPage * pageSize, processedData.length)} of{' '}
               {processedData.length} entries
             </p>
@@ -354,7 +360,9 @@ export function DataTableCard({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                onClick={() =>
+                  setCurrentPage(prev => Math.min(totalPages, prev + 1))
+                }
                 disabled={currentPage === totalPages}
               >
                 Next

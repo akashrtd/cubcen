@@ -12,11 +12,11 @@ const ThrowError = ({ shouldThrow }: { shouldThrow: boolean }) => {
 // Component that uses the useErrorBoundary hook
 const ComponentWithHook = ({ shouldThrow }: { shouldThrow: boolean }) => {
   const { captureError } = useErrorBoundary()
-  
+
   if (shouldThrow) {
     captureError(new Error('Hook error'))
   }
-  
+
   return <div>Component with hook</div>
 }
 
@@ -48,7 +48,7 @@ describe('ErrorBoundary', () => {
         <div>Test content</div>
       </ErrorBoundary>
     )
-    
+
     expect(screen.getByText('Test content')).toBeInTheDocument()
   })
 
@@ -58,9 +58,11 @@ describe('ErrorBoundary', () => {
         <ThrowError shouldThrow={true} />
       </ErrorBoundary>
     )
-    
+
     expect(screen.getByText('Something went wrong')).toBeInTheDocument()
-    expect(screen.getByText(/an unexpected error occurred/i)).toBeInTheDocument()
+    expect(
+      screen.getByText(/an unexpected error occurred/i)
+    ).toBeInTheDocument()
   })
 
   it('displays error details when showDetails is true', () => {
@@ -69,35 +71,35 @@ describe('ErrorBoundary', () => {
         <ThrowError shouldThrow={true} />
       </ErrorBoundary>
     )
-    
+
     expect(screen.getByText('Test error')).toBeInTheDocument()
   })
 
   it('renders custom fallback component', () => {
     const CustomFallback = () => <div>Custom error message</div>
-    
+
     render(
       <ErrorBoundary fallback={CustomFallback}>
         <ThrowError shouldThrow={true} />
       </ErrorBoundary>
     )
-    
+
     expect(screen.getByText('Custom error message')).toBeInTheDocument()
   })
 
   it('calls onError callback when error occurs', () => {
     const mockOnError = jest.fn()
-    
+
     render(
       <ErrorBoundary onError={mockOnError}>
         <ThrowError shouldThrow={true} />
       </ErrorBoundary>
     )
-    
+
     expect(mockOnError).toHaveBeenCalledWith(
       expect.any(Error),
       expect.objectContaining({
-        componentStack: expect.any(String)
+        componentStack: expect.any(String),
       })
     )
   })
@@ -108,22 +110,22 @@ describe('ErrorBoundary', () => {
         <ThrowError shouldThrow={true} />
       </ErrorBoundary>
     )
-    
+
     expect(screen.getByText('Something went wrong')).toBeInTheDocument()
-    
+
     const retryButton = screen.getByRole('button', { name: /try again/i })
     expect(retryButton).toBeInTheDocument()
-    
+
     // Click retry button
     fireEvent.click(retryButton)
-    
+
     // Re-render with no error
     rerender(
       <ErrorBoundary>
         <ThrowError shouldThrow={false} />
       </ErrorBoundary>
     )
-    
+
     expect(screen.getByText('No error')).toBeInTheDocument()
   })
 
@@ -134,16 +136,16 @@ describe('ErrorBoundary', () => {
       value: { reload: mockReload },
       writable: true,
     })
-    
+
     render(
       <ErrorBoundary>
         <ThrowError shouldThrow={true} />
       </ErrorBoundary>
     )
-    
+
     const reloadButton = screen.getByRole('button', { name: /reload page/i })
     expect(reloadButton).toBeInTheDocument()
-    
+
     fireEvent.click(reloadButton)
     expect(mockReload).toHaveBeenCalled()
   })
@@ -152,16 +154,16 @@ describe('ErrorBoundary', () => {
     // Mock window.location.href
     delete (window as any).location
     window.location = { href: '' } as any
-    
+
     render(
       <ErrorBoundary>
         <ThrowError shouldThrow={true} />
       </ErrorBoundary>
     )
-    
+
     const homeButton = screen.getByRole('button', { name: /go home/i })
     expect(homeButton).toBeInTheDocument()
-    
+
     fireEvent.click(homeButton)
     expect(window.location.href).toBe('/dashboard')
   })
@@ -172,7 +174,7 @@ describe('ErrorBoundary', () => {
         <ThrowError shouldThrow={true} />
       </ErrorBoundary>
     )
-    
+
     expect(screen.getByText(/error id:/i)).toBeInTheDocument()
   })
 
@@ -182,7 +184,7 @@ describe('ErrorBoundary', () => {
         <ThrowError shouldThrow={true} />
       </ErrorBoundary>
     )
-    
+
     expect(screen.getByText(/in test page/i)).toBeInTheDocument()
   })
 
@@ -192,7 +194,7 @@ describe('ErrorBoundary', () => {
         <ThrowError shouldThrow={true} />
       </ErrorBoundary>
     )
-    
+
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
         '/api/cubcen/v1/errors/report',
@@ -213,10 +215,10 @@ describe('ErrorBoundary', () => {
         <ThrowError shouldThrow={true} />
       </ErrorBoundary>
     )
-    
+
     const reportButton = screen.getByRole('button', { name: /report error/i })
     fireEvent.click(reportButton)
-    
+
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
         '/api/cubcen/v1/errors/user-report',
@@ -233,15 +235,15 @@ describe('ErrorBoundary', () => {
         <ThrowError shouldThrow={true} />
       </ErrorBoundary>
     )
-    
+
     const detailsButton = screen.getByRole('button', { name: /show details/i })
     fireEvent.click(detailsButton)
-    
+
     expect(screen.getByText(/stack trace/i)).toBeInTheDocument()
-    
+
     const hideButton = screen.getByRole('button', { name: /hide details/i })
     fireEvent.click(hideButton)
-    
+
     expect(screen.queryByText(/stack trace/i)).not.toBeInTheDocument()
   })
 
@@ -251,21 +253,21 @@ describe('ErrorBoundary', () => {
         <ThrowError shouldThrow={true} />
       </ErrorBoundary>
     )
-    
+
     expect(container.firstChild).toHaveClass('custom-error-boundary')
   })
 
   it('logs error to console in development', () => {
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
-    
+
     render(
       <ErrorBoundary>
         <ThrowError shouldThrow={true} />
       </ErrorBoundary>
     )
-    
+
     expect(consoleSpy).toHaveBeenCalled()
-    
+
     consoleSpy.mockRestore()
   })
 })
@@ -277,7 +279,7 @@ describe('useErrorBoundary', () => {
         <ComponentWithHook shouldThrow={false} />
       </ErrorBoundary>
     )
-    
+
     expect(screen.getByText('Component with hook')).toBeInTheDocument()
   })
 
@@ -287,7 +289,7 @@ describe('useErrorBoundary', () => {
         <ComponentWithHook shouldThrow={true} />
       </ErrorBoundary>
     )
-    
+
     expect(screen.getByText('Something went wrong')).toBeInTheDocument()
   })
 
@@ -296,20 +298,20 @@ describe('useErrorBoundary', () => {
       const { error } = useErrorBoundary()
       return <div>{error ? 'Has error' : 'No error'}</div>
     }
-    
+
     render(
       <ErrorBoundary>
         <ComponentWithErrorState />
       </ErrorBoundary>
     )
-    
+
     expect(screen.getByText('No error')).toBeInTheDocument()
   })
 
   it('provides reset function', () => {
     const ComponentWithReset = () => {
       const { reset, captureError } = useErrorBoundary()
-      
+
       return (
         <div>
           <button onClick={() => captureError(new Error('Test'))}>
@@ -319,14 +321,16 @@ describe('useErrorBoundary', () => {
         </div>
       )
     }
-    
+
     render(
       <ErrorBoundary>
         <ComponentWithReset />
       </ErrorBoundary>
     )
-    
-    expect(screen.getByRole('button', { name: /throw error/i })).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('button', { name: /throw error/i })
+    ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /reset/i })).toBeInTheDocument()
   })
 })

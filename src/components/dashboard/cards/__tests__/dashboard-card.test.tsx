@@ -12,25 +12,15 @@ describe('DashboardCard', () => {
 
   describe('Basic Rendering', () => {
     it('renders with title and subtitle', () => {
-      render(
-        <DashboardCard
-          title="Test Card"
-          subtitle="Test subtitle"
-        />
-      )
-      
+      render(<DashboardCard title="Test Card" subtitle="Test subtitle" />)
+
       expect(screen.getByText('Test Card')).toBeInTheDocument()
       expect(screen.getByText('Test subtitle')).toBeInTheDocument()
     })
 
     it('renders with icon', () => {
-      render(
-        <DashboardCard
-          title="Test Card"
-          icon={Activity}
-        />
-      )
-      
+      render(<DashboardCard title="Test Card" icon={Activity} />)
+
       expect(screen.getByText('Test Card')).toBeInTheDocument()
       // Icon should be present but hidden from screen readers
       const icon = document.querySelector('[aria-hidden="true"]')
@@ -45,11 +35,11 @@ describe('DashboardCard', () => {
             value: 1234,
             unit: 'users',
             trend: 'up',
-            trendValue: '+12%'
+            trendValue: '+12%',
           }}
         />
       )
-      
+
       expect(screen.getByText('1234')).toBeInTheDocument()
       expect(screen.getByText('users')).toBeInTheDocument()
       expect(screen.getByText('+12%')).toBeInTheDocument()
@@ -62,25 +52,24 @@ describe('DashboardCard', () => {
           <div>Custom content</div>
         </DashboardCard>
       )
-      
+
       expect(screen.getByText('Custom content')).toBeInTheDocument()
     })
 
     it('renders with actions', () => {
       render(
-        <DashboardCard
-          title="Test Card"
-          actions={<button>Action</button>}
-        />
+        <DashboardCard title="Test Card" actions={<button>Action</button>} />
       )
-      
+
       expect(screen.getByRole('button', { name: 'Action' })).toBeInTheDocument()
     })
   })
 
   describe('Size Variants', () => {
     it('applies correct size classes', () => {
-      const { rerender } = render(<DashboardCard size="sm" title="Small Card" />)
+      const { rerender } = render(
+        <DashboardCard size="sm" title="Small Card" />
+      )
       expect(document.querySelector('.dashboard-card-sm')).toBeInTheDocument()
 
       rerender(<DashboardCard size="md" title="Medium Card" />)
@@ -96,27 +85,37 @@ describe('DashboardCard', () => {
 
   describe('Priority Variants', () => {
     it('applies correct priority classes', () => {
-      const { rerender } = render(<DashboardCard priority="low" title="Low Priority" />)
-      expect(document.querySelector('.dashboard-card-priority-low')).toBeInTheDocument()
+      const { rerender } = render(
+        <DashboardCard priority="low" title="Low Priority" />
+      )
+      expect(
+        document.querySelector('.dashboard-card-priority-low')
+      ).toBeInTheDocument()
 
       rerender(<DashboardCard priority="medium" title="Medium Priority" />)
-      expect(document.querySelector('.dashboard-card-priority-medium')).toBeInTheDocument()
+      expect(
+        document.querySelector('.dashboard-card-priority-medium')
+      ).toBeInTheDocument()
 
       rerender(<DashboardCard priority="high" title="High Priority" />)
-      expect(document.querySelector('.dashboard-card-priority-high')).toBeInTheDocument()
+      expect(
+        document.querySelector('.dashboard-card-priority-high')
+      ).toBeInTheDocument()
 
       rerender(<DashboardCard priority="critical" title="Critical Priority" />)
-      expect(document.querySelector('.dashboard-card-priority-critical')).toBeInTheDocument()
+      expect(
+        document.querySelector('.dashboard-card-priority-critical')
+      ).toBeInTheDocument()
     })
   })
 
   describe('Loading State', () => {
     it('renders loading skeleton', () => {
       render(<DashboardCard loading title="Loading Card" />)
-      
+
       expect(screen.getByRole('status')).toBeInTheDocument()
       expect(screen.getByLabelText('Loading card content')).toBeInTheDocument()
-      
+
       // Should show skeleton elements
       const skeletons = document.querySelectorAll('.animate-pulse')
       expect(skeletons.length).toBeGreaterThan(0)
@@ -132,7 +131,7 @@ describe('DashboardCard', () => {
           <div>Content</div>
         </DashboardCard>
       )
-      
+
       expect(screen.queryByText('Loading Card')).not.toBeInTheDocument()
       expect(screen.queryByText('100')).not.toBeInTheDocument()
       expect(screen.queryByText('Content')).not.toBeInTheDocument()
@@ -142,7 +141,7 @@ describe('DashboardCard', () => {
   describe('Error State', () => {
     it('renders error message', () => {
       render(<DashboardCard error="Something went wrong" />)
-      
+
       expect(screen.getByRole('alert')).toBeInTheDocument()
       expect(screen.getByLabelText('Card error')).toBeInTheDocument()
       expect(screen.getByText('Error')).toBeInTheDocument()
@@ -159,7 +158,7 @@ describe('DashboardCard', () => {
           <div>Content</div>
         </DashboardCard>
       )
-      
+
       expect(screen.queryByText('Error Card')).not.toBeInTheDocument()
       expect(screen.queryByText('100')).not.toBeInTheDocument()
       expect(screen.queryByText('Content')).not.toBeInTheDocument()
@@ -176,11 +175,11 @@ describe('DashboardCard', () => {
           onClick={handleClick}
         />
       )
-      
+
       const card = screen.getByRole('button')
       expect(card).toBeInTheDocument()
       expect(card).toHaveAttribute('aria-label', 'Interactive Card card')
-      
+
       await user.click(card)
       expect(handleClick).toHaveBeenCalledTimes(1)
     })
@@ -194,14 +193,14 @@ describe('DashboardCard', () => {
           onClick={handleClick}
         />
       )
-      
+
       const card = screen.getByRole('button')
-      
+
       // Test Enter key
       card.focus()
       await user.keyboard('{Enter}')
       expect(handleClick).toHaveBeenCalledTimes(1)
-      
+
       // Test Space key
       await user.keyboard(' ')
       expect(handleClick).toHaveBeenCalledTimes(2)
@@ -210,16 +209,13 @@ describe('DashboardCard', () => {
     it('does not handle clicks when not interactive', async () => {
       const handleClick = jest.fn()
       render(
-        <DashboardCard
-          title="Non-interactive Card"
-          onClick={handleClick}
-        />
+        <DashboardCard title="Non-interactive Card" onClick={handleClick} />
       )
-      
+
       const card = document.querySelector('.dashboard-card')
       expect(card).not.toHaveAttribute('role', 'button')
       expect(card).not.toHaveAttribute('tabindex')
-      
+
       if (card) {
         await user.click(card)
       }
@@ -234,7 +230,7 @@ describe('DashboardCard', () => {
           onClick={() => {}}
         />
       )
-      
+
       const card = screen.getByRole('button')
       expect(card).toHaveClass('cursor-pointer')
     })
@@ -247,11 +243,11 @@ describe('DashboardCard', () => {
           metric={{
             value: 100,
             trend: 'up',
-            trendValue: '+5%'
+            trendValue: '+5%',
           }}
         />
       )
-      
+
       const trendElement = screen.getByLabelText('Trend: up, +5%')
       expect(trendElement).toHaveClass('bg-green-100', 'text-green-800')
     })
@@ -262,11 +258,11 @@ describe('DashboardCard', () => {
           metric={{
             value: 100,
             trend: 'down',
-            trendValue: '-3%'
+            trendValue: '-3%',
           }}
         />
       )
-      
+
       const trendElement = screen.getByLabelText('Trend: down, -3%')
       expect(trendElement).toHaveClass('bg-red-100', 'text-red-800')
     })
@@ -277,11 +273,11 @@ describe('DashboardCard', () => {
           metric={{
             value: 100,
             trend: 'neutral',
-            trendValue: '0%'
+            trendValue: '0%',
           }}
         />
       )
-      
+
       const trendElement = screen.getByLabelText('Trend: neutral, 0%')
       expect(trendElement).toHaveClass('bg-gray-100', 'text-gray-800')
     })
@@ -289,13 +285,8 @@ describe('DashboardCard', () => {
 
   describe('Custom Styling', () => {
     it('applies custom className', () => {
-      render(
-        <DashboardCard
-          title="Custom Card"
-          className="custom-class"
-        />
-      )
-      
+      render(<DashboardCard title="Custom Card" className="custom-class" />)
+
       const card = document.querySelector('.dashboard-card')
       expect(card).toHaveClass('custom-class')
     })
@@ -309,7 +300,7 @@ describe('DashboardCard', () => {
           className="custom-class"
         />
       )
-      
+
       const card = document.querySelector('.dashboard-card')
       expect(card).toHaveClass(
         'dashboard-card',
@@ -331,7 +322,7 @@ describe('DashboardCard', () => {
             value: 1234,
             unit: 'users',
             trend: 'up',
-            trendValue: '+12%'
+            trendValue: '+12%',
           }}
           interactive
           onClick={() => {}}
@@ -339,7 +330,7 @@ describe('DashboardCard', () => {
           <div>Card content</div>
         </DashboardCard>
       )
-      
+
       const results = await axe(container)
       expect(results).toHaveNoViolations()
     })
@@ -352,33 +343,28 @@ describe('DashboardCard', () => {
           onClick={() => {}}
         />
       )
-      
+
       const card = screen.getByRole('button')
       expect(card).toHaveAttribute('aria-label', 'Interactive Card card')
     })
 
     it('provides proper ARIA labels for loading state', () => {
       render(<DashboardCard loading />)
-      
+
       expect(screen.getByRole('status')).toBeInTheDocument()
       expect(screen.getByLabelText('Loading card content')).toBeInTheDocument()
     })
 
     it('provides proper ARIA labels for error state', () => {
       render(<DashboardCard error="Test error" />)
-      
+
       expect(screen.getByRole('alert')).toBeInTheDocument()
       expect(screen.getByLabelText('Card error')).toBeInTheDocument()
     })
 
     it('hides decorative icons from screen readers', () => {
-      render(
-        <DashboardCard
-          title="Card with Icon"
-          icon={Activity}
-        />
-      )
-      
+      render(<DashboardCard title="Card with Icon" icon={Activity} />)
+
       const icon = document.querySelector('[aria-hidden="true"]')
       expect(icon).toBeInTheDocument()
     })
@@ -392,35 +378,23 @@ describe('DashboardCard', () => {
           subtitle="This is also a long subtitle that should truncate properly"
         />
       )
-      
+
       const title = screen.getByText(/This is a very long title/)
       const subtitle = screen.getByText(/This is also a long subtitle/)
-      
+
       expect(title).toBeInTheDocument()
       expect(subtitle).toBeInTheDocument()
       expect(subtitle).toHaveClass('truncate')
     })
 
     it('handles metric values with different types', () => {
-      const { rerender } = render(
-        <DashboardCard
-          metric={{ value: 1234 }}
-        />
-      )
+      const { rerender } = render(<DashboardCard metric={{ value: 1234 }} />)
       expect(screen.getByText('1234')).toBeInTheDocument()
 
-      rerender(
-        <DashboardCard
-          metric={{ value: '1.2K' }}
-        />
-      )
+      rerender(<DashboardCard metric={{ value: '1.2K' }} />)
       expect(screen.getByText('1.2K')).toBeInTheDocument()
 
-      rerender(
-        <DashboardCard
-          metric={{ value: 0 }}
-        />
-      )
+      rerender(<DashboardCard metric={{ value: 0 }} />)
       expect(screen.getByText('0')).toBeInTheDocument()
     })
   })
@@ -428,18 +402,16 @@ describe('DashboardCard', () => {
   describe('Performance', () => {
     it('renders efficiently with minimal re-renders', () => {
       const renderSpy = jest.fn()
-      
+
       function TestCard(props: any) {
         renderSpy()
         return <DashboardCard {...props} />
       }
-      
-      const { rerender } = render(
-        <TestCard title="Test Card" />
-      )
-      
+
+      const { rerender } = render(<TestCard title="Test Card" />)
+
       expect(renderSpy).toHaveBeenCalledTimes(1)
-      
+
       // Re-render with same props should not cause additional renders
       rerender(<TestCard title="Test Card" />)
       expect(renderSpy).toHaveBeenCalledTimes(2)

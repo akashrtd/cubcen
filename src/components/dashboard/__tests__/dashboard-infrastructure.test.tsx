@@ -12,7 +12,7 @@ describe('Dashboard Infrastructure', () => {
           <div>Test content</div>
         </DashboardLayout>
       )
-      
+
       expect(screen.getByText('Test content')).toBeInTheDocument()
     })
 
@@ -26,7 +26,7 @@ describe('Dashboard Infrastructure', () => {
           <div>Main content</div>
         </DashboardLayout>
       )
-      
+
       expect(screen.getByText('Header')).toBeInTheDocument()
       expect(screen.getByText('Sidebar')).toBeInTheDocument()
       expect(screen.getByText('Footer')).toBeInTheDocument()
@@ -42,7 +42,7 @@ describe('Dashboard Infrastructure', () => {
           metric={{ value: 100, unit: 'items' }}
         />
       )
-      
+
       expect(screen.getByText('Test Card')).toBeInTheDocument()
       expect(screen.getByText('100')).toBeInTheDocument()
       expect(screen.getByText('items')).toBeInTheDocument()
@@ -50,13 +50,13 @@ describe('Dashboard Infrastructure', () => {
 
     it('shows loading state', () => {
       const { container } = render(<DashboardCard loading />)
-      
+
       expect(container.querySelector('.animate-pulse')).toBeInTheDocument()
     })
 
     it('shows error state', () => {
       render(<DashboardCard error="Test error" />)
-      
+
       expect(screen.getByText('Test error')).toBeInTheDocument()
     })
   })
@@ -73,7 +73,7 @@ describe('Dashboard Infrastructure', () => {
           </GridItem>
         </DashboardGrid>
       )
-      
+
       expect(screen.getByText('Grid item 1')).toBeInTheDocument()
       expect(screen.getByText('Grid item 2')).toBeInTheDocument()
     })
@@ -81,38 +81,25 @@ describe('Dashboard Infrastructure', () => {
 
   describe('ChartWrapper', () => {
     it('shows loading state', () => {
-      render(
-        <ChartWrapper
-          type="line"
-          data={{ datasets: [] }}
-          loading
-        />
-      )
-      
+      render(<ChartWrapper type="line" data={{ datasets: [] }} loading />)
+
       expect(screen.getByText(/loading chart/i)).toBeInTheDocument()
     })
 
     it('shows error state', () => {
       render(
-        <ChartWrapper
-          type="line"
-          data={{ datasets: [] }}
-          error="Chart error"
-        />
+        <ChartWrapper type="line" data={{ datasets: [] }} error="Chart error" />
       )
-      
+
       expect(screen.getByText('Chart error')).toBeInTheDocument()
     })
 
     it('shows placeholder when not loading or error', () => {
-      render(
-        <ChartWrapper
-          type="line"
-          data={{ datasets: [] }}
-        />
-      )
-      
-      expect(screen.getByText(/chart component for line will be implemented/i)).toBeInTheDocument()
+      render(<ChartWrapper type="line" data={{ datasets: [] }} />)
+
+      expect(
+        screen.getByText(/chart component for line will be implemented/i)
+      ).toBeInTheDocument()
     })
   })
 })

@@ -6,11 +6,11 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Shield, UserPlus } from 'lucide-react'
 
 // Lazy load user components
-const LazyUserList = lazy(() => 
+const LazyUserList = lazy(() =>
   import('./user-list').then(module => ({ default: module.UserList }))
 )
 
-const LazyUserForm = lazy(() => 
+const LazyUserForm = lazy(() =>
   import('./user-form').then(module => ({ default: module.UserForm }))
 )
 
@@ -62,7 +62,7 @@ const UserFormLoading = () => (
       </div>
       <Skeleton className="h-4 w-80" />
     </div>
-    
+
     <div className="grid gap-4">
       <div className="space-y-2">
         <Skeleton className="h-4 w-20" />
@@ -81,7 +81,7 @@ const UserFormLoading = () => (
         <Skeleton className="h-10 w-full" />
       </div>
     </div>
-    
+
     <div className="flex justify-end gap-2">
       <Skeleton className="h-10 w-20" />
       <Skeleton className="h-10 w-20" />

@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import type { ChartType } from '@/types/dashboard'
 
 // Dynamic imports for chart components with proper error boundaries
-const LazyLineChart = lazy(() => 
+const LazyLineChart = lazy(() =>
   import('../charts/chart-types/line-chart')
     .then(module => ({ default: module.LineChart }))
     .catch(error => {
@@ -13,7 +13,7 @@ const LazyLineChart = lazy(() =>
     })
 )
 
-const LazyBarChart = lazy(() => 
+const LazyBarChart = lazy(() =>
   import('../charts/chart-types/bar-chart')
     .then(module => ({ default: module.BarChart }))
     .catch(error => {
@@ -22,7 +22,7 @@ const LazyBarChart = lazy(() =>
     })
 )
 
-const LazyPieChart = lazy(() => 
+const LazyPieChart = lazy(() =>
   import('../charts/chart-types/pie-chart')
     .then(module => ({ default: module.PieChart }))
     .catch(error => {
@@ -31,7 +31,7 @@ const LazyPieChart = lazy(() =>
     })
 )
 
-const LazyHeatmapChart = lazy(() => 
+const LazyHeatmapChart = lazy(() =>
   import('../charts/chart-types/heatmap-chart')
     .then(module => ({ default: module.HeatmapChart }))
     .catch(error => {
@@ -41,7 +41,7 @@ const LazyHeatmapChart = lazy(() =>
 )
 
 // Dynamic imports for other heavy components
-const LazyAnalyticsDashboard = lazy(() => 
+const LazyAnalyticsDashboard = lazy(() =>
   import('../../analytics/analytics-dashboard')
     .then(module => ({ default: module.AnalyticsDashboard }))
     .catch(error => {
@@ -50,7 +50,7 @@ const LazyAnalyticsDashboard = lazy(() =>
     })
 )
 
-const LazyPerformanceCharts = lazy(() => 
+const LazyPerformanceCharts = lazy(() =>
   import('../../analytics/performance-charts')
     .then(module => ({ default: module.PerformanceCharts }))
     .catch(error => {
@@ -59,7 +59,7 @@ const LazyPerformanceCharts = lazy(() =>
     })
 )
 
-const LazyTaskBoard = lazy(() => 
+const LazyTaskBoard = lazy(() =>
   import('../../kanban/task-board')
     .then(module => ({ default: module.TaskBoard }))
     .catch(error => {
@@ -107,7 +107,10 @@ function ChartLoadingFallback({ height = 300 }: { height?: number }) {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <div className="flex justify-between items-end" style={{ height: `${height}px` }}>
+          <div
+            className="flex justify-between items-end"
+            style={{ height: `${height}px` }}
+          >
             {Array.from({ length: 8 }).map((_, i) => (
               <Skeleton
                 key={i}
@@ -165,7 +168,7 @@ function DashboardLoadingFallback() {
 export function createDynamicChart(type: ChartType) {
   const ChartComponent = ({ fallbackHeight = 300, ...props }: any) => {
     let LazyComponent: ComponentType<any>
-    
+
     switch (type) {
       case 'line':
       case 'area':
@@ -202,7 +205,7 @@ export function withDynamicLoading<T extends object>(
   fallback?: React.ReactNode,
   errorFallback?: React.ReactNode
 ) {
-  const LazyComponent = lazy(() => 
+  const LazyComponent = lazy(() =>
     importFn().catch(error => {
       console.error('Dynamic import failed:', error)
       return { default: () => errorFallback || <ComponentErrorFallback /> }
@@ -221,13 +224,19 @@ export function withDynamicLoading<T extends object>(
 
 // Pre-configured dynamic components
 export const DynamicAnalyticsDashboard = withDynamicLoading(
-  () => import('../../analytics/analytics-dashboard').then(m => ({ default: m.AnalyticsDashboard })),
+  () =>
+    import('../../analytics/analytics-dashboard').then(m => ({
+      default: m.AnalyticsDashboard,
+    })),
   <DashboardLoadingFallback />,
   <ComponentErrorFallback />
 )
 
 export const DynamicPerformanceCharts = withDynamicLoading(
-  () => import('../../analytics/performance-charts').then(m => ({ default: m.PerformanceCharts })),
+  () =>
+    import('../../analytics/performance-charts').then(m => ({
+      default: m.PerformanceCharts,
+    })),
   <ChartLoadingFallback />,
   <ChartErrorFallback />
 )
@@ -286,25 +295,25 @@ export function addResourceHints() {
 export function trackDynamicImportPerformance(componentName: string) {
   if (typeof window !== 'undefined' && 'performance' in window) {
     const startTime = performance.now()
-    
+
     return {
       end: () => {
         const endTime = performance.now()
         const loadTime = endTime - startTime
-        
+
         // Log performance metrics
         console.log(`Dynamic import ${componentName}: ${loadTime.toFixed(2)}ms`)
-        
+
         // Send to analytics if available
         if ('gtag' in window) {
-          (window as any).gtag('event', 'dynamic_import_performance', {
+          ;(window as any).gtag('event', 'dynamic_import_performance', {
             component_name: componentName,
             load_time: Math.round(loadTime),
           })
         }
-      }
+      },
     }
   }
-  
+
   return { end: () => {} }
 }

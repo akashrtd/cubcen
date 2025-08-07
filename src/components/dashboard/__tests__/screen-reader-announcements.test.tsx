@@ -12,7 +12,9 @@ import { ScreenReaderAnnouncer } from '../accessibility/screen-reader-announcer'
 jest.mock('../mobile/touch-interactions', () => ({
   useIsMobile: jest.fn(() => false),
   useIsTouchDevice: jest.fn(() => false),
-  TouchInteraction: ({ children }: { children: React.ReactNode }) => <div>{children}</div>
+  TouchInteraction: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
 }))
 
 describe('Screen Reader Announcements', () => {
@@ -23,10 +25,10 @@ describe('Screen Reader Announcements', () => {
         data: [
           { x: 'Jan', y: 100 },
           { x: 'Feb', y: 150 },
-          { x: 'Mar', y: 120 }
-        ]
-      }
-    ]
+          { x: 'Mar', y: 120 },
+        ],
+      },
+    ],
   }
 
   describe('Card State Announcements', () => {
@@ -42,10 +44,7 @@ describe('Screen Reader Announcements', () => {
       // Change to loading state
       rerender(
         <DashboardThemeProvider>
-          <DashboardCard
-            title="Dynamic Card"
-            loading={true}
-          />
+          <DashboardCard title="Dynamic Card" loading={true} />
         </DashboardThemeProvider>
       )
 
@@ -74,10 +73,7 @@ describe('Screen Reader Announcements', () => {
       // Change to error state
       rerender(
         <DashboardThemeProvider>
-          <DashboardCard
-            title="Error Card"
-            error="Network connection failed"
-          />
+          <DashboardCard title="Error Card" error="Network connection failed" />
         </DashboardThemeProvider>
       )
 
@@ -98,10 +94,7 @@ describe('Screen Reader Announcements', () => {
     it('announces successful data loading', async () => {
       const { rerender } = render(
         <DashboardThemeProvider>
-          <DashboardCard
-            title="Data Card"
-            loading={true}
-          />
+          <DashboardCard title="Data Card" loading={true} />
         </DashboardThemeProvider>
       )
 
@@ -114,7 +107,7 @@ describe('Screen Reader Announcements', () => {
               value: 1234,
               unit: 'users',
               trend: 'up',
-              trendValue: '+12%'
+              trendValue: '+12%',
             }}
           >
             <div>Loaded content</div>
@@ -155,7 +148,7 @@ describe('Screen Reader Announcements', () => {
       )
 
       const card = screen.getByRole('button')
-      
+
       // Card should have comprehensive ARIA label
       expect(card).toHaveAttribute(
         'aria-label',
@@ -176,10 +169,7 @@ describe('Screen Reader Announcements', () => {
     it('provides comprehensive chart descriptions', async () => {
       render(
         <DashboardThemeProvider>
-          <ChartWrapper
-            type="line"
-            data={mockChartData}
-          />
+          <ChartWrapper type="line" data={mockChartData} />
         </DashboardThemeProvider>
       )
 
@@ -189,7 +179,7 @@ describe('Screen Reader Announcements', () => {
       })
 
       const chartContainer = screen.getByRole('application')
-      
+
       // Chart should have descriptive label
       expect(chartContainer).toHaveAttribute(
         'aria-label',
@@ -201,17 +191,16 @@ describe('Screen Reader Announcements', () => {
       expect(description).toBeInTheDocument()
 
       // Instructions for interaction should be provided
-      const instructions = screen.getByText(/interactive chart.*tap.*pinch.*swipe/i)
+      const instructions = screen.getByText(
+        /interactive chart.*tap.*pinch.*swipe/i
+      )
       expect(instructions).toBeInTheDocument()
     })
 
     it('announces chart data updates', async () => {
       const { rerender } = render(
         <DashboardThemeProvider>
-          <ChartWrapper
-            type="line"
-            data={mockChartData}
-          />
+          <ChartWrapper type="line" data={mockChartData} />
         </DashboardThemeProvider>
       )
 
@@ -228,18 +217,15 @@ describe('Screen Reader Announcements', () => {
               { x: 'Jan', y: 200 },
               { x: 'Feb', y: 250 },
               { x: 'Mar', y: 220 },
-              { x: 'Apr', y: 300 }
-            ]
-          }
-        ]
+              { x: 'Apr', y: 300 },
+            ],
+          },
+        ],
       }
 
       rerender(
         <DashboardThemeProvider>
-          <ChartWrapper
-            type="line"
-            data={updatedData}
-          />
+          <ChartWrapper type="line" data={updatedData} />
         </DashboardThemeProvider>
       )
 
@@ -253,7 +239,9 @@ describe('Screen Reader Announcements', () => {
 
       // Updated description should reflect new data
       await waitFor(() => {
-        const description = screen.getByText(/chart with.*dataset.*4 data points/i)
+        const description = screen.getByText(
+          /chart with.*dataset.*4 data points/i
+        )
         expect(description).toBeInTheDocument()
       })
     })
@@ -279,7 +267,7 @@ describe('Screen Reader Announcements', () => {
       })
 
       const chartContainer = screen.getByRole('application')
-      
+
       // Focus and interact with chart
       chartContainer.focus()
       await user.keyboard('{Enter}')
@@ -344,8 +332,9 @@ describe('Screen Reader Announcements', () => {
       expect(card2).toHaveFocus()
 
       // Grid structure should be conveyed through proper markup
-      const grid = screen.getByRole('grid', { hidden: true }) || 
-                   document.querySelector('.dashboard-grid')
+      const grid =
+        screen.getByRole('grid', { hidden: true }) ||
+        document.querySelector('.dashboard-grid')
       expect(grid).toBeInTheDocument()
     })
 
@@ -354,7 +343,7 @@ describe('Screen Reader Announcements', () => {
       Object.defineProperty(window, 'innerWidth', {
         writable: true,
         configurable: true,
-        value: 600
+        value: 600,
       })
 
       const { useIsMobile } = require('../mobile/touch-interactions')
@@ -403,12 +392,14 @@ describe('Screen Reader Announcements', () => {
       )
 
       const searchInput = screen.getByTestId('search-input')
-      
+
       // Type in search
       await user.type(searchInput, 'result')
 
       // Results region should be announced
-      const resultsRegion = screen.getByRole('region', { name: /search results/i })
+      const resultsRegion = screen.getByRole('region', {
+        name: /search results/i,
+      })
       expect(resultsRegion).toBeInTheDocument()
       expect(resultsRegion).toHaveAttribute('aria-live', 'polite')
     })
@@ -440,7 +431,9 @@ describe('Screen Reader Announcements', () => {
       const noResults = screen.getByText('No results found')
       expect(noResults).toBeInTheDocument()
 
-      const resultsRegion = screen.getByRole('region', { name: /search results/i })
+      const resultsRegion = screen.getByRole('region', {
+        name: /search results/i,
+      })
       expect(resultsRegion).toHaveAttribute('aria-live', 'polite')
     })
   })
@@ -459,10 +452,7 @@ describe('Screen Reader Announcements', () => {
             >
               25% complete
             </div>
-            <DashboardCard
-              title="Progress Card"
-              loading={true}
-            />
+            <DashboardCard title="Progress Card" loading={true} />
           </div>
         </DashboardThemeProvider>
       )
@@ -480,10 +470,7 @@ describe('Screen Reader Announcements', () => {
             >
               75% complete
             </div>
-            <DashboardCard
-              title="Progress Card"
-              loading={true}
-            />
+            <DashboardCard title="Progress Card" loading={true} />
           </div>
         </DashboardThemeProvider>
       )
@@ -496,10 +483,7 @@ describe('Screen Reader Announcements', () => {
     it('announces completion status', async () => {
       const { rerender } = render(
         <DashboardThemeProvider>
-          <DashboardCard
-            title="Task Card"
-            loading={true}
-          />
+          <DashboardCard title="Task Card" loading={true} />
         </DashboardThemeProvider>
       )
 
@@ -510,7 +494,7 @@ describe('Screen Reader Announcements', () => {
             title="Task Card"
             metric={{
               value: 'Complete',
-              trend: 'up'
+              trend: 'up',
             }}
           >
             <div role="status" aria-live="polite">
@@ -532,7 +516,11 @@ describe('Screen Reader Announcements', () => {
         <DashboardThemeProvider>
           <div>
             <DashboardCard title="Existing Card" />
-            <div role="region" aria-live="polite" aria-label="Dashboard updates">
+            <div
+              role="region"
+              aria-live="polite"
+              aria-label="Dashboard updates"
+            >
               {/* Updates will be announced here */}
             </div>
           </div>
@@ -545,14 +533,20 @@ describe('Screen Reader Announcements', () => {
           <div>
             <DashboardCard title="Existing Card" />
             <DashboardCard title="New Card" />
-            <div role="region" aria-live="polite" aria-label="Dashboard updates">
+            <div
+              role="region"
+              aria-live="polite"
+              aria-label="Dashboard updates"
+            >
               New card added to dashboard
             </div>
           </div>
         </DashboardThemeProvider>
       )
 
-      const updatesRegion = screen.getByRole('region', { name: /dashboard updates/i })
+      const updatesRegion = screen.getByRole('region', {
+        name: /dashboard updates/i,
+      })
       expect(updatesRegion).toHaveTextContent('New card added to dashboard')
     })
 
@@ -562,7 +556,11 @@ describe('Screen Reader Announcements', () => {
           <div>
             <DashboardCard title="Card 1" />
             <DashboardCard title="Card 2" />
-            <div role="region" aria-live="polite" aria-label="Dashboard updates">
+            <div
+              role="region"
+              aria-live="polite"
+              aria-label="Dashboard updates"
+            >
               {/* Updates will be announced here */}
             </div>
           </div>
@@ -574,14 +572,20 @@ describe('Screen Reader Announcements', () => {
         <DashboardThemeProvider>
           <div>
             <DashboardCard title="Card 1" />
-            <div role="region" aria-live="polite" aria-label="Dashboard updates">
+            <div
+              role="region"
+              aria-live="polite"
+              aria-label="Dashboard updates"
+            >
               Card removed from dashboard
             </div>
           </div>
         </DashboardThemeProvider>
       )
 
-      const updatesRegion = screen.getByRole('region', { name: /dashboard updates/i })
+      const updatesRegion = screen.getByRole('region', {
+        name: /dashboard updates/i,
+      })
       expect(updatesRegion).toHaveTextContent('Card removed from dashboard')
     })
   })
@@ -594,10 +598,7 @@ describe('Screen Reader Announcements', () => {
       render(
         <DashboardThemeProvider>
           <div>
-            <DashboardCard
-              title="Failed Card"
-              error="Network error"
-            >
+            <DashboardCard title="Failed Card" error="Network error">
               <button onClick={onRetry} data-testid="retry-btn">
                 Retry
               </button>
@@ -615,17 +616,16 @@ describe('Screen Reader Announcements', () => {
       expect(onRetry).toHaveBeenCalled()
 
       // Retry attempt should be announced
-      const feedbackRegion = screen.getByRole('status', { name: /action feedback/i })
+      const feedbackRegion = screen.getByRole('status', {
+        name: /action feedback/i,
+      })
       expect(feedbackRegion).toBeInTheDocument()
     })
 
     it('announces successful error recovery', async () => {
       const { rerender } = render(
         <DashboardThemeProvider>
-          <DashboardCard
-            title="Recovery Card"
-            error="Connection failed"
-          />
+          <DashboardCard title="Recovery Card" error="Connection failed" />
         </DashboardThemeProvider>
       )
 
@@ -645,7 +645,9 @@ describe('Screen Reader Announcements', () => {
       )
 
       const recoveryStatus = screen.getByRole('status')
-      expect(recoveryStatus).toHaveTextContent('Connection restored successfully')
+      expect(recoveryStatus).toHaveTextContent(
+        'Connection restored successfully'
+      )
     })
   })
 
@@ -661,8 +663,9 @@ describe('Screen Reader Announcements', () => {
       )
 
       // Screen reader announcer should be present but hidden
-      const announcer = screen.getByRole('status', { hidden: true }) ||
-                       screen.getByRole('log', { hidden: true })
+      const announcer =
+        screen.getByRole('status', { hidden: true }) ||
+        screen.getByRole('log', { hidden: true })
       expect(announcer).toBeInTheDocument()
     })
   })

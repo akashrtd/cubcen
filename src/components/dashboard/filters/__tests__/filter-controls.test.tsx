@@ -7,22 +7,27 @@ import { FilterProvider } from '../filter-context'
 // Mock Next.js navigation
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(() => ({ replace: jest.fn() })),
-  useSearchParams: jest.fn(() => ({ get: jest.fn(), toString: jest.fn(() => '') })),
+  useSearchParams: jest.fn(() => ({
+    get: jest.fn(),
+    toString: jest.fn(() => ''),
+  })),
 }))
 
 // Test wrapper with FilterProvider
 function TestWrapper({ children, ...props }: any) {
-  return (
-    <FilterProvider {...props}>
-      {children}
-    </FilterProvider>
-  )
+  return <FilterProvider {...props}>{children}</FilterProvider>
 }
 
 // Test component for useFilteredData hook
-function FilteredDataTest({ data, searchFields }: { data: any[], searchFields: string[] }) {
+function FilteredDataTest({
+  data,
+  searchFields,
+}: {
+  data: any[]
+  searchFields: string[]
+}) {
   const filteredData = useFilteredData(data, searchFields)
-  
+
   return (
     <div>
       <div data-testid="filtered-count">{filteredData.length}</div>
@@ -102,8 +107,9 @@ describe('FilterControls', () => {
     await user.type(searchInput, 'test')
 
     // Clear button should appear
-    const clearButton = screen.getByRole('button', { name: /clear search/i }) ||
-                       searchInput.parentElement?.querySelector('button')
+    const clearButton =
+      screen.getByRole('button', { name: /clear search/i }) ||
+      searchInput.parentElement?.querySelector('button')
     expect(clearButton).toBeInTheDocument()
   })
 
@@ -158,7 +164,12 @@ describe('FilterControls', () => {
 
   it('renders custom filter options', async () => {
     const customOptions = [
-      { key: 'department', label: 'Department', type: 'select' as const, options: ['IT', 'HR', 'Finance'] },
+      {
+        key: 'department',
+        label: 'Department',
+        type: 'select' as const,
+        options: ['IT', 'HR', 'Finance'],
+      },
       { key: 'score', label: 'Score', type: 'number' as const },
       { key: 'description', label: 'Description', type: 'string' as const },
     ]
@@ -181,7 +192,12 @@ describe('FilterControls', () => {
 
   it('handles select-type custom filters', async () => {
     const customOptions = [
-      { key: 'department', label: 'Department', type: 'select' as const, options: ['IT', 'HR'] },
+      {
+        key: 'department',
+        label: 'Department',
+        type: 'select' as const,
+        options: ['IT', 'HR'],
+      },
     ]
 
     render(
@@ -194,9 +210,11 @@ describe('FilterControls', () => {
     )
 
     await user.click(screen.getByText('Advanced'))
-    
+
     // Find and click the department select
-    const departmentSelect = screen.getByRole('combobox', { name: /department/i })
+    const departmentSelect = screen.getByRole('combobox', {
+      name: /department/i,
+    })
     await user.click(departmentSelect)
 
     // Select IT option
@@ -221,7 +239,7 @@ describe('FilterControls', () => {
     // Fill in custom filter form
     const nameInput = screen.getByPlaceholderText('Filter name')
     const valueInput = screen.getByPlaceholderText('Filter value')
-    
+
     await user.type(nameInput, 'custom-field')
     await user.type(valueInput, 'custom-value')
 
@@ -293,7 +311,9 @@ describe('FilterControls', () => {
     })
 
     // Find and click X button
-    const removeButton = screen.getByText('search: test').parentElement?.querySelector('svg')
+    const removeButton = screen
+      .getByText('search: test')
+      .parentElement?.querySelector('svg')
     if (removeButton) {
       await user.click(removeButton)
     }
@@ -332,9 +352,30 @@ describe('FilterControls', () => {
 
 describe('useFilteredData', () => {
   const testData = [
-    { id: 1, name: 'John Doe', status: 'active', priority: 'high', category: 'user', createdAt: '2023-01-15' },
-    { id: 2, name: 'Jane Smith', status: 'inactive', priority: 'low', category: 'admin', createdAt: '2023-02-20' },
-    { id: 3, name: 'Bob Johnson', status: 'active', priority: 'medium', category: 'user', createdAt: '2023-03-10' },
+    {
+      id: 1,
+      name: 'John Doe',
+      status: 'active',
+      priority: 'high',
+      category: 'user',
+      createdAt: '2023-01-15',
+    },
+    {
+      id: 2,
+      name: 'Jane Smith',
+      status: 'inactive',
+      priority: 'low',
+      category: 'admin',
+      createdAt: '2023-02-20',
+    },
+    {
+      id: 3,
+      name: 'Bob Johnson',
+      status: 'active',
+      priority: 'medium',
+      category: 'user',
+      createdAt: '2023-03-10',
+    },
   ]
 
   it('returns all data when no filters are applied', () => {
@@ -382,10 +423,10 @@ describe('useFilteredData', () => {
 
     // Add status filter through advanced filters
     await userEvent.click(screen.getByText('Advanced'))
-    
+
     const nameInput = screen.getByPlaceholderText('Filter name')
     const valueInput = screen.getByPlaceholderText('Filter value')
-    
+
     await userEvent.type(nameInput, 'status')
     await userEvent.type(valueInput, 'active')
     await userEvent.click(screen.getByText('Add Filter'))
@@ -413,10 +454,10 @@ describe('useFilteredData', () => {
 
     // Add status filter
     await userEvent.click(screen.getByText('Advanced'))
-    
+
     const nameInput = screen.getByPlaceholderText('Filter name')
     const valueInput = screen.getByPlaceholderText('Filter value')
-    
+
     await userEvent.type(nameInput, 'status')
     await userEvent.type(valueInput, 'active')
     await userEvent.click(screen.getByText('Add Filter'))

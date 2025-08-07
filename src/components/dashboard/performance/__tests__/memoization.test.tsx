@@ -49,9 +49,11 @@ describe('Memoization', () => {
     })
 
     it('should use custom comparison function', () => {
-      const TestComponent = ({ obj }: { obj: { id: number; name: string } }) => (
-        <div data-testid="test-component">{obj.name}</div>
-      )
+      const TestComponent = ({
+        obj,
+      }: {
+        obj: { id: number; name: string }
+      }) => <div data-testid="test-component">{obj.name}</div>
 
       const MemoizedTestComponent = createMemoizedComponent(
         TestComponent,
@@ -86,14 +88,22 @@ describe('Memoization', () => {
 
     it('should memoize based on props', () => {
       const { rerender } = render(
-        <MemoizedDashboardCard title="Test" data={{ value: 100 }} loading={false}>
+        <MemoizedDashboardCard
+          title="Test"
+          data={{ value: 100 }}
+          loading={false}
+        >
           <div>Content</div>
         </MemoizedDashboardCard>
       )
 
       // Same props should not re-render
       rerender(
-        <MemoizedDashboardCard title="Test" data={{ value: 100 }} loading={false}>
+        <MemoizedDashboardCard
+          title="Test"
+          data={{ value: 100 }}
+          loading={false}
+        >
           <div>Content</div>
         </MemoizedDashboardCard>
       )
@@ -141,11 +151,9 @@ describe('Memoization', () => {
         return input * 2
       }
 
-      const result = useMemoizedCalculation(
-        expensiveCalculation,
-        [input],
-        { key: 'test-calculation' }
-      )
+      const result = useMemoizedCalculation(expensiveCalculation, [input], {
+        key: 'test-calculation',
+      })
 
       return <div data-testid="result">{result}</div>
     }
@@ -167,7 +175,7 @@ describe('Memoization', () => {
   describe('useStableObject', () => {
     const TestComponent = ({ obj }: { obj: { id: number; name: string } }) => {
       const stableObj = useStableObject(obj)
-      
+
       return (
         <div data-testid="stable-obj">
           {stableObj.id}-{stableObj.name}
@@ -197,20 +205,21 @@ describe('Memoization', () => {
         <div data-testid="monitored-component">{message}</div>
       )
 
-      const MonitoredComponent = withPerformanceMonitoring(TestComponent, 'TestComponent')
+      const MonitoredComponent = withPerformanceMonitoring(
+        TestComponent,
+        'TestComponent'
+      )
 
       render(<MonitoredComponent message="Hello" />)
-      expect(screen.getByTestId('monitored-component')).toHaveTextContent('Hello')
+      expect(screen.getByTestId('monitored-component')).toHaveTextContent(
+        'Hello'
+      )
     })
   })
 
   describe('RenderOptimizer', () => {
-    it('should batch updates', (done) => {
-      const updates = [
-        jest.fn(),
-        jest.fn(),
-        jest.fn(),
-      ]
+    it('should batch updates', done => {
+      const updates = [jest.fn(), jest.fn(), jest.fn()]
 
       RenderOptimizer.batchUpdates(updates)
 
@@ -223,7 +232,7 @@ describe('Memoization', () => {
       }, 10)
     })
 
-    it('should debounce updates', (done) => {
+    it('should debounce updates', done => {
       const updateFn = jest.fn()
 
       // Call multiple times rapidly
@@ -254,16 +263,25 @@ describe('Memoization', () => {
   describe('useOptimizedRender', () => {
     const TestComponent = () => {
       const { scheduleUpdate } = useOptimizedRender()
-      
+
       return (
         <div>
-          <button onClick={() => scheduleUpdate('high')} data-testid="high-priority">
+          <button
+            onClick={() => scheduleUpdate('high')}
+            data-testid="high-priority"
+          >
             High Priority
           </button>
-          <button onClick={() => scheduleUpdate('normal')} data-testid="normal-priority">
+          <button
+            onClick={() => scheduleUpdate('normal')}
+            data-testid="normal-priority"
+          >
             Normal Priority
           </button>
-          <button onClick={() => scheduleUpdate('low')} data-testid="low-priority">
+          <button
+            onClick={() => scheduleUpdate('low')}
+            data-testid="low-priority"
+          >
             Low Priority
           </button>
         </div>
@@ -272,7 +290,7 @@ describe('Memoization', () => {
 
     it('should provide optimized render scheduling', () => {
       render(<TestComponent />)
-      
+
       expect(screen.getByTestId('high-priority')).toBeInTheDocument()
       expect(screen.getByTestId('normal-priority')).toBeInTheDocument()
       expect(screen.getByTestId('low-priority')).toBeInTheDocument()
@@ -292,14 +310,16 @@ describe('Memoization', () => {
         </RenderBarrier>
       )
 
-      expect(screen.getByTestId('barrier-child')).toHaveTextContent('Protected content')
+      expect(screen.getByTestId('barrier-child')).toHaveTextContent(
+        'Protected content'
+      )
     })
   })
 
   describe('useRenderPerformance', () => {
     const TestComponent = ({ name }: { name: string }) => {
       const { renderCount, averageRenderTime } = useRenderPerformance(name)
-      
+
       return (
         <div>
           <div data-testid="render-count">{renderCount}</div>
@@ -310,9 +330,9 @@ describe('Memoization', () => {
 
     it('should track render performance', () => {
       const { rerender } = render(<TestComponent name="TestComponent" />)
-      
+
       expect(screen.getByTestId('render-count')).toHaveTextContent('1')
-      
+
       // Re-render to increment count
       rerender(<TestComponent name="TestComponent" />)
       expect(screen.getByTestId('render-count')).toHaveTextContent('2')

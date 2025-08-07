@@ -237,7 +237,9 @@ describe('Dashboard Navigation Integration', () => {
         </DashboardLayout>
       )
 
-      const dashboardBreadcrumb = screen.getByRole('link', { name: /dashboard/i })
+      const dashboardBreadcrumb = screen.getByRole('link', {
+        name: /dashboard/i,
+      })
       fireEvent.click(dashboardBreadcrumb)
 
       expect(mockPush).toHaveBeenCalledWith('/dashboard')
@@ -281,7 +283,9 @@ describe('Dashboard Navigation Integration', () => {
       fireEvent.click(menuToggle)
 
       await waitFor(() => {
-        const mobileMenu = screen.getByRole('navigation', { name: /mobile menu/i })
+        const mobileMenu = screen.getByRole('navigation', {
+          name: /mobile menu/i,
+        })
         expect(mobileMenu).toBeVisible()
       })
     })
@@ -305,7 +309,9 @@ describe('Dashboard Navigation Integration', () => {
       fireEvent.click(menuToggle)
 
       await waitFor(() => {
-        const mobileMenu = screen.getByRole('navigation', { name: /mobile menu/i })
+        const mobileMenu = screen.getByRole('navigation', {
+          name: /mobile menu/i,
+        })
         expect(mobileMenu).toBeVisible()
       })
 
@@ -314,7 +320,9 @@ describe('Dashboard Navigation Integration', () => {
       fireEvent.click(analyticsLink)
 
       await waitFor(() => {
-        const mobileMenu = screen.queryByRole('navigation', { name: /mobile menu/i })
+        const mobileMenu = screen.queryByRole('navigation', {
+          name: /mobile menu/i,
+        })
         expect(mobileMenu).not.toBeVisible()
       })
     })
@@ -354,7 +362,7 @@ describe('Dashboard Navigation Integration', () => {
 
     it('handles logout when logout is clicked', async () => {
       const mockLogout = jest.fn()
-      
+
       // Mock auth hook with logout function
       jest.doMock('@/hooks/use-auth', () => ({
         useAuth: jest.fn(() => ({

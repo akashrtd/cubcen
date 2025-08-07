@@ -85,7 +85,13 @@ export async function GET(request: NextRequest) {
         ],
       },
       errorPatterns: {
-        labels: ['Connection Timeout', 'Auth Failed', 'Rate Limited', 'Invalid Data', 'Server Error'],
+        labels: [
+          'Connection Timeout',
+          'Auth Failed',
+          'Rate Limited',
+          'Invalid Data',
+          'Server Error',
+        ],
         datasets: [
           {
             data: [35, 25, 20, 15, 5],

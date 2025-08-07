@@ -260,10 +260,14 @@ export function validateRequest(schemas: {
 
       next()
     } catch (error) {
-      structuredLogger.error('Unexpected request validation error', error as Error, {
-        path: req.path,
-        method: req.method,
-      })
+      structuredLogger.error(
+        'Unexpected request validation error',
+        error as Error,
+        {
+          path: req.path,
+          method: req.method,
+        }
+      )
 
       res.status(500).json({
         error: {

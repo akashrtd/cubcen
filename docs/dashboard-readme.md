@@ -10,7 +10,7 @@ A comprehensive, modular dashboard UI framework built for the Cubcen AI Agent Ma
 ♿ **Accessibility First** - WCAG 2.1 AA compliant with full keyboard and screen reader support  
 📊 **Advanced Charts** - Integrated data visualization with Recharts  
 ⚡ **Performance Optimized** - Lazy loading, memoization, and progressive enhancement  
-🎯 **TypeScript Ready** - Full TypeScript support with comprehensive type definitions  
+🎯 **TypeScript Ready** - Full TypeScript support with comprehensive type definitions
 
 ## Quick Start
 
@@ -21,12 +21,12 @@ The dashboard system is built into the Cubcen platform. No additional installati
 ### Basic Usage
 
 ```tsx
-import { 
+import {
   DashboardLayout,
   DashboardGrid,
   DashboardCard,
   ChartCard,
-  DashboardThemeProvider 
+  DashboardThemeProvider,
 } from '@/components/dashboard'
 
 function MyDashboard() {
@@ -44,7 +44,7 @@ function MyDashboard() {
               value: 1234,
               unit: 'users',
               trend: 'up',
-              trendValue: '+12%'
+              trendValue: '+12%',
             }}
           />
           <ChartCard
@@ -79,6 +79,7 @@ The main layout component providing responsive grid-based layouts.
 ```
 
 **Key Features:**
+
 - Responsive CSS Grid layout
 - Collapsible sidebar with state persistence
 - Mobile bottom navigation
@@ -98,7 +99,7 @@ Versatile card component for displaying metrics, content, and interactive elemen
     value: 98.5,
     unit: '%',
     trend: 'up',
-    trendValue: '+2.1%'
+    trendValue: '+2.1%',
   }}
   size="md"
   priority="high"
@@ -110,6 +111,7 @@ Versatile card component for displaying metrics, content, and interactive elemen
 ```
 
 **Props:**
+
 - `title` - Card title
 - `subtitle` - Optional subtitle
 - `icon` - Lucide React icon component
@@ -147,6 +149,7 @@ const chartData = {
 ```
 
 **Supported Chart Types:**
+
 - `line` - Line charts with optional area fill
 - `bar` - Vertical and horizontal bar charts
 - `pie` - Pie charts with customizable segments
@@ -158,7 +161,7 @@ const chartData = {
 
 Responsive 12-column grid system optimized for dashboard layouts.
 
-```tsx
+````tsx
 <DashboardGrid
   responsive={{
     mobile: 1,
@@ -196,7 +199,7 @@ function App() {
     </DashboardThemeProvider>
   )
 }
-```
+````
 
 ### Custom Theme
 
@@ -231,8 +234,9 @@ const customTheme = {
 import { useDashboardTheme } from '@/components/dashboard/theming/theme-provider'
 
 function ThemeControls() {
-  const { theme, setTheme, dashboardTheme, setDashboardTheme } = useDashboardTheme()
-  
+  const { theme, setTheme, dashboardTheme, setDashboardTheme } =
+    useDashboardTheme()
+
   return (
     <div>
       <button onClick={() => setTheme('light')}>Light</button>
@@ -272,7 +276,7 @@ test('dashboard is accessible', async () => {
       </DashboardLayout>
     </DashboardThemeProvider>
   )
-  
+
   const results = await axe(container)
   expect(results).toHaveNoViolations()
 })
@@ -327,10 +331,7 @@ Large datasets are progressively loaded:
 All components are mobile-first and responsive:
 
 ```tsx
-<DashboardLayout
-  showMobileNav={true}
-  enableSwipeNavigation={true}
->
+<DashboardLayout showMobileNav={true} enableSwipeNavigation={true}>
   <DashboardGrid>
     {/* Automatically stacks on mobile */}
     <GridItem colSpan={{ mobile: 1, tablet: 2, desktop: 3 }}>
@@ -353,13 +354,13 @@ Touch gestures are supported throughout:
 
 ### Analytics Dashboard
 
-```tsx
-import { 
-  DashboardLayout, 
-  DashboardGrid, 
+````tsx
+import {
+  DashboardLayout,
+  DashboardGrid,
   GridItem,
-  MetricCard, 
-  ChartCard 
+  MetricCard,
+  ChartCard
 } from '@/components/dashboard'
 
 function AnalyticsDashboard() {
@@ -396,7 +397,7 @@ function AnalyticsDashboard() {
             priority="high"
           />
         </GridItem>
-        
+
         {/* Charts */}
         <GridItem colSpan={{ mobile: 1, tablet: 3, desktop: 6 }}>
           <ChartCard
@@ -406,7 +407,7 @@ function AnalyticsDashboard() {
             exportable={true}
           />
         </GridItem>
-        
+
         <GridItem colSpan={{ mobile: 1, tablet: 3, desktop: 6 }}>
           <ChartCard
             title="Revenue Distribution"
@@ -458,7 +459,7 @@ function ErrorMonitoringDashboard() {
             onClick={() => console.log('View errors')}
           />
         </GridItem>
-        
+
         <GridItem colSpan={{ mobile: 1, tablet: 4, desktop: 9 }}>
           <ChartCard
             title="Error Rate Over Time"
@@ -472,7 +473,7 @@ function ErrorMonitoringDashboard() {
     </DashboardLayout>
   )
 }
-```
+````
 
 ### Custom Themed Dashboard
 
@@ -486,18 +487,15 @@ const darkTheme = {
     surface: '#1E293B',
     text: {
       primary: '#F1F5F9',
-      secondary: '#CBD5E1'
-    }
-  }
+      secondary: '#CBD5E1',
+    },
+  },
 }
 
 function CustomDashboard() {
   return (
     <DashboardThemeProvider theme={darkTheme}>
-      <DashboardLayout
-        header={<h1>Custom Dashboard</h1>}
-        showMobileNav={true}
-      >
+      <DashboardLayout header={<h1>Custom Dashboard</h1>} showMobileNav={true}>
         <DashboardGrid>
           <GridItem colSpan={{ mobile: 1, tablet: 3, desktop: 4 }}>
             <DashboardCard
@@ -525,10 +523,10 @@ function Dashboard() {
       <DashboardGrid>
         {/* Group related metrics */}
         <MetricsSection />
-        
+
         {/* Separate chart section */}
         <ChartsSection />
-        
+
         {/* Data tables at bottom */}
         <DataSection />
       </DashboardGrid>
@@ -554,20 +552,22 @@ function BadDashboard() {
 ```tsx
 // ✅ Good: Consistent data structure
 const chartData = {
-  datasets: [{
-    label: 'Revenue',
-    data: [
-      { x: 'Q1', y: 10000 },
-      { x: 'Q2', y: 12000 },
-      { x: 'Q3', y: 11000 }
-    ]
-  }]
+  datasets: [
+    {
+      label: 'Revenue',
+      data: [
+        { x: 'Q1', y: 10000 },
+        { x: 'Q2', y: 12000 },
+        { x: 'Q3', y: 11000 },
+      ],
+    },
+  ],
 }
 
 // ❌ Avoid: Inconsistent data formats
 const badData = [
   { quarter: 'Q1', revenue: 10000 },
-  { period: 'Q2', amount: 12000 }
+  { period: 'Q2', amount: 12000 },
 ]
 ```
 
@@ -619,8 +619,8 @@ function BadComponent({ data }) {
 // ✅ Good: Use CSS variables for custom styling
 .custom-card {
   background: linear-gradient(
-    135deg, 
-    var(--dashboard-primary), 
+    135deg,
+    var(--dashboard-primary),
     var(--dashboard-secondary)
   );
   border: 2px solid var(--dashboard-accent);
@@ -667,21 +667,14 @@ import { DashboardThemeProvider } from '@/components/dashboard/theming/theme-pro
 import { DashboardCard } from '@/components/dashboard/cards/dashboard-card'
 
 function renderWithTheme(component: React.ReactElement) {
-  return render(
-    <DashboardThemeProvider>
-      {component}
-    </DashboardThemeProvider>
-  )
+  return render(<DashboardThemeProvider>{component}</DashboardThemeProvider>)
 }
 
 test('dashboard card displays metric', () => {
   renderWithTheme(
-    <DashboardCard
-      title="Test Card"
-      metric={{ value: 100, unit: 'items' }}
-    />
+    <DashboardCard title="Test Card" metric={{ value: 100, unit: 'items' }} />
   )
-  
+
   expect(screen.getByText('Test Card')).toBeInTheDocument()
   expect(screen.getByText('100')).toBeInTheDocument()
   expect(screen.getByText('items')).toBeInTheDocument()
@@ -689,7 +682,7 @@ test('dashboard card displays metric', () => {
 
 test('interactive card handles clicks', () => {
   const handleClick = jest.fn()
-  
+
   renderWithTheme(
     <DashboardCard
       title="Interactive Card"
@@ -697,7 +690,7 @@ test('interactive card handles clicks', () => {
       onClick={handleClick}
     />
   )
-  
+
   fireEvent.click(screen.getByRole('button'))
   expect(handleClick).toHaveBeenCalled()
 })
@@ -718,7 +711,7 @@ test('dashboard layout is accessible', async () => {
       </DashboardGrid>
     </DashboardLayout>
   )
-  
+
   const results = await axe(container)
   expect(results).toHaveNoViolations()
 })
@@ -753,10 +746,15 @@ test('dashboard layout is accessible', async () => {
 ```tsx
 // ✅ Correct data format
 const data = {
-  datasets: [{
-    label: 'Data',
-    data: [{ x: 'A', y: 1 }, { x: 'B', y: 2 }]
-  }]
+  datasets: [
+    {
+      label: 'Data',
+      data: [
+        { x: 'A', y: 1 },
+        { x: 'B', y: 2 },
+      ],
+    },
+  ],
 }
 
 // ❌ Incorrect format

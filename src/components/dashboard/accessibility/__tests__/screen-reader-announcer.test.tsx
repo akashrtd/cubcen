@@ -1,12 +1,12 @@
 import React from 'react'
 import { render, screen, waitFor, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { 
-  ScreenReaderAnnouncer, 
+import {
+  ScreenReaderAnnouncer,
   useScreenReaderAnnouncer,
   DataAnnouncer,
   ChartAnnouncer,
-  FilterAnnouncer
+  FilterAnnouncer,
 } from '../screen-reader-announcer'
 
 // Mock window.announceToScreenReader
@@ -24,11 +24,11 @@ afterEach(() => {
 describe('ScreenReaderAnnouncer', () => {
   it('renders live regions correctly', () => {
     render(<ScreenReaderAnnouncer />)
-    
+
     // Should have both polite and assertive live regions
     const politeRegion = document.querySelector('[aria-live="polite"]')
     const assertiveRegion = document.querySelector('[aria-live="assertive"]')
-    
+
     expect(politeRegion).toBeInTheDocument()
     expect(assertiveRegion).toBeInTheDocument()
     expect(politeRegion).toHaveAttribute('role', 'status')
@@ -37,26 +37,26 @@ describe('ScreenReaderAnnouncer', () => {
 
   it('sets up global announce function', () => {
     render(<ScreenReaderAnnouncer />)
-    
+
     expect((window as any).announceToScreenReader).toBeDefined()
     expect(typeof (window as any).announceToScreenReader).toBe('function')
   })
 
   it('cleans up global announce function on unmount', () => {
     const { unmount } = render(<ScreenReaderAnnouncer />)
-    
+
     expect((window as any).announceToScreenReader).toBeDefined()
-    
+
     unmount()
-    
+
     expect((window as any).announceToScreenReader).toBeUndefined()
   })
 
   it('processes announcement queue', async () => {
     render(<ScreenReaderAnnouncer />)
-    
+
     const politeRegion = document.querySelector('[aria-live="polite"]')
-    
+
     act(() => {
       ;(window as any).announceToScreenReader('Test message', 'polite')
     })
@@ -66,16 +66,19 @@ describe('ScreenReaderAnnouncer', () => {
     })
 
     // Message should be cleared after processing
-    await waitFor(() => {
-      expect(politeRegion).toHaveTextContent('')
-    }, { timeout: 200 })
+    await waitFor(
+      () => {
+        expect(politeRegion).toHaveTextContent('')
+      },
+      { timeout: 200 }
+    )
   })
 
   it('handles assertive announcements', async () => {
     render(<ScreenReaderAnnouncer />)
-    
+
     const assertiveRegion = document.querySelector('[aria-live="assertive"]')
-    
+
     act(() => {
       ;(window as any).announceToScreenReader('Urgent message', 'assertive')
     })
@@ -87,9 +90,9 @@ describe('ScreenReaderAnnouncer', () => {
 
   it('handles delayed announcements', async () => {
     render(<ScreenReaderAnnouncer />)
-    
+
     const politeRegion = document.querySelector('[aria-live="polite"]')
-    
+
     act(() => {
       ;(window as any).announceToScreenReader('Delayed message', 'polite', 100)
     })
@@ -98,15 +101,18 @@ describe('ScreenReaderAnnouncer', () => {
     expect(politeRegion).toHaveTextContent('')
 
     // Should appear after delay
-    await waitFor(() => {
-      expect(politeRegion).toHaveTextContent('Delayed message')
-    }, { timeout: 200 })
+    await waitFor(
+      () => {
+        expect(politeRegion).toHaveTextContent('Delayed message')
+      },
+      { timeout: 200 }
+    )
   })
 })
 
 describe('useScreenReaderAnnouncer', () => {
   function TestComponent() {
-    const { 
+    const {
       announce,
       announcePolite,
       announceAssertive,
@@ -115,20 +121,38 @@ describe('useScreenReaderAnnouncer', () => {
       announceNavigation,
       announceFilterChange,
       announceLoading,
-      announceError
+      announceError,
     } = useScreenReaderAnnouncer()
 
     return (
       <div>
         <button onClick={() => announce('Test message')}>Announce</button>
-        <button onClick={() => announcePolite('Polite message')}>Announce Polite</button>
-        <button onClick={() => announceAssertive('Assertive message')}>Announce Assertive</button>
-        <button onClick={() => announceDataUpdate('chart data', 'updated')}>Data Update</button>
-        <button onClick={() => announceChartInteraction('Selected', 'bar', 100, 'sales chart')}>Chart Interaction</button>
-        <button onClick={() => announceNavigation('dashboard')}>Navigation</button>
-        <button onClick={() => announceFilterChange('status', 'active', 5)}>Filter Change</button>
+        <button onClick={() => announcePolite('Polite message')}>
+          Announce Polite
+        </button>
+        <button onClick={() => announceAssertive('Assertive message')}>
+          Announce Assertive
+        </button>
+        <button onClick={() => announceDataUpdate('chart data', 'updated')}>
+          Data Update
+        </button>
+        <button
+          onClick={() =>
+            announceChartInteraction('Selected', 'bar', 100, 'sales chart')
+          }
+        >
+          Chart Interaction
+        </button>
+        <button onClick={() => announceNavigation('dashboard')}>
+          Navigation
+        </button>
+        <button onClick={() => announceFilterChange('status', 'active', 5)}>
+          Filter Change
+        </button>
         <button onClick={() => announceLoading('data', true)}>Loading</button>
-        <button onClick={() => announceError('Network error', 'API')}>Error</button>
+        <button onClick={() => announceError('Network error', 'API')}>
+          Error
+        </button>
       </div>
     )
   }
@@ -142,8 +166,12 @@ describe('useScreenReaderAnnouncer', () => {
     render(<TestComponent />)
 
     await user.click(screen.getByText('Announce'))
-    
-    expect(mockAnnounce).toHaveBeenCalledWith('Test message', 'polite', undefined)
+
+    expect(mockAnnounce).toHaveBeenCalledWith(
+      'Test message',
+      'polite',
+      undefined
+    )
   })
 
   it('announces polite messages', async () => {
@@ -151,8 +179,12 @@ describe('useScreenReaderAnnouncer', () => {
     render(<TestComponent />)
 
     await user.click(screen.getByText('Announce Polite'))
-    
-    expect(mockAnnounce).toHaveBeenCalledWith('Polite message', 'polite', undefined)
+
+    expect(mockAnnounce).toHaveBeenCalledWith(
+      'Polite message',
+      'polite',
+      undefined
+    )
   })
 
   it('announces assertive messages', async () => {
@@ -160,8 +192,12 @@ describe('useScreenReaderAnnouncer', () => {
     render(<TestComponent />)
 
     await user.click(screen.getByText('Announce Assertive'))
-    
-    expect(mockAnnounce).toHaveBeenCalledWith('Assertive message', 'assertive', undefined)
+
+    expect(mockAnnounce).toHaveBeenCalledWith(
+      'Assertive message',
+      'assertive',
+      undefined
+    )
   })
 
   it('announces data updates', async () => {
@@ -169,7 +205,7 @@ describe('useScreenReaderAnnouncer', () => {
     render(<TestComponent />)
 
     await user.click(screen.getByText('Data Update'))
-    
+
     expect(mockAnnounce).toHaveBeenCalledWith('chart data updated', 'polite')
   })
 
@@ -178,8 +214,11 @@ describe('useScreenReaderAnnouncer', () => {
     render(<TestComponent />)
 
     await user.click(screen.getByText('Chart Interaction'))
-    
-    expect(mockAnnounce).toHaveBeenCalledWith('Selected bar with value 100 in sales chart', 'polite')
+
+    expect(mockAnnounce).toHaveBeenCalledWith(
+      'Selected bar with value 100 in sales chart',
+      'polite'
+    )
   })
 
   it('announces navigation changes', async () => {
@@ -187,8 +226,11 @@ describe('useScreenReaderAnnouncer', () => {
     render(<TestComponent />)
 
     await user.click(screen.getByText('Navigation'))
-    
-    expect(mockAnnounce).toHaveBeenCalledWith('Navigated to dashboard', 'polite')
+
+    expect(mockAnnounce).toHaveBeenCalledWith(
+      'Navigated to dashboard',
+      'polite'
+    )
   })
 
   it('announces filter changes', async () => {
@@ -196,8 +238,11 @@ describe('useScreenReaderAnnouncer', () => {
     render(<TestComponent />)
 
     await user.click(screen.getByText('Filter Change'))
-    
-    expect(mockAnnounce).toHaveBeenCalledWith('Filter applied: status set to active. Showing 5 results', 'polite')
+
+    expect(mockAnnounce).toHaveBeenCalledWith(
+      'Filter applied: status set to active. Showing 5 results',
+      'polite'
+    )
   })
 
   it('announces loading states', async () => {
@@ -205,7 +250,7 @@ describe('useScreenReaderAnnouncer', () => {
     render(<TestComponent />)
 
     await user.click(screen.getByText('Loading'))
-    
+
     expect(mockAnnounce).toHaveBeenCalledWith('Loading data', 'polite')
   })
 
@@ -214,8 +259,11 @@ describe('useScreenReaderAnnouncer', () => {
     render(<TestComponent />)
 
     await user.click(screen.getByText('Error'))
-    
-    expect(mockAnnounce).toHaveBeenCalledWith('Error: Network error in API', 'assertive')
+
+    expect(mockAnnounce).toHaveBeenCalledWith(
+      'Error: Network error in API',
+      'assertive'
+    )
   })
 })
 
@@ -279,7 +327,10 @@ describe('DataAnnouncer', () => {
       </DataAnnouncer>
     )
 
-    expect(mockAnnounce).toHaveBeenCalledWith('Error: Failed to load in chart', 'assertive')
+    expect(mockAnnounce).toHaveBeenCalledWith(
+      'Error: Failed to load in chart',
+      'assertive'
+    )
   })
 })
 
@@ -297,12 +348,19 @@ describe('ChartAnnouncer', () => {
 
     const selectedElement = { type: 'bar', value: 100 }
     rerender(
-      <ChartAnnouncer chartType="bar" data={[]} selectedElement={selectedElement}>
+      <ChartAnnouncer
+        chartType="bar"
+        data={[]}
+        selectedElement={selectedElement}
+      >
         <div>Chart</div>
       </ChartAnnouncer>
     )
 
-    expect(mockAnnounce).toHaveBeenCalledWith('Selected bar with value 100 in bar chart', 'polite')
+    expect(mockAnnounce).toHaveBeenCalledWith(
+      'Selected bar with value 100 in bar chart',
+      'polite'
+    )
   })
 
   it('handles different element types', () => {
@@ -314,12 +372,19 @@ describe('ChartAnnouncer', () => {
 
     const selectedElement = { y: 50, data: 'point data' }
     rerender(
-      <ChartAnnouncer chartType="line" data={[]} selectedElement={selectedElement}>
+      <ChartAnnouncer
+        chartType="line"
+        data={[]}
+        selectedElement={selectedElement}
+      >
         <div>Chart</div>
       </ChartAnnouncer>
     )
 
-    expect(mockAnnounce).toHaveBeenCalledWith('Selected element with value 50 in line chart', 'polite')
+    expect(mockAnnounce).toHaveBeenCalledWith(
+      'Selected element with value 50 in line chart',
+      'polite'
+    )
   })
 })
 
@@ -341,7 +406,10 @@ describe('FilterAnnouncer', () => {
       </FilterAnnouncer>
     )
 
-    expect(mockAnnounce).toHaveBeenCalledWith('Filter applied: status set to active. Showing 5 results', 'polite')
+    expect(mockAnnounce).toHaveBeenCalledWith(
+      'Filter applied: status set to active. Showing 5 results',
+      'polite'
+    )
   })
 
   it('handles multiple filter changes', () => {
@@ -357,8 +425,14 @@ describe('FilterAnnouncer', () => {
       </FilterAnnouncer>
     )
 
-    expect(mockAnnounce).toHaveBeenCalledWith('Filter applied: status set to active', 'polite')
-    expect(mockAnnounce).toHaveBeenCalledWith('Filter applied: type set to premium', 'polite')
+    expect(mockAnnounce).toHaveBeenCalledWith(
+      'Filter applied: status set to active',
+      'polite'
+    )
+    expect(mockAnnounce).toHaveBeenCalledWith(
+      'Filter applied: type set to premium',
+      'polite'
+    )
   })
 
   it('announces filter changes without result count', () => {
@@ -374,6 +448,9 @@ describe('FilterAnnouncer', () => {
       </FilterAnnouncer>
     )
 
-    expect(mockAnnounce).toHaveBeenCalledWith('Filter applied: category set to electronics', 'polite')
+    expect(mockAnnounce).toHaveBeenCalledWith(
+      'Filter applied: category set to electronics',
+      'polite'
+    )
   })
 })

@@ -5,8 +5,18 @@ import { Calendar, Filter, X, RotateCcw, Bookmark, Share2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Calendar as CalendarComponent } from '@/components/ui/calendar'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
@@ -130,7 +140,7 @@ export function DashboardFilters({
             />
           </PopoverContent>
         </Popover>
-        
+
         {isFiltered && (
           <Button
             variant="ghost"
@@ -177,14 +187,14 @@ export function DashboardFilters({
           </div>
         </div>
       </CardHeader>
-      
+
       <CardContent className="space-y-4">
         {/* Presets */}
         {showPresets && presets.length > 0 && (
           <div className="space-y-2">
             <Label className="text-sm font-medium">Quick Filters</Label>
             <div className="flex flex-wrap gap-2">
-              {presets.map((preset) => (
+              {presets.map(preset => (
                 <Button
                   key={preset.id}
                   variant="outline"
@@ -215,8 +225,7 @@ export function DashboardFilters({
                 <Calendar className="mr-2 h-4 w-4" />
                 {filters.dateRange
                   ? `${filters.dateRange.start.toLocaleDateString()} - ${filters.dateRange.end.toLocaleDateString()}`
-                  : 'Select date range'
-                }
+                  : 'Select date range'}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
@@ -238,13 +247,17 @@ export function DashboardFilters({
           <div className="space-y-2">
             <Label className="text-sm font-medium">Categories</Label>
             <div className="space-y-2">
-              {availableCategories.map((category) => (
+              {availableCategories.map(category => (
                 <div key={category} className="flex items-center space-x-2">
                   <Checkbox
                     id={`category-${category}`}
                     checked={filters.categories?.includes(category) || false}
                     onCheckedChange={() =>
-                      handleMultiSelectChange(category, filters.categories, setCategories)
+                      handleMultiSelectChange(
+                        category,
+                        filters.categories,
+                        setCategories
+                      )
                     }
                   />
                   <Label
@@ -263,7 +276,7 @@ export function DashboardFilters({
         <div className="space-y-2">
           <Label className="text-sm font-medium">Status</Label>
           <div className="space-y-2">
-            {availableStatuses.map((status) => (
+            {availableStatuses.map(status => (
               <div key={status} className="flex items-center space-x-2">
                 <Checkbox
                   id={`status-${status}`}
@@ -287,13 +300,17 @@ export function DashboardFilters({
         <div className="space-y-2">
           <Label className="text-sm font-medium">Priority</Label>
           <div className="space-y-2">
-            {availablePriorities.map((priority) => (
+            {availablePriorities.map(priority => (
               <div key={priority} className="flex items-center space-x-2">
                 <Checkbox
                   id={`priority-${priority}`}
                   checked={filters.priority?.includes(priority) || false}
                   onCheckedChange={() =>
-                    handleMultiSelectChange(priority, filters.priority, setPriority)
+                    handleMultiSelectChange(
+                      priority,
+                      filters.priority,
+                      setPriority
+                    )
                   }
                 />
                 <Label
@@ -311,13 +328,17 @@ export function DashboardFilters({
         <div className="space-y-2">
           <Label className="text-sm font-medium">Platforms</Label>
           <div className="space-y-2">
-            {availablePlatforms.map((platform) => (
+            {availablePlatforms.map(platform => (
               <div key={platform} className="flex items-center space-x-2">
                 <Checkbox
                   id={`platform-${platform}`}
                   checked={filters.platforms?.includes(platform) || false}
                   onCheckedChange={() =>
-                    handleMultiSelectChange(platform, filters.platforms, setPlatforms)
+                    handleMultiSelectChange(
+                      platform,
+                      filters.platforms,
+                      setPlatforms
+                    )
                   }
                 />
                 <Label
@@ -336,7 +357,7 @@ export function DashboardFilters({
           <div className="space-y-2">
             <Label className="text-sm font-medium">Agents</Label>
             <div className="space-y-2">
-              {availableAgents.map((agent) => (
+              {availableAgents.map(agent => (
                 <div key={agent} className="flex items-center space-x-2">
                   <Checkbox
                     id={`agent-${agent}`}
@@ -373,57 +394,67 @@ export function DashboardFilters({
                     />
                   </Badge>
                 )}
-                {filters.categories?.map((category) => (
+                {filters.categories?.map(category => (
                   <Badge key={category} variant="secondary" className="gap-1">
                     {category}
                     <X
                       className="h-3 w-3 cursor-pointer"
                       onClick={() =>
-                        setCategories(filters.categories?.filter(c => c !== category) || [])
+                        setCategories(
+                          filters.categories?.filter(c => c !== category) || []
+                        )
                       }
                     />
                   </Badge>
                 ))}
-                {filters.status?.map((status) => (
+                {filters.status?.map(status => (
                   <Badge key={status} variant="secondary" className="gap-1">
                     {status}
                     <X
                       className="h-3 w-3 cursor-pointer"
                       onClick={() =>
-                        setStatus(filters.status?.filter(s => s !== status) || [])
+                        setStatus(
+                          filters.status?.filter(s => s !== status) || []
+                        )
                       }
                     />
                   </Badge>
                 ))}
-                {filters.priority?.map((priority) => (
+                {filters.priority?.map(priority => (
                   <Badge key={priority} variant="secondary" className="gap-1">
                     {priority}
                     <X
                       className="h-3 w-3 cursor-pointer"
                       onClick={() =>
-                        setPriority(filters.priority?.filter(p => p !== priority) || [])
+                        setPriority(
+                          filters.priority?.filter(p => p !== priority) || []
+                        )
                       }
                     />
                   </Badge>
                 ))}
-                {filters.platforms?.map((platform) => (
+                {filters.platforms?.map(platform => (
                   <Badge key={platform} variant="secondary" className="gap-1">
                     {platform}
                     <X
                       className="h-3 w-3 cursor-pointer"
                       onClick={() =>
-                        setPlatforms(filters.platforms?.filter(p => p !== platform) || [])
+                        setPlatforms(
+                          filters.platforms?.filter(p => p !== platform) || []
+                        )
                       }
                     />
                   </Badge>
                 ))}
-                {filters.agents?.map((agent) => (
+                {filters.agents?.map(agent => (
                   <Badge key={agent} variant="secondary" className="gap-1">
                     {agent}
                     <X
                       className="h-3 w-3 cursor-pointer"
                       onClick={() =>
-                        setAgents(filters.agents?.filter(a => a !== agent) || [])
+                        setAgents(
+                          filters.agents?.filter(a => a !== agent) || []
+                        )
                       }
                     />
                   </Badge>
@@ -465,16 +496,18 @@ export function DashboardFilters({
                 <Input
                   id="preset-name"
                   value={newPresetName}
-                  onChange={(e) => setNewPresetName(e.target.value)}
+                  onChange={e => setNewPresetName(e.target.value)}
                   placeholder="Enter preset name"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="preset-description">Description (optional)</Label>
+                <Label htmlFor="preset-description">
+                  Description (optional)
+                </Label>
                 <Input
                   id="preset-description"
                   value={newPresetDescription}
-                  onChange={(e) => setNewPresetDescription(e.target.value)}
+                  onChange={e => setNewPresetDescription(e.target.value)}
                   placeholder="Enter preset description"
                 />
               </div>
@@ -485,7 +518,10 @@ export function DashboardFilters({
                 >
                   Cancel
                 </Button>
-                <Button onClick={handleSavePreset} disabled={!newPresetName.trim()}>
+                <Button
+                  onClick={handleSavePreset}
+                  disabled={!newPresetName.trim()}
+                >
                   Save Preset
                 </Button>
               </div>

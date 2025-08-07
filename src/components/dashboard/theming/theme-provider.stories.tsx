@@ -15,7 +15,8 @@ const meta: Meta<typeof DashboardThemeProvider> = {
     layout: 'fullscreen',
     docs: {
       description: {
-        component: 'A comprehensive theme provider for dashboard components with support for custom themes, dark/light mode, and WCAG-compliant color schemes.',
+        component:
+          'A comprehensive theme provider for dashboard components with support for custom themes, dark/light mode, and WCAG-compliant color schemes.',
       },
     },
   },
@@ -62,20 +63,29 @@ const SampleDashboard = () => (
   <div className="p-6 space-y-6">
     <div className="flex items-center justify-between">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Dashboard Theme Demo</h1>
-        <p className="text-muted-foreground">Demonstrating theme customization capabilities</p>
+        <h1 className="text-3xl font-bold text-foreground">
+          Dashboard Theme Demo
+        </h1>
+        <p className="text-muted-foreground">
+          Demonstrating theme customization capabilities
+        </p>
       </div>
       <div className="flex gap-2">
         <Button variant="outline">Secondary</Button>
         <Button>Primary</Button>
       </div>
     </div>
-    
+
     <DashboardGrid>
       <GridItem colSpan={3}>
         <DashboardCard
           title="Active Agents"
-          metric={{ value: 24, unit: 'agents', trend: 'up', trendValue: '+12%' }}
+          metric={{
+            value: 24,
+            unit: 'agents',
+            trend: 'up',
+            trendValue: '+12%',
+          }}
           icon={Activity}
           priority="high"
         />
@@ -83,7 +93,12 @@ const SampleDashboard = () => (
       <GridItem colSpan={3}>
         <DashboardCard
           title="Total Users"
-          metric={{ value: 1247, unit: 'users', trend: 'up', trendValue: '+5%' }}
+          metric={{
+            value: 1247,
+            unit: 'users',
+            trend: 'up',
+            trendValue: '+5%',
+          }}
           icon={Users}
           priority="medium"
         />
@@ -126,18 +141,24 @@ const SampleDashboard = () => (
         >
           <div className="space-y-4">
             <p className="text-foreground">
-              This demonstrates how text appears in the current theme with proper contrast ratios.
+              This demonstrates how text appears in the current theme with
+              proper contrast ratios.
             </p>
             <p className="text-muted-foreground">
-              Secondary text maintains readability while providing visual hierarchy.
+              Secondary text maintains readability while providing visual
+              hierarchy.
             </p>
             <div className="grid grid-cols-2 gap-4">
               <div className="p-3 bg-muted rounded-lg">
-                <div className="text-sm font-medium text-muted-foreground">Success</div>
+                <div className="text-sm font-medium text-muted-foreground">
+                  Success
+                </div>
                 <div className="text-2xl font-bold text-green-600">98.5%</div>
               </div>
               <div className="p-3 bg-muted rounded-lg">
-                <div className="text-sm font-medium text-muted-foreground">Errors</div>
+                <div className="text-sm font-medium text-muted-foreground">
+                  Errors
+                </div>
                 <div className="text-2xl font-bold text-red-600">1.5%</div>
               </div>
             </div>
@@ -154,7 +175,7 @@ export const DefaultTheme: Story = {
     enableColorSchemeDetection: true,
     validateContrast: true,
   },
-  render: (args) => (
+  render: args => (
     <DashboardThemeProvider {...args}>
       <SampleDashboard />
     </DashboardThemeProvider>
@@ -167,7 +188,7 @@ export const DarkTheme: Story = {
     enableColorSchemeDetection: false,
     validateContrast: true,
   },
-  render: (args) => (
+  render: args => (
     <DashboardThemeProvider {...args}>
       <SampleDashboard />
     </DashboardThemeProvider>
@@ -180,7 +201,7 @@ export const SystemTheme: Story = {
     enableColorSchemeDetection: true,
     validateContrast: true,
   },
-  render: (args) => (
+  render: args => (
     <DashboardThemeProvider {...args}>
       <SampleDashboard />
     </DashboardThemeProvider>
@@ -209,7 +230,14 @@ export const CustomTheme: Story = {
           info: '#3B82F6',
         },
         chart: {
-          palette: ['#8B5CF6', '#06B6D4', '#F59E0B', '#10B981', '#EF4444', '#3B82F6'],
+          palette: [
+            '#8B5CF6',
+            '#06B6D4',
+            '#F59E0B',
+            '#10B981',
+            '#EF4444',
+            '#3B82F6',
+          ],
           gradients: {
             primary: 'linear-gradient(135deg, #8B5CF6 0%, #06B6D4 100%)',
             secondary: 'linear-gradient(135deg, #F59E0B 0%, #10B981 100%)',
@@ -219,7 +247,7 @@ export const CustomTheme: Story = {
     },
     validateContrast: true,
   },
-  render: (args) => (
+  render: args => (
     <DashboardThemeProvider {...args}>
       <SampleDashboard />
     </DashboardThemeProvider>
@@ -248,14 +276,21 @@ export const HighContrastTheme: Story = {
           info: '#0066CC',
         },
         chart: {
-          palette: ['#000000', '#333333', '#0066CC', '#006600', '#CC0000', '#CC6600'],
+          palette: [
+            '#000000',
+            '#333333',
+            '#0066CC',
+            '#006600',
+            '#CC0000',
+            '#CC6600',
+          ],
           gradients: {},
         },
       },
     },
     validateContrast: true,
   },
-  render: (args) => (
+  render: args => (
     <DashboardThemeProvider {...args}>
       <SampleDashboard />
     </DashboardThemeProvider>
@@ -284,7 +319,14 @@ export const CubcenBrandTheme: Story = {
           info: '#3F51B5',
         },
         chart: {
-          palette: ['#3F51B5', '#B19ADA', '#FF6B35', '#10B981', '#F59E0B', '#EF4444'],
+          palette: [
+            '#3F51B5',
+            '#B19ADA',
+            '#FF6B35',
+            '#10B981',
+            '#F59E0B',
+            '#EF4444',
+          ],
           gradients: {
             primary: 'linear-gradient(135deg, #3F51B5 0%, #B19ADA 100%)',
             secondary: 'linear-gradient(135deg, #FF6B35 0%, #10B981 100%)',
@@ -294,7 +336,7 @@ export const CubcenBrandTheme: Story = {
     },
     validateContrast: true,
   },
-  render: (args) => (
+  render: args => (
     <DashboardThemeProvider {...args}>
       <SampleDashboard />
     </DashboardThemeProvider>
@@ -329,7 +371,7 @@ export const CustomTypography: Story = {
     },
     validateContrast: true,
   },
-  render: (args) => (
+  render: args => (
     <DashboardThemeProvider {...args}>
       <SampleDashboard />
     </DashboardThemeProvider>
@@ -354,7 +396,7 @@ export const CustomSpacing: Story = {
     },
     validateContrast: true,
   },
-  render: (args) => (
+  render: args => (
     <DashboardThemeProvider {...args}>
       <SampleDashboard />
     </DashboardThemeProvider>
@@ -380,7 +422,7 @@ export const WithoutContrastValidation: Story = {
     },
     validateContrast: false,
   },
-  render: (args) => (
+  render: args => (
     <DashboardThemeProvider {...args}>
       <SampleDashboard />
     </DashboardThemeProvider>
@@ -397,7 +439,7 @@ export const ResponsiveMobile: Story = {
       defaultViewport: 'mobile',
     },
   },
-  render: (args) => (
+  render: args => (
     <DashboardThemeProvider {...args}>
       <SampleDashboard />
     </DashboardThemeProvider>
@@ -414,7 +456,7 @@ export const ResponsiveTablet: Story = {
       defaultViewport: 'tablet',
     },
   },
-  render: (args) => (
+  render: args => (
     <DashboardThemeProvider {...args}>
       <SampleDashboard />
     </DashboardThemeProvider>

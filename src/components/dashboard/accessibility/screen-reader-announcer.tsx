@@ -17,10 +17,12 @@ interface ScreenReaderAnnouncerProps {
 const announcementQueue: AnnouncementProps[] = []
 let isProcessing = false
 
-export function ScreenReaderAnnouncer({ className }: ScreenReaderAnnouncerProps) {
+export function ScreenReaderAnnouncer({
+  className,
+}: ScreenReaderAnnouncerProps) {
   const politeRef = useRef<HTMLDivElement>(null)
   const assertiveRef = useRef<HTMLDivElement>(null)
-  const timeoutRef = useRef<NodeJS.Timeout>()
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // Process the announcement queue
   const processQueue = useCallback(() => {
@@ -28,19 +30,20 @@ export function ScreenReaderAnnouncer({ className }: ScreenReaderAnnouncerProps)
 
     isProcessing = true
     const announcement = announcementQueue.shift()!
-    
-    const targetRef = announcement.priority === 'assertive' ? assertiveRef : politeRef
-    
+
+    const targetRef =
+      announcement.priority === 'assertive' ? assertiveRef : politeRef
+
     if (targetRef.current) {
       // Clear previous content
       targetRef.current.textContent = ''
-      
+
       // Add new announcement with optional delay
       const delay = announcement.delay || 0
       timeoutRef.current = setTimeout(() => {
         if (targetRef.current) {
           targetRef.current.textContent = announcement.message
-          
+
           // Clear the message after a short delay to allow for re-announcements
           setTimeout(() => {
             if (targetRef.current) {
@@ -61,14 +64,14 @@ export function ScreenReaderAnnouncer({ className }: ScreenReaderAnnouncerProps)
   useEffect(() => {
     // Make announce function globally available
     const announceFunction = (
-      message: string, 
+      message: string,
       priority: 'polite' | 'assertive' = 'polite',
       delay?: number
     ) => {
       announcementQueue.push({ message, priority, delay })
       processQueue()
     }
-    
+
     ;(window as any).announceToScreenReader = announceFunction
 
     return () => {
@@ -90,7 +93,7 @@ export function ScreenReaderAnnouncer({ className }: ScreenReaderAnnouncerProps)
         aria-atomic="true"
         role="status"
       />
-      
+
       {/* Assertive announcements - will interrupt current speech */}
       <div
         ref={assertiveRef}
@@ -105,101 +108,116 @@ export function ScreenReaderAnnouncer({ className }: ScreenReaderAnnouncerProps)
 
 // Hook for using screen reader announcements
 export function useScreenReaderAnnouncer() {
-  const announce = useCallback((
-    message: string, 
-    priority: 'polite' | 'assertive' = 'polite',
-    delay?: number
-  ) => {
-    if (typeof window !== 'undefined' && (window as any).announceToScreenReader) {
-      ;(window as any).announceToScreenReader(message, priority, delay)
-    }
-  }, [])
+  const announce = useCallback(
+    (
+      message: string,
+      priority: 'polite' | 'assertive' = 'polite',
+      delay?: number
+    ) => {
+      if (
+        typeof window !== 'undefined' &&
+        (window as any).announceToScreenReader
+      ) {
+        ;(window as any).announceToScreenReader(message, priority, delay)
+      }
+    },
+    []
+  )
 
-  const announcePolite = useCallback((message: string, delay?: number) => {
-    announce(message, 'polite', delay)
-  }, [announce])
+  const announcePolite = useCallback(
+    (message: string, delay?: number) => {
+      announce(message, 'polite', delay)
+    },
+    [announce]
+  )
 
-  const announceAssertive = useCallback((message: string, delay?: number) => {
-    announce(message, 'assertive', delay)
-  }, [announce])
+  const announceAssertive = useCallback(
+    (message: string, delay?: number) => {
+      announce(message, 'assertive', delay)
+    },
+    [announce]
+  )
 
   // Announce data updates
-  const announceDataUpdate = useCallback((
-    dataType: string, 
-    updateType: 'loaded' | 'updated' | 'error' | 'filtered' = 'updated',
-    details?: string
-  ) => {
-    let message = `${dataType} ${updateType}`
-    if (details) {
-      message += `: ${details}`
-    }
-    announce(message, 'polite')
-  }, [announce])
+  const announceDataUpdate = useCallback(
+    (
+      dataType: string,
+      updateType: 'loaded' | 'updated' | 'error' | 'filtered' = 'updated',
+      details?: string
+    ) => {
+      let message = `${dataType} ${updateType}`
+      if (details) {
+        message += `: ${details}`
+      }
+      announce(message, 'polite')
+    },
+    [announce]
+  )
 
   // Announce chart interactions
-  const announceChartInteraction = useCallback((
-    action: string,
-    element: string,
-    value?: string | number,
-    context?: string
-  ) => {
-    let message = `${action} ${element}`
-    if (value !== undefined) {
-      message += ` with value ${value}`
-    }
-    if (context) {
-      message += ` in ${context}`
-    }
-    announce(message, 'polite')
-  }, [announce])
+  const announceChartInteraction = useCallback(
+    (
+      action: string,
+      element: string,
+      value?: string | number,
+      context?: string
+    ) => {
+      let message = `${action} ${element}`
+      if (value !== undefined) {
+        message += ` with value ${value}`
+      }
+      if (context) {
+        message += ` in ${context}`
+      }
+      announce(message, 'polite')
+    },
+    [announce]
+  )
 
   // Announce navigation changes
-  const announceNavigation = useCallback((
-    destination: string,
-    context?: string
-  ) => {
-    let message = `Navigated to ${destination}`
-    if (context) {
-      message += ` ${context}`
-    }
-    announce(message, 'polite')
-  }, [announce])
+  const announceNavigation = useCallback(
+    (destination: string, context?: string) => {
+      let message = `Navigated to ${destination}`
+      if (context) {
+        message += ` ${context}`
+      }
+      announce(message, 'polite')
+    },
+    [announce]
+  )
 
   // Announce filter changes
-  const announceFilterChange = useCallback((
-    filterType: string,
-    filterValue: string,
-    resultCount?: number
-  ) => {
-    let message = `Filter applied: ${filterType} set to ${filterValue}`
-    if (resultCount !== undefined) {
-      message += `. Showing ${resultCount} results`
-    }
-    announce(message, 'polite')
-  }, [announce])
+  const announceFilterChange = useCallback(
+    (filterType: string, filterValue: string, resultCount?: number) => {
+      let message = `Filter applied: ${filterType} set to ${filterValue}`
+      if (resultCount !== undefined) {
+        message += `. Showing ${resultCount} results`
+      }
+      announce(message, 'polite')
+    },
+    [announce]
+  )
 
   // Announce loading states
-  const announceLoading = useCallback((
-    content: string,
-    isLoading: boolean
-  ) => {
-    const message = isLoading 
-      ? `Loading ${content}` 
-      : `${content} loaded`
-    announce(message, 'polite')
-  }, [announce])
+  const announceLoading = useCallback(
+    (content: string, isLoading: boolean) => {
+      const message = isLoading ? `Loading ${content}` : `${content} loaded`
+      announce(message, 'polite')
+    },
+    [announce]
+  )
 
   // Announce errors
-  const announceError = useCallback((
-    error: string,
-    context?: string
-  ) => {
-    let message = `Error: ${error}`
-    if (context) {
-      message += ` in ${context}`
-    }
-    announce(message, 'assertive')
-  }, [announce])
+  const announceError = useCallback(
+    (error: string, context?: string) => {
+      let message = `Error: ${error}`
+      if (context) {
+        message += ` in ${context}`
+      }
+      announce(message, 'assertive')
+    },
+    [announce]
+  )
 
   return {
     announce,
@@ -210,7 +228,7 @@ export function useScreenReaderAnnouncer() {
     announceNavigation,
     announceFilterChange,
     announceLoading,
-    announceError
+    announceError,
   }
 }
 
@@ -223,14 +241,15 @@ interface DataAnnouncerProps {
   children: React.ReactNode
 }
 
-export function DataAnnouncer({ 
-  data, 
-  dataType, 
-  loading = false, 
-  error, 
-  children 
+export function DataAnnouncer({
+  data,
+  dataType,
+  loading = false,
+  error,
+  children,
 }: DataAnnouncerProps) {
-  const { announceDataUpdate, announceLoading, announceError } = useScreenReaderAnnouncer()
+  const { announceDataUpdate, announceLoading, announceError } =
+    useScreenReaderAnnouncer()
   const previousDataRef = useRef(data)
   const previousLoadingRef = useRef(loading)
 
@@ -255,7 +274,15 @@ export function DataAnnouncer({
     if (error) {
       announceError(error, dataType)
     }
-  }, [data, dataType, loading, error, announceDataUpdate, announceLoading, announceError])
+  }, [
+    data,
+    dataType,
+    loading,
+    error,
+    announceDataUpdate,
+    announceLoading,
+    announceError,
+  ])
 
   return <>{children}</>
 }
@@ -268,11 +295,11 @@ interface ChartAnnouncerProps {
   children: React.ReactNode
 }
 
-export function ChartAnnouncer({ 
-  chartType, 
-  data, 
-  selectedElement, 
-  children 
+export function ChartAnnouncer({
+  chartType,
+  data,
+  selectedElement,
+  children,
 }: ChartAnnouncerProps) {
   const { announceChartInteraction } = useScreenReaderAnnouncer()
   const previousSelectedRef = useRef(selectedElement)
@@ -280,8 +307,14 @@ export function ChartAnnouncer({
   useEffect(() => {
     if (selectedElement && selectedElement !== previousSelectedRef.current) {
       const elementType = selectedElement.type || 'element'
-      const value = selectedElement.value || selectedElement.y || selectedElement.data
-      announceChartInteraction('Selected', elementType, value, `${chartType} chart`)
+      const value =
+        selectedElement.value || selectedElement.y || selectedElement.data
+      announceChartInteraction(
+        'Selected',
+        elementType,
+        value,
+        `${chartType} chart`
+      )
       previousSelectedRef.current = selectedElement
     }
   }, [selectedElement, chartType, announceChartInteraction])
@@ -296,10 +329,10 @@ interface FilterAnnouncerProps {
   children: React.ReactNode
 }
 
-export function FilterAnnouncer({ 
-  filters, 
-  resultCount, 
-  children 
+export function FilterAnnouncer({
+  filters,
+  resultCount,
+  children,
 }: FilterAnnouncerProps) {
   const { announceFilterChange } = useScreenReaderAnnouncer()
   const previousFiltersRef = useRef(filters)

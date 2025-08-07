@@ -6,16 +6,22 @@
 'use client'
 
 import { ComponentProps, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { DashboardCard } from '@/components/dashboard/cards/dashboard-card'
 import { MetricCard } from '@/components/dashboard/cards/metric-card'
 import { ChartCard } from '@/components/dashboard/cards/chart-card'
 import { DashboardDataTransforms } from '@/lib/dashboard-data-transforms'
-import { 
-  DashboardMigration, 
-  LegacyDataAdapter, 
+import {
+  DashboardMigration,
+  LegacyDataAdapter,
   MigrationAnalytics,
-  MigrationRollback 
+  MigrationRollback,
 } from '@/lib/dashboard-migration'
 import { AnalyticsData } from '@/services/analytics'
 import { useAuth } from '@/hooks/use-auth'
@@ -30,18 +36,18 @@ interface CompatibilityKPICardsProps {
   userId?: string
 }
 
-export function CompatibilityKPICards({ 
-  data, 
+export function CompatibilityKPICards({
+  data,
   loading,
-  userId 
+  userId,
 }: CompatibilityKPICardsProps) {
   const migration = DashboardMigration.getInstance()
   const featureFlags = migration.getFeatureFlags(userId)
-  
+
   useEffect(() => {
     // Track component usage
     MigrationAnalytics.trackComponentUsage(
-      'KPICards', 
+      'KPICards',
       featureFlags.KPI_CARDS_V2 ? 'new' : 'legacy',
       userId
     )
@@ -59,67 +65,90 @@ export function CompatibilityKPICards({
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
           <MetricCard
             title="Total Agents"
-            metrics={[{
-              label: "Total",
-              value: data.totalAgents,
-              unit: "agents",
-              trend: data.activeAgents > data.totalAgents * 0.8 ? 'up' : 'neutral',
-              color: "text-blue-600"
-            }]}
+            metrics={[
+              {
+                label: 'Total',
+                value: data.totalAgents,
+                unit: 'agents',
+                trend:
+                  data.activeAgents > data.totalAgents * 0.8 ? 'up' : 'neutral',
+                color: 'text-blue-600',
+              },
+            ]}
             loading={loading}
           />
           <MetricCard
             title="Active Agents"
-            metrics={[{
-              label: "Active",
-              value: data.activeAgents,
-              unit: "running",
-              trend: data.activeAgents > 0 ? 'up' : 'down',
-              color: "text-cubcen-primary"
-            }]}
+            metrics={[
+              {
+                label: 'Active',
+                value: data.activeAgents,
+                unit: 'running',
+                trend: data.activeAgents > 0 ? 'up' : 'down',
+                color: 'text-cubcen-primary',
+              },
+            ]}
             loading={loading}
           />
           <MetricCard
             title="Total Tasks"
-            metrics={[{
-              label: "All time",
-              value: data.totalTasks,
-              unit: "tasks",
-              color: "text-purple-600"
-            }]}
+            metrics={[
+              {
+                label: 'All time',
+                value: data.totalTasks,
+                unit: 'tasks',
+                color: 'text-purple-600',
+              },
+            ]}
             loading={loading}
           />
           <MetricCard
             title="Success Rate"
-            metrics={[{
-              label: "Completed",
-              value: `${data.successRate}%`,
-              trend: data.successRate >= 90 ? 'up' : data.successRate >= 70 ? 'neutral' : 'down',
-              trendValue: `${data.completedTasks} completed`,
-              color: "text-green-600"
-            }]}
+            metrics={[
+              {
+                label: 'Completed',
+                value: `${data.successRate}%`,
+                trend:
+                  data.successRate >= 90
+                    ? 'up'
+                    : data.successRate >= 70
+                      ? 'neutral'
+                      : 'down',
+                trendValue: `${data.completedTasks} completed`,
+                color: 'text-green-600',
+              },
+            ]}
             loading={loading}
           />
           <MetricCard
             title="Failed Tasks"
-            metrics={[{
-              label: "Needs attention",
-              value: data.failedTasks,
-              unit: "failed",
-              trend: data.failedTasks > 0 ? 'down' : 'neutral',
-              color: "text-red-600"
-            }]}
+            metrics={[
+              {
+                label: 'Needs attention',
+                value: data.failedTasks,
+                unit: 'failed',
+                trend: data.failedTasks > 0 ? 'down' : 'neutral',
+                color: 'text-red-600',
+              },
+            ]}
             loading={loading}
           />
           <MetricCard
             title="Avg Response Time"
-            metrics={[{
-              label: "Performance",
-              value: data.averageResponseTime,
-              unit: "ms",
-              trend: data.averageResponseTime < 1000 ? 'up' : data.averageResponseTime < 3000 ? 'neutral' : 'down',
-              color: "text-orange-600"
-            }]}
+            metrics={[
+              {
+                label: 'Performance',
+                value: data.averageResponseTime,
+                unit: 'ms',
+                trend:
+                  data.averageResponseTime < 1000
+                    ? 'up'
+                    : data.averageResponseTime < 3000
+                      ? 'neutral'
+                      : 'down',
+                color: 'text-orange-600',
+              },
+            ]}
             loading={loading}
           />
         </div>
@@ -163,7 +192,9 @@ function renderLegacyKPICards(data: AnalyticsData, loading?: boolean) {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{data.totalAgents}</div>
-          <p className="text-xs text-muted-foreground">{data.activeAgents} active</p>
+          <p className="text-xs text-muted-foreground">
+            {data.activeAgents} active
+          </p>
         </CardContent>
       </Card>
       <Card>
@@ -190,18 +221,18 @@ interface CompatibilityPerformanceChartsProps {
   userId?: string
 }
 
-export function CompatibilityPerformanceCharts({ 
-  data, 
+export function CompatibilityPerformanceCharts({
+  data,
   loading,
-  userId 
+  userId,
 }: CompatibilityPerformanceChartsProps) {
   const migration = DashboardMigration.getInstance()
   const featureFlags = migration.getFeatureFlags(userId)
-  
+
   useEffect(() => {
     // Track component usage
     MigrationAnalytics.trackComponentUsage(
-      'PerformanceCharts', 
+      'PerformanceCharts',
       featureFlags.CHARTS_V2 ? 'new' : 'legacy',
       userId
     )
@@ -221,26 +252,32 @@ export function CompatibilityPerformanceCharts({
             title="Task Trends Over Time"
             subtitle="Daily completed and failed tasks over the selected period"
             chartType="area"
-            data={DashboardDataTransforms.transformDailyTaskTrends(data.dailyTaskTrends)}
+            data={DashboardDataTransforms.transformDailyTaskTrends(
+              data.dailyTaskTrends
+            )}
             loading={loading}
             exportable
           />
-          
+
           <div className="grid gap-4 md:grid-cols-2">
             <ChartCard
               title="Task Status Distribution"
               subtitle="Breakdown of tasks by current status"
               chartType="pie"
-              data={DashboardDataTransforms.transformTasksByStatus(data.tasksByStatus)}
+              data={DashboardDataTransforms.transformTasksByStatus(
+                data.tasksByStatus
+              )}
               loading={loading}
               exportable
             />
-            
+
             <ChartCard
               title="Task Priority Distribution"
               subtitle="Tasks organized by priority level"
               chartType="bar"
-              data={DashboardDataTransforms.transformTasksByPriority(data.tasksByPriority)}
+              data={DashboardDataTransforms.transformTasksByPriority(
+                data.tasksByPriority
+              )}
               loading={loading}
               exportable
             />
@@ -282,7 +319,9 @@ function renderLegacyCharts(data: AnalyticsData, loading?: boolean) {
       <Card>
         <CardHeader>
           <CardTitle>Task Trends Over Time</CardTitle>
-          <CardDescription>Daily completed and failed tasks over the selected period</CardDescription>
+          <CardDescription>
+            Daily completed and failed tasks over the selected period
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-64 flex items-center justify-center text-muted-foreground">

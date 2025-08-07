@@ -5,7 +5,11 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { AlertCircle, TrendingUp, TrendingDown, Minus } from 'lucide-react'
 import { useAriaLabels, AriaDescription } from '../accessibility/aria-labels'
 import { useScreenReaderAnnouncer } from '../accessibility/screen-reader-announcer'
-import { TouchInteraction, useIsTouchDevice, useIsMobile } from '../mobile/touch-interactions'
+import {
+  TouchInteraction,
+  useIsTouchDevice,
+  useIsMobile,
+} from '../mobile/touch-interactions'
 import { MobileTooltip } from '../mobile/mobile-tooltip'
 import type { DashboardCardProps, FilterValue } from '@/types/dashboard'
 
@@ -29,7 +33,7 @@ export function DashboardCard({
   const { announceError } = useScreenReaderAnnouncer()
   const isTouchDevice = useIsTouchDevice()
   const isMobile = useIsMobile()
-  
+
   // Generate unique IDs for ARIA relationships
   const cardId = React.useId()
   const titleId = `${cardId}-title`
@@ -72,42 +76,48 @@ export function DashboardCard({
   }
 
   // Handle touch interactions
-  const handleTouchTap = useCallback((event: TouchEvent) => {
-    if (interactive && onClick) {
-      onClick()
-    }
-  }, [interactive, onClick])
+  const handleTouchTap = useCallback(
+    (event: TouchEvent) => {
+      if (interactive && onClick) {
+        onClick()
+      }
+    },
+    [interactive, onClick]
+  )
 
-  const handleTouchLongPress = useCallback((event: TouchEvent) => {
-    if (interactive && onFilter) {
-      // Long press could trigger filter options
-      onFilter({ type: 'string', value: title || 'card' })
-    }
-  }, [interactive, onFilter, title])
+  const handleTouchLongPress = useCallback(
+    (event: TouchEvent) => {
+      if (interactive && onFilter) {
+        // Long press could trigger filter options
+        onFilter({ type: 'string', value: title || 'card' })
+      }
+    },
+    [interactive, onFilter, title]
+  )
 
   // Generate comprehensive ARIA label
   const getAriaLabel = () => {
     if (loading) {
       return ariaLabels.card.loading(title)
     }
-    
+
     if (error) {
       return ariaLabels.card.error(title, error)
     }
-    
+
     if (interactive && title) {
       return ariaLabels.card.interactive(title)
     }
-    
+
     if (metric && title) {
       return ariaLabels.card.metric(
-        title, 
-        metric.value, 
-        metric.unit, 
+        title,
+        metric.value,
+        metric.unit,
         metric.trend
       )
     }
-    
+
     return title || 'Dashboard card'
   }
 
@@ -120,7 +130,7 @@ export function DashboardCard({
 
   if (loading) {
     return (
-      <Card 
+      <Card
         className={cn('dashboard-card', cardSizeClasses[size], className)}
         role="status"
         aria-label={getAriaLabel()}
@@ -157,10 +167,10 @@ export function DashboardCard({
 
   if (error) {
     return (
-      <Card 
+      <Card
         className={cn(
-          'dashboard-card border-red-200 bg-red-50 dark:bg-red-950/20', 
-          cardSizeClasses[size], 
+          'dashboard-card border-red-200 bg-red-50 dark:bg-red-950/20',
+          cardSizeClasses[size],
           className
         )}
         role="alert"
@@ -168,7 +178,9 @@ export function DashboardCard({
         aria-describedby={errorId}
       >
         <AriaDescription id={errorId}>
-          {title ? `${title} card has an error: ${error}` : `Card error: ${error}`}
+          {title
+            ? `${title} card has an error: ${error}`
+            : `Card error: ${error}`}
         </AriaDescription>
         <CardContent className="dashboard-card-content">
           <div className="flex items-center space-x-2 text-red-600 dark:text-red-400">
@@ -211,24 +223,23 @@ export function DashboardCard({
       aria-describedby={subtitle ? subtitleId : descriptionId}
     >
       <AriaDescription id={descriptionId}>
-        {interactive 
+        {interactive
           ? 'Interactive dashboard card. Press Enter or Space to activate.'
-          : 'Dashboard card with information display.'
-        }
+          : 'Dashboard card with information display.'}
       </AriaDescription>
       {(title || subtitle || Icon || actions) && (
         <CardHeader className="dashboard-card-header">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               {Icon && (
-                <Icon 
-                  className="h-5 w-5 text-muted-foreground flex-shrink-0" 
+                <Icon
+                  className="h-5 w-5 text-muted-foreground flex-shrink-0"
                   aria-hidden="true"
                 />
               )}
               <div className="min-w-0 flex-1">
                 {title && (
-                  <CardTitle 
+                  <CardTitle
                     id={titleId}
                     className="dashboard-card-title text-base font-semibold leading-tight"
                   >
@@ -236,7 +247,7 @@ export function DashboardCard({
                   </CardTitle>
                 )}
                 {subtitle && (
-                  <p 
+                  <p
                     id={subtitleId}
                     className="dashboard-card-subtitle text-sm text-muted-foreground mt-1 truncate"
                   >
@@ -253,29 +264,29 @@ export function DashboardCard({
           </div>
         </CardHeader>
       )}
-      
+
       <CardContent className="dashboard-card-content">
         {metric && (
-          <div 
+          <div
             id={metricId}
             className="dashboard-card-metric mb-4"
             role="group"
             aria-label={ariaLabels.card.metric(
-              title || 'Metric', 
-              metric.value, 
-              metric.unit, 
+              title || 'Metric',
+              metric.value,
+              metric.unit,
               metric.trend
             )}
           >
             <div className="flex items-baseline space-x-2 flex-wrap">
-              <span 
+              <span
                 className="text-2xl font-bold text-foreground"
                 aria-label={`Value: ${metric.value}${metric.unit ? ` ${metric.unit}` : ''}`}
               >
                 {metric.value}
               </span>
               {metric.unit && (
-                <span 
+                <span
                   className="text-sm text-muted-foreground"
                   aria-label={`Unit: ${metric.unit}`}
                 >
@@ -286,9 +297,12 @@ export function DashboardCard({
                 <span
                   className={cn(
                     'inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full font-medium',
-                    metric.trend === 'up' && 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
-                    metric.trend === 'down' && 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400',
-                    metric.trend === 'neutral' && 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
+                    metric.trend === 'up' &&
+                      'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
+                    metric.trend === 'down' &&
+                      'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400',
+                    metric.trend === 'neutral' &&
+                      'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
                   )}
                   role="img"
                   aria-label={`Trend: ${metric.trend === 'up' ? 'increasing' : metric.trend === 'down' ? 'decreasing' : 'stable'} by ${metric.trendValue}`}

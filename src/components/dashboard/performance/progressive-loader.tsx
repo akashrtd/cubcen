@@ -163,7 +163,13 @@ export function ProgressiveLoader({
       setIsComplete(true)
       onAllStagesComplete?.()
     }
-  }, [currentStage, stages.length, isComplete, onStageComplete, onAllStagesComplete])
+  }, [
+    currentStage,
+    stages.length,
+    isComplete,
+    onStageComplete,
+    onAllStagesComplete,
+  ])
 
   useEffect(() => {
     if (isComplete) return
@@ -183,13 +189,19 @@ export function ProgressiveLoader({
   }, [currentStage, stages, priority, progressToNextStage, isComplete])
 
   if (isComplete) {
-    return <div className={cn('progressive-loader-complete', className)}>{children}</div>
+    return (
+      <div className={cn('progressive-loader-complete', className)}>
+        {children}
+      </div>
+    )
   }
 
-  const currentStageSkeleton = stages[currentStage]?.skeleton || <StructureSkeleton />
+  const currentStageSkeleton = stages[currentStage]?.skeleton || (
+    <StructureSkeleton />
+  )
 
   return (
-    <div 
+    <div
       className={cn(
         'progressive-loader',
         `progressive-loader-stage-${currentStage}`,
@@ -205,7 +217,9 @@ export function ProgressiveLoader({
 }
 
 // Skeleton generator for different content types
-export function createSkeletonVariant(variant: SkeletonVariant): React.ReactNode {
+export function createSkeletonVariant(
+  variant: SkeletonVariant
+): React.ReactNode {
   switch (variant.type) {
     case 'card':
       return <CardSkeleton height={variant.height} />
@@ -224,7 +238,10 @@ export function createSkeletonVariant(variant: SkeletonVariant): React.ReactNode
 
 function CardSkeleton({ height = 200 }: { height?: number }) {
   return (
-    <Card className="dashboard-card-skeleton" style={{ minHeight: `${height}px` }}>
+    <Card
+      className="dashboard-card-skeleton"
+      style={{ minHeight: `${height}px` }}
+    >
       <CardHeader>
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
@@ -255,7 +272,10 @@ function ChartSkeleton({ height = 300 }: { height?: number }) {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <div className="flex justify-between items-end" style={{ height: `${height}px` }}>
+          <div
+            className="flex justify-between items-end"
+            style={{ height: `${height}px` }}
+          >
             {Array.from({ length: 8 }).map((_, i) => (
               <Skeleton
                 key={i}
@@ -278,7 +298,13 @@ function ChartSkeleton({ height = 300 }: { height?: number }) {
   )
 }
 
-function TableSkeleton({ rows = 5, columns = 4 }: { rows?: number; columns?: number }) {
+function TableSkeleton({
+  rows = 5,
+  columns = 4,
+}: {
+  rows?: number
+  columns?: number
+}) {
   return (
     <Card className="dashboard-card-skeleton">
       <CardHeader>
@@ -287,14 +313,21 @@ function TableSkeleton({ rows = 5, columns = 4 }: { rows?: number; columns?: num
       <CardContent>
         <div className="space-y-3">
           {/* Table header */}
-          <div className="grid gap-4" style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
+          <div
+            className="grid gap-4"
+            style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}
+          >
             {Array.from({ length: columns }).map((_, i) => (
               <Skeleton key={i} className="h-4 w-full" />
             ))}
           </div>
           {/* Table rows */}
           {Array.from({ length: rows }).map((_, rowIndex) => (
-            <div key={rowIndex} className="grid gap-4" style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
+            <div
+              key={rowIndex}
+              className="grid gap-4"
+              style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}
+            >
               {Array.from({ length: columns }).map((_, colIndex) => (
                 <Skeleton key={colIndex} className="h-4 w-full" />
               ))}

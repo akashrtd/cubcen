@@ -15,14 +15,14 @@ export async function GET(request: NextRequest) {
 
     // Build where clause
     const where: any = {}
-    
+
     if (search) {
       where.OR = [
         { name: { contains: search, mode: 'insensitive' } },
         { email: { contains: search, mode: 'insensitive' } },
       ]
     }
-    
+
     if (role) {
       where.role = role
     }
@@ -50,7 +50,9 @@ export async function GET(request: NextRequest) {
     const usersWithStatus = users.map(user => ({
       ...user,
       status: 'active', // Mock status since it's not in the schema
-      lastLogin: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000), // Mock last login
+      lastLogin: new Date(
+        Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000
+      ), // Mock last login
     }))
 
     return NextResponse.json({

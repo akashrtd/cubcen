@@ -50,7 +50,7 @@ interface DashboardLayoutProps {
 
 #### Usage Example
 
-```tsx
+````tsx
 import { DashboardLayout } from '@/components/dashboard/layout/dashboard-layout'
 
 function MyDashboard() {
@@ -93,7 +93,7 @@ interface DashboardHeaderProps extends React.HTMLAttributes<HTMLElement> {
   children: React.ReactNode
   className?: string
 }
-```
+````
 
 ### DashboardFooter
 
@@ -140,7 +140,7 @@ interface DashboardCardProps {
 
 #### Usage Example
 
-```tsx
+````tsx
 import { DashboardCard } from '@/components/dashboard/cards/dashboard-card'
 import { Users } from 'lucide-react'
 
@@ -204,7 +204,7 @@ interface MetricCardProps extends DashboardCardProps {
   }>
   layout?: 'horizontal' | 'vertical' | 'grid'
 }
-```
+````
 
 #### Usage Example
 
@@ -223,7 +223,7 @@ function SystemMetrics() {
           unit: '%',
           trend: 'down',
           trendValue: '-5%',
-          color: '#10B981'
+          color: '#10B981',
         },
         {
           label: 'Memory',
@@ -231,8 +231,8 @@ function SystemMetrics() {
           unit: 'GB',
           trend: 'up',
           trendValue: '+0.3GB',
-          color: '#F59E0B'
-        }
+          color: '#F59E0B',
+        },
       ]}
     />
   )
@@ -257,7 +257,7 @@ interface ChartCardProps extends DashboardCardProps {
 
 #### Usage Example
 
-```tsx
+````tsx
 import { ChartCard } from '@/components/dashboard/cards/chart-card'
 
 function RevenueChart() {
@@ -311,7 +311,7 @@ interface ChartWrapperProps {
   onExportError?: (error: Error, format: string) => void
   className?: string
 }
-```
+````
 
 #### Supported Chart Types
 
@@ -388,7 +388,7 @@ interface ChartConfiguration {
 
 #### Usage Example
 
-```tsx
+````tsx
 import { ChartWrapper } from '@/components/dashboard/charts/chart-wrapper'
 
 function SalesChart() {
@@ -408,7 +408,7 @@ function SalesChart() {
   const config = {
     legend: { show: true, position: 'bottom' },
     animations: { enabled: true, duration: 300 },
-    tooltip: { 
+    tooltip: {
       show: true,
       format: (value) => `$${value.toLocaleString()}`
     }
@@ -460,7 +460,7 @@ interface DashboardGridProps {
   alignItems?: 'start' | 'center' | 'end' | 'stretch'
   justifyItems?: 'start' | 'center' | 'end' | 'stretch'
 }
-```
+````
 
 #### Usage Example
 
@@ -474,7 +474,7 @@ function DashboardContent() {
       responsive={{
         mobile: 1,
         tablet: 6,
-        desktop: 12
+        desktop: 12,
       }}
       gap={24}
     >
@@ -518,6 +518,7 @@ interface GridItemProps {
 #### Priority-Based Ordering
 
 Grid items with higher priority are automatically ordered first:
+
 - **critical**: order: -4
 - **high**: order: -3
 - **medium**: order: -2
@@ -531,7 +532,7 @@ Comprehensive theming system with CSS variables, contrast validation, and theme 
 
 #### Props
 
-```typescript
+````typescript
 interface ThemeProviderProps {
   children: React.ReactNode
   theme?: Partial<DashboardTheme>
@@ -624,7 +625,7 @@ interface DashboardTheme {
     }
   }
 }
-```
+````
 
 #### Usage Example
 
@@ -635,8 +636,8 @@ function App() {
   const customTheme = {
     colors: {
       primary: '#2563EB',
-      secondary: '#7C3AED'
-    }
+      secondary: '#7C3AED',
+    },
   }
 
   return (
@@ -646,9 +647,7 @@ function App() {
       validateContrast={true}
       enableColorSchemeDetection={true}
     >
-      <DashboardLayout>
-        {/* Your dashboard content */}
-      </DashboardLayout>
+      <DashboardLayout>{/* Your dashboard content */}</DashboardLayout>
     </DashboardThemeProvider>
   )
 }
@@ -656,17 +655,17 @@ function App() {
 
 #### Theme Hook
 
-```tsx
+````tsx
 import { useDashboardTheme } from '@/components/dashboard/theming/theme-provider'
 
 function ThemeControls() {
-  const { 
-    theme, 
-    setTheme, 
-    dashboardTheme, 
+  const {
+    theme,
+    setTheme,
+    dashboardTheme,
     setDashboardTheme,
     validateContrast,
-    getContrastRatio 
+    getContrastRatio
   } = useDashboardTheme()
 
   const handleThemeChange = (newTheme: 'light' | 'dark' | 'system') => {
@@ -706,24 +705,24 @@ The theming system uses CSS custom properties for maximum flexibility and perfor
   --dashboard-background: #FFFFFF;
   --dashboard-surface: #F8F9FA;
   --dashboard-border: #E5E7EB;
-  
+
   /* Text Colors */
   --dashboard-text-primary: #1A1A1A;
   --dashboard-text-secondary: #6B7280;
   --dashboard-text-disabled: #9CA3AF;
-  
+
   /* Status Colors */
   --dashboard-success: #10B981;
   --dashboard-warning: #F59E0B;
   --dashboard-error: #EF4444;
   --dashboard-info: #3B82F6;
-  
+
   /* Chart Colors */
   --dashboard-chart-1: var(--dashboard-primary);
   --dashboard-chart-2: var(--dashboard-secondary);
   /* ... up to --dashboard-chart-10 */
 }
-```
+````
 
 #### Typography Variables
 
@@ -737,13 +736,13 @@ The theming system uses CSS custom properties for maximum flexibility and perfor
   --dashboard-text-xl: 1.25rem;
   --dashboard-text-2xl: 1.5rem;
   --dashboard-text-3xl: 2rem;
-  
+
   /* Font Weights */
   --dashboard-font-normal: 400;
   --dashboard-font-medium: 500;
   --dashboard-font-semibold: 600;
   --dashboard-font-bold: 700;
-  
+
   /* Line Heights */
   --dashboard-line-height-tight: 1.25;
   --dashboard-line-height-normal: 1.5;
@@ -758,13 +757,13 @@ The theming system uses CSS custom properties for maximum flexibility and perfor
   /* Grid Spacing */
   --dashboard-grid-gap: 1.5rem;
   --dashboard-section-margin: 2rem;
-  
+
   /* Card Spacing */
   --dashboard-card-padding: 1.5rem;
   --dashboard-card-sm-padding: 1rem;
   --dashboard-card-lg-padding: 2rem;
   --dashboard-card-xl-padding: 2.5rem;
-  
+
   /* Component Spacing */
   --dashboard-component-spacing: 1rem;
 }
@@ -778,7 +777,7 @@ The theming system uses CSS custom properties for maximum flexibility and perfor
   --dashboard-transition-fast: 150ms ease-out;
   --dashboard-transition-normal: 250ms ease-out;
   --dashboard-transition-slow: 350ms ease-out;
-  
+
   /* Easing Functions */
   --dashboard-ease: cubic-bezier(0.4, 0, 0.2, 1);
   --dashboard-ease-in: cubic-bezier(0.4, 0, 1, 1);
@@ -794,21 +793,27 @@ The theming system uses CSS custom properties for maximum flexibility and perfor
 ```typescript
 const myCustomTheme: Partial<DashboardTheme> = {
   colors: {
-    primary: '#2563EB',      // Custom blue
-    secondary: '#7C3AED',    // Custom purple
-    accent: '#DC2626',       // Custom red
+    primary: '#2563EB', // Custom blue
+    secondary: '#7C3AED', // Custom purple
+    accent: '#DC2626', // Custom red
     chart: {
       palette: [
-        '#2563EB', '#7C3AED', '#DC2626', '#059669',
-        '#D97706', '#7C2D12', '#1E40AF', '#6B21A8'
-      ]
-    }
+        '#2563EB',
+        '#7C3AED',
+        '#DC2626',
+        '#059669',
+        '#D97706',
+        '#7C2D12',
+        '#1E40AF',
+        '#6B21A8',
+      ],
+    },
   },
   typography: {
     fontFamily: {
-      sans: ['Roboto', 'system-ui', 'sans-serif']
-    }
-  }
+      sans: ['Roboto', 'system-ui', 'sans-serif'],
+    },
+  },
 }
 ```
 
@@ -849,5 +854,5 @@ const { validateContrast, getContrastRatio } = useDashboardTheme()
 
 // Check if colors meet WCAG standards
 const isValid = validateContrast('#3F51B5', '#FFFFFF') // true
-const ratio = getContrastRatio('#3F51B5', '#FFFFFF')   // 8.59
+const ratio = getContrastRatio('#3F51B5', '#FFFFFF') // 8.59
 ```

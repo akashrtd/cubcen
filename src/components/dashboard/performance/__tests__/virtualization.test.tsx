@@ -35,7 +35,11 @@ const mockTableColumns = [
 describe('Virtualization', () => {
   describe('VirtualizedList', () => {
     it('should render virtualized list', () => {
-      const renderItem = (item: any, index: number, style: React.CSSProperties) => (
+      const renderItem = (
+        item: any,
+        index: number,
+        style: React.CSSProperties
+      ) => (
         <div style={style} data-testid={`item-${index}`}>
           {item.name}
         </div>
@@ -57,7 +61,11 @@ describe('Virtualization', () => {
 
     it('should handle scroll events', () => {
       const onScroll = jest.fn()
-      const renderItem = (item: any, index: number, style: React.CSSProperties) => (
+      const renderItem = (
+        item: any,
+        index: number,
+        style: React.CSSProperties
+      ) => (
         <div style={style} data-testid={`item-${index}`}>
           {item.name}
         </div>
@@ -80,7 +88,11 @@ describe('Virtualization', () => {
     })
 
     it('should use custom item key function', () => {
-      const renderItem = (item: any, index: number, style: React.CSSProperties) => (
+      const renderItem = (
+        item: any,
+        index: number,
+        style: React.CSSProperties
+      ) => (
         <div style={style} data-testid={`item-${item.id}`}>
           {item.name}
         </div>
@@ -195,7 +207,11 @@ describe('Virtualization', () => {
 
   describe('VirtualizedGrid', () => {
     it('should render virtualized grid', () => {
-      const renderItem = (item: any, index: number, style: React.CSSProperties) => (
+      const renderItem = (
+        item: any,
+        index: number,
+        style: React.CSSProperties
+      ) => (
         <div style={style} data-testid={`grid-item-${index}`}>
           {item.name}
         </div>
@@ -219,7 +235,11 @@ describe('Virtualization', () => {
     })
 
     it('should handle grid with gap', () => {
-      const renderItem = (item: any, index: number, style: React.CSSProperties) => (
+      const renderItem = (
+        item: any,
+        index: number,
+        style: React.CSSProperties
+      ) => (
         <div style={style} data-testid={`grid-item-${index}`}>
           {item.name}
         </div>
@@ -246,11 +266,8 @@ describe('Virtualization', () => {
     const TestComponent = ({ items }: { items: any[] }) => {
       const measureItem = (item: any) => item.height || 50
 
-      const { itemHeights, totalHeight, measureItemHeight, getItemOffset } = useDynamicSizing(
-        items,
-        50,
-        measureItem
-      )
+      const { itemHeights, totalHeight, measureItemHeight, getItemOffset } =
+        useDynamicSizing(items, 50, measureItem)
 
       return (
         <div>

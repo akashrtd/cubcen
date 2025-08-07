@@ -5,25 +5,59 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
 import { Switch } from '@/components/ui/switch'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
-import { Bell, Mail, MessageSquare, Smartphone, Save, AlertTriangle, CheckCircle, XCircle, Info } from 'lucide-react'
-import { NotificationEventType, NotificationChannelType } from '@/types/notification'
+import {
+  Bell,
+  Mail,
+  MessageSquare,
+  Smartphone,
+  Save,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
+  Info,
+} from 'lucide-react'
+import {
+  NotificationEventType,
+  NotificationChannelType,
+} from '@/types/notification'
 
 // Notification preferences schema
 const notificationPreferencesSchema = z.object({
-  preferences: z.array(z.object({
-    eventType: z.nativeEnum(NotificationEventType),
-    enabled: z.boolean(),
-    channels: z.array(z.nativeEnum(NotificationChannelType)),
-    frequency: z.enum(['immediate', 'hourly', 'daily']),
-    escalationDelay: z.number().min(0).max(1440).optional(), // 0-1440 minutes (24 hours)
-  })),
+  preferences: z.array(
+    z.object({
+      eventType: z.nativeEnum(NotificationEventType),
+      enabled: z.boolean(),
+      channels: z.array(z.nativeEnum(NotificationChannelType)),
+      frequency: z.enum(['immediate', 'hourly', 'daily']),
+      escalationDelay: z.number().min(0).max(1440).optional(), // 0-1440 minutes (24 hours)
+    })
+  ),
   globalSettings: z.object({
     emailEnabled: z.boolean(),
     slackEnabled: z.boolean(),
@@ -36,7 +70,9 @@ const notificationPreferencesSchema = z.object({
   }),
 })
 
-type NotificationPreferencesFormData = z.infer<typeof notificationPreferencesSchema>
+type NotificationPreferencesFormData = z.infer<
+  typeof notificationPreferencesSchema
+>
 
 interface NotificationPreference {
   eventType: NotificationEventType
@@ -68,7 +104,10 @@ const eventTypeConfig = {
     description: 'When an agent becomes unavailable or stops responding',
     icon: XCircle,
     priority: 'high' as const,
-    defaultChannels: [NotificationChannelType.EMAIL, NotificationChannelType.SLACK],
+    defaultChannels: [
+      NotificationChannelType.EMAIL,
+      NotificationChannelType.SLACK,
+    ],
     defaultFrequency: 'immediate' as const,
   },
   [NotificationEventType.AGENT_ERROR]: {
@@ -100,7 +139,10 @@ const eventTypeConfig = {
     description: 'When a workflow execution fails',
     icon: XCircle,
     priority: 'high' as const,
-    defaultChannels: [NotificationChannelType.EMAIL, NotificationChannelType.SLACK],
+    defaultChannels: [
+      NotificationChannelType.EMAIL,
+      NotificationChannelType.SLACK,
+    ],
     defaultFrequency: 'immediate' as const,
   },
   [NotificationEventType.WORKFLOW_COMPLETED]: {
@@ -116,7 +158,10 @@ const eventTypeConfig = {
     description: 'When a system-level error occurs',
     icon: AlertTriangle,
     priority: 'high' as const,
-    defaultChannels: [NotificationChannelType.EMAIL, NotificationChannelType.SLACK],
+    defaultChannels: [
+      NotificationChannelType.EMAIL,
+      NotificationChannelType.SLACK,
+    ],
     defaultFrequency: 'immediate' as const,
   },
   [NotificationEventType.HEALTH_CHECK_FAILED]: {
@@ -132,7 +177,10 @@ const eventTypeConfig = {
     description: 'When a platform connection is lost',
     icon: XCircle,
     priority: 'high' as const,
-    defaultChannels: [NotificationChannelType.EMAIL, NotificationChannelType.SLACK],
+    defaultChannels: [
+      NotificationChannelType.EMAIL,
+      NotificationChannelType.SLACK,
+    ],
     defaultFrequency: 'immediate' as const,
   },
 }
@@ -155,19 +203,25 @@ const channelConfig = {
   },
 }
 
-export function NotificationSettings({ preferences = [], globalSettings, onSave }: NotificationSettingsProps) {
+export function NotificationSettings({
+  preferences = [],
+  globalSettings,
+  onSave,
+}: NotificationSettingsProps) {
   const [isSaving, setIsSaving] = useState(false)
 
   const form = useForm<NotificationPreferencesFormData>({
     resolver: zodResolver(notificationPreferencesSchema),
     defaultValues: {
-      preferences: Array.isArray(preferences) ? preferences.map(pref => ({
-        eventType: pref.eventType,
-        enabled: pref.enabled,
-        channels: pref.channels,
-        frequency: pref.frequency,
-        escalationDelay: pref.escalationDelay,
-      })) : [],
+      preferences: Array.isArray(preferences)
+        ? preferences.map(pref => ({
+            eventType: pref.eventType,
+            enabled: pref.enabled,
+            channels: pref.channels,
+            frequency: pref.frequency,
+            escalationDelay: pref.escalationDelay,
+          }))
+        : [],
       globalSettings: globalSettings || {
         emailEnabled: true,
         slackEnabled: false,
@@ -311,7 +365,8 @@ export function NotificationSettings({ preferences = [], globalSettings, onSave 
                       <div className="space-y-1">
                         <FormLabel>Quiet Hours</FormLabel>
                         <p className="text-sm text-muted-foreground">
-                          Disable non-critical notifications during specified hours
+                          Disable non-critical notifications during specified
+                          hours
                         </p>
                       </div>
                       <FormControl>
@@ -376,148 +431,191 @@ export function NotificationSettings({ preferences = [], globalSettings, onSave 
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {Object.entries(eventTypeConfig).map(([eventType, config], index) => {
-                const Icon = config.icon
-                return (
-                  <div key={eventType} className="space-y-4">
-                    {index > 0 && <Separator />}
-                    
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <Icon className="h-4 w-4" />
-                          <h4 className="font-medium">{config.name}</h4>
-                          <Badge variant={getPriorityColor(config.priority)}>
-                            {config.priority}
-                          </Badge>
+              {Object.entries(eventTypeConfig).map(
+                ([eventType, config], index) => {
+                  const Icon = config.icon
+                  return (
+                    <div key={eventType} className="space-y-4">
+                      {index > 0 && <Separator />}
+
+                      <div className="flex items-start justify-between">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <Icon className="h-4 w-4" />
+                            <h4 className="font-medium">{config.name}</h4>
+                            <Badge variant={getPriorityColor(config.priority)}>
+                              {config.priority}
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {config.description}
+                          </p>
                         </div>
-                        <p className="text-sm text-muted-foreground">
-                          {config.description}
-                        </p>
+
+                        <FormField
+                          control={form.control}
+                          name={`preferences.${index}.enabled`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <Switch
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                />
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
                       </div>
 
-                      <FormField
-                        control={form.control}
-                        name={`preferences.${index}.enabled`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Switch
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    {form.watch(`preferences.${index}.enabled`) && (
-                      <div className="ml-6 space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <FormField
-                            control={form.control}
-                            name={`preferences.${index}.frequency`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Frequency</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                  <FormControl>
-                                    <SelectTrigger>
-                                      <SelectValue placeholder="Select frequency" />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    <SelectItem value="immediate">Immediate</SelectItem>
-                                    <SelectItem value="hourly">Hourly Digest</SelectItem>
-                                    <SelectItem value="daily">Daily Digest</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-
-                          <FormField
-                            control={form.control}
-                            name={`preferences.${index}.escalationDelay`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Escalation Delay (minutes)</FormLabel>
-                                <FormControl>
-                                  <Select 
-                                    onValueChange={(value) => field.onChange(parseInt(value))} 
-                                    defaultValue={field.value?.toString()}
+                      {form.watch(`preferences.${index}.enabled`) && (
+                        <div className="ml-6 space-y-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <FormField
+                              control={form.control}
+                              name={`preferences.${index}.frequency`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Frequency</FormLabel>
+                                  <Select
+                                    onValueChange={field.onChange}
+                                    defaultValue={field.value}
                                   >
-                                    <SelectTrigger>
-                                      <SelectValue placeholder="Select delay" />
-                                    </SelectTrigger>
+                                    <FormControl>
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select frequency" />
+                                      </SelectTrigger>
+                                    </FormControl>
                                     <SelectContent>
-                                      <SelectItem value="0">No escalation</SelectItem>
-                                      <SelectItem value="5">5 minutes</SelectItem>
-                                      <SelectItem value="15">15 minutes</SelectItem>
-                                      <SelectItem value="30">30 minutes</SelectItem>
-                                      <SelectItem value="60">1 hour</SelectItem>
-                                      <SelectItem value="120">2 hours</SelectItem>
-                                      <SelectItem value="240">4 hours</SelectItem>
+                                      <SelectItem value="immediate">
+                                        Immediate
+                                      </SelectItem>
+                                      <SelectItem value="hourly">
+                                        Hourly Digest
+                                      </SelectItem>
+                                      <SelectItem value="daily">
+                                        Daily Digest
+                                      </SelectItem>
                                     </SelectContent>
                                   </Select>
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
 
-                        <div>
-                          <FormLabel>Notification Channels</FormLabel>
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mt-2">
-                            {Object.entries(channelConfig).map(([channelType, channelInfo]) => {
-                              const ChannelIcon = channelInfo.icon
-                              return (
-                                <FormField
-                                  key={channelType}
-                                  control={form.control}
-                                  name={`preferences.${index}.channels`}
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormControl>
-                                        <label className="flex items-center space-x-2 p-2 border rounded cursor-pointer hover:bg-accent">
-                                          <input
-                                            type="checkbox"
-                                            checked={field.value?.includes(channelType as NotificationChannelType)}
-                                            onChange={(e) => {
-                                              const currentChannels = field.value || []
-                                              if (e.target.checked) {
-                                                field.onChange([...currentChannels, channelType])
-                                              } else {
-                                                field.onChange(currentChannels.filter(c => c !== channelType))
-                                              }
-                                            }}
-                                            className="rounded"
-                                          />
-                                          <ChannelIcon className="h-4 w-4" />
-                                          <span className="text-sm">{channelInfo.name}</span>
-                                        </label>
-                                      </FormControl>
-                                    </FormItem>
-                                  )}
-                                />
-                              )
-                            })}
+                            <FormField
+                              control={form.control}
+                              name={`preferences.${index}.escalationDelay`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>
+                                    Escalation Delay (minutes)
+                                  </FormLabel>
+                                  <FormControl>
+                                    <Select
+                                      onValueChange={value =>
+                                        field.onChange(parseInt(value))
+                                      }
+                                      defaultValue={field.value?.toString()}
+                                    >
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Select delay" />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="0">
+                                          No escalation
+                                        </SelectItem>
+                                        <SelectItem value="5">
+                                          5 minutes
+                                        </SelectItem>
+                                        <SelectItem value="15">
+                                          15 minutes
+                                        </SelectItem>
+                                        <SelectItem value="30">
+                                          30 minutes
+                                        </SelectItem>
+                                        <SelectItem value="60">
+                                          1 hour
+                                        </SelectItem>
+                                        <SelectItem value="120">
+                                          2 hours
+                                        </SelectItem>
+                                        <SelectItem value="240">
+                                          4 hours
+                                        </SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+
+                          <div>
+                            <FormLabel>Notification Channels</FormLabel>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mt-2">
+                              {Object.entries(channelConfig).map(
+                                ([channelType, channelInfo]) => {
+                                  const ChannelIcon = channelInfo.icon
+                                  return (
+                                    <FormField
+                                      key={channelType}
+                                      control={form.control}
+                                      name={`preferences.${index}.channels`}
+                                      render={({ field }) => (
+                                        <FormItem>
+                                          <FormControl>
+                                            <label className="flex items-center space-x-2 p-2 border rounded cursor-pointer hover:bg-accent">
+                                              <input
+                                                type="checkbox"
+                                                checked={field.value?.includes(
+                                                  channelType as NotificationChannelType
+                                                )}
+                                                onChange={e => {
+                                                  const currentChannels =
+                                                    field.value || []
+                                                  if (e.target.checked) {
+                                                    field.onChange([
+                                                      ...currentChannels,
+                                                      channelType,
+                                                    ])
+                                                  } else {
+                                                    field.onChange(
+                                                      currentChannels.filter(
+                                                        c => c !== channelType
+                                                      )
+                                                    )
+                                                  }
+                                                }}
+                                                className="rounded"
+                                              />
+                                              <ChannelIcon className="h-4 w-4" />
+                                              <span className="text-sm">
+                                                {channelInfo.name}
+                                              </span>
+                                            </label>
+                                          </FormControl>
+                                        </FormItem>
+                                      )}
+                                    />
+                                  )
+                                }
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
+                      )}
+                    </div>
+                  )
+                }
+              )}
             </CardContent>
           </Card>
 
           <div className="flex justify-end">
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={isSaving || !form.formState.isDirty}
             >
               <Save className="h-4 w-4 mr-2" />

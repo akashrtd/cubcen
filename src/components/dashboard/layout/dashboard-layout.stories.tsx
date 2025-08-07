@@ -14,7 +14,8 @@ const meta: Meta<typeof DashboardLayout> = {
     layout: 'fullscreen',
     docs: {
       description: {
-        component: 'The main dashboard layout component with CSS Grid-based responsive design. Supports customizable grid areas, collapsible sidebar, and mobile navigation.',
+        component:
+          'The main dashboard layout component with CSS Grid-based responsive design. Supports customizable grid areas, collapsible sidebar, and mobile navigation.',
       },
     },
   },
@@ -43,7 +44,9 @@ const SampleHeader = () => (
     <div className="flex items-center justify-between">
       <h1 className="text-2xl font-bold text-foreground">Cubcen Dashboard</h1>
       <div className="flex items-center gap-4">
-        <span className="text-sm text-muted-foreground">Welcome back, Admin</span>
+        <span className="text-sm text-muted-foreground">
+          Welcome back, Admin
+        </span>
       </div>
     </div>
   </header>
@@ -97,7 +100,7 @@ const SampleFooter = () => (
 
 export const Default: Story = {
   args: {},
-  render: (args) => (
+  render: args => (
     <DashboardLayout {...args}>
       <SampleContent />
     </DashboardLayout>
@@ -106,7 +109,7 @@ export const Default: Story = {
 
 export const WithHeaderAndFooter: Story = {
   args: {},
-  render: (args) => (
+  render: args => (
     <DashboardLayout
       {...args}
       header={<SampleHeader />}
@@ -119,7 +122,7 @@ export const WithHeaderAndFooter: Story = {
 
 export const WithSidebar: Story = {
   args: {},
-  render: (args) => (
+  render: args => (
     <DashboardLayout
       {...args}
       header={<SampleHeader />}
@@ -138,7 +141,7 @@ export const MobileLayout: Story = {
       defaultViewport: 'mobile',
     },
   },
-  render: (args) => (
+  render: args => (
     <DashboardLayout
       {...args}
       header={<SampleHeader />}
@@ -157,7 +160,7 @@ export const TabletLayout: Story = {
       defaultViewport: 'tablet',
     },
   },
-  render: (args) => (
+  render: args => (
     <DashboardLayout
       {...args}
       header={<SampleHeader />}
@@ -178,7 +181,7 @@ export const CustomGridAreas: Story = {
       footer: 'footer',
     },
   },
-  render: (args) => (
+  render: args => (
     <DashboardLayout
       {...args}
       header={<SampleHeader />}
@@ -197,7 +200,7 @@ export const AccessibilityFocused: Story = {
       test: 'error',
     },
   },
-  render: (args) => (
+  render: args => (
     <DashboardLayout
       {...args}
       header={<SampleHeader />}

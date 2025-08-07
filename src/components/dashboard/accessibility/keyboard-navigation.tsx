@@ -23,7 +23,7 @@ export function KeyboardNavigation({
   initialFocus,
   skipLinks = [],
   onEscape,
-  className
+  className,
 }: KeyboardNavigationProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const previousFocusRef = useRef<HTMLElement | null>(null)
@@ -53,7 +53,7 @@ export function KeyboardNavigation({
   // Get all focusable elements within the container
   const getFocusableElements = useCallback(() => {
     if (!containerRef.current) return []
-    
+
     const focusableSelectors = [
       'button:not([disabled])',
       'input:not([disabled])',
@@ -64,7 +64,7 @@ export function KeyboardNavigation({
       '[role="button"]:not([disabled])',
       '[role="link"]:not([disabled])',
       '[role="menuitem"]:not([disabled])',
-      '[role="tab"]:not([disabled])'
+      '[role="tab"]:not([disabled])',
     ].join(', ')
 
     return Array.from(
@@ -72,82 +72,89 @@ export function KeyboardNavigation({
     ) as HTMLElement[]
   }, [])
 
-  // Handle keyboard navigation
-  const handleKeyDown = useCallback((event: KeyboardEvent) => {
-    const { key, shiftKey } = event
-
-    // Handle escape key
-    if (key === 'Escape' && onEscape) {
-      onEscape()
-      return
-    }
-
-    // Handle tab navigation with focus trapping
-    if (key === 'Tab' && trapFocus) {
-      const focusableElements = getFocusableElements()
-      if (focusableElements.length === 0) return
-
-      const firstElement = focusableElements[0]
-      const lastElement = focusableElements[focusableElements.length - 1]
-      const currentElement = document.activeElement as HTMLElement
-
-      if (shiftKey) {
-        // Shift + Tab (backward navigation)
-        if (currentElement === firstElement) {
-          event.preventDefault()
-          lastElement.focus()
-        }
-      } else {
-        // Tab (forward navigation)
-        if (currentElement === lastElement) {
-          event.preventDefault()
-          firstElement.focus()
-        }
-      }
-    }
-
-    // Handle arrow key navigation for chart interactions
-    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) {
-      const currentElement = document.activeElement as HTMLElement
-      
-      // Check if we're in a chart container
-      if (currentElement.closest('[data-chart-container]')) {
-        handleChartNavigation(event, currentElement)
-      }
-    }
-  }, [trapFocus, onEscape, getFocusableElements, handleChartNavigation])
-
   // Handle chart-specific keyboard navigation
-  const handleChartNavigation = useCallback((event: KeyboardEvent, currentElement: HTMLElement) => {
-    const { key } = event
-    const chartContainer = currentElement.closest('[data-chart-container]')
-    if (!chartContainer) return
+  const handleChartNavigation = useCallback(
+    (event: KeyboardEvent, currentElement: HTMLElement) => {
+      const { key } = event
+      const chartContainer = currentElement.closest('[data-chart-container]')
+      if (!chartContainer) return
 
-    const chartElements = Array.from(
-      chartContainer.querySelectorAll('[data-chart-element]')
-    ) as HTMLElement[]
+      const chartElements = Array.from(
+        chartContainer.querySelectorAll('[data-chart-element]')
+      ) as HTMLElement[]
 
-    if (chartElements.length === 0) return
+      if (chartElements.length === 0) return
 
-    const currentIndex = chartElements.indexOf(currentElement)
-    let nextIndex = currentIndex
+      const currentIndex = chartElements.indexOf(currentElement)
+      let nextIndex = currentIndex
 
-    switch (key) {
-      case 'ArrowRight':
-      case 'ArrowDown':
-        nextIndex = (currentIndex + 1) % chartElements.length
-        break
-      case 'ArrowLeft':
-      case 'ArrowUp':
-        nextIndex = currentIndex === 0 ? chartElements.length - 1 : currentIndex - 1
-        break
-      default:
+      switch (key) {
+        case 'ArrowRight':
+        case 'ArrowDown':
+          nextIndex = (currentIndex + 1) % chartElements.length
+          break
+        case 'ArrowLeft':
+        case 'ArrowUp':
+          nextIndex =
+            currentIndex === 0 ? chartElements.length - 1 : currentIndex - 1
+          break
+        default:
+          return
+      }
+
+      event.preventDefault()
+      chartElements[nextIndex].focus()
+    },
+    []
+  )
+
+  // Handle keyboard navigation
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      const { key, shiftKey } = event
+
+      // Handle escape key
+      if (key === 'Escape' && onEscape) {
+        onEscape()
         return
-    }
+      }
 
-    event.preventDefault()
-    chartElements[nextIndex].focus()
-  }, [])
+      // Handle tab navigation with focus trapping
+      if (key === 'Tab' && trapFocus) {
+        const focusableElements = getFocusableElements()
+        if (focusableElements.length === 0) return
+
+        const firstElement = focusableElements[0]
+        const lastElement = focusableElements[focusableElements.length - 1]
+        const currentElement = document.activeElement as HTMLElement
+
+        if (shiftKey) {
+          // Shift + Tab (backward navigation)
+          if (currentElement === firstElement) {
+            event.preventDefault()
+            lastElement.focus()
+          }
+        } else {
+          // Tab (forward navigation)
+          if (currentElement === lastElement) {
+            event.preventDefault()
+            firstElement.focus()
+          }
+        }
+      }
+
+      // Handle arrow key navigation for chart interactions
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) {
+        const currentElement = document.activeElement as HTMLElement
+
+        // Check if we're in a chart container
+        if (currentElement.closest('[data-chart-container]')) {
+          handleChartNavigation(event, currentElement)
+        }
+      }
+    },
+    [trapFocus, onEscape, getFocusableElements, handleChartNavigation]
+  )
 
   // Attach keyboard event listeners
   useEffect(() => {
@@ -176,7 +183,7 @@ export function KeyboardNavigation({
           </div>
         </div>
       )}
-      
+
       {children}
     </div>
   )
@@ -216,7 +223,8 @@ export function useFocusManagement() {
     if (direction === 'next') {
       nextIndex = (currentIndex + 1) % focusableElements.length
     } else {
-      nextIndex = currentIndex === 0 ? focusableElements.length - 1 : currentIndex - 1
+      nextIndex =
+        currentIndex === 0 ? focusableElements.length - 1 : currentIndex - 1
     }
 
     focusableElements[nextIndex].focus()
@@ -225,7 +233,7 @@ export function useFocusManagement() {
   return {
     setFocus,
     restoreFocus,
-    moveFocus
+    moveFocus,
   }
 }
 
@@ -237,7 +245,12 @@ interface FocusTrapProps {
   onEscape?: () => void
 }
 
-export function FocusTrap({ children, active = true, initialFocus, onEscape }: FocusTrapProps) {
+export function FocusTrap({
+  children,
+  active = true,
+  initialFocus,
+  onEscape,
+}: FocusTrapProps) {
   if (!active) {
     return <>{children}</>
   }

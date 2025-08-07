@@ -52,7 +52,9 @@ describe('AnalyticsErrorFallback', () => {
       />
     )
 
-    expect(screen.getByText(/analytics data is being processed/i)).toBeInTheDocument()
+    expect(
+      screen.getByText(/analytics data is being processed/i)
+    ).toBeInTheDocument()
     expect(screen.getByText(/api connection issues/i)).toBeInTheDocument()
     expect(screen.getByText(/date range filters/i)).toBeInTheDocument()
   })
@@ -81,7 +83,9 @@ describe('AnalyticsErrorFallback', () => {
       />
     )
 
-    const backButton = screen.getByRole('button', { name: /back to dashboard/i })
+    const backButton = screen.getByRole('button', {
+      name: /back to dashboard/i,
+    })
     fireEvent.click(backButton)
 
     expect(mockPush).toHaveBeenCalledWith('/dashboard')
@@ -114,7 +118,9 @@ describe('PlatformsErrorFallback', () => {
 
     expect(screen.getByText(/platform api connectivity/i)).toBeInTheDocument()
     expect(screen.getByText(/authentication credentials/i)).toBeInTheDocument()
-    expect(screen.getByText(/platform configuration errors/i)).toBeInTheDocument()
+    expect(
+      screen.getByText(/platform configuration errors/i)
+    ).toBeInTheDocument()
   })
 
   it('handles retry platforms button click', () => {
@@ -200,9 +206,13 @@ describe('SettingsErrorFallback', () => {
       />
     )
 
-    expect(screen.getByText(/user preferences data corruption/i)).toBeInTheDocument()
+    expect(
+      screen.getByText(/user preferences data corruption/i)
+    ).toBeInTheDocument()
     expect(screen.getByText(/settings api connectivity/i)).toBeInTheDocument()
-    expect(screen.getByText(/security settings validation/i)).toBeInTheDocument()
+    expect(
+      screen.getByText(/security settings validation/i)
+    ).toBeInTheDocument()
   })
 
   it('handles retry settings button click', () => {
@@ -232,7 +242,9 @@ describe('DashboardErrorFallback', () => {
     )
 
     expect(screen.getByText('Dashboard Error')).toBeInTheDocument()
-    expect(screen.getByText(/critical error loading the dashboard/i)).toBeInTheDocument()
+    expect(
+      screen.getByText(/critical error loading the dashboard/i)
+    ).toBeInTheDocument()
   })
 
   it('shows dashboard-specific troubleshooting tips', () => {
@@ -244,7 +256,9 @@ describe('DashboardErrorFallback', () => {
       />
     )
 
-    expect(screen.getByText(/authentication session expired/i)).toBeInTheDocument()
+    expect(
+      screen.getByText(/authentication session expired/i)
+    ).toBeInTheDocument()
     expect(screen.getByText(/core system connectivity/i)).toBeInTheDocument()
     expect(screen.getByText(/browser compatibility/i)).toBeInTheDocument()
   })
@@ -305,10 +319,7 @@ describe('DashboardErrorFallback', () => {
 describe('Common functionality', () => {
   it('renders without error ID when not provided', () => {
     render(
-      <AnalyticsErrorFallback
-        error={mockError}
-        resetError={mockResetError}
-      />
+      <AnalyticsErrorFallback error={mockError} resetError={mockResetError} />
     )
 
     expect(screen.queryByText(/error id:/i)).not.toBeInTheDocument()
@@ -316,7 +327,7 @@ describe('Common functionality', () => {
 
   it('displays error message correctly', () => {
     const customError = new Error('Custom error message')
-    
+
     render(
       <AnalyticsErrorFallback
         error={customError}
@@ -338,7 +349,9 @@ describe('Common functionality', () => {
     )
 
     const retryButton = screen.getByRole('button', { name: /retry analytics/i })
-    const backButton = screen.getByRole('button', { name: /back to dashboard/i })
+    const backButton = screen.getByRole('button', {
+      name: /back to dashboard/i,
+    })
 
     expect(retryButton).toBeInTheDocument()
     expect(backButton).toBeInTheDocument()

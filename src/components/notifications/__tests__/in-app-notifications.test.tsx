@@ -1,5 +1,8 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { InAppNotifications, useNotificationToasts } from '../in-app-notifications'
+import {
+  InAppNotifications,
+  useNotificationToasts,
+} from '../in-app-notifications'
 
 // Mock fetch
 global.fetch = jest.fn()
@@ -98,7 +101,9 @@ describe('InAppNotifications', () => {
       expect(screen.getByText('System Update')).toBeInTheDocument()
     })
 
-    expect(fetch).toHaveBeenCalledWith('/api/cubcen/v1/notifications?userId=user-1')
+    expect(fetch).toHaveBeenCalledWith(
+      '/api/cubcen/v1/notifications?userId=user-1'
+    )
   })
 
   it('displays notification messages', async () => {
@@ -112,9 +117,15 @@ describe('InAppNotifications', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByText('Your automation task has been completed successfully')).toBeInTheDocument()
-      expect(screen.getByText('Agent "Test Agent" encountered an error')).toBeInTheDocument()
-      expect(screen.getByText('System maintenance scheduled for tonight')).toBeInTheDocument()
+      expect(
+        screen.getByText('Your automation task has been completed successfully')
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText('Agent "Test Agent" encountered an error')
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText('System maintenance scheduled for tonight')
+      ).toBeInTheDocument()
     })
   })
 
@@ -208,7 +219,9 @@ describe('InAppNotifications', () => {
       expect(screen.getByText('Task Completed')).toBeInTheDocument()
     })
 
-    const markAsReadButton = screen.getAllByRole('button', { name: /mark as read/i })[0]
+    const markAsReadButton = screen.getAllByRole('button', {
+      name: /mark as read/i,
+    })[0]
     fireEvent.click(markAsReadButton)
 
     expect(mockOnMarkAsRead).toHaveBeenCalledWith('1')
@@ -228,7 +241,9 @@ describe('InAppNotifications', () => {
       expect(screen.getByText('Task Completed')).toBeInTheDocument()
     })
 
-    const markAllAsReadButton = screen.getByRole('button', { name: /mark all as read/i })
+    const markAllAsReadButton = screen.getByRole('button', {
+      name: /mark all as read/i,
+    })
     fireEvent.click(markAllAsReadButton)
 
     expect(mockOnMarkAllAsRead).toHaveBeenCalledTimes(1)
@@ -255,7 +270,7 @@ describe('InAppNotifications', () => {
 
     await waitFor(() => {
       expect(screen.getByText('No notifications')).toBeInTheDocument()
-      expect(screen.getByText('You\'re all caught up!')).toBeInTheDocument()
+      expect(screen.getByText("You're all caught up!")).toBeInTheDocument()
     })
   })
 
@@ -276,7 +291,9 @@ describe('InAppNotifications', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByText('Failed to load notifications')).toBeInTheDocument()
+      expect(
+        screen.getByText('Failed to load notifications')
+      ).toBeInTheDocument()
     })
   })
 
@@ -293,7 +310,9 @@ describe('InAppNotifications', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByText('Failed to load notifications')).toBeInTheDocument()
+      expect(
+        screen.getByText('Failed to load notifications')
+      ).toBeInTheDocument()
     })
   })
 

@@ -1,6 +1,12 @@
 'use client'
 
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from 'react'
 import { useRouter } from 'next/navigation'
 import { AuthUser, UserRole } from '@/types/auth'
 import { clientLogger } from '@/lib/client-logger'
@@ -62,7 +68,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const login = async (email: string, password: string): Promise<void> => {
     try {
       setIsLoading(true)
-      
+
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
@@ -77,13 +83,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
 
       const data = await response.json()
-      
+
       // Store tokens
       localStorage.setItem('accessToken', data.data.tokens.accessToken)
       localStorage.setItem('refreshToken', data.data.tokens.refreshToken)
-      
+
       setUser(data.data.user)
-      
+
       // Handle redirect after login
       const redirectPath = localStorage.getItem('redirectAfterLogin')
       if (redirectPath && redirectPath !== '/auth/login') {
@@ -92,8 +98,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       } else {
         router.push('/dashboard')
       }
-      
-      clientLogger.info('User logged in successfully', { userId: data.data.user.id })
+
+      clientLogger.info('User logged in successfully', {
+        userId: data.data.user.id,
+      })
     } catch (error) {
       clientLogger.error('Login failed', error as Error)
       throw error
@@ -165,11 +173,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
 
       const data = await response.json()
-      
+
       // Update tokens
       localStorage.setItem('accessToken', data.data.tokens.accessToken)
       localStorage.setItem('refreshToken', data.data.tokens.refreshToken)
-      
+
       // Validate the new token
       await validateToken()
     } catch (error) {

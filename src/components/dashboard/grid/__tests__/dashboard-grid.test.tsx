@@ -14,10 +14,10 @@ describe('DashboardGrid', () => {
           <div>Grid Item 2</div>
         </DashboardGrid>
       )
-      
+
       expect(screen.getByText('Grid Item 1')).toBeInTheDocument()
       expect(screen.getByText('Grid Item 2')).toBeInTheDocument()
-      
+
       const grid = document.querySelector('.dashboard-grid')
       expect(grid).toBeInTheDocument()
       expect(grid).toHaveClass('grid')
@@ -29,7 +29,7 @@ describe('DashboardGrid', () => {
           <div>Content</div>
         </DashboardGrid>
       )
-      
+
       const grid = document.querySelector('.dashboard-grid')
       expect(grid).toHaveClass('custom-grid-class')
     })
@@ -40,7 +40,7 @@ describe('DashboardGrid', () => {
           <div>Content</div>
         </DashboardGrid>
       )
-      
+
       const grid = document.querySelector('.dashboard-grid')
       expect(grid).toHaveStyle({ '--dashboard-grid-gap': '32px' })
     })
@@ -53,12 +53,12 @@ describe('DashboardGrid', () => {
           <div>Content</div>
         </DashboardGrid>
       )
-      
+
       const grid = document.querySelector('.dashboard-grid')
       expect(grid).toHaveStyle({
         '--dashboard-grid-columns-mobile': '1',
         '--dashboard-grid-columns-tablet': '6',
-        '--dashboard-grid-columns-desktop': '12'
+        '--dashboard-grid-columns-desktop': '12',
       })
     })
 
@@ -68,18 +68,18 @@ describe('DashboardGrid', () => {
           responsive={{
             mobile: 2,
             tablet: 4,
-            desktop: 8
+            desktop: 8,
           }}
         >
           <div>Content</div>
         </DashboardGrid>
       )
-      
+
       const grid = document.querySelector('.dashboard-grid')
       expect(grid).toHaveStyle({
         '--dashboard-grid-columns-mobile': '2',
         '--dashboard-grid-columns-tablet': '4',
-        '--dashboard-grid-columns-desktop': '8'
+        '--dashboard-grid-columns-desktop': '8',
       })
     })
 
@@ -89,7 +89,7 @@ describe('DashboardGrid', () => {
           <div>Content</div>
         </DashboardGrid>
       )
-      
+
       const grid = document.querySelector('.dashboard-grid')
       expect(grid).toHaveClass(
         '[grid-template-columns:repeat(var(--dashboard-grid-columns-mobile),1fr)]',
@@ -106,7 +106,7 @@ describe('DashboardGrid', () => {
           <div>Content</div>
         </DashboardGrid>
       )
-      
+
       const grid = document.querySelector('.dashboard-grid')
       expect(grid).toHaveStyle({ gridAutoFlow: 'column' })
     })
@@ -117,7 +117,7 @@ describe('DashboardGrid', () => {
           <div>Content</div>
         </DashboardGrid>
       )
-      
+
       const grid = document.querySelector('.dashboard-grid')
       expect(grid).toHaveStyle({ alignItems: 'center' })
     })
@@ -128,7 +128,7 @@ describe('DashboardGrid', () => {
           <div>Content</div>
         </DashboardGrid>
       )
-      
+
       const grid = document.querySelector('.dashboard-grid')
       expect(grid).toHaveStyle({ justifyItems: 'center' })
     })
@@ -143,7 +143,7 @@ describe('DashboardGrid', () => {
           <div>Grid Item 3</div>
         </DashboardGrid>
       )
-      
+
       const results = await axe(container)
       expect(results).toHaveNoViolations()
     })
@@ -158,9 +158,9 @@ describe('GridItem', () => {
           <div>Grid Item Content</div>
         </GridItem>
       )
-      
+
       expect(screen.getByText('Grid Item Content')).toBeInTheDocument()
-      
+
       const item = document.querySelector('.dashboard-grid-item')
       expect(item).toBeInTheDocument()
       expect(item).toHaveClass('col-span-1')
@@ -172,7 +172,7 @@ describe('GridItem', () => {
           <div>Content</div>
         </GridItem>
       )
-      
+
       const item = document.querySelector('.dashboard-grid-item')
       expect(item).toHaveClass('custom-item-class')
     })
@@ -185,7 +185,7 @@ describe('GridItem', () => {
           <div>Content</div>
         </GridItem>
       )
-      
+
       const item = document.querySelector('.dashboard-grid-item')
       expect(item).toHaveClass('col-span-4')
     })
@@ -196,13 +196,13 @@ describe('GridItem', () => {
           colSpan={{
             mobile: 1,
             tablet: 3,
-            desktop: 6
+            desktop: 6,
           }}
         >
           <div>Content</div>
         </GridItem>
       )
-      
+
       const item = document.querySelector('.dashboard-grid-item')
       expect(item).toHaveClass('col-span-1', 'md:col-span-3', 'lg:col-span-6')
     })
@@ -213,13 +213,13 @@ describe('GridItem', () => {
           colSpan={{
             mobile: 5, // Should be limited to 1
             tablet: 10, // Should be limited to 6
-            desktop: 20 // Should be limited to 12
+            desktop: 20, // Should be limited to 12
           }}
         >
           <div>Content</div>
         </GridItem>
       )
-      
+
       const item = document.querySelector('.dashboard-grid-item')
       expect(item).toHaveClass('col-span-1', 'md:col-span-6', 'lg:col-span-12')
     })
@@ -232,7 +232,7 @@ describe('GridItem', () => {
           <div>Content</div>
         </GridItem>
       )
-      
+
       const item = document.querySelector('.dashboard-grid-item')
       expect(item).toHaveClass('row-span-2')
     })
@@ -243,7 +243,7 @@ describe('GridItem', () => {
           <div>Content</div>
         </GridItem>
       )
-      
+
       const item = document.querySelector('.dashboard-grid-item')
       expect(item).not.toHaveClass('row-span-1')
     })
@@ -254,13 +254,13 @@ describe('GridItem', () => {
           rowSpan={{
             mobile: 2,
             tablet: 3,
-            desktop: 4
+            desktop: 4,
           }}
         >
           <div>Content</div>
         </GridItem>
       )
-      
+
       const item = document.querySelector('.dashboard-grid-item')
       expect(item).toHaveClass('row-span-2', 'md:row-span-3', 'lg:row-span-4')
     })
@@ -271,13 +271,13 @@ describe('GridItem', () => {
           rowSpan={{
             mobile: 10, // Should be limited to 6
             tablet: 15, // Should be limited to 6
-            desktop: 20 // Should be limited to 6
+            desktop: 20, // Should be limited to 6
           }}
         >
           <div>Content</div>
         </GridItem>
       )
-      
+
       const item = document.querySelector('.dashboard-grid-item')
       expect(item).toHaveClass('row-span-6', 'md:row-span-6', 'lg:row-span-6')
     })
@@ -290,7 +290,7 @@ describe('GridItem', () => {
           <div>Content</div>
         </GridItem>
       )
-      
+
       const item = document.querySelector('.dashboard-grid-item')
       expect(item).toHaveClass('order-3')
     })
@@ -301,13 +301,13 @@ describe('GridItem', () => {
           order={{
             mobile: 1,
             tablet: 2,
-            desktop: 3
+            desktop: 3,
           }}
         >
           <div>Content</div>
         </GridItem>
       )
-      
+
       const item = document.querySelector('.dashboard-grid-item')
       expect(item).toHaveClass('order-1', 'md:order-2', 'lg:order-3')
     })
@@ -318,13 +318,13 @@ describe('GridItem', () => {
           order={{
             mobile: 20, // Should be limited to 12
             tablet: 25, // Should be limited to 12
-            desktop: 30 // Should be limited to 12
+            desktop: 30, // Should be limited to 12
           }}
         >
           <div>Content</div>
         </GridItem>
       )
-      
+
       const item = document.querySelector('.dashboard-grid-item')
       expect(item).toHaveClass('order-12', 'md:order-12', 'lg:order-12')
     })
@@ -335,7 +335,7 @@ describe('GridItem', () => {
           <div>Content</div>
         </GridItem>
       )
-      
+
       const item = document.querySelector('.dashboard-grid-item')
       expect(item?.className).not.toMatch(/order-/)
     })
@@ -348,7 +348,7 @@ describe('GridItem', () => {
           <div>Content</div>
         </GridItem>
       )
-      
+
       const item = document.querySelector('.dashboard-grid-item')
       expect(item).toHaveClass('dashboard-grid-item-priority-medium')
     })
@@ -359,7 +359,7 @@ describe('GridItem', () => {
           <div>Content</div>
         </GridItem>
       )
-      
+
       const item = document.querySelector('.dashboard-grid-item')
       expect(item).toHaveClass('dashboard-grid-item-priority-low')
     })
@@ -370,7 +370,7 @@ describe('GridItem', () => {
           <div>Content</div>
         </GridItem>
       )
-      
+
       const item = document.querySelector('.dashboard-grid-item')
       expect(item).toHaveClass('dashboard-grid-item-priority-high')
     })
@@ -381,7 +381,7 @@ describe('GridItem', () => {
           <div>Content</div>
         </GridItem>
       )
-      
+
       const item = document.querySelector('.dashboard-grid-item')
       expect(item).toHaveClass('dashboard-grid-item-priority-critical')
     })
@@ -399,13 +399,18 @@ describe('GridItem', () => {
           <div>Complex Item</div>
         </GridItem>
       )
-      
+
       const item = document.querySelector('.dashboard-grid-item')
       expect(item).toHaveClass(
         'dashboard-grid-item-priority-high',
-        'col-span-1', 'md:col-span-2', 'lg:col-span-4',
-        'md:row-span-2', 'lg:row-span-3',
-        'order-2', 'md:order-1', 'lg:order-3'
+        'col-span-1',
+        'md:col-span-2',
+        'lg:col-span-4',
+        'md:row-span-2',
+        'lg:row-span-3',
+        'order-2',
+        'md:order-1',
+        'lg:order-3'
       )
     })
 
@@ -419,29 +424,20 @@ describe('GridItem', () => {
           <div>Partial Config</div>
         </GridItem>
       )
-      
+
       const item = document.querySelector('.dashboard-grid-item')
-      expect(item).toHaveClass(
-        'lg:col-span-6',
-        'md:row-span-2',
-        'order-1'
-      )
+      expect(item).toHaveClass('lg:col-span-6', 'md:row-span-2', 'order-1')
     })
   })
 
   describe('Accessibility', () => {
     it('meets WCAG accessibility standards', async () => {
       const { container } = render(
-        <GridItem
-          colSpan={4}
-          rowSpan={2}
-          order={1}
-          priority="high"
-        >
+        <GridItem colSpan={4} rowSpan={2} order={1} priority="high">
           <div>Accessible Grid Item</div>
         </GridItem>
       )
-      
+
       const results = await axe(container)
       expect(results).toHaveNoViolations()
     })
@@ -466,15 +462,15 @@ describe('DashboardGrid with GridItems', () => {
         </GridItem>
       </DashboardGrid>
     )
-    
+
     expect(screen.getByText('Critical Item')).toBeInTheDocument()
     expect(screen.getByText('High Priority Item')).toBeInTheDocument()
     expect(screen.getByText('Medium Priority Item')).toBeInTheDocument()
     expect(screen.getByText('Low Priority Item')).toBeInTheDocument()
-    
+
     const grid = document.querySelector('.dashboard-grid')
     const items = document.querySelectorAll('.dashboard-grid-item')
-    
+
     expect(grid).toBeInTheDocument()
     expect(items).toHaveLength(4)
   })
@@ -493,9 +489,9 @@ describe('DashboardGrid with GridItems', () => {
         </GridItem>
       </DashboardGrid>
     )
-    
+
     const items = document.querySelectorAll('.dashboard-grid-item')
-    
+
     items.forEach(item => {
       expect(item).toHaveClass('col-span-1', 'md:col-span-3', 'lg:col-span-4')
     })
@@ -503,10 +499,7 @@ describe('DashboardGrid with GridItems', () => {
 
   it('meets WCAG accessibility standards for complete layout', async () => {
     const { container } = render(
-      <DashboardGrid
-        responsive={{ mobile: 1, tablet: 2, desktop: 3 }}
-        gap={24}
-      >
+      <DashboardGrid responsive={{ mobile: 1, tablet: 2, desktop: 3 }} gap={24}>
         <GridItem colSpan={1} priority="critical">
           <div role="region" aria-label="Critical metrics">
             <h2>Critical Metrics</h2>
@@ -527,7 +520,7 @@ describe('DashboardGrid with GridItems', () => {
         </GridItem>
       </DashboardGrid>
     )
-    
+
     const results = await axe(container)
     expect(results).toHaveNoViolations()
   })

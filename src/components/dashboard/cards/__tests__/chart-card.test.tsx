@@ -10,7 +10,7 @@ expect.extend(toHaveNoViolations)
 // Mock ChartWrapper component
 jest.mock('../../charts/chart-wrapper', () => ({
   ChartWrapper: ({ type, data, onDataClick, className }: any) => (
-    <div 
+    <div
       className={className}
       data-testid="chart-wrapper"
       data-chart-type={type}
@@ -19,12 +19,12 @@ jest.mock('../../charts/chart-wrapper', () => ({
       Mock Chart: {type}
       <div>Data points: {data?.datasets?.[0]?.data?.length || 0}</div>
     </div>
-  )
+  ),
 }))
 
 describe('ChartCard', () => {
   const user = userEvent.setup()
-  
+
   const mockChartData = {
     datasets: [
       {
@@ -32,11 +32,11 @@ describe('ChartCard', () => {
         data: [
           { x: 1, y: 100, label: 'Point 1' },
           { x: 2, y: 200, label: 'Point 2' },
-          { x: 3, y: 150, label: 'Point 3' }
-        ]
-      }
+          { x: 3, y: 150, label: 'Point 3' },
+        ],
+      },
     ],
-    labels: ['Jan', 'Feb', 'Mar']
+    labels: ['Jan', 'Feb', 'Mar'],
   }
 
   const mockChartConfig = {
@@ -46,26 +46,22 @@ describe('ChartCard', () => {
       accent: '#FF6B35',
       success: '#10B981',
       warning: '#F59E0B',
-      error: '#EF4444'
+      error: '#EF4444',
     },
     legend: {
       show: true,
-      position: 'bottom' as const
-    }
+      position: 'bottom' as const,
+    },
   }
 
   describe('Basic Rendering', () => {
     it('renders with title and chart', async () => {
       render(
-        <ChartCard
-          title="Test Chart"
-          chartType="bar"
-          data={mockChartData}
-        />
+        <ChartCard title="Test Chart" chartType="bar" data={mockChartData} />
       )
-      
+
       expect(screen.getByText('Test Chart')).toBeInTheDocument()
-      
+
       await waitFor(() => {
         expect(screen.getByTestId('chart-wrapper')).toBeInTheDocument()
         expect(screen.getByText('Mock Chart: bar')).toBeInTheDocument()
@@ -82,10 +78,10 @@ describe('ChartCard', () => {
           data={mockChartData}
         />
       )
-      
+
       expect(screen.getByText('Chart with Icon')).toBeInTheDocument()
       expect(screen.getByText('Test subtitle')).toBeInTheDocument()
-      
+
       const icon = document.querySelector('[aria-hidden="true"]')
       expect(icon).toBeInTheDocument()
     })
@@ -99,7 +95,7 @@ describe('ChartCard', () => {
           chartConfig={mockChartConfig}
         />
       )
-      
+
       await waitFor(() => {
         expect(screen.getByTestId('chart-wrapper')).toBeInTheDocument()
         expect(screen.getByText('Mock Chart: pie')).toBeInTheDocument()
@@ -117,7 +113,7 @@ describe('ChartCard', () => {
           filterable
         />
       )
-      
+
       const filterButton = screen.getByLabelText('Filter chart data')
       expect(filterButton).toBeInTheDocument()
     })
@@ -131,12 +127,12 @@ describe('ChartCard', () => {
           exportable
         />
       )
-      
+
       const exportButton = screen.getByLabelText('Export chart')
       expect(exportButton).toBeInTheDocument()
-      
+
       await user.click(exportButton)
-      
+
       expect(screen.getByText('Export as PNG')).toBeInTheDocument()
       expect(screen.getByText('Export as SVG')).toBeInTheDocument()
       expect(screen.getByText('Export as PDF')).toBeInTheDocument()
@@ -144,7 +140,7 @@ describe('ChartCard', () => {
 
     it('handles filter button click', async () => {
       const mockOnFilter = jest.fn()
-      
+
       render(
         <ChartCard
           title="Filterable Chart"
@@ -154,20 +150,20 @@ describe('ChartCard', () => {
           onFilter={mockOnFilter}
         />
       )
-      
+
       const filterButton = screen.getByLabelText('Filter chart data')
       await user.click(filterButton)
-      
+
       expect(mockOnFilter).toHaveBeenCalledWith({
         type: 'string',
         value: 'chart-filter',
-        operator: 'equals'
+        operator: 'equals',
       })
     })
 
     it('handles export menu clicks', async () => {
       const consoleSpy = jest.spyOn(console, 'log').mockImplementation()
-      
+
       render(
         <ChartCard
           title="Exportable Chart"
@@ -176,15 +172,15 @@ describe('ChartCard', () => {
           exportable
         />
       )
-      
+
       const exportButton = screen.getByLabelText('Export chart')
       await user.click(exportButton)
-      
+
       const pngOption = screen.getByText('Export as PNG')
       await user.click(pngOption)
-      
+
       expect(consoleSpy).toHaveBeenCalledWith('Exporting chart as png')
-      
+
       consoleSpy.mockRestore()
     })
 
@@ -199,10 +195,12 @@ describe('ChartCard', () => {
           actions={<button>Custom Action</button>}
         />
       )
-      
+
       expect(screen.getByLabelText('Filter chart data')).toBeInTheDocument()
       expect(screen.getByLabelText('Export chart')).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'Custom Action' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Custom Action' })
+      ).toBeInTheDocument()
     })
   })
 
@@ -216,11 +214,11 @@ describe('ChartCard', () => {
           loading
         />
       )
-      
+
       // Should show skeleton elements
       const skeletons = document.querySelectorAll('.animate-pulse')
       expect(skeletons.length).toBeGreaterThan(0)
-      
+
       // Should not show chart
       expect(screen.queryByTestId('chart-wrapper')).not.toBeInTheDocument()
     })
@@ -234,10 +232,10 @@ describe('ChartCard', () => {
           error="Failed to load chart data"
         />
       )
-      
+
       expect(screen.getByText('Unable to load chart')).toBeInTheDocument()
       expect(screen.getByText('Failed to load chart data')).toBeInTheDocument()
-      
+
       // Should not show chart
       expect(screen.queryByTestId('chart-wrapper')).not.toBeInTheDocument()
     })
@@ -250,7 +248,7 @@ describe('ChartCard', () => {
           data={mockChartData}
         />
       )
-      
+
       // Chart should be rendered (mocked)
       expect(screen.getByText('Loading Chart Component')).toBeInTheDocument()
     })
@@ -259,7 +257,7 @@ describe('ChartCard', () => {
   describe('Chart Interaction', () => {
     it('handles chart data clicks for filtering', async () => {
       const mockOnFilter = jest.fn()
-      
+
       render(
         <ChartCard
           title="Interactive Chart"
@@ -269,22 +267,22 @@ describe('ChartCard', () => {
           onFilter={mockOnFilter}
         />
       )
-      
+
       await waitFor(() => {
         const chart = screen.getByTestId('chart-wrapper')
         fireEvent.click(chart)
       })
-      
+
       expect(mockOnFilter).toHaveBeenCalledWith({
         type: 'string',
         value: 'test-data',
-        operator: 'equals'
+        operator: 'equals',
       })
     })
 
     it('does not handle clicks when not interactive', async () => {
       const mockOnFilter = jest.fn()
-      
+
       render(
         <ChartCard
           title="Non-interactive Chart"
@@ -293,20 +291,27 @@ describe('ChartCard', () => {
           onFilter={mockOnFilter}
         />
       )
-      
+
       await waitFor(() => {
         const chart = screen.getByTestId('chart-wrapper')
         fireEvent.click(chart)
       })
-      
+
       // onFilter should still be called because chart wrapper handles it
       expect(mockOnFilter).toHaveBeenCalled()
     })
   })
 
   describe('Chart Types', () => {
-    const chartTypes = ['line', 'bar', 'pie', 'heatmap', 'area', 'scatter'] as const
-    
+    const chartTypes = [
+      'line',
+      'bar',
+      'pie',
+      'heatmap',
+      'area',
+      'scatter',
+    ] as const
+
     chartTypes.forEach(chartType => {
       it(`renders ${chartType} chart correctly`, async () => {
         render(
@@ -316,10 +321,15 @@ describe('ChartCard', () => {
             data={mockChartData}
           />
         )
-        
+
         await waitFor(() => {
-          expect(screen.getByTestId('chart-wrapper')).toHaveAttribute('data-chart-type', chartType)
-          expect(screen.getByText(`Mock Chart: ${chartType}`)).toBeInTheDocument()
+          expect(screen.getByTestId('chart-wrapper')).toHaveAttribute(
+            'data-chart-type',
+            chartType
+          )
+          expect(
+            screen.getByText(`Mock Chart: ${chartType}`)
+          ).toBeInTheDocument()
         })
       })
     })
@@ -336,7 +346,7 @@ describe('ChartCard', () => {
           <div>Additional chart content</div>
         </ChartCard>
       )
-      
+
       expect(screen.getByText('Additional chart content')).toBeInTheDocument()
     })
   })
@@ -354,7 +364,7 @@ describe('ChartCard', () => {
           exportable
         />
       )
-      
+
       const results = await axe(container)
       expect(results).toHaveNoViolations()
     })
@@ -369,7 +379,7 @@ describe('ChartCard', () => {
           exportable
         />
       )
-      
+
       expect(screen.getByLabelText('Filter chart data')).toBeInTheDocument()
       expect(screen.getByLabelText('Export chart')).toBeInTheDocument()
     })
@@ -379,17 +389,11 @@ describe('ChartCard', () => {
     it('handles empty data gracefully', async () => {
       const emptyData = {
         datasets: [],
-        labels: []
+        labels: [],
       }
-      
-      render(
-        <ChartCard
-          title="Empty Chart"
-          chartType="bar"
-          data={emptyData}
-        />
-      )
-      
+
+      render(<ChartCard title="Empty Chart" chartType="bar" data={emptyData} />)
+
       await waitFor(() => {
         expect(screen.getByTestId('chart-wrapper')).toBeInTheDocument()
         expect(screen.getByText('Data points: 0')).toBeInTheDocument()
@@ -405,7 +409,7 @@ describe('ChartCard', () => {
           className="custom-chart-class"
         />
       )
-      
+
       const card = document.querySelector('.chart-card')
       expect(card).toHaveClass('custom-chart-class')
     })

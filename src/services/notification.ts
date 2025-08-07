@@ -98,9 +98,10 @@ export class CubcenNotificationService implements NotificationService {
         channels: notification.channels,
       })
 
-      const channels = typeof notification.channels === 'string' 
-        ? JSON.parse(notification.channels) as NotificationChannelType[]
-        : notification.channels
+      const channels =
+        typeof notification.channels === 'string'
+          ? (JSON.parse(notification.channels) as NotificationChannelType[])
+          : notification.channels
       const promises: Promise<void>[] = []
 
       for (const channel of channels) {
@@ -529,9 +530,10 @@ export class CubcenNotificationService implements NotificationService {
     }
 
     if (notification.data) {
-      const data = typeof notification.data === 'string' 
-        ? JSON.parse(notification.data)
-        : notification.data
+      const data =
+        typeof notification.data === 'string'
+          ? JSON.parse(notification.data)
+          : notification.data
       Object.assign(context, data)
     }
 

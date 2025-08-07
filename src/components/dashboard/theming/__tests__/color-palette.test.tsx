@@ -20,29 +20,36 @@ jest.mock('../theme-provider', () => ({
         text: {
           primary: '#1A1A1A',
           secondary: '#6B7280',
-          disabled: '#9CA3AF'
+          disabled: '#9CA3AF',
         },
         status: {
           success: '#10B981',
           warning: '#F59E0B',
           error: '#EF4444',
-          info: '#3B82F6'
+          info: '#3B82F6',
         },
         chart: {
           palette: [
-            '#3F51B5', '#B19ADA', '#FF6B35', '#10B981',
-            '#F59E0B', '#EF4444', '#3B82F6', '#8B5CF6',
-            '#EC4899', '#14B8A6'
+            '#3F51B5',
+            '#B19ADA',
+            '#FF6B35',
+            '#10B981',
+            '#F59E0B',
+            '#EF4444',
+            '#3B82F6',
+            '#8B5CF6',
+            '#EC4899',
+            '#14B8A6',
           ],
           gradients: {
-            primary: 'linear-gradient(135deg, #3F51B5 0%, #B19ADA 100%)'
-          }
-        }
-      }
+            primary: 'linear-gradient(135deg, #3F51B5 0%, #B19ADA 100%)',
+          },
+        },
+      },
     },
     setDashboardTheme: mockSetDashboardTheme,
-    getContrastRatio: mockGetContrastRatio
-  })
+    getContrastRatio: mockGetContrastRatio,
+  }),
 }))
 
 describe('ColorPalette', () => {
@@ -73,13 +80,19 @@ describe('ColorPalette', () => {
     render(<ColorPalette showLabels={true} />)
 
     expect(screen.getByText('Accessibility Information')).toBeInTheDocument()
-    expect(screen.getByText(/Colors with contrast ratios ≥4.5:1 meet WCAG AA standards/)).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        /Colors with contrast ratios ≥4.5:1 meet WCAG AA standards/
+      )
+    ).toBeInTheDocument()
   })
 
   it('hides accessibility information when showLabels is false', () => {
     render(<ColorPalette showLabels={false} />)
 
-    expect(screen.queryByText('Accessibility Information')).not.toBeInTheDocument()
+    expect(
+      screen.queryByText('Accessibility Information')
+    ).not.toBeInTheDocument()
   })
 
   it('displays contrast ratios for colors', () => {
@@ -109,17 +122,16 @@ describe('ColorPalette', () => {
     expect(colorSwatches.length).toBeGreaterThan(0)
 
     // Should show instruction about clicking
-    expect(screen.getByText(/Click on any color swatch to edit it/)).toBeInTheDocument()
+    expect(
+      screen.getByText(/Click on any color swatch to edit it/)
+    ).toBeInTheDocument()
   })
 
   it('calls onColorChange when color is changed in interactive mode', async () => {
     const mockOnColorChange = jest.fn()
-    
+
     render(
-      <ColorPalette 
-        interactive={true} 
-        onColorChange={mockOnColorChange}
-      />
+      <ColorPalette interactive={true} onColorChange={mockOnColorChange} />
     )
 
     // Find and click a color swatch
@@ -140,20 +152,20 @@ describe('ColorPalette', () => {
     render(<ColorPalette interactive={true} />)
 
     const primaryColorSwatch = screen.getByLabelText(/Primary color/)
-    
+
     // Should be focusable
     expect(primaryColorSwatch).toHaveAttribute('tabIndex', '0')
-    
+
     // Should respond to Enter key
     fireEvent.keyDown(primaryColorSwatch, { key: 'Enter' })
-    
+
     // Color input should appear
     expect(screen.getByLabelText(/Edit Primary color/)).toBeInTheDocument()
   })
 
   it('applies custom className', () => {
     const { container } = render(<ColorPalette className="custom-class" />)
-    
+
     expect(container.firstChild).toHaveClass('custom-class')
   })
 
@@ -163,19 +175,16 @@ describe('ColorPalette', () => {
     // Should show first 10 chart colors
     expect(screen.getByText('Chart 1')).toBeInTheDocument()
     expect(screen.getByText('Chart 10')).toBeInTheDocument()
-    
+
     // Should not show Chart 11 (only first 10 are displayed)
     expect(screen.queryByText('Chart 11')).not.toBeInTheDocument()
   })
 
   it('handles color editing with keyboard shortcuts', async () => {
     const mockOnColorChange = jest.fn()
-    
+
     render(
-      <ColorPalette 
-        interactive={true} 
-        onColorChange={mockOnColorChange}
-      />
+      <ColorPalette interactive={true} onColorChange={mockOnColorChange} />
     )
 
     // Click to start editing
@@ -212,12 +221,9 @@ describe('ColorPalette', () => {
 
   it('updates chart palette colors correctly', async () => {
     const mockOnColorChange = jest.fn()
-    
+
     render(
-      <ColorPalette 
-        interactive={true} 
-        onColorChange={mockOnColorChange}
-      />
+      <ColorPalette interactive={true} onColorChange={mockOnColorChange} />
     )
 
     // Find a chart color swatch
@@ -233,9 +239,9 @@ describe('ColorPalette', () => {
         expect.objectContaining({
           colors: expect.objectContaining({
             chart: expect.objectContaining({
-              palette: expect.arrayContaining(['#FF0000'])
-            })
-          })
+              palette: expect.arrayContaining(['#FF0000']),
+            }),
+          }),
         })
       )
     })
@@ -245,7 +251,9 @@ describe('ColorPalette', () => {
     render(<ColorPalette />)
 
     expect(screen.getByLabelText('Primary color: #3F51B5')).toBeInTheDocument()
-    expect(screen.getByLabelText('Secondary color: #B19ADA')).toBeInTheDocument()
+    expect(
+      screen.getByLabelText('Secondary color: #B19ADA')
+    ).toBeInTheDocument()
     expect(screen.getByLabelText('Success color: #10B981')).toBeInTheDocument()
   })
 

@@ -8,7 +8,11 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
-import { useChartExport, type ExportFormat, type ExportOptions } from './chart-export'
+import {
+  useChartExport,
+  type ExportFormat,
+  type ExportOptions,
+} from './chart-export'
 import { cn } from '@/lib/utils'
 
 interface ChartExportControlsProps {
@@ -44,7 +48,9 @@ export function ChartExportControls({
 }: ChartExportControlsProps) {
   const { exportChart, isSupported, availableFormats } = useChartExport()
   const [isExporting, setIsExporting] = useState(false)
-  const [exportingFormat, setExportingFormat] = useState<ExportFormat | null>(null)
+  const [exportingFormat, setExportingFormat] = useState<ExportFormat | null>(
+    null
+  )
 
   const handleExport = async (format: ExportFormat) => {
     if (disabled || isExporting) return
@@ -63,7 +69,8 @@ export function ChartExportControls({
       await exportChart(chartRef, options)
       onExportComplete?.(format)
     } catch (error) {
-      const exportError = error instanceof Error ? error : new Error('Export failed')
+      const exportError =
+        error instanceof Error ? error : new Error('Export failed')
       onExportError?.(exportError, format)
     } finally {
       setIsExporting(false)
@@ -89,7 +96,7 @@ export function ChartExportControls({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
-        {availableFormats.map((format) => {
+        {availableFormats.map(format => {
           const Icon = formatIcons[format]
           const isCurrentlyExporting = isExporting && exportingFormat === format
 

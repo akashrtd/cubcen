@@ -188,177 +188,190 @@ export default function DashboardPage() {
   return (
     <ProtectedRoute>
       <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">
-            Welcome back! Here&apos;s what&apos;s happening with your AI agents.
-          </p>
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+            <p className="text-muted-foreground">
+              Welcome back! Here&apos;s what&apos;s happening with your AI
+              agents.
+            </p>
+          </div>
+          <Button
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className="bg-cubcen-primary hover:bg-cubcen-primary-hover"
+          >
+            <RefreshCw
+              className={`mr-2 h-4 w-4 ${refreshing ? 'animate-spin' : ''}`}
+            />
+            Refresh
+          </Button>
         </div>
-        <Button
-          onClick={handleRefresh}
-          disabled={refreshing}
-          className="bg-cubcen-primary hover:bg-cubcen-primary-hover"
-        >
-          <RefreshCw
-            className={`mr-2 h-4 w-4 ${refreshing ? 'animate-spin' : ''}`}
-          />
-          Refresh
-        </Button>
-      </div>
 
-      {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Agents</CardTitle>
-            <Bot className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{mockStats.totalAgents}</div>
-            <p className="text-xs text-muted-foreground">
-              <span className="text-green-600">
-                {mockStats.activeAgents} active
-              </span>
-            </p>
-          </CardContent>
-        </Card>
+        {/* Stats Cards */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Total Agents
+              </CardTitle>
+              <Bot className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{mockStats.totalAgents}</div>
+              <p className="text-xs text-muted-foreground">
+                <span className="text-green-600">
+                  {mockStats.activeAgents} active
+                </span>
+              </p>
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tasks Today</CardTitle>
-            <CheckSquare className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{mockStats.totalTasks}</div>
-            <p className="text-xs text-muted-foreground">
-              <span className="text-green-600">
-                {mockStats.completedTasks} completed
-              </span>
-            </p>
-          </CardContent>
-        </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Tasks Today</CardTitle>
+              <CheckSquare className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{mockStats.totalTasks}</div>
+              <p className="text-xs text-muted-foreground">
+                <span className="text-green-600">
+                  {mockStats.completedTasks} completed
+                </span>
+              </p>
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Success Rate</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{mockStats.successRate}%</div>
-            <Progress value={mockStats.successRate} className="mt-2 h-2" />
-          </CardContent>
-        </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Success Rate
+              </CardTitle>
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{mockStats.successRate}%</div>
+              <Progress value={mockStats.successRate} className="mt-2 h-2" />
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg Response</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {mockStats.avgResponseTime}s
-            </div>
-            <p className="text-xs text-muted-foreground">
-              <span className="text-green-600">↓ 0.3s from yesterday</span>
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Avg Response
+              </CardTitle>
+              <Clock className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {mockStats.avgResponseTime}s
+              </div>
+              <p className="text-xs text-muted-foreground">
+                <span className="text-green-600">↓ 0.3s from yesterday</span>
+              </p>
+            </CardContent>
+          </Card>
+        </div>
 
-      {/* Alerts */}
-      {mockStats.failedTasks > 0 && (
-        <Alert>
-          <AlertTriangle className="h-4 w-4" />
-          <AlertDescription>
-            {mockStats.failedTasks} tasks failed in the last hour.
-            <Button
-              variant="link"
-              className="p-0 ml-1 h-auto text-cubcen-primary"
-            >
-              View details
-            </Button>
-          </AlertDescription>
-        </Alert>
-      )}
-
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Recent Tasks */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              Recent Tasks
-              <Button variant="outline" size="sm">
-                <ExternalLink className="mr-2 h-4 w-4" />
-                View All
+        {/* Alerts */}
+        {mockStats.failedTasks > 0 && (
+          <Alert>
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>
+              {mockStats.failedTasks} tasks failed in the last hour.
+              <Button
+                variant="link"
+                className="p-0 ml-1 h-auto text-cubcen-primary"
+              >
+                View details
               </Button>
-            </CardTitle>
-            <CardDescription>
-              Latest task executions across all agents
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {mockRecentTasks.map(task => (
-                <div key={task.id} className="flex items-center space-x-4">
-                  <div
-                    className={`w-2 h-2 rounded-full ${getStatusColor(task.status)}`}
-                  />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{task.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {task.agent} • {task.duration} • {task.timestamp}
-                    </p>
-                  </div>
-                  <Badge variant={getStatusBadgeVariant(task.status)}>
-                    {task.status}
-                  </Badge>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+            </AlertDescription>
+          </Alert>
+        )}
 
-        {/* Agent Status */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              Agent Status
-              <Button variant="outline" size="sm">
-                <ExternalLink className="mr-2 h-4 w-4" />
-                Manage
-              </Button>
-            </CardTitle>
-            <CardDescription>Current status of your AI agents</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {mockAgents.map(agent => (
-                <div key={agent.id} className="flex items-center space-x-4">
-                  <div className="flex items-center space-x-2">
+        <div className="grid gap-6 lg:grid-cols-2">
+          {/* Recent Tasks */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                Recent Tasks
+                <Button variant="outline" size="sm">
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  View All
+                </Button>
+              </CardTitle>
+              <CardDescription>
+                Latest task executions across all agents
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {mockRecentTasks.map(task => (
+                  <div key={task.id} className="flex items-center space-x-4">
                     <div
-                      className={`w-2 h-2 rounded-full ${getStatusColor(agent.status)}`}
+                      className={`w-2 h-2 rounded-full ${getStatusColor(task.status)}`}
                     />
-                    <Badge variant="outline" className="text-xs">
-                      {agent.platform}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">
+                        {task.name}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {task.agent} • {task.duration} • {task.timestamp}
+                      </p>
+                    </div>
+                    <Badge variant={getStatusBadgeVariant(task.status)}>
+                      {task.status}
                     </Badge>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{agent.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      Last run: {agent.lastRun} • {agent.successRate}% success
-                    </p>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Agent Status */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                Agent Status
+                <Button variant="outline" size="sm">
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  Manage
+                </Button>
+              </CardTitle>
+              <CardDescription>
+                Current status of your AI agents
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {mockAgents.map(agent => (
+                  <div key={agent.id} className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-2">
+                      <div
+                        className={`w-2 h-2 rounded-full ${getStatusColor(agent.status)}`}
+                      />
+                      <Badge variant="outline" className="text-xs">
+                        {agent.platform}
+                      </Badge>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">
+                        {agent.name}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Last run: {agent.lastRun} • {agent.successRate}% success
+                      </p>
+                    </div>
+                    <Badge variant={getStatusBadgeVariant(agent.status)}>
+                      {agent.status}
+                    </Badge>
                   </div>
-                  <Badge variant={getStatusBadgeVariant(agent.status)}>
-                    {agent.status}
-                  </Badge>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </ProtectedRoute>
   )

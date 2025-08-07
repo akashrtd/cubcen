@@ -22,7 +22,11 @@ interface ErrorBoundaryState {
 
 interface ErrorBoundaryProps {
   children: React.ReactNode
-  fallback?: React.ComponentType<{ error: Error; resetError: () => void; errorId?: string }>
+  fallback?: React.ComponentType<{
+    error: Error
+    resetError: () => void
+    errorId?: string
+  }>
   onError?: (error: Error, errorInfo: React.ErrorInfo) => void
   showDetails?: boolean
   className?: string
@@ -44,14 +48,16 @@ export class ErrorBoundary extends React.Component<
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    const errorId = this.state.errorId || `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-    
+    const errorId =
+      this.state.errorId ||
+      `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+
     // Enhanced error logging
     console.error('ErrorBoundary caught an error:', error, errorInfo)
-    
+
     // Report error to monitoring service
     this.reportError(error, errorInfo, errorId)
-    
+
     // Call custom error handler if provided
     if (this.props.onError) {
       this.props.onError(error, errorInfo)
@@ -61,7 +67,11 @@ export class ErrorBoundary extends React.Component<
     this.setState({ errorInfo, errorId })
   }
 
-  reportError = async (error: Error, errorInfo: React.ErrorInfo, errorId: string) => {
+  reportError = async (
+    error: Error,
+    errorInfo: React.ErrorInfo,
+    errorId: string
+  ) => {
     try {
       // Report to backend error tracking
       await fetch('/api/cubcen/v1/errors/report', {
@@ -89,7 +99,12 @@ export class ErrorBoundary extends React.Component<
   }
 
   resetError = () => {
-    this.setState({ hasError: false, error: undefined, errorInfo: undefined, errorId: undefined })
+    this.setState({
+      hasError: false,
+      error: undefined,
+      errorInfo: undefined,
+      errorId: undefined,
+    })
   }
 
   render() {
@@ -134,13 +149,13 @@ interface ErrorFallbackProps {
   pageName?: string
 }
 
-function DefaultErrorFallback({ 
-  error, 
-  errorInfo, 
-  resetError, 
-  errorId, 
+function DefaultErrorFallback({
+  error,
+  errorInfo,
+  resetError,
+  errorId,
   showDetails = false,
-  pageName 
+  pageName,
 }: ErrorFallbackProps) {
   const [detailsVisible, setDetailsVisible] = React.useState(false)
   const [reportSent, setReportSent] = React.useState(false)
@@ -181,10 +196,15 @@ function DefaultErrorFallback({
           <CardTitle className="flex items-center text-red-600">
             <AlertTriangle className="mr-2 h-5 w-5" />
             Something went wrong
-            {pageName && <span className="ml-2 text-sm text-muted-foreground">in {pageName}</span>}
+            {pageName && (
+              <span className="ml-2 text-sm text-muted-foreground">
+                in {pageName}
+              </span>
+            )}
           </CardTitle>
           <CardDescription>
-            An unexpected error occurred. We&apos;ve been notified and are working to fix it.
+            An unexpected error occurred. We&apos;ve been notified and are
+            working to fix it.
             {errorId && (
               <span className="block mt-1 text-xs text-muted-foreground">
                 Error ID: {errorId}
@@ -246,11 +266,7 @@ function DefaultErrorFallback({
               <RefreshCw className="mr-2 h-4 w-4" />
               Reload Page
             </Button>
-            <Button
-              variant="outline"
-              onClick={goHome}
-              className="flex-1"
-            >
+            <Button variant="outline" onClick={goHome} className="flex-1">
               <Home className="mr-2 h-4 w-4" />
               Go Home
             </Button>

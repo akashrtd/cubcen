@@ -74,19 +74,37 @@ describe('NotificationPreferences', () => {
     )
 
     // Email preferences
-    expect(screen.getByRole('checkbox', { name: /enable email notifications/i })).toBeChecked()
-    expect(screen.getByRole('checkbox', { name: /task completion.*email/i })).toBeChecked()
-    expect(screen.getByRole('checkbox', { name: /task failure.*email/i })).toBeChecked()
-    expect(screen.getByRole('checkbox', { name: /agent errors.*email/i })).toBeChecked()
-    expect(screen.getByRole('checkbox', { name: /system alerts.*email/i })).not.toBeChecked()
+    expect(
+      screen.getByRole('checkbox', { name: /enable email notifications/i })
+    ).toBeChecked()
+    expect(
+      screen.getByRole('checkbox', { name: /task completion.*email/i })
+    ).toBeChecked()
+    expect(
+      screen.getByRole('checkbox', { name: /task failure.*email/i })
+    ).toBeChecked()
+    expect(
+      screen.getByRole('checkbox', { name: /agent errors.*email/i })
+    ).toBeChecked()
+    expect(
+      screen.getByRole('checkbox', { name: /system alerts.*email/i })
+    ).not.toBeChecked()
 
     // Push preferences
-    expect(screen.getByRole('checkbox', { name: /enable push notifications/i })).toBeChecked()
-    expect(screen.getByRole('checkbox', { name: /task completion.*push/i })).not.toBeChecked()
-    expect(screen.getByRole('checkbox', { name: /task failure.*push/i })).toBeChecked()
+    expect(
+      screen.getByRole('checkbox', { name: /enable push notifications/i })
+    ).toBeChecked()
+    expect(
+      screen.getByRole('checkbox', { name: /task completion.*push/i })
+    ).not.toBeChecked()
+    expect(
+      screen.getByRole('checkbox', { name: /task failure.*push/i })
+    ).toBeChecked()
 
     // Slack preferences
-    expect(screen.getByRole('checkbox', { name: /enable slack notifications/i })).not.toBeChecked()
+    expect(
+      screen.getByRole('checkbox', { name: /enable slack notifications/i })
+    ).not.toBeChecked()
   })
 
   it('displays notification frequency setting', () => {
@@ -110,7 +128,9 @@ describe('NotificationPreferences', () => {
       />
     )
 
-    expect(screen.getByRole('checkbox', { name: /enable quiet hours/i })).toBeChecked()
+    expect(
+      screen.getByRole('checkbox', { name: /enable quiet hours/i })
+    ).toBeChecked()
     expect(screen.getByDisplayValue('22:00')).toBeInTheDocument()
     expect(screen.getByDisplayValue('08:00')).toBeInTheDocument()
   })
@@ -124,7 +144,9 @@ describe('NotificationPreferences', () => {
       />
     )
 
-    const emailToggle = screen.getByRole('checkbox', { name: /enable email notifications/i })
+    const emailToggle = screen.getByRole('checkbox', {
+      name: /enable email notifications/i,
+    })
     fireEvent.click(emailToggle)
 
     const saveButton = screen.getByRole('button', { name: /save preferences/i })
@@ -150,7 +172,9 @@ describe('NotificationPreferences', () => {
       />
     )
 
-    const taskCompletionToggle = screen.getByRole('checkbox', { name: /task completion.*email/i })
+    const taskCompletionToggle = screen.getByRole('checkbox', {
+      name: /task completion.*email/i,
+    })
     fireEvent.click(taskCompletionToggle)
 
     const saveButton = screen.getByRole('button', { name: /save preferences/i })
@@ -176,7 +200,9 @@ describe('NotificationPreferences', () => {
       />
     )
 
-    const pushToggle = screen.getByRole('checkbox', { name: /enable push notifications/i })
+    const pushToggle = screen.getByRole('checkbox', {
+      name: /enable push notifications/i,
+    })
     fireEvent.click(pushToggle)
 
     const saveButton = screen.getByRole('button', { name: /save preferences/i })
@@ -202,7 +228,9 @@ describe('NotificationPreferences', () => {
       />
     )
 
-    const slackToggle = screen.getByRole('checkbox', { name: /enable slack notifications/i })
+    const slackToggle = screen.getByRole('checkbox', {
+      name: /enable slack notifications/i,
+    })
     fireEvent.click(slackToggle)
 
     const saveButton = screen.getByRole('button', { name: /save preferences/i })
@@ -237,7 +265,9 @@ describe('NotificationPreferences', () => {
     )
 
     const webhookInput = screen.getByLabelText(/webhook url/i)
-    fireEvent.change(webhookInput, { target: { value: 'https://hooks.slack.com/test' } })
+    fireEvent.change(webhookInput, {
+      target: { value: 'https://hooks.slack.com/test' },
+    })
 
     const saveButton = screen.getByRole('button', { name: /save preferences/i })
     fireEvent.click(saveButton)
@@ -285,7 +315,9 @@ describe('NotificationPreferences', () => {
       />
     )
 
-    const quietHoursToggle = screen.getByRole('checkbox', { name: /enable quiet hours/i })
+    const quietHoursToggle = screen.getByRole('checkbox', {
+      name: /enable quiet hours/i,
+    })
     fireEvent.click(quietHoursToggle)
 
     const saveButton = screen.getByRole('button', { name: /save preferences/i })
@@ -343,8 +375,12 @@ describe('NotificationPreferences', () => {
       />
     )
 
-    expect(screen.getByRole('checkbox', { name: /enable email notifications/i })).toBeDisabled()
-    expect(screen.getByRole('checkbox', { name: /enable push notifications/i })).toBeDisabled()
+    expect(
+      screen.getByRole('checkbox', { name: /enable email notifications/i })
+    ).toBeDisabled()
+    expect(
+      screen.getByRole('checkbox', { name: /enable push notifications/i })
+    ).toBeDisabled()
   })
 
   it('shows disabled state messages', () => {
@@ -361,7 +397,9 @@ describe('NotificationPreferences', () => {
       />
     )
 
-    expect(screen.getByText(/email notifications are disabled by administrator/i)).toBeInTheDocument()
+    expect(
+      screen.getByText(/email notifications are disabled by administrator/i)
+    ).toBeInTheDocument()
   })
 
   it('displays loading state during save', async () => {
@@ -398,7 +436,9 @@ describe('NotificationPreferences', () => {
     )
 
     // Make a change
-    const emailToggle = screen.getByRole('checkbox', { name: /enable email notifications/i })
+    const emailToggle = screen.getByRole('checkbox', {
+      name: /enable email notifications/i,
+    })
     fireEvent.click(emailToggle)
 
     // Reset form
@@ -433,7 +473,9 @@ describe('NotificationPreferences', () => {
     fireEvent.click(saveButton)
 
     await waitFor(() => {
-      expect(screen.getByText(/please enter a valid webhook url/i)).toBeInTheDocument()
+      expect(
+        screen.getByText(/please enter a valid webhook url/i)
+      ).toBeInTheDocument()
     })
 
     expect(mockOnSave).not.toHaveBeenCalled()
@@ -452,7 +494,9 @@ describe('NotificationPreferences', () => {
     fireEvent.click(saveButton)
 
     await waitFor(() => {
-      expect(screen.getByText(/preferences saved successfully/i)).toBeInTheDocument()
+      expect(
+        screen.getByText(/preferences saved successfully/i)
+      ).toBeInTheDocument()
     })
   })
 

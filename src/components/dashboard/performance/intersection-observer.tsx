@@ -29,7 +29,8 @@ interface UseIntersectionObserverResult {
 }
 
 // Polyfill for environments without IntersectionObserver
-const hasIntersectionObserver = typeof window !== 'undefined' && 'IntersectionObserver' in window
+const hasIntersectionObserver =
+  typeof window !== 'undefined' && 'IntersectionObserver' in window
 
 function createIntersectionObserver(
   callback: (entries: IntersectionObserverEntry[]) => void,
@@ -93,7 +94,7 @@ export function useIntersectionObserver(
       }
 
       observerRef.current = createIntersectionObserver(
-        (entries) => {
+        entries => {
           const [observerEntry] = entries
           const isIntersecting = observerEntry.isIntersecting
 
@@ -168,7 +169,10 @@ export function withIntersectionObserver<T extends object>(
   Component: React.ComponentType<T>,
   options: IntersectionObserverOptions = {}
 ) {
-  const WrappedComponent = React.forwardRef<any, T & { onIntersect?: (inView: boolean) => void }>((props, ref) => {
+  const WrappedComponent = React.forwardRef<
+    any,
+    T & { onIntersect?: (inView: boolean) => void }
+  >((props, ref) => {
     const { onIntersect, ...componentProps } = props
     const { ref: intersectionRef, inView } = useIntersectionObserver(options)
 
@@ -184,32 +188,35 @@ export function withIntersectionObserver<T extends object>(
   })
 
   WrappedComponent.displayName = `WithIntersectionObserver(${Component.displayName || Component.name})`
-  
+
   return WrappedComponent
 }
 
 // Utility for batch intersection observer
 export class BatchIntersectionObserver {
   private observer: IntersectionObserver | null = null
-  private callbacks = new Map<Element, (entry: IntersectionObserverEntry) => void>()
+  private callbacks = new Map<
+    Element,
+    (entry: IntersectionObserverEntry) => void
+  >()
 
   constructor(private options: IntersectionObserverOptions = {}) {
     if (hasIntersectionObserver) {
-      this.observer = createIntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            const callback = this.callbacks.get(entry.target)
-            if (callback) {
-              callback(entry)
-            }
-          })
-        },
-        options
-      )
+      this.observer = createIntersectionObserver(entries => {
+        entries.forEach(entry => {
+          const callback = this.callbacks.get(entry.target)
+          if (callback) {
+            callback(entry)
+          }
+        })
+      }, options)
     }
   }
 
-  observe(element: Element, callback: (entry: IntersectionObserverEntry) => void) {
+  observe(
+    element: Element,
+    callback: (entry: IntersectionObserverEntry) => void
+  ) {
     if (!this.observer) {
       // Fallback behavior
       callback({
@@ -241,7 +248,9 @@ export class BatchIntersectionObserver {
 // Singleton batch observer for performance optimization
 let globalBatchObserver: BatchIntersectionObserver | null = null
 
-export function getGlobalBatchObserver(options: IntersectionObserverOptions = {}) {
+export function getGlobalBatchObserver(
+  options: IntersectionObserverOptions = {}
+) {
   if (!globalBatchObserver) {
     globalBatchObserver = new BatchIntersectionObserver(options)
   }
@@ -286,31 +295,35 @@ export function useBatchIntersectionObserver(
 export function trackIntersectionPerformance(elementId: string) {
   if (typeof window !== 'undefined' && 'performance' in window) {
     const startTime = performance.now()
-    
+
     return {
       end: () => {
         const endTime = performance.now()
         const observationTime = endTime - startTime
-        
+
         // Log performance metrics
-        console.log(`Intersection observation ${elementId}: ${observationTime.toFixed(2)}ms`)
-        
+        console.log(
+          `Intersection observation ${elementId}: ${observationTime.toFixed(2)}ms`
+        )
+
         // Send to analytics if available
         if ('gtag' in window) {
-          (window as any).gtag('event', 'intersection_performance', {
+          ;(window as any).gtag('event', 'intersection_performance', {
             element_id: elementId,
             observation_time: Math.round(observationTime),
           })
         }
-      }
+      },
     }
   }
-  
+
   return { end: () => {} }
 }
 
 // Utility for creating viewport-based loading priorities
-export function getViewportBasedPriority(element: Element): 'critical' | 'high' | 'medium' | 'low' {
+export function getViewportBasedPriority(
+  element: Element
+): 'critical' | 'high' | 'medium' | 'low' {
   if (typeof window === 'undefined') return 'medium'
 
   const rect = element.getBoundingClientRect()
@@ -319,7 +332,7 @@ export function getViewportBasedPriority(element: Element): 'critical' | 'high' 
 
   // Critical: Above the fold and in center of viewport
   if (
-    rect.top >= 0 && 
+    rect.top >= 0 &&
     rect.bottom <= viewportHeight &&
     rect.left >= viewportWidth * 0.25 &&
     rect.right <= viewportWidth * 0.75
@@ -343,24 +356,26 @@ export function getViewportBasedPriority(element: Element): 'critical' | 'high' 
 
 // Utility for preloading elements based on scroll direction
 export function useScrollDirectionOptimization() {
-  const [scrollDirection, setScrollDirection] = useState<'up' | 'down' | null>(null)
+  const [scrollDirection, setScrollDirection] = useState<'up' | 'down' | null>(
+    null
+  )
   const lastScrollY = useRef(0)
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY
-      
+
       if (currentScrollY > lastScrollY.current) {
         setScrollDirection('down')
       } else if (currentScrollY < lastScrollY.current) {
         setScrollDirection('up')
       }
-      
+
       lastScrollY.current = currentScrollY
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true })
-    
+
     return () => {
       window.removeEventListener('scroll', handleScroll)
     }

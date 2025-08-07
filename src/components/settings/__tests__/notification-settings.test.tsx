@@ -1,7 +1,10 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { NotificationSettings } from '../notification-settings'
-import { NotificationEventType, NotificationChannelType } from '@/types/notification'
+import {
+  NotificationEventType,
+  NotificationChannelType,
+} from '@/types/notification'
 import { toast } from 'sonner'
 
 // Mock sonner toast
@@ -82,7 +85,9 @@ describe('NotificationSettings', () => {
     )
 
     expect(screen.getByText('Global Notification Settings')).toBeInTheDocument()
-    expect(screen.getByText('Event Notification Preferences')).toBeInTheDocument()
+    expect(
+      screen.getByText('Event Notification Preferences')
+    ).toBeInTheDocument()
     expect(screen.getByText('Email Notifications')).toBeInTheDocument()
     expect(screen.getByText('Slack Notifications')).toBeInTheDocument()
     expect(screen.getByText('Push Notifications')).toBeInTheDocument()
@@ -99,7 +104,9 @@ describe('NotificationSettings', () => {
 
     expect(screen.getByText('Agent Down')).toBeInTheDocument()
     expect(screen.getByText('Task Completed')).toBeInTheDocument()
-    expect(screen.getByText('When an agent becomes unavailable or stops responding')).toBeInTheDocument()
+    expect(
+      screen.getByText('When an agent becomes unavailable or stops responding')
+    ).toBeInTheDocument()
   })
 
   it('shows priority badges for events', () => {
@@ -184,7 +191,9 @@ describe('NotificationSettings', () => {
       expect(mockOnSave).toHaveBeenCalled()
     })
 
-    expect(toast.success).toHaveBeenCalledWith('Notification preferences saved successfully')
+    expect(toast.success).toHaveBeenCalledWith(
+      'Notification preferences saved successfully'
+    )
   })
 
   it('handles form submission error', async () => {
@@ -202,7 +211,9 @@ describe('NotificationSettings', () => {
     fireEvent.click(saveButton)
 
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith('Failed to save notification preferences')
+      expect(toast.error).toHaveBeenCalledWith(
+        'Failed to save notification preferences'
+      )
     })
   })
 
@@ -229,7 +240,9 @@ describe('NotificationSettings', () => {
   })
 
   it('shows loading state during save', async () => {
-    mockOnSave.mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100)))
+    mockOnSave.mockImplementation(
+      () => new Promise(resolve => setTimeout(resolve, 100))
+    )
 
     render(
       <NotificationSettings

@@ -48,7 +48,9 @@ export default function LoginPage() {
       await login(email, password)
       // The login function handles the redirect to dashboard
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Invalid email or password')
+      setError(
+        error instanceof Error ? error.message : 'Invalid email or password'
+      )
     } finally {
       setIsLoading(false)
     }

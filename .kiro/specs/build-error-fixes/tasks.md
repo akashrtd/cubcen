@@ -60,7 +60,7 @@
   - Update function signature to match expected (agent: Agent) => void
   - _Requirements: 1.1, 1.2_
 
-- [-] 13. Fix backend route test warnings
+- [ ] 13. Fix backend route test warnings
   - Remove unused imports in test files (PrismaClient, generateToken, etc.)
   - Fix unused variables in test functions
   - Replace any types with proper type definitions in backend tests

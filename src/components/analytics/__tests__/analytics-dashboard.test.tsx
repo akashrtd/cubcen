@@ -166,16 +166,21 @@ describe('AnalyticsDashboard', () => {
     render(<AnalyticsDashboard />)
 
     await waitFor(() => {
-      expect(screen.getByText('Unable to Load Analytics Data')).toBeInTheDocument()
       expect(
-        screen.getByText('The server is experiencing issues. Please try again later.')
+        screen.getByText('Unable to Load Analytics Data')
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          'The server is experiencing issues. Please try again later.'
+        )
       ).toBeInTheDocument()
     })
 
     expect(toast.error).toHaveBeenCalledWith(
       'Server error',
       expect.objectContaining({
-        description: 'The server is experiencing issues. Please try again later.',
+        description:
+          'The server is experiencing issues. Please try again later.',
       })
     )
   })
@@ -186,7 +191,9 @@ describe('AnalyticsDashboard', () => {
     render(<AnalyticsDashboard />)
 
     await waitFor(() => {
-      expect(screen.getByText('Unable to Load Analytics Data')).toBeInTheDocument()
+      expect(
+        screen.getByText('Unable to Load Analytics Data')
+      ).toBeInTheDocument()
     })
 
     expect(toast.error).toHaveBeenCalledWith(
@@ -308,7 +315,9 @@ describe('AnalyticsDashboard', () => {
     render(<AnalyticsDashboard />)
 
     await waitFor(() => {
-      expect(screen.getByText('Unable to Load Analytics Data')).toBeInTheDocument()
+      expect(
+        screen.getByText('Unable to Load Analytics Data')
+      ).toBeInTheDocument()
     })
 
     expect(toast.error).toHaveBeenCalledWith(

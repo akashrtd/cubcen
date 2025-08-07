@@ -241,13 +241,16 @@ export function ErrorPatterns({ className, timeRange }: ErrorPatternsProps) {
                             <Clock className="h-3 w-3" />
                             {formatFrequency(pattern.frequency)}
                           </span>
-                          {pattern.affectedAgents && pattern.affectedAgents.length > 0 && (
-                            <span className="text-sm text-gray-600 flex items-center gap-1">
-                              <Users className="h-3 w-3" />
-                              {pattern.affectedAgents?.length || 0} agent
-                              {(pattern.affectedAgents?.length || 0) !== 1 ? 's' : ''}
-                            </span>
-                          )}
+                          {pattern.affectedAgents &&
+                            pattern.affectedAgents.length > 0 && (
+                              <span className="text-sm text-gray-600 flex items-center gap-1">
+                                <Users className="h-3 w-3" />
+                                {pattern.affectedAgents?.length || 0} agent
+                                {(pattern.affectedAgents?.length || 0) !== 1
+                                  ? 's'
+                                  : ''}
+                              </span>
+                            )}
                         </div>
                         <h4 className="font-medium text-gray-900 mb-1 truncate">
                           {pattern.description}
@@ -291,34 +294,38 @@ export function ErrorPatterns({ className, timeRange }: ErrorPatternsProps) {
                         </div>
 
                         {/* Affected Agents */}
-                        {pattern.affectedAgents && pattern.affectedAgents.length > 0 && (
-                          <div>
-                            <label className="text-sm font-medium text-gray-600 mb-2 block">
-                              Affected Agents ({pattern.affectedAgents?.length || 0})
-                            </label>
-                            <div className="flex flex-wrap gap-2">
-                              {(pattern.affectedAgents || [])
-                                .slice(0, 10)
-                                .map(agentId => (
+                        {pattern.affectedAgents &&
+                          pattern.affectedAgents.length > 0 && (
+                            <div>
+                              <label className="text-sm font-medium text-gray-600 mb-2 block">
+                                Affected Agents (
+                                {pattern.affectedAgents?.length || 0})
+                              </label>
+                              <div className="flex flex-wrap gap-2">
+                                {(pattern.affectedAgents || [])
+                                  .slice(0, 10)
+                                  .map(agentId => (
+                                    <Badge
+                                      key={agentId}
+                                      variant="outline"
+                                      className="text-xs"
+                                    >
+                                      {agentId.slice(0, 8)}...
+                                    </Badge>
+                                  ))}
+                                {(pattern.affectedAgents?.length || 0) > 10 && (
                                   <Badge
-                                    key={agentId}
                                     variant="outline"
-                                    className="text-xs"
+                                    className="text-xs text-gray-500"
                                   >
-                                    {agentId.slice(0, 8)}...
+                                    +
+                                    {(pattern.affectedAgents?.length || 0) - 10}{' '}
+                                    more
                                   </Badge>
-                                ))}
-                              {(pattern.affectedAgents?.length || 0) > 10 && (
-                                <Badge
-                                  variant="outline"
-                                  className="text-xs text-gray-500"
-                                >
-                                  +{(pattern.affectedAgents?.length || 0) - 10} more
-                                </Badge>
-                              )}
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        )}
+                          )}
 
                         {/* Suggested Action */}
                         {pattern.suggestedAction && (

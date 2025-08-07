@@ -46,40 +46,46 @@ export function getOptimizedImageProps(
 /**
  * Generate blur data URL for placeholder
  */
-export function generateBlurDataURL(width: number = 10, height: number = 10): string {
+export function generateBlurDataURL(
+  width: number = 10,
+  height: number = 10
+): string {
   const canvas = document.createElement('canvas')
   canvas.width = width
   canvas.height = height
-  
+
   const ctx = canvas.getContext('2d')
   if (!ctx) return ''
-  
+
   // Create a simple gradient blur effect
   const gradient = ctx.createLinearGradient(0, 0, width, height)
   gradient.addColorStop(0, '#f3f4f6')
   gradient.addColorStop(1, '#e5e7eb')
-  
+
   ctx.fillStyle = gradient
   ctx.fillRect(0, 0, width, height)
-  
+
   return canvas.toDataURL()
 }
 
 /**
  * Preload critical images
  */
-export function preloadImage(src: string, priority: boolean = false): Promise<void> {
+export function preloadImage(
+  src: string,
+  priority: boolean = false
+): Promise<void> {
   return new Promise((resolve, reject) => {
     const img = new Image()
-    
+
     img.onload = () => resolve()
     img.onerror = reject
-    
+
     // Set priority for critical images
     if (priority) {
       img.fetchPriority = 'high'
     }
-    
+
     img.src = src
   })
 }
@@ -93,11 +99,14 @@ export class LazyImageLoader {
 
   constructor(options: IntersectionObserverInit = {}) {
     if (typeof window !== 'undefined' && 'IntersectionObserver' in window) {
-      this.observer = new IntersectionObserver(this.handleIntersection.bind(this), {
-        rootMargin: '50px',
-        threshold: 0.1,
-        ...options,
-      })
+      this.observer = new IntersectionObserver(
+        this.handleIntersection.bind(this),
+        {
+          rootMargin: '50px',
+          threshold: 0.1,
+          ...options,
+        }
+      )
     }
   }
 
@@ -155,17 +164,13 @@ export function getAvatarProps(
   size: number = 40
 ) {
   const fallbackSrc = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&size=${size}&background=3F51B5&color=fff&format=svg`
-  
-  return getOptimizedImageProps(
-    src || fallbackSrc,
-    `${name} avatar`,
-    {
-      quality: 80,
-      sizes: `${size}px`,
-      placeholder: 'blur',
-      blurDataURL: generateBlurDataURL(size, size),
-    }
-  )
+
+  return getOptimizedImageProps(src || fallbackSrc, `${name} avatar`, {
+    quality: 80,
+    sizes: `${size}px`,
+    placeholder: 'blur',
+    blurDataURL: generateBlurDataURL(size, size),
+  })
 }
 
 /**
@@ -184,23 +189,25 @@ export const responsiveSizes = {
  */
 export function getSupportedImageFormat(): 'webp' | 'avif' | 'jpeg' {
   if (typeof window === 'undefined') return 'jpeg'
-  
+
   // Check for AVIF support
   const avifCanvas = document.createElement('canvas')
   avifCanvas.width = 1
   avifCanvas.height = 1
-  const avifSupported = avifCanvas.toDataURL('image/avif').indexOf('data:image/avif') === 0
-  
+  const avifSupported =
+    avifCanvas.toDataURL('image/avif').indexOf('data:image/avif') === 0
+
   if (avifSupported) return 'avif'
-  
+
   // Check for WebP support
   const webpCanvas = document.createElement('canvas')
   webpCanvas.width = 1
   webpCanvas.height = 1
-  const webpSupported = webpCanvas.toDataURL('image/webp').indexOf('data:image/webp') === 0
-  
+  const webpSupported =
+    webpCanvas.toDataURL('image/webp').indexOf('data:image/webp') === 0
+
   if (webpSupported) return 'webp'
-  
+
   return 'jpeg'
 }
 

@@ -23,7 +23,9 @@ jest.mock('recharts', () => ({
       ))}
     </div>
   ),
-  Cell: ({ fill }: any) => <div data-testid="pie-cell" style={{ backgroundColor: fill }} />,
+  Cell: ({ fill }: any) => (
+    <div data-testid="pie-cell" style={{ backgroundColor: fill }} />
+  ),
   Tooltip: ({ content }: any) => <div data-testid="tooltip">Tooltip</div>,
   Legend: ({ content }: any) => <div data-testid="legend">Legend</div>,
   ResponsiveContainer: ({ children }: any) => (
@@ -187,10 +189,7 @@ describe('PieChart', () => {
       datasets: [
         {
           label: 'Categories',
-          data: [
-            { value: 100 },
-            { value: 200 },
-          ],
+          data: [{ value: 100 }, { value: 200 }],
         },
       ],
     }
@@ -240,7 +239,11 @@ describe('PieChart', () => {
   it('hides legend when configured', () => {
     const configWithHiddenLegend = {
       ...mockConfig,
-      legend: { show: false, position: 'bottom' as const, align: 'center' as const },
+      legend: {
+        show: false,
+        position: 'bottom' as const,
+        align: 'center' as const,
+      },
     }
 
     render(<PieChart {...defaultProps} config={configWithHiddenLegend} />)
@@ -254,7 +257,7 @@ describe('PieChart', () => {
     render(<PieChart {...defaultProps} data={emptyData} />)
 
     expect(screen.getByTestId('recharts-pie-chart')).toBeInTheDocument()
-    
+
     const pieDataElement = screen.getByTestId('pie-data')
     const pieData = JSON.parse(pieDataElement.textContent || '[]')
     expect(pieData).toHaveLength(0)

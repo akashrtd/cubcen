@@ -203,10 +203,25 @@ export class ChartConfigBuilder {
   /**
    * Set custom colors
    */
-  withColors(colors: Partial<ChartConfiguration['colors']>): ChartConfigBuilder {
+  withColors(
+    colors: Partial<ChartConfiguration['colors']>
+  ): ChartConfigBuilder {
+    const safeColors = colors ?? {}
+    const baseColors = this.config.colors ?? {
+      primary: '',
+      secondary: '',
+      accent: '',
+      success: '',
+      warning: '',
+      error: '',
+    }
     this.config.colors = {
-      ...this.config.colors,
-      ...colors,
+      primary: safeColors.primary ?? baseColors.primary,
+      secondary: safeColors.secondary ?? baseColors.secondary,
+      accent: safeColors.accent ?? baseColors.accent,
+      success: safeColors.success ?? baseColors.success,
+      warning: safeColors.warning ?? baseColors.warning,
+      error: safeColors.error ?? baseColors.error,
     }
     return this
   }
@@ -214,10 +229,19 @@ export class ChartConfigBuilder {
   /**
    * Configure legend settings
    */
-  withLegend(legend: Partial<ChartConfiguration['legend']>): ChartConfigBuilder {
+  withLegend(
+    legend: Partial<ChartConfiguration['legend']>
+  ): ChartConfigBuilder {
+    const safeLegend = legend ?? {}
+    const baseLegend = this.config.legend ?? {
+      show: true,
+      position: 'bottom',
+      align: 'center',
+    }
     this.config.legend = {
-      ...this.config.legend,
-      ...legend,
+      show: safeLegend.show ?? baseLegend.show,
+      position: safeLegend.position ?? baseLegend.position,
+      align: safeLegend.align ?? baseLegend.align,
     }
     return this
   }
@@ -225,10 +249,15 @@ export class ChartConfigBuilder {
   /**
    * Configure tooltip settings
    */
-  withTooltip(tooltip: Partial<ChartConfiguration['tooltip']>): ChartConfigBuilder {
+  withTooltip(
+    tooltip: Partial<ChartConfiguration['tooltip']>
+  ): ChartConfigBuilder {
+    const safeTooltip = tooltip ?? {}
+    const baseTooltip = this.config.tooltip ?? { show: true }
     this.config.tooltip = {
-      ...this.config.tooltip,
-      ...tooltip,
+      show: safeTooltip.show ?? baseTooltip.show,
+      format: safeTooltip.format ?? baseTooltip.format,
+      customContent: safeTooltip.customContent ?? baseTooltip.customContent,
     }
     return this
   }
@@ -247,10 +276,19 @@ export class ChartConfigBuilder {
   /**
    * Configure animation settings
    */
-  withAnimations(animations: Partial<ChartConfiguration['animations']>): ChartConfigBuilder {
+  withAnimations(
+    animations: Partial<ChartConfiguration['animations']>
+  ): ChartConfigBuilder {
+    const safeAnimations = animations ?? {}
+    const baseAnimations = this.config.animations ?? {
+      enabled: true,
+      duration: 300,
+      easing: 'ease',
+    }
     this.config.animations = {
-      ...this.config.animations,
-      ...animations,
+      enabled: safeAnimations.enabled ?? baseAnimations.enabled,
+      duration: safeAnimations.duration ?? baseAnimations.duration,
+      easing: safeAnimations.easing ?? baseAnimations.easing,
     }
     return this
   }
@@ -258,7 +296,9 @@ export class ChartConfigBuilder {
   /**
    * Set responsive breakpoint configurations
    */
-  withResponsive(responsive: ChartConfiguration['responsive']): ChartConfigBuilder {
+  withResponsive(
+    responsive: ChartConfiguration['responsive']
+  ): ChartConfigBuilder {
     this.config.responsive = responsive
     return this
   }
@@ -310,14 +350,15 @@ export const ChartConfigUtils = {
   /**
    * Create a configuration builder
    */
-  builder: (baseConfig?: Partial<ChartConfiguration>) => 
+  builder: (baseConfig?: Partial<ChartConfiguration>) =>
     new ChartConfigBuilder(baseConfig),
 
   /**
    * Get theme colors as an array for chart palettes
    */
-  getThemePalette: (theme: ChartTheme): string[] => 
-    CHART_THEMES[theme].palette,
+  getThemePalette: (theme: ChartTheme): string[] => [
+    ...CHART_THEMES[theme].palette,
+  ],
 
   /**
    * Create a quick configuration for a chart type with theme
@@ -325,11 +366,8 @@ export const ChartConfigUtils = {
   quickConfig: (
     chartType: keyof typeof CHART_PRESETS,
     theme: ChartTheme = 'default'
-  ): ChartConfiguration => 
-    new ChartConfigBuilder()
-      .withTheme(theme)
-      .withPreset(chartType)
-      .build(),
+  ): ChartConfiguration =>
+    new ChartConfigBuilder().withTheme(theme).withPreset(chartType).build(),
 
   /**
    * Merge multiple configurations
@@ -350,7 +388,9 @@ export const ChartConfigUtils = {
   /**
    * Validate configuration
    */
-  validate: (config: ChartConfiguration): { valid: boolean; errors: string[] } => {
+  validate: (
+    config: ChartConfiguration
+  ): { valid: boolean; errors: string[] } => {
     const errors: string[] = []
 
     if (!config.colors) {
@@ -383,38 +423,42 @@ export const ChartConfigUtils = {
 /**
  * React hook for chart configuration
  */
-export function useChartConfig(
-  initialConfig?: Partial<ChartConfiguration>
-): {
+export function useChartConfig(initialConfig?: Partial<ChartConfiguration>): {
   config: ChartConfiguration
   updateConfig: (updates: Partial<ChartConfiguration>) => void
   resetConfig: () => void
   applyTheme: (theme: ChartTheme) => void
   applyPreset: (chartType: keyof typeof CHART_PRESETS) => void
 } {
-  const [config, setConfig] = React.useState<ChartConfiguration>(() => 
+  const [config, setConfig] = React.useState<ChartConfiguration>(() =>
     ChartConfigUtils.builder(initialConfig).build()
   )
 
-  const updateConfig = React.useCallback((updates: Partial<ChartConfiguration>) => {
-    setConfig(current => ChartConfigUtils.merge(current, updates))
-  }, [])
+  const updateConfig = React.useCallback(
+    (updates: Partial<ChartConfiguration>) => {
+      setConfig(current => ChartConfigUtils.merge(current, updates))
+    },
+    []
+  )
 
   const resetConfig = React.useCallback(() => {
     setConfig(ChartConfigUtils.builder(initialConfig).build())
   }, [initialConfig])
 
   const applyTheme = React.useCallback((theme: ChartTheme) => {
-    setConfig(current => 
+    setConfig(current =>
       ChartConfigUtils.builder(current).withTheme(theme).build()
     )
   }, [])
 
-  const applyPreset = React.useCallback((chartType: keyof typeof CHART_PRESETS) => {
-    setConfig(current => 
-      ChartConfigUtils.builder(current).withPreset(chartType).build()
-    )
-  }, [])
+  const applyPreset = React.useCallback(
+    (chartType: keyof typeof CHART_PRESETS) => {
+      setConfig(current =>
+        ChartConfigUtils.builder(current).withPreset(chartType).build()
+      )
+    },
+    []
+  )
 
   return {
     config,

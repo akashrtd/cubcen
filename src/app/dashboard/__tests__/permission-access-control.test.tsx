@@ -144,7 +144,9 @@ describe('Dashboard Permission-Based Access Control', () => {
 
       await waitFor(() => {
         expect(screen.getByText('Access Denied')).toBeInTheDocument()
-        expect(screen.getByText('You do not have permission to access this page')).toBeInTheDocument()
+        expect(
+          screen.getByText('You do not have permission to access this page')
+        ).toBeInTheDocument()
       })
 
       // Should redirect to dashboard
@@ -386,7 +388,7 @@ describe('Dashboard Permission-Based Access Control', () => {
           expect.stringContaining('/api/cubcen/v1/users'),
           expect.objectContaining({
             headers: expect.objectContaining({
-              'Authorization': expect.stringContaining('Bearer'),
+              Authorization: expect.stringContaining('Bearer'),
               'X-User-Role': 'ADMIN',
             }),
           })
@@ -398,12 +400,12 @@ describe('Dashboard Permission-Based Access Control', () => {
       ;(fetch as jest.Mock).mockResolvedValue({
         ok: false,
         status: 403,
-        json: () => Promise.resolve({
-          success: false,
-          error: 'Insufficient permissions',
-        }),
+        json: () =>
+          Promise.resolve({
+            success: false,
+            error: 'Insufficient permissions',
+          }),
       })
-
       ;(useAuth as jest.Mock).mockReturnValue({
         user: {
           id: 'operator-1',
@@ -429,12 +431,12 @@ describe('Dashboard Permission-Based Access Control', () => {
       ;(fetch as jest.Mock).mockResolvedValue({
         ok: false,
         status: 401,
-        json: () => Promise.resolve({
-          success: false,
-          error: 'Session expired',
-        }),
+        json: () =>
+          Promise.resolve({
+            success: false,
+            error: 'Session expired',
+          }),
       })
-
       ;(useAuth as jest.Mock).mockReturnValue({
         user: {
           id: 'user-1',
@@ -449,7 +451,9 @@ describe('Dashboard Permission-Based Access Control', () => {
       render(<AnalyticsPage />)
 
       await waitFor(() => {
-        expect(mockPush).toHaveBeenCalledWith('/auth/login?redirect=/dashboard/analytics')
+        expect(mockPush).toHaveBeenCalledWith(
+          '/auth/login?redirect=/dashboard/analytics'
+        )
       })
     })
 
@@ -457,17 +461,20 @@ describe('Dashboard Permission-Based Access Control', () => {
       ;(fetch as jest.Mock).mockResolvedValue({
         ok: false,
         status: 401,
-        json: () => Promise.resolve({
-          success: false,
-          error: 'Session expired',
-        }),
+        json: () =>
+          Promise.resolve({
+            success: false,
+            error: 'Session expired',
+          }),
       })
 
       render(<AnalyticsPage />)
 
       await waitFor(() => {
         expect(screen.getByText('Session Expired')).toBeInTheDocument()
-        expect(screen.getByText('Please log in again to continue')).toBeInTheDocument()
+        expect(
+          screen.getByText('Please log in again to continue')
+        ).toBeInTheDocument()
       })
     })
   })

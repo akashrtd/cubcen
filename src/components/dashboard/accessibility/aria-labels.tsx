@@ -8,32 +8,42 @@ export const ariaLabels = {
   card: {
     interactive: (title: string) => `${title} card, interactive`,
     loading: (title?: string) => `${title ? `${title} card` : 'Card'} loading`,
-    error: (title?: string, error?: string) => 
+    error: (title?: string, error?: string) =>
       `${title ? `${title} card` : 'Card'} error${error ? `: ${error}` : ''}`,
-    metric: (title: string, value: string | number, unit?: string, trend?: string) => {
+    metric: (
+      title: string,
+      value: string | number,
+      unit?: string,
+      trend?: string
+    ) => {
       let label = `${title}: ${value}`
       if (unit) label += ` ${unit}`
       if (trend) label += `, trend ${trend}`
       return label
-    }
+    },
   },
 
   // Chart labels
   chart: {
-    container: (type: string, title?: string) => 
+    container: (type: string, title?: string) =>
       `${type} chart${title ? ` showing ${title}` : ''}`,
-    interactive: (type: string) => 
+    interactive: (type: string) =>
       `Interactive ${type} chart. Use arrow keys to navigate, Enter to select`,
     loading: (type: string) => `${type} chart loading`,
-    error: (type: string, error?: string) => 
+    error: (type: string, error?: string) =>
       `${type} chart error${error ? `: ${error}` : ''}`,
     noData: (type: string) => `${type} chart with no data available`,
-    element: (type: string, label: string, value: string | number, index: number, total: number) =>
-      `${type} element ${index + 1} of ${total}: ${label}, value ${value}`,
-    legend: (label: string, active: boolean) => 
+    element: (
+      type: string,
+      label: string,
+      value: string | number,
+      index: number,
+      total: number
+    ) => `${type} element ${index + 1} of ${total}: ${label}, value ${value}`,
+    legend: (label: string, active: boolean) =>
       `Legend item: ${label}, ${active ? 'active' : 'inactive'}`,
-    axis: (type: 'x' | 'y', label?: string) => 
-      `${type.toUpperCase()} axis${label ? `: ${label}` : ''}`
+    axis: (type: 'x' | 'y', label?: string) =>
+      `${type.toUpperCase()} axis${label ? `: ${label}` : ''}`,
   },
 
   // Navigation labels
@@ -42,9 +52,9 @@ export const ariaLabels = {
     breadcrumb: 'Breadcrumb navigation',
     pagination: 'Pagination navigation',
     skip: (target: string) => `Skip to ${target}`,
-    toggle: (expanded: boolean, target: string) => 
+    toggle: (expanded: boolean, target: string) =>
       `${expanded ? 'Collapse' : 'Expand'} ${target}`,
-    current: (page: string) => `Current page: ${page}`
+    current: (page: string) => `Current page: ${page}`,
   },
 
   // Form labels
@@ -53,10 +63,10 @@ export const ariaLabels = {
     optional: (label: string) => `${label}, optional`,
     invalid: (label: string, error: string) => `${label}, invalid: ${error}`,
     help: (label: string, help: string) => `${label}. ${help}`,
-    search: (placeholder?: string) => 
+    search: (placeholder?: string) =>
       `Search${placeholder ? ` ${placeholder}` : ''}`,
-    filter: (type: string, value?: string) => 
-      `Filter by ${type}${value ? `, current value: ${value}` : ''}`
+    filter: (type: string, value?: string) =>
+      `Filter by ${type}${value ? `, current value: ${value}` : ''}`,
   },
 
   // Table labels
@@ -79,8 +89,8 @@ export const ariaLabels = {
       if (selected) label += ', selected'
       return label
     },
-    cell: (content: string, column: string, row: number) => 
-      `${column}: ${content}, row ${row + 1}`
+    cell: (content: string, column: string, row: number) =>
+      `${column}: ${content}, row ${row + 1}`,
   },
 
   // Status and feedback labels
@@ -90,8 +100,8 @@ export const ariaLabels = {
     error: (message: string) => `Error: ${message}`,
     warning: (message: string) => `Warning: ${message}`,
     info: (message: string) => `Information: ${message}`,
-    progress: (current: number, total: number, label?: string) => 
-      `${label ? `${label}: ` : ''}${current} of ${total} complete`
+    progress: (current: number, total: number, label?: string) =>
+      `${label ? `${label}: ` : ''}${current} of ${total} complete`,
   },
 
   // Modal and dialog labels
@@ -99,20 +109,21 @@ export const ariaLabels = {
     dialog: (title: string) => `${title} dialog`,
     close: (title?: string) => `Close${title ? ` ${title}` : ''} dialog`,
     confirm: (action: string) => `Confirm ${action}`,
-    cancel: 'Cancel'
+    cancel: 'Cancel',
   },
 
   // Filter and search labels
   filter: {
-    applied: (count: number) => `${count} filter${count !== 1 ? 's' : ''} applied`,
+    applied: (count: number) =>
+      `${count} filter${count !== 1 ? 's' : ''} applied`,
     clear: 'Clear all filters',
     results: (count: number, total?: number) => {
       if (total !== undefined) {
         return `Showing ${count} of ${total} results`
       }
       return `${count} result${count !== 1 ? 's' : ''} found`
-    }
-  }
+    },
+  },
 }
 
 // Hook for generating dynamic ARIA labels
@@ -127,13 +138,13 @@ interface AriaDescriptionProps {
   className?: string
 }
 
-export function AriaDescription({ id, children, className }: AriaDescriptionProps) {
+export function AriaDescription({
+  id,
+  children,
+  className,
+}: AriaDescriptionProps) {
   return (
-    <div
-      id={id}
-      className={`sr-only ${className || ''}`}
-      role="text"
-    >
+    <div id={id} className={`sr-only ${className || ''}`} role="text">
       {children}
     </div>
   )
@@ -148,12 +159,12 @@ interface LiveRegionProps {
   className?: string
 }
 
-export function LiveRegion({ 
-  children, 
-  priority = 'polite', 
+export function LiveRegion({
+  children,
+  priority = 'polite',
   atomic = true,
   relevant = 'all',
-  className 
+  className,
 }: LiveRegionProps) {
   return (
     <div
@@ -196,29 +207,51 @@ export function AccessibleElement({
   disabled,
   required,
   invalid,
-  current
+  current,
 }: AccessibleElementProps) {
-  const descriptionId = description ? `${children.props.id || 'element'}-description` : undefined
+  const descriptionId = description
+    ? `${(children.props as any).id || 'element'}-description`
+    : undefined
 
   return (
     <>
       {React.cloneElement(children, {
-        ...children.props,
-        'aria-label': label || children.props['aria-label'],
-        'aria-labelledby': labelledBy || children.props['aria-labelledby'],
-        'aria-describedby': describedBy || descriptionId || children.props['aria-describedby'],
-        'role': role || children.props.role,
-        'aria-expanded': expanded !== undefined ? expanded : children.props['aria-expanded'],
-        'aria-selected': selected !== undefined ? selected : children.props['aria-selected'],
-        'aria-disabled': disabled !== undefined ? disabled : children.props['aria-disabled'],
-        'aria-required': required !== undefined ? required : children.props['aria-required'],
-        'aria-invalid': invalid !== undefined ? invalid : children.props['aria-invalid'],
-        'aria-current': current !== undefined ? current : children.props['aria-current']
+        ...(children.props as any),
+        'aria-label': label || (children.props as any)['aria-label'],
+        'aria-labelledby':
+          labelledBy || (children.props as any)['aria-labelledby'],
+        'aria-describedby':
+          describedBy ||
+          descriptionId ||
+          (children.props as any)['aria-describedby'],
+        role: role || (children.props as any).role,
+        'aria-expanded':
+          expanded !== undefined
+            ? expanded
+            : (children.props as any)['aria-expanded'],
+        'aria-selected':
+          selected !== undefined
+            ? selected
+            : (children.props as any)['aria-selected'],
+        'aria-disabled':
+          disabled !== undefined
+            ? disabled
+            : (children.props as any)['aria-disabled'],
+        'aria-required':
+          required !== undefined
+            ? required
+            : (children.props as any)['aria-required'],
+        'aria-invalid':
+          invalid !== undefined
+            ? invalid
+            : (children.props as any)['aria-invalid'],
+        'aria-current':
+          current !== undefined
+            ? current
+            : (children.props as any)['aria-current'],
       })}
       {description && descriptionId && (
-        <AriaDescription id={descriptionId}>
-          {description}
-        </AriaDescription>
+        <AriaDescription id={descriptionId}>{description}</AriaDescription>
       )}
     </>
   )
@@ -232,13 +265,13 @@ export function generateChartAriaLabel(
   chartType: string
 ): string {
   const { label, value, x, y, data } = element
-  
+
   let ariaLabel = `${chartType} element ${index + 1} of ${total}`
-  
+
   if (label) {
     ariaLabel += `: ${label}`
   }
-  
+
   if (value !== undefined) {
     ariaLabel += `, value ${value}`
   } else if (y !== undefined) {
@@ -249,7 +282,7 @@ export function generateChartAriaLabel(
   } else if (data !== undefined) {
     ariaLabel += `, data ${data}`
   }
-  
+
   return ariaLabel
 }
 
@@ -272,19 +305,19 @@ export function generateFormFieldAriaLabel(
   helpText?: string
 ): string {
   let ariaLabel = label
-  
+
   if (required) {
     ariaLabel += ', required'
   }
-  
+
   if (invalid && errorMessage) {
     ariaLabel += `, invalid: ${errorMessage}`
   }
-  
+
   if (helpText) {
     ariaLabel += `. ${helpText}`
   }
-  
+
   return ariaLabel
 }
 
@@ -295,10 +328,10 @@ export function generateNavigationAriaLabel(
   pageIndex?: number
 ): string {
   let ariaLabel = `Current page: ${currentPage}`
-  
+
   if (totalPages && pageIndex !== undefined) {
     ariaLabel += `, page ${pageIndex + 1} of ${totalPages}`
   }
-  
+
   return ariaLabel
 }

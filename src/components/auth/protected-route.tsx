@@ -7,7 +7,13 @@ import { UserRole } from '@/types/auth'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { ShieldX, ArrowLeft, Home, LogIn } from 'lucide-react'
 
 interface ProtectedRouteProps {
@@ -25,7 +31,8 @@ export function ProtectedRoute({
   fallbackPath = '/auth/login',
   showUnauthorized = true,
 }: ProtectedRouteProps) {
-  const { user, isLoading, isAuthenticated, hasAnyRole, canAccessResource } = useAuth()
+  const { user, isLoading, isAuthenticated, hasAnyRole, canAccessResource } =
+    useAuth()
   const router = useRouter()
 
   useEffect(() => {
@@ -77,7 +84,9 @@ export function ProtectedRoute({
             <div className="bg-muted/50 p-4 rounded-lg space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Required role:</span>
-                <span className="font-medium">{requiredRoles.join(' or ')}</span>
+                <span className="font-medium">
+                  {requiredRoles.join(' or ')}
+                </span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Your role:</span>
@@ -149,14 +158,17 @@ export function ProtectedRoute({
             </div>
             <CardTitle className="text-xl">Access Denied</CardTitle>
             <CardDescription>
-              You don&apos;t have permission to access {getResourceDisplayName(requiredResource)}
+              You don&apos;t have permission to access{' '}
+              {getResourceDisplayName(requiredResource)}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="bg-muted/50 p-4 rounded-lg space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Required roles:</span>
-                <span className="font-medium">{getRequiredRolesForResource(requiredResource).join(', ')}</span>
+                <span className="font-medium">
+                  {getRequiredRolesForResource(requiredResource).join(', ')}
+                </span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Your role:</span>
@@ -165,7 +177,8 @@ export function ProtectedRoute({
             </div>
             <Alert>
               <AlertDescription className="text-sm">
-                Contact your administrator if you believe you should have access to this section.
+                Contact your administrator if you believe you should have access
+                to this section.
               </AlertDescription>
             </Alert>
             <div className="flex flex-col sm:flex-row gap-2">

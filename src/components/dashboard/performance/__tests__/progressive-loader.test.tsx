@@ -236,7 +236,10 @@ describe('ProgressiveLoader', () => {
     )
 
     const loader = screen.getByRole('status')
-    expect(loader).toHaveAttribute('aria-label', 'Loading content - stage 1 of 3')
+    expect(loader).toHaveAttribute(
+      'aria-label',
+      'Loading content - stage 1 of 3'
+    )
   })
 })
 
@@ -244,70 +247,85 @@ describe('createSkeletonVariant', () => {
   it('should create card skeleton variant', () => {
     const skeleton = createSkeletonVariant({ type: 'card', height: 300 })
     const { container } = render(<div>{skeleton}</div>)
-    
-    expect(container.querySelector('.dashboard-card-skeleton')).toBeInTheDocument()
+
+    expect(
+      container.querySelector('.dashboard-card-skeleton')
+    ).toBeInTheDocument()
   })
 
   it('should create chart skeleton variant', () => {
     const skeleton = createSkeletonVariant({ type: 'chart', height: 400 })
     const { container } = render(<div>{skeleton}</div>)
-    
-    expect(container.querySelector('.dashboard-card-skeleton')).toBeInTheDocument()
+
+    expect(
+      container.querySelector('.dashboard-card-skeleton')
+    ).toBeInTheDocument()
   })
 
   it('should create table skeleton variant', () => {
-    const skeleton = createSkeletonVariant({ 
-      type: 'table', 
-      rows: 5, 
-      columns: 3 
+    const skeleton = createSkeletonVariant({
+      type: 'table',
+      rows: 5,
+      columns: 3,
     })
     const { container } = render(<div>{skeleton}</div>)
-    
-    expect(container.querySelector('.dashboard-card-skeleton')).toBeInTheDocument()
+
+    expect(
+      container.querySelector('.dashboard-card-skeleton')
+    ).toBeInTheDocument()
   })
 
   it('should create metric skeleton variant', () => {
     const skeleton = createSkeletonVariant({ type: 'metric' })
     const { container } = render(<div>{skeleton}</div>)
-    
-    expect(container.querySelector('.dashboard-card-skeleton')).toBeInTheDocument()
+
+    expect(
+      container.querySelector('.dashboard-card-skeleton')
+    ).toBeInTheDocument()
   })
 
   it('should create custom skeleton variant', () => {
     const customSkeleton = <div data-testid="custom-skeleton">Custom</div>
-    const skeleton = createSkeletonVariant({ 
-      type: 'custom', 
-      customSkeleton 
+    const skeleton = createSkeletonVariant({
+      type: 'custom',
+      customSkeleton,
     })
     const { container } = render(<div>{skeleton}</div>)
-    
-    expect(container.querySelector('[data-testid="custom-skeleton"]')).toBeInTheDocument()
+
+    expect(
+      container.querySelector('[data-testid="custom-skeleton"]')
+    ).toBeInTheDocument()
   })
 
   it('should fallback to default skeleton for unknown types', () => {
     const skeleton = createSkeletonVariant({ type: 'unknown' as any })
     const { container } = render(<div>{skeleton}</div>)
-    
-    expect(container.querySelector('.dashboard-card-skeleton')).toBeInTheDocument()
+
+    expect(
+      container.querySelector('.dashboard-card-skeleton')
+    ).toBeInTheDocument()
   })
 })
 
 describe('useProgressiveLoading', () => {
-  const TestHookComponent = ({ 
-    stages, 
-    options = {} 
-  }: { 
-    stages: any[], 
-    options?: any 
+  const TestHookComponent = ({
+    stages,
+    options = {},
+  }: {
+    stages: any[]
+    options?: any
   }) => {
-    const { currentStage, isComplete, currentSkeleton, reset } = useProgressiveLoading(stages, options)
-    
+    const { currentStage, isComplete, currentSkeleton, reset } =
+      useProgressiveLoading(stages, options)
+
     return (
       <div>
         <div data-testid="current-stage">{currentStage}</div>
         <div data-testid="is-complete">{isComplete.toString()}</div>
         <div data-testid="current-skeleton">{currentSkeleton}</div>
-        <button onClick={reset} data-testid="reset-button">Reset</button>
+        <button onClick={reset} data-testid="reset-button">
+          Reset
+        </button>
       </div>
     )
   }

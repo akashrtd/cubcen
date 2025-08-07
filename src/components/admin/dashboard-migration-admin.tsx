@@ -6,25 +6,31 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { 
-  DashboardMigration, 
+import {
+  DashboardMigration,
   MigrationAnalytics,
-  MigrationRollback 
+  MigrationRollback,
 } from '@/lib/dashboard-migration'
-import { 
-  Settings, 
-  Users, 
-  BarChart3, 
-  AlertTriangle, 
+import {
+  Settings,
+  Users,
+  BarChart3,
+  AlertTriangle,
   CheckCircle,
-  RefreshCw
+  RefreshCw,
 } from 'lucide-react'
 
 interface MigrationAdminProps {
@@ -50,10 +56,10 @@ export function DashboardMigrationAdmin({ className }: MigrationAdminProps) {
   const updateFeatureFlag = (feature: string, enabled: boolean) => {
     migration.updateConfig({ [feature]: enabled })
     setStatus(migration.getMigrationStatus())
-    
+
     // Track the change
     MigrationAnalytics.trackComponentUsage(
-      `Admin-${feature}`, 
+      `Admin-${feature}`,
       enabled ? 'new' : 'legacy'
     )
   }
@@ -68,13 +74,17 @@ export function DashboardMigrationAdmin({ className }: MigrationAdminProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Dashboard Migration</h2>
+          <h2 className="text-2xl font-bold tracking-tight">
+            Dashboard Migration
+          </h2>
           <p className="text-muted-foreground">
             Manage the rollout of new modular dashboard components
           </p>
         </div>
         <Button onClick={refreshStatus} disabled={loading} variant="outline">
-          <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+          <RefreshCw
+            className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`}
+          />
           Refresh
         </Button>
       </div>
@@ -83,11 +93,15 @@ export function DashboardMigrationAdmin({ className }: MigrationAdminProps) {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Rollout Progress</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Rollout Progress
+            </CardTitle>
             <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{status.rolloutPercentage}%</div>
+            <div className="text-2xl font-bold">
+              {status.rolloutPercentage}%
+            </div>
             <Progress value={status.rolloutPercentage} className="mt-2" />
           </CardContent>
         </Card>
@@ -107,7 +121,9 @@ export function DashboardMigrationAdmin({ className }: MigrationAdminProps) {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Features Enabled</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Features Enabled
+            </CardTitle>
             <CheckCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -131,9 +147,7 @@ export function DashboardMigrationAdmin({ className }: MigrationAdminProps) {
                 Healthy
               </Badge>
             </div>
-            <p className="text-xs text-muted-foreground">
-              No critical issues
-            </p>
+            <p className="text-xs text-muted-foreground">No critical issues</p>
           </CardContent>
         </Card>
       </div>
@@ -160,7 +174,9 @@ export function DashboardMigrationAdmin({ className }: MigrationAdminProps) {
             <Switch
               id="dashboard-flag"
               checked={status.features.dashboard}
-              onCheckedChange={(checked) => updateFeatureFlag('useNewDashboard', checked)}
+              onCheckedChange={checked =>
+                updateFeatureFlag('useNewDashboard', checked)
+              }
             />
           </div>
 
@@ -174,7 +190,9 @@ export function DashboardMigrationAdmin({ className }: MigrationAdminProps) {
             <Switch
               id="kpi-flag"
               checked={status.features.kpiCards}
-              onCheckedChange={(checked) => updateFeatureFlag('useNewKPICards', checked)}
+              onCheckedChange={checked =>
+                updateFeatureFlag('useNewKPICards', checked)
+              }
             />
           </div>
 
@@ -188,7 +206,9 @@ export function DashboardMigrationAdmin({ className }: MigrationAdminProps) {
             <Switch
               id="charts-flag"
               checked={status.features.charts}
-              onCheckedChange={(checked) => updateFeatureFlag('useNewCharts', checked)}
+              onCheckedChange={checked =>
+                updateFeatureFlag('useNewCharts', checked)
+              }
             />
           </div>
 
@@ -202,7 +222,9 @@ export function DashboardMigrationAdmin({ className }: MigrationAdminProps) {
             <Switch
               id="layout-flag"
               checked={status.features.layout}
-              onCheckedChange={(checked) => updateFeatureFlag('useNewLayout', checked)}
+              onCheckedChange={checked =>
+                updateFeatureFlag('useNewLayout', checked)
+              }
             />
           </div>
         </CardContent>
@@ -212,8 +234,9 @@ export function DashboardMigrationAdmin({ className }: MigrationAdminProps) {
       <Alert>
         <AlertTriangle className="h-4 w-4" />
         <AlertDescription>
-          <strong>Migration in Progress:</strong> New dashboard components are being gradually 
-          rolled out. Monitor user feedback and system performance closely.
+          <strong>Migration in Progress:</strong> New dashboard components are
+          being gradually rolled out. Monitor user feedback and system
+          performance closely.
         </AlertDescription>
       </Alert>
     </div>

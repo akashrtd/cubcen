@@ -1,6 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { MetricCard } from './metric-card'
-import { Activity, Users, TrendingUp, AlertCircle, DollarSign, Clock } from 'lucide-react'
+import {
+  Activity,
+  Users,
+  TrendingUp,
+  AlertCircle,
+  DollarSign,
+  Clock,
+} from 'lucide-react'
 
 const meta: Meta<typeof MetricCard> = {
   title: 'Dashboard/Cards/MetricCard',
@@ -9,7 +16,8 @@ const meta: Meta<typeof MetricCard> = {
     layout: 'padded',
     docs: {
       description: {
-        component: 'A specialized card component for displaying KPI metrics with trend indicators, multiple metric support, and flexible layouts.',
+        component:
+          'A specialized card component for displaying KPI metrics with trend indicators, multiple metric support, and flexible layouts.',
       },
     },
   },

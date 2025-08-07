@@ -6,16 +6,22 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { User, Bell, Shield } from 'lucide-react'
 
 // Lazy load settings components
-const LazyProfileSettings = lazy(() => 
-  import('./profile-settings').then(module => ({ default: module.ProfileSettings }))
+const LazyProfileSettings = lazy(() =>
+  import('./profile-settings').then(module => ({
+    default: module.ProfileSettings,
+  }))
 )
 
-const LazyNotificationSettings = lazy(() => 
-  import('./notification-settings').then(module => ({ default: module.NotificationSettings }))
+const LazyNotificationSettings = lazy(() =>
+  import('./notification-settings').then(module => ({
+    default: module.NotificationSettings,
+  }))
 )
 
-const LazySecuritySettings = lazy(() => 
-  import('./security-settings').then(module => ({ default: module.SecuritySettings }))
+const LazySecuritySettings = lazy(() =>
+  import('./security-settings').then(module => ({
+    default: module.SecuritySettings,
+  }))
 )
 
 // Loading skeletons
@@ -28,7 +34,7 @@ const ProfileSettingsLoading = () => (
       </div>
       <Skeleton className="h-4 w-80" />
     </div>
-    
+
     <div className="grid gap-4">
       <div className="space-y-2">
         <Skeleton className="h-4 w-20" />
@@ -43,7 +49,7 @@ const ProfileSettingsLoading = () => (
         <Skeleton className="h-20 w-20 rounded-full" />
       </div>
     </div>
-    
+
     <div className="flex justify-end">
       <Skeleton className="h-10 w-20" />
     </div>
@@ -59,10 +65,13 @@ const NotificationSettingsLoading = () => (
       </div>
       <Skeleton className="h-4 w-80" />
     </div>
-    
+
     <div className="space-y-4">
       {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="flex items-center justify-between p-4 border rounded">
+        <div
+          key={i}
+          className="flex items-center justify-between p-4 border rounded"
+        >
           <div className="space-y-2">
             <Skeleton className="h-4 w-32" />
             <Skeleton className="h-3 w-48" />
@@ -71,7 +80,7 @@ const NotificationSettingsLoading = () => (
         </div>
       ))}
     </div>
-    
+
     <div className="flex justify-end">
       <Skeleton className="h-10 w-20" />
     </div>
@@ -87,7 +96,7 @@ const SecuritySettingsLoading = () => (
       </div>
       <Skeleton className="h-4 w-80" />
     </div>
-    
+
     <div className="space-y-4">
       <div className="p-4 border rounded">
         <div className="flex items-center justify-between mb-4">
@@ -96,7 +105,7 @@ const SecuritySettingsLoading = () => (
         </div>
         <Skeleton className="h-3 w-64" />
       </div>
-      
+
       <div className="p-4 border rounded">
         <Skeleton className="h-5 w-32 mb-4" />
         <div className="space-y-2">

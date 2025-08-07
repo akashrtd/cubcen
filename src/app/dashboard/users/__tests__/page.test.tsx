@@ -6,13 +6,40 @@ jest.mock('@/components/users/user-list', () => ({
   UserList: ({ onUserInvite, onUserEdit, onUserDelete, onUserSelect }: any) => (
     <div data-testid="user-list">
       <button onClick={() => onUserInvite()}>Mock Invite</button>
-      <button onClick={() => onUserEdit({ id: '1', name: 'Test User', email: 'test@example.com', status: 'active' })}>
+      <button
+        onClick={() =>
+          onUserEdit({
+            id: '1',
+            name: 'Test User',
+            email: 'test@example.com',
+            status: 'active',
+          })
+        }
+      >
         Mock Edit
       </button>
-      <button onClick={() => onUserDelete({ id: '1', name: 'Test User', email: 'test@example.com', status: 'suspended' })}>
+      <button
+        onClick={() =>
+          onUserDelete({
+            id: '1',
+            name: 'Test User',
+            email: 'test@example.com',
+            status: 'suspended',
+          })
+        }
+      >
         Mock Delete
       </button>
-      <button onClick={() => onUserSelect({ id: '1', name: 'Test User', email: 'test@example.com', status: 'active' })}>
+      <button
+        onClick={() =>
+          onUserSelect({
+            id: '1',
+            name: 'Test User',
+            email: 'test@example.com',
+            status: 'active',
+          })
+        }
+      >
         Mock Select
       </button>
     </div>
@@ -23,7 +50,11 @@ jest.mock('@/components/users/user-form', () => ({
   UserForm: ({ mode, onSubmit, onCancel }: any) => (
     <div data-testid="user-form">
       <span>Form Mode: {mode}</span>
-      <button onClick={() => onSubmit({ name: 'Test User', email: 'test@example.com' })}>
+      <button
+        onClick={() =>
+          onSubmit({ name: 'Test User', email: 'test@example.com' })
+        }
+      >
         Submit Form
       </button>
       <button onClick={onCancel}>Cancel Form</button>
@@ -54,15 +85,15 @@ describe('UsersPage', () => {
     mockFetch.mockClear()
     // Clear mocks
     ;(global.confirm as jest.Mock).mockClear()
-    
+
     // Mock the initial users fetch
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ 
-        success: true, 
-        data: { 
-          users: [] 
-        } 
+      json: async () => ({
+        success: true,
+        data: {
+          users: [],
+        },
       }),
     } as Response)
   })
@@ -71,9 +102,17 @@ describe('UsersPage', () => {
     render(<UsersPage />)
 
     expect(screen.getByText('User Management')).toBeInTheDocument()
-    expect(screen.getByText('Manage user accounts, roles, and permissions with full audit trail logging')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Invite User' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Create User' })).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        'Manage user accounts, roles, and permissions with full audit trail logging'
+      )
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Invite User' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Create User' })
+    ).toBeInTheDocument()
     expect(screen.getByTestId('user-list')).toBeInTheDocument()
   })
 
@@ -120,7 +159,10 @@ describe('UsersPage', () => {
     // Mock the second fetch call for user creation
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ success: true, data: { user: { id: '1', name: 'Test User' } } }),
+      json: async () => ({
+        success: true,
+        data: { user: { id: '1', name: 'Test User' } },
+      }),
     } as Response)
 
     render(<UsersPage />)
@@ -143,11 +185,11 @@ describe('UsersPage', () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          name: 'Test User', 
+        body: JSON.stringify({
+          name: 'Test User',
           email: 'test@example.com',
           auditTrail: true,
-          action: 'create'
+          action: 'create',
         }),
       })
     })
@@ -157,7 +199,10 @@ describe('UsersPage', () => {
     // Mock the second fetch call for user update
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ success: true, data: { user: { id: '1', name: 'Test User' } } }),
+      json: async () => ({
+        success: true,
+        data: { user: { id: '1', name: 'Test User' } },
+      }),
     } as Response)
 
     render(<UsersPage />)
@@ -180,11 +225,11 @@ describe('UsersPage', () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          name: 'Test User', 
+        body: JSON.stringify({
+          name: 'Test User',
           email: 'test@example.com',
           auditTrail: true,
-          action: 'update'
+          action: 'update',
         }),
       })
     })
@@ -204,16 +249,18 @@ describe('UsersPage', () => {
     fireEvent.click(deleteButton)
 
     await waitFor(() => {
-      expect(global.confirm).toHaveBeenCalledWith('Are you sure you want to reactivate Test User? This action will be logged for audit purposes.')
+      expect(global.confirm).toHaveBeenCalledWith(
+        'Are you sure you want to reactivate Test User? This action will be logged for audit purposes.'
+      )
       expect(mockFetch).toHaveBeenCalledWith('/api/cubcen/v1/users/1/status', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           status: 'active',
           reason: 'User reactivated by administrator',
-          auditTrail: true
+          auditTrail: true,
         }),
       })
     })
@@ -227,7 +274,9 @@ describe('UsersPage', () => {
     const deleteButton = screen.getByText('Mock Delete')
     fireEvent.click(deleteButton)
 
-    expect(global.confirm).toHaveBeenCalledWith('Are you sure you want to reactivate Test User? This action will be logged for audit purposes.')
+    expect(global.confirm).toHaveBeenCalledWith(
+      'Are you sure you want to reactivate Test User? This action will be logged for audit purposes.'
+    )
     // Should only have been called once for the initial fetch
     expect(mockFetch).toHaveBeenCalledTimes(1)
   })

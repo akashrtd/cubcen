@@ -584,7 +584,11 @@ export function AgentMonitoringDashboard({
             agent={selectedAgent}
             loading={loading && !selectedAgent}
             onEdit={handleConfigureAgent}
-            onRefresh={selectedAgent ? async (agent: Agent) => await refreshAgent(agent.id) : undefined}
+            onRefresh={
+              selectedAgent
+                ? async (agent: Agent) => await refreshAgent(agent.id)
+                : undefined
+            }
           />
         </TabsContent>
       </Tabs>

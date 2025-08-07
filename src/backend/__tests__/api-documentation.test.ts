@@ -151,8 +151,9 @@ describe('API Documentation', () => {
       const agentsPathItem = typedSpecs.paths?.[agentsPath] as PathItem
       if (agentsPathItem && agentsPathItem.get) {
         const response200 = agentsPathItem.get.responses?.['200'] as Response
-        const schema = response200.content?.['application/json']
-          .schema as { properties: { [key: string]: object } }
+        const schema = response200.content?.['application/json'].schema as {
+          properties: { [key: string]: object }
+        }
         expect(schema).toBeDefined()
         expect(schema.properties.success).toBeDefined()
         expect(schema.properties.data).toBeDefined()

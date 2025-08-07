@@ -73,7 +73,9 @@ describe('Platforms API Integration', () => {
     })
 
     it('should handle database errors', async () => {
-      mockPrisma.platform.findMany.mockRejectedValue(new Error('Database error'))
+      mockPrisma.platform.findMany.mockRejectedValue(
+        new Error('Database error')
+      )
 
       const response = await request(app)
         .get('/api/cubcen/v1/platforms')
@@ -313,7 +315,9 @@ describe('Platforms API Integration', () => {
       jest.doMock('../../adapters/adapter-factory', () => ({
         AdapterFactory: {
           createAdapter: jest.fn().mockReturnValue({
-            testConnection: jest.fn().mockRejectedValue(new Error('Connection failed')),
+            testConnection: jest
+              .fn()
+              .mockRejectedValue(new Error('Connection failed')),
           }),
         },
       }))

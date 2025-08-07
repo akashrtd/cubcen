@@ -7,7 +7,10 @@ import type { ChartData } from '@/types/dashboard'
 // Mock the chart components to avoid Recharts rendering issues in tests
 jest.mock('../chart-types/line-chart', () => ({
   LineChart: ({ data, onDataClick }: any) => (
-    <div data-testid="line-chart" onClick={() => onDataClick?.({ x: 1, y: 100 })}>
+    <div
+      data-testid="line-chart"
+      onClick={() => onDataClick?.({ x: 1, y: 100 })}
+    >
       Line Chart: {data.datasets[0]?.label}
     </div>
   ),
@@ -15,7 +18,10 @@ jest.mock('../chart-types/line-chart', () => ({
 
 jest.mock('../chart-types/bar-chart', () => ({
   BarChart: ({ data, onDataClick }: any) => (
-    <div data-testid="bar-chart" onClick={() => onDataClick?.({ x: 1, y: 100 })}>
+    <div
+      data-testid="bar-chart"
+      onClick={() => onDataClick?.({ x: 1, y: 100 })}
+    >
       Bar Chart: {data.datasets[0]?.label}
     </div>
   ),
@@ -23,7 +29,10 @@ jest.mock('../chart-types/bar-chart', () => ({
 
 jest.mock('../chart-types/pie-chart', () => ({
   PieChart: ({ data, onDataClick }: any) => (
-    <div data-testid="pie-chart" onClick={() => onDataClick?.({ x: 1, y: 100 })}>
+    <div
+      data-testid="pie-chart"
+      onClick={() => onDataClick?.({ x: 1, y: 100 })}
+    >
       Pie Chart: {data.datasets[0]?.label}
     </div>
   ),
@@ -31,7 +40,10 @@ jest.mock('../chart-types/pie-chart', () => ({
 
 jest.mock('../chart-types/heatmap-chart', () => ({
   HeatmapChart: ({ data, onDataClick }: any) => (
-    <div data-testid="heatmap-chart" onClick={() => onDataClick?.({ x: 1, y: 100 })}>
+    <div
+      data-testid="heatmap-chart"
+      onClick={() => onDataClick?.({ x: 1, y: 100 })}
+    >
       Heatmap Chart: {data.datasets[0]?.label}
     </div>
   ),
@@ -52,13 +64,7 @@ const mockData: ChartData = {
 
 describe('ChartWrapper', () => {
   it('renders loading state', () => {
-    render(
-      <ChartWrapper
-        type="line"
-        data={mockData}
-        loading={true}
-      />
-    )
+    render(<ChartWrapper type="line" data={mockData} loading={true} />)
 
     expect(screen.getByText('Loading chart...')).toBeInTheDocument()
     expect(screen.getByRole('status')).toBeInTheDocument()
@@ -66,11 +72,7 @@ describe('ChartWrapper', () => {
 
   it('renders error state', () => {
     render(
-      <ChartWrapper
-        type="line"
-        data={mockData}
-        error="Failed to load chart"
-      />
+      <ChartWrapper type="line" data={mockData} error="Failed to load chart" />
     )
 
     expect(screen.getByText('Failed to load chart')).toBeInTheDocument()
@@ -78,23 +80,13 @@ describe('ChartWrapper', () => {
   })
 
   it('renders empty state when no data', () => {
-    render(
-      <ChartWrapper
-        type="line"
-        data={{ datasets: [] }}
-      />
-    )
+    render(<ChartWrapper type="line" data={{ datasets: [] }} />)
 
     expect(screen.getByText('No data available')).toBeInTheDocument()
   })
 
   it('renders line chart', async () => {
-    render(
-      <ChartWrapper
-        type="line"
-        data={mockData}
-      />
-    )
+    render(<ChartWrapper type="line" data={mockData} />)
 
     await waitFor(() => {
       expect(screen.getByTestId('line-chart')).toBeInTheDocument()
@@ -103,12 +95,7 @@ describe('ChartWrapper', () => {
   })
 
   it('renders bar chart', async () => {
-    render(
-      <ChartWrapper
-        type="bar"
-        data={mockData}
-      />
-    )
+    render(<ChartWrapper type="bar" data={mockData} />)
 
     await waitFor(() => {
       expect(screen.getByTestId('bar-chart')).toBeInTheDocument()
@@ -117,12 +104,7 @@ describe('ChartWrapper', () => {
   })
 
   it('renders pie chart', async () => {
-    render(
-      <ChartWrapper
-        type="pie"
-        data={mockData}
-      />
-    )
+    render(<ChartWrapper type="pie" data={mockData} />)
 
     await waitFor(() => {
       expect(screen.getByTestId('pie-chart')).toBeInTheDocument()
@@ -131,12 +113,7 @@ describe('ChartWrapper', () => {
   })
 
   it('renders heatmap chart', async () => {
-    render(
-      <ChartWrapper
-        type="heatmap"
-        data={mockData}
-      />
-    )
+    render(<ChartWrapper type="heatmap" data={mockData} />)
 
     await waitFor(() => {
       expect(screen.getByTestId('heatmap-chart')).toBeInTheDocument()
@@ -145,12 +122,7 @@ describe('ChartWrapper', () => {
   })
 
   it('renders area chart (line chart variant)', async () => {
-    render(
-      <ChartWrapper
-        type="area"
-        data={mockData}
-      />
-    )
+    render(<ChartWrapper type="area" data={mockData} />)
 
     await waitFor(() => {
       expect(screen.getByTestId('line-chart')).toBeInTheDocument()
@@ -159,12 +131,7 @@ describe('ChartWrapper', () => {
   })
 
   it('renders scatter chart (line chart variant)', async () => {
-    render(
-      <ChartWrapper
-        type="scatter"
-        data={mockData}
-      />
-    )
+    render(<ChartWrapper type="scatter" data={mockData} />)
 
     await waitFor(() => {
       expect(screen.getByTestId('line-chart')).toBeInTheDocument()
@@ -173,14 +140,11 @@ describe('ChartWrapper', () => {
   })
 
   it('handles unsupported chart type', () => {
-    render(
-      <ChartWrapper
-        type={'unsupported' as any}
-        data={mockData}
-      />
-    )
+    render(<ChartWrapper type={'unsupported' as any} data={mockData} />)
 
-    expect(screen.getByText('Unsupported chart type: unsupported')).toBeInTheDocument()
+    expect(
+      screen.getByText('Unsupported chart type: unsupported')
+    ).toBeInTheDocument()
   })
 
   it('handles data click events', async () => {
@@ -229,13 +193,7 @@ describe('ChartWrapper', () => {
       },
     }
 
-    render(
-      <ChartWrapper
-        type="line"
-        data={mockData}
-        config={customConfig}
-      />
-    )
+    render(<ChartWrapper type="line" data={mockData} config={customConfig} />)
 
     await waitFor(() => {
       expect(screen.getByTestId('line-chart')).toBeInTheDocument()
@@ -271,7 +229,9 @@ describe('ChartWrapper', () => {
       />
     )
 
-    const wrapper = screen.getByText('Loading chart...').closest('.chart-wrapper')
+    const wrapper = screen
+      .getByText('Loading chart...')
+      .closest('.chart-wrapper')
     expect(wrapper).toHaveStyle({ height: '400px' })
   })
 
@@ -285,7 +245,9 @@ describe('ChartWrapper', () => {
       />
     )
 
-    const wrapper = screen.getByText('Loading chart...').closest('.chart-wrapper')
+    const wrapper = screen
+      .getByText('Loading chart...')
+      .closest('.chart-wrapper')
     expect(wrapper).toHaveClass('custom-chart-class')
   })
 
@@ -297,13 +259,7 @@ describe('ChartWrapper', () => {
       },
     }
 
-    render(
-      <ChartWrapper
-        type="line"
-        data={mockData}
-        config={customConfig}
-      />
-    )
+    render(<ChartWrapper type="line" data={mockData} config={customConfig} />)
 
     await waitFor(() => {
       expect(screen.getByTestId('line-chart')).toBeInTheDocument()
@@ -329,12 +285,7 @@ describe('ChartWrapper', () => {
       ],
     }
 
-    render(
-      <ChartWrapper
-        type="line"
-        data={multiDatasetData}
-      />
-    )
+    render(<ChartWrapper type="line" data={multiDatasetData} />)
 
     await waitFor(() => {
       expect(screen.getByTestId('line-chart')).toBeInTheDocument()

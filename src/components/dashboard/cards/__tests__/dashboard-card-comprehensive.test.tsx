@@ -8,20 +8,20 @@ const mockIntersectionObserver = jest.fn()
 mockIntersectionObserver.mockReturnValue({
   observe: () => null,
   unobserve: () => null,
-  disconnect: () => null
+  disconnect: () => null,
 })
 window.IntersectionObserver = mockIntersectionObserver
 
 describe('DashboardCard Comprehensive Tests', () => {
   const defaultProps: DashboardCardProps = {
     title: 'Test Card',
-    children: <div data-testid="card-content">Card Content</div>
+    children: <div data-testid="card-content">Card Content</div>,
   }
 
   describe('Basic Rendering', () => {
     it('renders with title and children', () => {
       render(<DashboardCard {...defaultProps} />)
-      
+
       expect(screen.getByText('Test Card')).toBeInTheDocument()
       expect(screen.getByTestId('card-content')).toBeInTheDocument()
     })
@@ -32,21 +32,18 @@ describe('DashboardCard Comprehensive Tests', () => {
           <div data-testid="card-content">Card Content</div>
         </DashboardCard>
       )
-      
+
       expect(screen.getByTestId('card-content')).toBeInTheDocument()
       expect(screen.queryByRole('heading')).not.toBeInTheDocument()
     })
 
     it('renders with subtitle', () => {
       render(
-        <DashboardCard
-          title="Main Title"
-          subtitle="Subtitle text"
-        >
+        <DashboardCard title="Main Title" subtitle="Subtitle text">
           <div>Content</div>
         </DashboardCard>
       )
-      
+
       expect(screen.getByText('Main Title')).toBeInTheDocument()
       expect(screen.getByText('Subtitle text')).toBeInTheDocument()
     })
@@ -59,31 +56,23 @@ describe('DashboardCard Comprehensive Tests', () => {
       )
 
       render(
-        <DashboardCard
-          title="Test Card"
-          icon={TestIcon}
-        >
+        <DashboardCard title="Test Card" icon={TestIcon}>
           <div>Content</div>
         </DashboardCard>
       )
-      
+
       expect(screen.getByTestId('test-icon')).toBeInTheDocument()
     })
 
     it('renders with actions', () => {
-      const actions = (
-        <button data-testid="card-action">Action Button</button>
-      )
+      const actions = <button data-testid="card-action">Action Button</button>
 
       render(
-        <DashboardCard
-          title="Test Card"
-          actions={actions}
-        >
+        <DashboardCard title="Test Card" actions={actions}>
           <div>Content</div>
         </DashboardCard>
       )
-      
+
       expect(screen.getByTestId('card-action')).toBeInTheDocument()
     })
   })
@@ -97,11 +86,11 @@ describe('DashboardCard Comprehensive Tests', () => {
             value: 1234,
             unit: 'users',
             trend: 'up',
-            trendValue: '+12%'
+            trendValue: '+12%',
           }}
         />
       )
-      
+
       expect(screen.getByText('1234')).toBeInTheDocument()
       expect(screen.getByText('users')).toBeInTheDocument()
       expect(screen.getByText('+12%')).toBeInTheDocument()
@@ -113,11 +102,11 @@ describe('DashboardCard Comprehensive Tests', () => {
           title="Status Card"
           metric={{
             value: 'Active',
-            trend: 'neutral'
+            trend: 'neutral',
           }}
         />
       )
-      
+
       expect(screen.getByText('Active')).toBeInTheDocument()
     })
 
@@ -128,11 +117,11 @@ describe('DashboardCard Comprehensive Tests', () => {
           metric={{
             value: 100,
             trend: 'up',
-            trendValue: '+5%'
+            trendValue: '+5%',
           }}
         />
       )
-      
+
       let trendElement = screen.getByText('+5%').closest('span')
       expect(trendElement).toHaveClass('text-green-800')
 
@@ -142,11 +131,11 @@ describe('DashboardCard Comprehensive Tests', () => {
           metric={{
             value: 100,
             trend: 'down',
-            trendValue: '-3%'
+            trendValue: '-3%',
           }}
         />
       )
-      
+
       trendElement = screen.getByText('-3%').closest('span')
       expect(trendElement).toHaveClass('text-red-800')
 
@@ -156,11 +145,11 @@ describe('DashboardCard Comprehensive Tests', () => {
           metric={{
             value: 100,
             trend: 'neutral',
-            trendValue: '0%'
+            trendValue: '0%',
           }}
         />
       )
-      
+
       trendElement = screen.getByText('0%').closest('span')
       expect(trendElement).toHaveClass('text-gray-800')
     })
@@ -169,51 +158,39 @@ describe('DashboardCard Comprehensive Tests', () => {
   describe('Loading States', () => {
     it('shows loading skeleton when loading is true', () => {
       const { container } = render(
-        <DashboardCard
-          title="Loading Card"
-          loading={true}
-        />
+        <DashboardCard title="Loading Card" loading={true} />
       )
-      
+
       expect(container.querySelector('.animate-pulse')).toBeInTheDocument()
       expect(screen.queryByText('Loading Card')).not.toBeInTheDocument()
     })
 
     it('shows content when loading is false', () => {
       render(
-        <DashboardCard
-          title="Loaded Card"
-          loading={false}
-        >
+        <DashboardCard title="Loaded Card" loading={false}>
           <div data-testid="content">Content</div>
         </DashboardCard>
       )
-      
+
       expect(screen.getByText('Loaded Card')).toBeInTheDocument()
       expect(screen.getByTestId('content')).toBeInTheDocument()
     })
 
     it('transitions from loading to loaded state', async () => {
       const { rerender } = render(
-        <DashboardCard
-          title="Transition Card"
-          loading={true}
-        >
+        <DashboardCard title="Transition Card" loading={true}>
           <div data-testid="content">Content</div>
         </DashboardCard>
       )
-      
+
       expect(screen.queryByText('Transition Card')).not.toBeInTheDocument()
-      
+
       rerender(
-        <DashboardCard
-          title="Transition Card"
-          loading={false}
-        >
+        <DashboardCard title="Transition Card" loading={false}>
           <div data-testid="content">Content</div>
         </DashboardCard>
       )
-      
+
       await waitFor(() => {
         expect(screen.getByText('Transition Card')).toBeInTheDocument()
         expect(screen.getByTestId('content')).toBeInTheDocument()
@@ -224,26 +201,18 @@ describe('DashboardCard Comprehensive Tests', () => {
   describe('Error Handling', () => {
     it('shows error message when error prop is provided', () => {
       render(
-        <DashboardCard
-          title="Error Card"
-          error="Something went wrong"
-        >
+        <DashboardCard title="Error Card" error="Something went wrong">
           <div data-testid="content">Content</div>
         </DashboardCard>
       )
-      
+
       expect(screen.getByText('Something went wrong')).toBeInTheDocument()
       expect(screen.queryByTestId('content')).not.toBeInTheDocument()
     })
 
     it('shows error icon with error message', () => {
-      render(
-        <DashboardCard
-          title="Error Card"
-          error="Network error"
-        />
-      )
-      
+      render(<DashboardCard title="Error Card" error="Network error" />)
+
       const errorIcon = screen.getByRole('img', { hidden: true })
       expect(errorIcon).toBeInTheDocument()
       expect(screen.getByText('Network error')).toBeInTheDocument()
@@ -257,48 +226,40 @@ describe('DashboardCard Comprehensive Tests', () => {
           error="Error occurred"
         />
       )
-      
+
       expect(screen.getByText('Error occurred')).toBeInTheDocument()
       expect(screen.queryByText(/loading/i)).not.toBeInTheDocument()
     })
 
     it('shows error message without retry button by default', () => {
-      render(
-        <DashboardCard
-          title="Error Card"
-          error="Network timeout"
-        />
-      )
-      
+      render(<DashboardCard title="Error Card" error="Network timeout" />)
+
       expect(screen.getByText('Network timeout')).toBeInTheDocument()
-      expect(screen.queryByRole('button', { name: /retry/i })).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: /retry/i })
+      ).not.toBeInTheDocument()
     })
   })
 
   describe('Size Variants', () => {
     it('applies correct classes for different sizes', () => {
       const sizes: Array<'sm' | 'md' | 'lg' | 'xl'> = ['sm', 'md', 'lg', 'xl']
-      
+
       sizes.forEach(size => {
         const { container, unmount } = render(
-          <DashboardCard
-            title={`${size} Card`}
-            size={size}
-          />
+          <DashboardCard title={`${size} Card`} size={size} />
         )
-        
+
         const card = container.firstChild as HTMLElement
         expect(card).toHaveClass(`dashboard-card-${size}`)
-        
+
         unmount()
       })
     })
 
     it('defaults to medium size when no size specified', () => {
-      const { container } = render(
-        <DashboardCard title="Default Card" />
-      )
-      
+      const { container } = render(<DashboardCard title="Default Card" />)
+
       const card = container.firstChild as HTMLElement
       expect(card).toHaveClass('dashboard-card-md')
     })
@@ -306,9 +267,13 @@ describe('DashboardCard Comprehensive Tests', () => {
 
   describe('Priority Levels', () => {
     it('applies correct styling for different priority levels', () => {
-      const priorities: Array<'low' | 'medium' | 'high' | 'critical'> = 
-        ['low', 'medium', 'high', 'critical']
-      
+      const priorities: Array<'low' | 'medium' | 'high' | 'critical'> = [
+        'low',
+        'medium',
+        'high',
+        'critical',
+      ]
+
       priorities.forEach(priority => {
         const { container, unmount } = render(
           <DashboardCard
@@ -316,22 +281,19 @@ describe('DashboardCard Comprehensive Tests', () => {
             priority={priority}
           />
         )
-        
+
         const card = container.firstChild as HTMLElement
         expect(card).toHaveClass(`dashboard-card-priority-${priority}`)
-        
+
         unmount()
       })
     })
 
     it('applies critical priority styling', () => {
       const { container } = render(
-        <DashboardCard
-          title="Critical Card"
-          priority="critical"
-        />
+        <DashboardCard title="Critical Card" priority="critical" />
       )
-      
+
       const card = container.firstChild as HTMLElement
       expect(card).toHaveClass('dashboard-card-priority-critical')
     })
@@ -347,7 +309,7 @@ describe('DashboardCard Comprehensive Tests', () => {
           onClick={onClick}
         />
       )
-      
+
       const card = screen.getByRole('button')
       expect(card).toBeInTheDocument()
       expect(card).toHaveClass('cursor-pointer')
@@ -362,10 +324,10 @@ describe('DashboardCard Comprehensive Tests', () => {
           onClick={onClick}
         />
       )
-      
+
       const card = screen.getByRole('button')
       await userEvent.click(card)
-      
+
       expect(onClick).toHaveBeenCalledTimes(1)
     })
 
@@ -378,13 +340,13 @@ describe('DashboardCard Comprehensive Tests', () => {
           onClick={onClick}
         />
       )
-      
+
       const card = screen.getByRole('button')
       card.focus()
-      
+
       await userEvent.keyboard('{Enter}')
       expect(onClick).toHaveBeenCalledTimes(1)
-      
+
       await userEvent.keyboard(' ')
       expect(onClick).toHaveBeenCalledTimes(2)
     })
@@ -397,10 +359,13 @@ describe('DashboardCard Comprehensive Tests', () => {
           onClick={() => {}}
         />
       )
-      
+
       const card = screen.getByRole('button')
       expect(card).toHaveAttribute('tabIndex', '0')
-      expect(card).toHaveAttribute('aria-label', expect.stringContaining('ARIA Card'))
+      expect(card).toHaveAttribute(
+        'aria-label',
+        expect.stringContaining('ARIA Card')
+      )
     })
   })
 
@@ -414,24 +379,19 @@ describe('DashboardCard Comprehensive Tests', () => {
           metric={{ value: 100, unit: 'items' }}
         />
       )
-      
+
       // Simulate filter trigger (this would typically be from chart interaction)
       const card = screen.getByText('100')
       fireEvent.click(card)
-      
+
       // Note: Actual filter triggering would depend on implementation
       // This is a placeholder for the expected behavior
     })
 
     it('accepts onFilter prop for filterable cards', () => {
       const onFilter = jest.fn()
-      render(
-        <DashboardCard
-          title="Filterable Card"
-          onFilter={onFilter}
-        />
-      )
-      
+      render(<DashboardCard title="Filterable Card" onFilter={onFilter} />)
+
       // Card should render without error when onFilter is provided
       expect(screen.getByText('Filterable Card')).toBeInTheDocument()
     })
@@ -444,7 +404,7 @@ describe('DashboardCard Comprehensive Tests', () => {
           <div>Content</div>
         </DashboardCard>
       )
-      
+
       const title = screen.getByText('Accessible Card')
       expect(title).toBeInTheDocument()
       expect(title).toHaveClass('dashboard-card-title')
@@ -458,11 +418,11 @@ describe('DashboardCard Comprehensive Tests', () => {
             value: 1234,
             unit: 'users',
             trend: 'up',
-            trendValue: '+5%'
+            trendValue: '+5%',
           }}
         />
       )
-      
+
       const metricGroup = screen.getByRole('group')
       expect(metricGroup).toHaveAttribute(
         'aria-label',
@@ -471,25 +431,18 @@ describe('DashboardCard Comprehensive Tests', () => {
     })
 
     it('announces loading state to screen readers', () => {
-      render(
-        <DashboardCard
-          title="Loading Card"
-          loading={true}
-        />
-      )
-      
+      render(<DashboardCard title="Loading Card" loading={true} />)
+
       const loadingIndicator = screen.getByRole('status')
-      expect(loadingIndicator).toHaveAttribute('aria-label', expect.stringContaining('Loading Card'))
+      expect(loadingIndicator).toHaveAttribute(
+        'aria-label',
+        expect.stringContaining('Loading Card')
+      )
     })
 
     it('announces error state to screen readers', () => {
-      render(
-        <DashboardCard
-          title="Error Card"
-          error="Failed to load data"
-        />
-      )
-      
+      render(<DashboardCard title="Error Card" error="Failed to load data" />)
+
       const errorAlert = screen.getByRole('alert')
       expect(errorAlert).toHaveTextContent('Failed to load data')
     })
@@ -498,24 +451,18 @@ describe('DashboardCard Comprehensive Tests', () => {
   describe('Custom Styling', () => {
     it('accepts custom className', () => {
       const { container } = render(
-        <DashboardCard
-          title="Custom Card"
-          className="custom-class"
-        />
+        <DashboardCard title="Custom Card" className="custom-class" />
       )
-      
+
       const card = container.firstChild as HTMLElement
       expect(card).toHaveClass('custom-class')
     })
 
     it('merges custom className with default classes', () => {
       const { container } = render(
-        <DashboardCard
-          title="Merged Card"
-          className="custom-class"
-        />
+        <DashboardCard title="Merged Card" className="custom-class" />
       )
-      
+
       const card = container.firstChild as HTMLElement
       expect(card).toHaveClass('custom-class')
       expect(card).toHaveClass('dashboard-card')
@@ -523,12 +470,9 @@ describe('DashboardCard Comprehensive Tests', () => {
 
     it('accepts additional props that are passed to the card', () => {
       const { container } = render(
-        <DashboardCard
-          title="Props Card"
-          data-testid="custom-card"
-        />
+        <DashboardCard title="Props Card" data-testid="custom-card" />
       )
-      
+
       const card = container.querySelector('[data-testid="custom-card"]')
       expect(card).toBeInTheDocument()
     })
@@ -547,29 +491,27 @@ describe('DashboardCard Comprehensive Tests', () => {
           <TestContent />
         </DashboardCard>
       )
-      
+
       expect(renderSpy).toHaveBeenCalledTimes(1)
-      
+
       // Re-render with same props
       rerender(
         <DashboardCard title="Memo Card">
           <TestContent />
         </DashboardCard>
       )
-      
+
       // Content should not re-render if props haven't changed
       expect(renderSpy).toHaveBeenCalledTimes(1)
     })
 
     it('renders content immediately (lazy loading handled at higher level)', () => {
       render(
-        <DashboardCard
-          title="Card"
-        >
+        <DashboardCard title="Card">
           <div>Content</div>
         </DashboardCard>
       )
-      
+
       expect(screen.getByText('Content')).toBeInTheDocument()
     })
   })

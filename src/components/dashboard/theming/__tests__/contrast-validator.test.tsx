@@ -17,18 +17,18 @@ jest.mock('../theme-provider', () => ({
         text: {
           primary: '#1A1A1A',
           secondary: '#6B7280',
-          disabled: '#9CA3AF'
+          disabled: '#9CA3AF',
         },
         status: {
           success: '#10B981',
           warning: '#F59E0B',
           error: '#EF4444',
-          info: '#3B82F6'
-        }
-      }
+          info: '#3B82F6',
+        },
+      },
     },
-    getContrastRatio: mockGetContrastRatio
-  })
+    getContrastRatio: mockGetContrastRatio,
+  }),
 }))
 
 describe('ContrastValidator', () => {
@@ -42,7 +42,9 @@ describe('ContrastValidator', () => {
     render(<ContrastValidator />)
 
     expect(screen.getByText('Contrast Validation')).toBeInTheDocument()
-    expect(screen.getByText('WCAG 2.1 accessibility compliance check')).toBeInTheDocument()
+    expect(
+      screen.getByText('WCAG 2.1 accessibility compliance check')
+    ).toBeInTheDocument()
   })
 
   it('shows validate button', () => {
@@ -54,7 +56,9 @@ describe('ContrastValidator', () => {
   it('displays WCAG guidelines', () => {
     render(<ContrastValidator />)
 
-    expect(screen.getByText('WCAG 2.1 Contrast Requirements')).toBeInTheDocument()
+    expect(
+      screen.getByText('WCAG 2.1 Contrast Requirements')
+    ).toBeInTheDocument()
     expect(screen.getByText('AA: 4.5:1 minimum')).toBeInTheDocument()
     expect(screen.getByText('AAA: 7:1 minimum')).toBeInTheDocument()
   })
@@ -138,10 +142,10 @@ describe('ContrastValidator', () => {
 
   it('calls onValidationComplete callback', async () => {
     const mockCallback = jest.fn()
-    
+
     render(
-      <ContrastValidator 
-        autoValidate={true} 
+      <ContrastValidator
+        autoValidate={true}
         onValidationComplete={mockCallback}
       />
     )
@@ -153,8 +157,8 @@ describe('ContrastValidator', () => {
             id: expect.any(String),
             contrastRatio: expect.any(Number),
             wcagLevel: expect.any(String),
-            isValid: expect.any(Boolean)
-          })
+            isValid: expect.any(Boolean),
+          }),
         ])
       )
     })
@@ -180,7 +184,9 @@ describe('ContrastValidator', () => {
     render(<ContrastValidator autoValidate={true} showDetails={true} />)
 
     await waitFor(() => {
-      expect(screen.getByText(/Increase contrast by approximately/)).toBeInTheDocument()
+      expect(
+        screen.getByText(/Increase contrast by approximately/)
+      ).toBeInTheDocument()
     })
   })
 
@@ -190,7 +196,9 @@ describe('ContrastValidator', () => {
     render(<ContrastValidator autoValidate={true} showDetails={true} />)
 
     await waitFor(() => {
-      expect(screen.getByText(/Consider increasing contrast by/)).toBeInTheDocument()
+      expect(
+        screen.getByText(/Consider increasing contrast by/)
+      ).toBeInTheDocument()
     })
   })
 
@@ -200,13 +208,15 @@ describe('ContrastValidator', () => {
     render(<ContrastValidator autoValidate={true} showDetails={true} />)
 
     await waitFor(() => {
-      expect(screen.getByText(/Excellent contrast - meets WCAG AAA standards/)).toBeInTheDocument()
+      expect(
+        screen.getByText(/Excellent contrast - meets WCAG AAA standards/)
+      ).toBeInTheDocument()
     })
   })
 
   it('applies custom className', () => {
     const { container } = render(<ContrastValidator className="custom-class" />)
-    
+
     expect(container.firstChild).toHaveClass('custom-class')
   })
 
@@ -232,9 +242,11 @@ describe('ContrastValidator', () => {
 
     await waitFor(() => {
       // Should show color swatches in the detailed results
-      const colorSwatches = screen.getAllByRole('generic').filter(el => 
-        el.style.backgroundColor && el.className.includes('w-4 h-4')
-      )
+      const colorSwatches = screen
+        .getAllByRole('generic')
+        .filter(
+          el => el.style.backgroundColor && el.className.includes('w-4 h-4')
+        )
       expect(colorSwatches.length).toBeGreaterThan(0)
     })
   })
@@ -242,10 +254,10 @@ describe('ContrastValidator', () => {
   it('categorizes results by WCAG level correctly', async () => {
     // Mock different contrast ratios for different tests
     mockGetContrastRatio
-      .mockReturnValueOnce(8.0)  // AAA
-      .mockReturnValueOnce(5.0)  // AA
-      .mockReturnValueOnce(2.0)  // FAIL
-      .mockReturnValue(7.0)      // Default AAA for remaining tests
+      .mockReturnValueOnce(8.0) // AAA
+      .mockReturnValueOnce(5.0) // AA
+      .mockReturnValueOnce(2.0) // FAIL
+      .mockReturnValue(7.0) // Default AAA for remaining tests
 
     render(<ContrastValidator autoValidate={true} showDetails={true} />)
 

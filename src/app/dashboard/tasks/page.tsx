@@ -195,12 +195,12 @@ export default function TasksPage() {
   return (
     <ProtectedRoute requiredResource="tasks">
       <TaskBoard
-      tasks={tasks}
-      onTaskUpdate={handleTaskUpdate}
-      onTaskCreate={handleTaskCreate}
-      onTaskDelete={handleTaskDelete}
-      agents={mockAgents}
-      isLoading={isLoading}
+        tasks={tasks}
+        onTaskUpdate={handleTaskUpdate}
+        onTaskCreate={handleTaskCreate}
+        onTaskDelete={handleTaskDelete}
+        agents={mockAgents}
+        isLoading={isLoading}
       />
     </ProtectedRoute>
   )

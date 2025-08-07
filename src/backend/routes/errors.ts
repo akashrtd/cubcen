@@ -7,7 +7,11 @@ import { structuredLogger as logger } from '@/lib/logger'
 import { auditLogger, AuditEventType, AuditSeverity } from '@/lib/audit-logger'
 import { validateRequest } from '@/backend/middleware/validation'
 import { authenticate } from '@/backend/middleware/auth'
-import { createErrorResponse, errorHandler, APIErrorCode } from '@/lib/api-error-handler'
+import {
+  createErrorResponse,
+  errorHandler,
+  APIErrorCode,
+} from '@/lib/api-error-handler'
 
 const router = express.Router()
 
@@ -49,48 +53,119 @@ const ErrorQuerySchema = z.object({
  * POST /api/cubcen/v1/errors/report
  * Report a client-side error
  */
-router.post('/report', validateRequest({ body: ErrorReportSchema }), async (req, res) => {
-  try {
-    const errorData = req.body
-    const requestId = req.headers['x-request-id'] as string
+router.post(
+  '/report',
+  validateRequest({ body: ErrorReportSchema }),
+  async (req, res) => {
+    try {
+      const errorData = req.body
+      const requestId = req.headers['x-request-id'] as string
 
-    // Log the error with structured data
-    logger.error('Client-side error reported', new Error(errorData.message), {
-      errorId: errorData.errorId,
-      pageName: errorData.pageName,
-      url: errorData.url,
-      userAgent: errorData.userAgent,
-      timestamp: errorData.timestamp,
-      requestId,
-      stack: errorData.stack,
-      componentStack: errorData.componentStack,
-      metadata: errorData.metadata,
-    })
+      // Log the error with structured data
+      logger.error('Client-side error reported', new Error(errorData.message), {
+        errorId: errorData.errorId,
+        pageName: errorData.pageName,
+        url: errorData.url,
+        userAgent: errorData.userAgent,
+        timestamp: errorData.timestamp,
+        requestId,
+        stack: errorData.stack,
+        componentStack: errorData.componentStack,
+        metadata: errorData.metadata,
+      })
 
-    // Store error in database for tracking
-    await storeError({
-      ...errorData,
-      requestId,
-      ipAddress: req.ip,
-      userId: req.user?.id,
-      userEmail: req.user?.email,
-      severity: determineSeverity(errorData.message, errorData.stack),
-      resolved: false,
-    })
+      // Store error in database for tracking
+      await storeError({
+        ...errorData,
+        requestId,
+        ipAddress: req.ip,
+        userId: req.user?.id,
+        userEmail: req.user?.email,
+        severity: determineSeverity(errorData.message, errorData.stack),
+        resolved: false,
+      })
 
-    // Log audit event for error reporting
-    if (req.user) {
+      // Log audit event for error reporting
+      if (req.user) {
+        await auditLogger.logEvent({
+          eventType: AuditEventType.SYSTEM_CONFIG_CHANGED,
+          severity: AuditSeverity.LOW,
+          userId: req.user!.id,
+          userEmail: req.user!.email,
+          action: 'ERROR_REPORTED',
+          description: `User reported client-side error: ${errorData.message}`,
+          metadata: {
+            errorId: errorData.errorId,
+            pageName: errorData.pageName,
+            url: errorData.url,
+          },
+          ipAddress: req.ip,
+          userAgent: req.get('User-Agent'),
+          requestId,
+          timestamp: new Date(),
+          success: true,
+        })
+      }
+
+      res.json({
+        success: true,
+        message: 'Error reported successfully',
+        data: {
+          errorId: errorData.errorId,
+          reported: true,
+        },
+      })
+    } catch (error) {
+      errorHandler(error as Error, req, res, () => {})
+    }
+  }
+)
+
+/**
+ * POST /api/cubcen/v1/errors/user-report
+ * Report an error with user description
+ */
+router.post(
+  '/user-report',
+  authenticate,
+  validateRequest({ body: UserErrorReportSchema }),
+  async (req, res) => {
+    try {
+      const reportData = req.body
+      const requestId = req.headers['x-request-id'] as string
+
+      // Log the user error report
+      logger.info('User error report submitted', {
+        errorId: reportData.errorId,
+        userId: req.user!.id,
+        userEmail: req.user!.email,
+        userDescription: reportData.userDescription,
+        requestId,
+      })
+
+      // Update error record with user feedback
+      await updateErrorWithUserFeedback(reportData.errorId, {
+        userDescription: reportData.userDescription,
+        reproductionSteps: reportData.reproductionSteps,
+        expectedBehavior: reportData.expectedBehavior,
+        actualBehavior: reportData.actualBehavior,
+        userReportedAt: new Date(),
+        userId: req.user!.id,
+        userEmail: req.user!.email,
+      })
+
+      // Log audit event
       await auditLogger.logEvent({
-        eventType: AuditEventType.SYSTEM_CONFIG_CHANGED,
+        eventType: AuditEventType.DATA_ACCESSED,
         severity: AuditSeverity.LOW,
         userId: req.user!.id,
         userEmail: req.user!.email,
-        action: 'ERROR_REPORTED',
-        description: `User reported client-side error: ${errorData.message}`,
+        action: 'USER_ERROR_REPORT',
+        description: `User provided additional details for error ${reportData.errorId}`,
         metadata: {
-          errorId: errorData.errorId,
-          pageName: errorData.pageName,
-          url: errorData.url,
+          errorId: reportData.errorId,
+          hasReproductionSteps: !!reportData.reproductionSteps,
+          hasExpectedBehavior: !!reportData.expectedBehavior,
         },
         ipAddress: req.ip,
         userAgent: req.get('User-Agent'),
@@ -98,141 +173,89 @@ router.post('/report', validateRequest({ body: ErrorReportSchema }), async (req,
         timestamp: new Date(),
         success: true,
       })
+
+      res.json({
+        success: true,
+        message: 'User error report submitted successfully',
+        data: {
+          errorId: reportData.errorId,
+          userReported: true,
+        },
+      })
+    } catch (error) {
+      errorHandler(error as Error, req, res, () => {})
     }
-
-    res.json({
-      success: true,
-      message: 'Error reported successfully',
-      data: {
-        errorId: errorData.errorId,
-        reported: true,
-      },
-    })
-  } catch (error) {
-    errorHandler(error as Error, req, res, () => {})
   }
-})
-
-/**
- * POST /api/cubcen/v1/errors/user-report
- * Report an error with user description
- */
-router.post('/user-report', authenticate, validateRequest({ body: UserErrorReportSchema }), async (req, res) => {
-  try {
-    const reportData = req.body
-    const requestId = req.headers['x-request-id'] as string
-
-    // Log the user error report
-    logger.info('User error report submitted', {
-      errorId: reportData.errorId,
-      userId: req.user!.id,
-      userEmail: req.user!.email,
-      userDescription: reportData.userDescription,
-      requestId,
-    })
-
-    // Update error record with user feedback
-    await updateErrorWithUserFeedback(reportData.errorId, {
-      userDescription: reportData.userDescription,
-      reproductionSteps: reportData.reproductionSteps,
-      expectedBehavior: reportData.expectedBehavior,
-      actualBehavior: reportData.actualBehavior,
-      userReportedAt: new Date(),
-      userId: req.user!.id,
-      userEmail: req.user!.email,
-    })
-
-    // Log audit event
-    await auditLogger.logEvent({
-      eventType: AuditEventType.DATA_ACCESSED,
-      severity: AuditSeverity.LOW,
-      userId: req.user!.id,
-      userEmail: req.user!.email,
-      action: 'USER_ERROR_REPORT',
-      description: `User provided additional details for error ${reportData.errorId}`,
-      metadata: {
-        errorId: reportData.errorId,
-        hasReproductionSteps: !!reportData.reproductionSteps,
-        hasExpectedBehavior: !!reportData.expectedBehavior,
-      },
-      ipAddress: req.ip,
-      userAgent: req.get('User-Agent'),
-      requestId,
-      timestamp: new Date(),
-      success: true,
-    })
-
-    res.json({
-      success: true,
-      message: 'User error report submitted successfully',
-      data: {
-        errorId: reportData.errorId,
-        userReported: true,
-      },
-    })
-  } catch (error) {
-    errorHandler(error as Error, req, res, () => {})
-  }
-})
+)
 
 /**
  * GET /api/cubcen/v1/errors
  * Get error reports (admin only)
  */
-router.get('/', authenticate, validateRequest({ query: ErrorQuerySchema }), async (req, res) => {
-  try {
-    // Check if user has admin permissions
-    if (req.user!.role !== 'ADMIN') {
-      return res.status(403).json(
-        createErrorResponse(APIErrorCode.INSUFFICIENT_PERMISSIONS, 'Admin access required')
-      )
-    }
+router.get(
+  '/',
+  authenticate,
+  validateRequest({ query: ErrorQuerySchema }),
+  async (req, res) => {
+    try {
+      // Check if user has admin permissions
+      if (req.user!.role !== 'ADMIN') {
+        return res
+          .status(403)
+          .json(
+            createErrorResponse(
+              APIErrorCode.INSUFFICIENT_PERMISSIONS,
+              'Admin access required'
+            )
+          )
+      }
 
-    const query = ErrorQuerySchema.parse(req.query)
-    const requestId = req.headers['x-request-id'] as string
+      const query = ErrorQuerySchema.parse(req.query)
+      const requestId = req.headers['x-request-id'] as string
 
-    const errors = await getErrors({
-      page: query.page,
-      limit: query.limit,
-      severity: query.severity,
-      startDate: query.startDate ? new Date(query.startDate) : undefined,
-      endDate: query.endDate ? new Date(query.endDate) : undefined,
-      pageName: query.pageName,
-      resolved: query.resolved,
-    })
-
-    // Log audit event for error access
-    await auditLogger.logEvent({
-      eventType: AuditEventType.DATA_ACCESSED,
-      severity: AuditSeverity.LOW,
-      userId: req.user!.id,
-      userEmail: req.user!.email,
-      action: 'ERRORS_ACCESSED',
-      description: 'Admin accessed error reports',
-      metadata: {
+      const errors = await getErrors({
         page: query.page,
         limit: query.limit,
-        filters: {
-          severity: query.severity,
-          pageName: query.pageName,
-          resolved: query.resolved,
-        },
-      },
-      ipAddress: req.ip,
-      userAgent: req.get('User-Agent'),
-      requestId,
-      timestamp: new Date(),
-      success: true,
-    })
+        severity: query.severity,
+        startDate: query.startDate ? new Date(query.startDate) : undefined,
+        endDate: query.endDate ? new Date(query.endDate) : undefined,
+        pageName: query.pageName,
+        resolved: query.resolved,
+      })
 
-    res.json({
-      success: true,
-      data: errors,
-    })
-  } catch (error) {
-    errorHandler(error as Error, req, res, () => {})
+      // Log audit event for error access
+      await auditLogger.logEvent({
+        eventType: AuditEventType.DATA_ACCESSED,
+        severity: AuditSeverity.LOW,
+        userId: req.user!.id,
+        userEmail: req.user!.email,
+        action: 'ERRORS_ACCESSED',
+        description: 'Admin accessed error reports',
+        metadata: {
+          page: query.page,
+          limit: query.limit,
+          filters: {
+            severity: query.severity,
+            pageName: query.pageName,
+            resolved: query.resolved,
+          },
+        },
+        ipAddress: req.ip,
+        userAgent: req.get('User-Agent'),
+        requestId,
+        timestamp: new Date(),
+        success: true,
+      })
+
+      res.json({
+        success: true,
+        data: errors,
+      })
+    } catch (error) {
+      errorHandler(error as Error, req, res, () => {})
+    }
   }
-})
+)
 
 /**
  * PUT /api/cubcen/v1/errors/:errorId/resolve
@@ -242,9 +265,14 @@ router.put('/:errorId/resolve', authenticate, async (req, res) => {
   try {
     // Check if user has admin permissions
     if (req.user!.role !== 'ADMIN') {
-      return res.status(403).json(
-        createErrorResponse(APIErrorCode.INSUFFICIENT_PERMISSIONS, 'Admin access required')
-      )
+      return res
+        .status(403)
+        .json(
+          createErrorResponse(
+            APIErrorCode.INSUFFICIENT_PERMISSIONS,
+            'Admin access required'
+          )
+        )
     }
 
     const { errorId } = req.params
@@ -301,9 +329,14 @@ async function storeError(errorData: any): Promise<void> {
     // For now, we'll use the audit log system
     await auditLogger.logEvent({
       eventType: AuditEventType.SYSTEM_CONFIG_CHANGED,
-      severity: errorData.severity === 'critical' ? AuditSeverity.CRITICAL : 
-                errorData.severity === 'high' ? AuditSeverity.HIGH :
-                errorData.severity === 'medium' ? AuditSeverity.MEDIUM : AuditSeverity.LOW,
+      severity:
+        errorData.severity === 'critical'
+          ? AuditSeverity.CRITICAL
+          : errorData.severity === 'high'
+            ? AuditSeverity.HIGH
+            : errorData.severity === 'medium'
+              ? AuditSeverity.MEDIUM
+              : AuditSeverity.LOW,
       userId: errorData.userId,
       userEmail: errorData.userEmail,
       action: 'CLIENT_ERROR',
@@ -330,7 +363,10 @@ async function storeError(errorData: any): Promise<void> {
   }
 }
 
-async function updateErrorWithUserFeedback(errorId: string, feedback: any): Promise<void> {
+async function updateErrorWithUserFeedback(
+  errorId: string,
+  feedback: any
+): Promise<void> {
   try {
     // In a real implementation, this would update the errors table
     // For now, we'll log the feedback as an audit event
@@ -369,8 +405,11 @@ async function getErrors(filters: any): Promise<any> {
     })
 
     // Filter for error-related events
-    const errorLogs = auditLogs.logs.filter(log => 
-      log.action === 'CLIENT_ERROR' || log.action === 'ERROR_FEEDBACK' || log.action === 'ERROR_RESOLVED'
+    const errorLogs = auditLogs.logs.filter(
+      log =>
+        log.action === 'CLIENT_ERROR' ||
+        log.action === 'ERROR_FEEDBACK' ||
+        log.action === 'ERROR_RESOLVED'
     )
 
     return {
@@ -410,30 +449,39 @@ async function resolveError(errorId: string, resolution: any): Promise<void> {
   }
 }
 
-function determineSeverity(message: string, stack?: string): 'low' | 'medium' | 'high' | 'critical' {
+function determineSeverity(
+  message: string,
+  stack?: string
+): 'low' | 'medium' | 'high' | 'critical' {
   const lowerMessage = message.toLowerCase()
   const lowerStack = stack?.toLowerCase() || ''
 
   // Critical errors
-  if (lowerMessage.includes('network error') || 
-      lowerMessage.includes('failed to fetch') ||
-      lowerMessage.includes('authentication') ||
-      lowerStack.includes('auth')) {
+  if (
+    lowerMessage.includes('network error') ||
+    lowerMessage.includes('failed to fetch') ||
+    lowerMessage.includes('authentication') ||
+    lowerStack.includes('auth')
+  ) {
     return 'critical'
   }
 
   // High severity errors
-  if (lowerMessage.includes('cannot read') ||
-      lowerMessage.includes('undefined') ||
-      lowerMessage.includes('null') ||
-      lowerStack.includes('typeerror')) {
+  if (
+    lowerMessage.includes('cannot read') ||
+    lowerMessage.includes('undefined') ||
+    lowerMessage.includes('null') ||
+    lowerStack.includes('typeerror')
+  ) {
     return 'high'
   }
 
   // Medium severity errors
-  if (lowerMessage.includes('validation') ||
-      lowerMessage.includes('invalid') ||
-      lowerMessage.includes('error')) {
+  if (
+    lowerMessage.includes('validation') ||
+    lowerMessage.includes('invalid') ||
+    lowerMessage.includes('error')
+  ) {
     return 'medium'
   }
 

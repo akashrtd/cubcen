@@ -26,7 +26,7 @@ describe('ProtectedRoute - Permission-based Navigation', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     mockUseRouter.mockReturnValue(mockRouter as any)
-    
+
     // Mock localStorage
     Object.defineProperty(window, 'localStorage', {
       value: {
@@ -41,7 +41,14 @@ describe('ProtectedRoute - Permission-based Navigation', () => {
   describe('Role-based Access Control', () => {
     it('should allow access for users with required roles', () => {
       mockUseAuth.mockReturnValue({
-        user: { id: '1', email: 'admin@test.com', name: 'Admin', role: UserRole.ADMIN, createdAt: new Date(), updatedAt: new Date() },
+        user: {
+          id: '1',
+          email: 'admin@test.com',
+          name: 'Admin',
+          role: UserRole.ADMIN,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
         isLoading: false,
         isAuthenticated: true,
         hasAnyRole: jest.fn().mockReturnValue(true),
@@ -62,7 +69,14 @@ describe('ProtectedRoute - Permission-based Navigation', () => {
 
     it('should deny access for users without required roles', () => {
       mockUseAuth.mockReturnValue({
-        user: { id: '1', email: 'viewer@test.com', name: 'Viewer', role: UserRole.VIEWER, createdAt: new Date(), updatedAt: new Date() },
+        user: {
+          id: '1',
+          email: 'viewer@test.com',
+          name: 'Viewer',
+          role: UserRole.VIEWER,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
         isLoading: false,
         isAuthenticated: true,
         hasAnyRole: jest.fn().mockReturnValue(false),
@@ -79,7 +93,11 @@ describe('ProtectedRoute - Permission-based Navigation', () => {
       )
 
       expect(screen.getByText('Access Denied')).toBeInTheDocument()
-      expect(screen.getByText('You don\'t have the required permissions to access this page')).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          "You don't have the required permissions to access this page"
+        )
+      ).toBeInTheDocument()
       expect(screen.getByText('Required role:')).toBeInTheDocument()
       expect(screen.getByText('ADMIN')).toBeInTheDocument()
       expect(screen.getByText('Your role:')).toBeInTheDocument()
@@ -90,7 +108,14 @@ describe('ProtectedRoute - Permission-based Navigation', () => {
   describe('Resource-based Access Control', () => {
     it('should allow access for users with resource permissions', () => {
       mockUseAuth.mockReturnValue({
-        user: { id: '1', email: 'operator@test.com', name: 'Operator', role: UserRole.OPERATOR, createdAt: new Date(), updatedAt: new Date() },
+        user: {
+          id: '1',
+          email: 'operator@test.com',
+          name: 'Operator',
+          role: UserRole.OPERATOR,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
         isLoading: false,
         isAuthenticated: true,
         hasAnyRole: jest.fn().mockReturnValue(true),
@@ -111,7 +136,14 @@ describe('ProtectedRoute - Permission-based Navigation', () => {
 
     it('should deny access for users without resource permissions', () => {
       mockUseAuth.mockReturnValue({
-        user: { id: '1', email: 'viewer@test.com', name: 'Viewer', role: UserRole.VIEWER, createdAt: new Date(), updatedAt: new Date() },
+        user: {
+          id: '1',
+          email: 'viewer@test.com',
+          name: 'Viewer',
+          role: UserRole.VIEWER,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
         isLoading: false,
         isAuthenticated: true,
         hasAnyRole: jest.fn().mockReturnValue(true),
@@ -128,7 +160,9 @@ describe('ProtectedRoute - Permission-based Navigation', () => {
       )
 
       expect(screen.getByText('Access Denied')).toBeInTheDocument()
-      expect(screen.getByText('You don\'t have permission to access User Management')).toBeInTheDocument()
+      expect(
+        screen.getByText("You don't have permission to access User Management")
+      ).toBeInTheDocument()
       expect(screen.getByText('Required roles:')).toBeInTheDocument()
       expect(screen.getByText('ADMIN')).toBeInTheDocument()
     })
@@ -186,7 +220,14 @@ describe('ProtectedRoute - Permission-based Navigation', () => {
   describe('Navigation Options', () => {
     it('should provide navigation options in access denied screen', () => {
       mockUseAuth.mockReturnValue({
-        user: { id: '1', email: 'viewer@test.com', name: 'Viewer', role: UserRole.VIEWER, createdAt: new Date(), updatedAt: new Date() },
+        user: {
+          id: '1',
+          email: 'viewer@test.com',
+          name: 'Viewer',
+          role: UserRole.VIEWER,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
         isLoading: false,
         isAuthenticated: true,
         hasAnyRole: jest.fn().mockReturnValue(false),

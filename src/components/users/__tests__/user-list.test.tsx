@@ -95,7 +95,7 @@ describe('UserList', () => {
 
   it('renders loading state initially', () => {
     render(<UserList />)
-    
+
     expect(screen.getByText('Users')).toBeInTheDocument()
     // Check for skeleton elements by their data-slot attribute
     const skeletons = document.querySelectorAll('[data-slot="skeleton"]')
@@ -104,7 +104,7 @@ describe('UserList', () => {
 
   it('renders users list after loading', async () => {
     render(<UserList />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Admin User')).toBeInTheDocument()
       expect(screen.getByText('Operator User')).toBeInTheDocument()
@@ -116,7 +116,7 @@ describe('UserList', () => {
 
   it('displays user information correctly', async () => {
     render(<UserList />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Admin User')).toBeInTheDocument()
     })
@@ -131,7 +131,7 @@ describe('UserList', () => {
 
   it('handles search functionality', async () => {
     render(<UserList />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Admin User')).toBeInTheDocument()
     })
@@ -144,14 +144,14 @@ describe('UserList', () => {
 
   it('handles role filtering', async () => {
     render(<UserList />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Admin User')).toBeInTheDocument()
     })
 
     const roleSelect = screen.getByText('All Roles')
     fireEvent.click(roleSelect)
-    
+
     const adminOption = screen.getByText('Admin')
     fireEvent.click(adminOption)
 
@@ -164,14 +164,14 @@ describe('UserList', () => {
 
   it('handles status filtering', async () => {
     render(<UserList />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Admin User')).toBeInTheDocument()
     })
 
     const statusSelect = screen.getByText('All Status')
     fireEvent.click(statusSelect)
-    
+
     const activeOption = screen.getByText('Active')
     fireEvent.click(activeOption)
 
@@ -185,7 +185,7 @@ describe('UserList', () => {
   it('calls onUserSelect when user row is clicked', async () => {
     const onUserSelect = jest.fn()
     render(<UserList onUserSelect={onUserSelect} />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Admin User')).toBeInTheDocument()
     })
@@ -199,7 +199,7 @@ describe('UserList', () => {
   it('calls onUserInvite when invite button is clicked', async () => {
     const onUserInvite = jest.fn()
     render(<UserList onUserInvite={onUserInvite} />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Invite User')).toBeInTheDocument()
     })
@@ -213,39 +213,39 @@ describe('UserList', () => {
   it('renders dropdown menu trigger buttons', async () => {
     const onUserEdit = jest.fn()
     const onUserDelete = jest.fn()
-    
+
     render(<UserList onUserEdit={onUserEdit} onUserDelete={onUserDelete} />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Admin User')).toBeInTheDocument()
     })
 
     // Check that dropdown trigger buttons are rendered
     const dropdownTriggers = screen.getAllByRole('button')
-    const moreButtons = dropdownTriggers.filter(button => 
-      button.getAttribute('aria-expanded') === 'false'
+    const moreButtons = dropdownTriggers.filter(
+      button => button.getAttribute('aria-expanded') === 'false'
     )
-    
+
     expect(moreButtons.length).toBeGreaterThan(0)
   })
 
   it('formats last login correctly', async () => {
     render(<UserList />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Admin User')).toBeInTheDocument()
     })
 
     // Should show relative time for users with login
     expect(screen.getAllByText(/days ago|weeks ago|months ago/)).toHaveLength(2)
-    
+
     // Should show "Never" for users without login
     expect(screen.getByText('Never')).toBeInTheDocument()
   })
 
   it('displays role badges with correct variants', async () => {
     render(<UserList />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Admin User')).toBeInTheDocument()
     })
@@ -255,14 +255,20 @@ describe('UserList', () => {
     const viewerBadge = screen.getByText('VIEWER')
 
     // Check that badges have the correct styling classes
-    expect(adminBadge.closest('[data-slot="badge"]')).toHaveClass('bg-destructive')
-    expect(operatorBadge.closest('[data-slot="badge"]')).toHaveClass('bg-primary')
-    expect(viewerBadge.closest('[data-slot="badge"]')).toHaveClass('bg-secondary')
+    expect(adminBadge.closest('[data-slot="badge"]')).toHaveClass(
+      'bg-destructive'
+    )
+    expect(operatorBadge.closest('[data-slot="badge"]')).toHaveClass(
+      'bg-primary'
+    )
+    expect(viewerBadge.closest('[data-slot="badge"]')).toHaveClass(
+      'bg-secondary'
+    )
   })
 
   it('displays status badges with correct variants', async () => {
     render(<UserList />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Admin User')).toBeInTheDocument()
     })
@@ -273,14 +279,16 @@ describe('UserList', () => {
     activeBadges.forEach(badge => {
       expect(badge.closest('[data-slot="badge"]')).toHaveClass('bg-primary')
     })
-    expect(inactiveBadge.closest('[data-slot="badge"]')).toHaveClass('bg-secondary')
+    expect(inactiveBadge.closest('[data-slot="badge"]')).toHaveClass(
+      'bg-secondary'
+    )
   })
 
   it('handles API error gracefully', async () => {
     mockFetch.mockRejectedValueOnce(new Error('API Error'))
-    
+
     render(<UserList />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('API Error')).toBeInTheDocument()
       expect(screen.getByText('Try Again')).toBeInTheDocument()
@@ -301,7 +309,7 @@ describe('UserList', () => {
     } as Response)
 
     render(<UserList onUserInvite={jest.fn()} />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('No users found')).toBeInTheDocument()
       expect(screen.getByText('Invite First User')).toBeInTheDocument()
@@ -311,7 +319,7 @@ describe('UserList', () => {
   it('shows filtered empty state', async () => {
     // First render with users, then mock empty response
     render(<UserList />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Admin User')).toBeInTheDocument()
     })
@@ -328,13 +336,15 @@ describe('UserList', () => {
         message: 'Users retrieved successfully',
       }),
     } as Response)
-    
+
     // Set a search term to trigger filtered state
     const searchInput = screen.getByPlaceholderText('Search users...')
     fireEvent.change(searchInput, { target: { value: 'nonexistent' } })
-    
+
     await waitFor(() => {
-      expect(screen.getByText('No users match your filters')).toBeInTheDocument()
+      expect(
+        screen.getByText('No users match your filters')
+      ).toBeInTheDocument()
     })
   })
 })

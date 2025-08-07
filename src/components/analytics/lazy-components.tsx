@@ -6,19 +6,25 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { BarChart3, TrendingUp, Users, AlertTriangle } from 'lucide-react'
 
 // Lazy load heavy analytics components
-const LazyPerformanceCharts = lazy(() => 
-  import('./performance-charts').then(module => ({ default: module.PerformanceCharts }))
+const LazyPerformanceCharts = lazy(() =>
+  import('./performance-charts').then(module => ({
+    default: module.PerformanceCharts,
+  }))
 )
 
-const LazyAgentPerformanceTable = lazy(() => 
-  import('./agent-performance-table').then(module => ({ default: module.AgentPerformanceTable }))
+const LazyAgentPerformanceTable = lazy(() =>
+  import('./agent-performance-table').then(module => ({
+    default: module.AgentPerformanceTable,
+  }))
 )
 
-const LazyErrorPatternsChart = lazy(() => 
-  import('./error-patterns-chart').then(module => ({ default: module.ErrorPatternsChart }))
+const LazyErrorPatternsChart = lazy(() =>
+  import('./error-patterns-chart').then(module => ({
+    default: module.ErrorPatternsChart,
+  }))
 )
 
-const LazyExportDialog = lazy(() => 
+const LazyExportDialog = lazy(() =>
   import('./export-dialog').then(module => ({ default: module.ExportDialog }))
 )
 

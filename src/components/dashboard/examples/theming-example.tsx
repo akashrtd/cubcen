@@ -1,14 +1,14 @@
 'use client'
 
 import React from 'react'
-import { 
-  DashboardThemeProvider, 
+import {
+  DashboardThemeProvider,
   ThemeCustomizer,
   DashboardLayout,
   DashboardGrid,
   DashboardCard,
   MetricCard,
-  ChartCard
+  ChartCard,
 } from '@/components/dashboard'
 
 // Sample data for demonstration
@@ -21,10 +21,10 @@ const sampleChartData = {
         { x: 'Feb', y: 78 },
         { x: 'Mar', y: 82 },
         { x: 'Apr', y: 91 },
-        { x: 'May', y: 87 }
-      ]
-    }
-  ]
+        { x: 'May', y: 87 },
+      ],
+    },
+  ],
 }
 
 const sampleMetrics = [
@@ -33,22 +33,22 @@ const sampleMetrics = [
     value: 1234,
     unit: 'agents',
     trend: 'up' as const,
-    trendValue: '+12%'
+    trendValue: '+12%',
   },
   {
     label: 'Success Rate',
     value: 98.5,
     unit: '%',
     trend: 'up' as const,
-    trendValue: '+2.1%'
+    trendValue: '+2.1%',
   },
   {
     label: 'Response Time',
     value: 145,
     unit: 'ms',
     trend: 'down' as const,
-    trendValue: '-8ms'
-  }
+    trendValue: '-8ms',
+  },
 ]
 
 interface ThemingExampleProps {
@@ -56,11 +56,12 @@ interface ThemingExampleProps {
   showCustomizer?: boolean
 }
 
-export function ThemingExample({ 
-  className = '', 
-  showCustomizer = true 
+export function ThemingExample({
+  className = '',
+  showCustomizer = true,
 }: ThemingExampleProps) {
-  const [showThemeCustomizer, setShowThemeCustomizer] = React.useState(showCustomizer)
+  const [showThemeCustomizer, setShowThemeCustomizer] =
+    React.useState(showCustomizer)
 
   return (
     <DashboardThemeProvider
@@ -73,13 +74,13 @@ export function ThemingExample({
         {showThemeCustomizer && (
           <div className="fixed top-4 right-4 w-96 max-h-[90vh] overflow-y-auto z-50">
             <ThemeCustomizer
-              onThemeChange={(theme) => {
+              onThemeChange={theme => {
                 console.log('Theme changed:', theme)
               }}
-              onExport={(theme) => {
+              onExport={theme => {
                 console.log('Theme exported:', theme)
               }}
-              onImport={(theme) => {
+              onImport={theme => {
                 console.log('Theme imported:', theme)
               }}
             />
@@ -103,7 +104,8 @@ export function ThemingExample({
                 Dashboard Theming Example
               </h1>
               <p className="dashboard-text-body text-dashboard-text-secondary mt-2">
-                This example demonstrates the comprehensive theming system with live customization
+                This example demonstrates the comprehensive theming system with
+                live customization
               </p>
             </div>
           }
@@ -215,13 +217,18 @@ export function ThemingExample({
                   Heading 2 - 24px Semibold
                 </div>
                 <div className="dashboard-text-body text-dashboard-text-primary">
-                  Body Text - 16px Normal. This is the standard body text used throughout the dashboard for general content and descriptions. It maintains excellent readability and meets WCAG accessibility standards.
+                  Body Text - 16px Normal. This is the standard body text used
+                  throughout the dashboard for general content and descriptions.
+                  It maintains excellent readability and meets WCAG
+                  accessibility standards.
                 </div>
                 <div className="dashboard-text-label text-dashboard-text-secondary">
-                  Label Text - 14px Medium. Used for form labels, captions, and secondary information.
+                  Label Text - 14px Medium. Used for form labels, captions, and
+                  secondary information.
                 </div>
                 <div className="text-dashboard-text-xs text-dashboard-text-disabled">
-                  Small Text - 12px Normal. Used for fine print, timestamps, and metadata.
+                  Small Text - 12px Normal. Used for fine print, timestamps, and
+                  metadata.
                 </div>
               </div>
             </DashboardCard>

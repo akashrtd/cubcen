@@ -87,21 +87,13 @@ export function DashboardExample() {
 
         <GridItem colSpan={6}>
           <DashboardCard title="Performance Chart" size="lg">
-            <ChartWrapper
-              type="line"
-              data={mockChartData}
-              height={300}
-            />
+            <ChartWrapper type="line" data={mockChartData} height={300} />
           </DashboardCard>
         </GridItem>
 
         <GridItem colSpan={6}>
           <DashboardCard title="Usage Statistics" size="lg">
-            <ChartWrapper
-              type="bar"
-              data={mockChartData}
-              height={300}
-            />
+            <ChartWrapper type="bar" data={mockChartData} height={300} />
           </DashboardCard>
         </GridItem>
       </DashboardGrid>

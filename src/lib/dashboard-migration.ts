@@ -47,7 +47,10 @@ export class DashboardMigration {
       useNewKPICards: process.env.NEXT_PUBLIC_NEW_KPI_CARDS === 'true',
       useNewCharts: process.env.NEXT_PUBLIC_NEW_CHARTS === 'true',
       useNewLayout: process.env.NEXT_PUBLIC_NEW_LAYOUT === 'true',
-      rolloutPercentage: parseInt(process.env.NEXT_PUBLIC_ROLLOUT_PERCENTAGE || '0', 10)
+      rolloutPercentage: parseInt(
+        process.env.NEXT_PUBLIC_ROLLOUT_PERCENTAGE || '0',
+        10
+      ),
     }
   }
 
@@ -74,12 +77,12 @@ export class DashboardMigration {
    */
   getFeatureFlags(userId?: string): FeatureFlags {
     const useNew = this.shouldUseNewComponents(userId)
-    
+
     return {
       DASHBOARD_V2: useNew || this.config.useNewDashboard,
       KPI_CARDS_V2: useNew || this.config.useNewKPICards,
       CHARTS_V2: useNew || this.config.useNewCharts,
-      LAYOUT_V2: useNew || this.config.useNewLayout
+      LAYOUT_V2: useNew || this.config.useNewLayout,
     }
   }
 
@@ -90,7 +93,7 @@ export class DashboardMigration {
     let hash = 0
     for (let i = 0; i < userId.length; i++) {
       const char = userId.charCodeAt(i)
-      hash = ((hash << 5) - hash) + char
+      hash = (hash << 5) - hash + char
       hash = hash & hash // Convert to 32-bit integer
     }
     return Math.abs(hash) % 100
@@ -120,12 +123,12 @@ export class DashboardMigration {
         dashboard: this.config.useNewDashboard,
         kpiCards: this.config.useNewKPICards,
         charts: this.config.useNewCharts,
-        layout: this.config.useNewLayout
-      }
+        layout: this.config.useNewLayout,
+      },
     }
   }
-}/*
-*
+} /*
+ *
  * Legacy Data Compatibility Layer
  * Ensures backward compatibility with existing data structures
  */
@@ -141,15 +144,17 @@ export class LegacyDataAdapter {
     // Handle legacy KPI card data structure
     return {
       title: legacyData.title || 'Unknown Metric',
-      metrics: [{
-        label: legacyData.description || '',
-        value: legacyData.value || 0,
-        unit: legacyData.unit || '',
-        trend: legacyData.trend || 'neutral',
-        color: legacyData.color || 'text-primary'
-      }],
+      metrics: [
+        {
+          label: legacyData.description || '',
+          value: legacyData.value || 0,
+          unit: legacyData.unit || '',
+          trend: legacyData.trend || 'neutral',
+          color: legacyData.color || 'text-primary',
+        },
+      ],
       icon: legacyData.icon,
-      loading: legacyData.loading || false
+      loading: legacyData.loading || false,
     }
   }
 
@@ -161,7 +166,7 @@ export class LegacyDataAdapter {
       return {
         datasets: [],
         labels: [],
-        metadata: { chartType, legacy: true }
+        metadata: { chartType, legacy: true },
       }
     }
 
@@ -171,12 +176,12 @@ export class LegacyDataAdapter {
       return {
         datasets: [],
         labels: [],
-        metadata: { chartType, legacy: true }
+        metadata: { chartType, legacy: true },
       }
     }
 
-    const dataKeys = Object.keys(firstItem).filter(key => 
-      typeof firstItem[key] === 'number' && key !== 'index'
+    const dataKeys = Object.keys(firstItem).filter(
+      key => typeof firstItem[key] === 'number' && key !== 'index'
     )
 
     return {
@@ -186,13 +191,13 @@ export class LegacyDataAdapter {
           x: item.name || item.label || item.date || index.toString(),
           y: item[key] || 0,
           label: item.name || item.label || item.date || index.toString(),
-          metadata: { originalData: item, key }
-        }))
+          metadata: { originalData: item, key },
+        })),
       })),
-      labels: legacyChartData.map((item: any) => 
-        item.name || item.label || item.date || ''
+      labels: legacyChartData.map(
+        (item: any) => item.name || item.label || item.date || ''
       ),
-      metadata: { chartType, legacy: true, originalKeys: dataKeys }
+      metadata: { chartType, legacy: true, originalKeys: dataKeys },
     }
   }
 
@@ -202,16 +207,19 @@ export class LegacyDataAdapter {
   static validateDataCompatibility(data: any, expectedFormat: string): boolean {
     switch (expectedFormat) {
       case 'analytics':
-        return data && typeof data === 'object' && 
-               typeof data.totalAgents === 'number' &&
-               typeof data.activeAgents === 'number'
-      
+        return (
+          data &&
+          typeof data === 'object' &&
+          typeof data.totalAgents === 'number' &&
+          typeof data.activeAgents === 'number'
+        )
+
       case 'chart':
         return Array.isArray(data) && data.length > 0
-      
+
       case 'kpi':
-        return data && (typeof data.value !== 'undefined')
-      
+        return data && typeof data.value !== 'undefined'
+
       default:
         return true
     }
@@ -252,8 +260,10 @@ export class MigrationRollback {
    * Trigger rollback for a component
    */
   private static triggerRollback(componentName: string, userId?: string): void {
-    console.warn(`Rolling back ${componentName} due to repeated failures`, { userId })
-    
+    console.warn(`Rolling back ${componentName} due to repeated failures`, {
+      userId,
+    })
+
     // In a real implementation, this would:
     // 1. Update feature flags to disable the component
     // 2. Log the rollback event
@@ -278,39 +288,51 @@ export class MigrationAnalytics {
   /**
    * Track component usage
    */
-  static trackComponentUsage(componentName: string, version: 'legacy' | 'new', userId?: string): void {
+  static trackComponentUsage(
+    componentName: string,
+    version: 'legacy' | 'new',
+    userId?: string
+  ): void {
     // In a real implementation, this would send analytics data
     console.log('Component usage tracked', {
       component: componentName,
       version,
       userId,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     })
   }
 
   /**
    * Track migration performance
    */
-  static trackPerformance(componentName: string, loadTime: number, userId?: string): void {
+  static trackPerformance(
+    componentName: string,
+    loadTime: number,
+    userId?: string
+  ): void {
     // Track performance metrics for comparison
     console.log('Performance tracked', {
       component: componentName,
       loadTime,
       userId,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     })
   }
 
   /**
    * Track errors
    */
-  static trackError(componentName: string, error: Error, userId?: string): void {
+  static trackError(
+    componentName: string,
+    error: Error,
+    userId?: string
+  ): void {
     console.error('Component error tracked', {
       component: componentName,
       error: error.message,
       stack: error.stack,
       userId,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     })
 
     // Record failure for potential rollback

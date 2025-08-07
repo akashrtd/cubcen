@@ -5,8 +5,18 @@ import { Search, SlidersHorizontal, X, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useFilters } from './filter-context'
@@ -31,13 +41,18 @@ export function FilterControls({
   showAdvancedFilters = true,
   customFilterOptions = [],
 }: FilterControlsProps) {
-  const { filters, setFilter, removeFilter, clearFilters, isFiltered } = useFilters()
+  const { filters, setFilter, removeFilter, clearFilters, isFiltered } =
+    useFilters()
   const [searchValue, setSearchValue] = useState('')
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false)
   const [newFilterKey, setNewFilterKey] = useState('')
   const [newFilterValue, setNewFilterValue] = useState('')
-  const [newFilterType, setNewFilterType] = useState<'string' | 'number' | 'boolean'>('string')
-  const [newFilterOperator, setNewFilterOperator] = useState<'equals' | 'contains' | 'greaterThan' | 'lessThan'>('contains')
+  const [newFilterType, setNewFilterType] = useState<
+    'string' | 'number' | 'boolean'
+  >('string')
+  const [newFilterOperator, setNewFilterOperator] = useState<
+    'equals' | 'contains' | 'greaterThan' | 'lessThan'
+  >('contains')
 
   // Handle search
   const handleSearchChange = (value: string) => {
@@ -59,7 +74,8 @@ export function FilterControls({
 
     const filterValue: FilterValue = {
       type: newFilterType,
-      value: newFilterType === 'number' ? Number(newFilterValue) : newFilterValue,
+      value:
+        newFilterType === 'number' ? Number(newFilterValue) : newFilterValue,
       operator: newFilterOperator,
     }
 
@@ -70,7 +86,11 @@ export function FilterControls({
   }
 
   // Handle predefined custom filter
-  const handleCustomFilterChange = (key: string, value: string, type: 'string' | 'number' | 'select') => {
+  const handleCustomFilterChange = (
+    key: string,
+    value: string,
+    type: 'string' | 'number' | 'select'
+  ) => {
     if (value) {
       const filterValue: FilterValue = {
         type,
@@ -91,7 +111,7 @@ export function FilterControls({
         <Input
           placeholder={searchPlaceholder}
           value={searchValue}
-          onChange={(e) => handleSearchChange(e.target.value)}
+          onChange={e => handleSearchChange(e.target.value)}
           className="pl-9 pr-9"
         />
         {searchValue && (
@@ -120,26 +140,38 @@ export function FilterControls({
               <PopoverContent className="w-80" align="start">
                 <Card className="border-0 shadow-none">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-base">Advanced Filters</CardTitle>
+                    <CardTitle className="text-base">
+                      Advanced Filters
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     {/* Predefined Custom Filters */}
-                    {customFilterOptions.map((option) => (
+                    {customFilterOptions.map(option => (
                       <div key={option.key} className="space-y-2">
-                        <Label className="text-sm font-medium">{option.label}</Label>
+                        <Label className="text-sm font-medium">
+                          {option.label}
+                        </Label>
                         {option.type === 'select' && option.options ? (
                           <Select
-                            value={filters.customFilters?.[option.key]?.value || ''}
-                            onValueChange={(value) =>
-                              handleCustomFilterChange(option.key, value, option.type)
+                            value={
+                              filters.customFilters?.[option.key]?.value || ''
+                            }
+                            onValueChange={value =>
+                              handleCustomFilterChange(
+                                option.key,
+                                value,
+                                option.type
+                              )
                             }
                           >
                             <SelectTrigger>
-                              <SelectValue placeholder={`Select ${option.label.toLowerCase()}`} />
+                              <SelectValue
+                                placeholder={`Select ${option.label.toLowerCase()}`}
+                              />
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="">All</SelectItem>
-                              {option.options.map((opt) => (
+                              {option.options.map(opt => (
                                 <SelectItem key={opt} value={opt}>
                                   {opt}
                                 </SelectItem>
@@ -150,9 +182,15 @@ export function FilterControls({
                           <Input
                             type={option.type === 'number' ? 'number' : 'text'}
                             placeholder={`Enter ${option.label.toLowerCase()}`}
-                            value={filters.customFilters?.[option.key]?.value || ''}
-                            onChange={(e) =>
-                              handleCustomFilterChange(option.key, e.target.value, option.type)
+                            value={
+                              filters.customFilters?.[option.key]?.value || ''
+                            }
+                            onChange={e =>
+                              handleCustomFilterChange(
+                                option.key,
+                                e.target.value,
+                                option.type
+                              )
                             }
                           />
                         )}
@@ -161,14 +199,21 @@ export function FilterControls({
 
                     {/* Custom Filter Builder */}
                     <div className="space-y-3 border-t pt-4">
-                      <Label className="text-sm font-medium">Add Custom Filter</Label>
+                      <Label className="text-sm font-medium">
+                        Add Custom Filter
+                      </Label>
                       <div className="grid grid-cols-2 gap-2">
                         <Input
                           placeholder="Filter name"
                           value={newFilterKey}
-                          onChange={(e) => setNewFilterKey(e.target.value)}
+                          onChange={e => setNewFilterKey(e.target.value)}
                         />
-                        <Select value={newFilterType} onValueChange={(value: any) => setNewFilterType(value)}>
+                        <Select
+                          value={newFilterType}
+                          onValueChange={(value: any) =>
+                            setNewFilterType(value)
+                          }
+                        >
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
@@ -184,9 +229,14 @@ export function FilterControls({
                           placeholder="Filter value"
                           type={newFilterType === 'number' ? 'number' : 'text'}
                           value={newFilterValue}
-                          onChange={(e) => setNewFilterValue(e.target.value)}
+                          onChange={e => setNewFilterValue(e.target.value)}
                         />
-                        <Select value={newFilterOperator} onValueChange={(value: any) => setNewFilterOperator(value)}>
+                        <Select
+                          value={newFilterOperator}
+                          onValueChange={(value: any) =>
+                            setNewFilterOperator(value)
+                          }
+                        >
                           <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
@@ -195,8 +245,12 @@ export function FilterControls({
                             <SelectItem value="contains">Contains</SelectItem>
                             {newFilterType === 'number' && (
                               <>
-                                <SelectItem value="greaterThan">Greater Than</SelectItem>
-                                <SelectItem value="lessThan">Less Than</SelectItem>
+                                <SelectItem value="greaterThan">
+                                  Greater Than
+                                </SelectItem>
+                                <SelectItem value="lessThan">
+                                  Less Than
+                                </SelectItem>
                               </>
                             )}
                           </SelectContent>
@@ -204,7 +258,9 @@ export function FilterControls({
                       </div>
                       <Button
                         onClick={handleAddCustomFilter}
-                        disabled={!newFilterKey.trim() || !newFilterValue.trim()}
+                        disabled={
+                          !newFilterKey.trim() || !newFilterValue.trim()
+                        }
                         className="w-full gap-2"
                         size="sm"
                       >
@@ -233,22 +289,25 @@ export function FilterControls({
       </div>
 
       {/* Active Custom Filters */}
-      {filters.customFilters && Object.keys(filters.customFilters).length > 0 && (
-        <div className="space-y-2">
-          <Label className="text-sm font-medium text-muted-foreground">Active Filters</Label>
-          <div className="flex flex-wrap gap-2">
-            {Object.entries(filters.customFilters).map(([key, filter]) => (
-              <Badge key={key} variant="secondary" className="gap-1">
-                {key}: {String(filter.value)}
-                <X
-                  className="h-3 w-3 cursor-pointer hover:text-destructive"
-                  onClick={() => removeFilter(key)}
-                />
-              </Badge>
-            ))}
+      {filters.customFilters &&
+        Object.keys(filters.customFilters).length > 0 && (
+          <div className="space-y-2">
+            <Label className="text-sm font-medium text-muted-foreground">
+              Active Filters
+            </Label>
+            <div className="flex flex-wrap gap-2">
+              {Object.entries(filters.customFilters).map(([key, filter]) => (
+                <Badge key={key} variant="secondary" className="gap-1">
+                  {key}: {String(filter.value)}
+                  <X
+                    className="h-3 w-3 cursor-pointer hover:text-destructive"
+                    onClick={() => removeFilter(key)}
+                  />
+                </Badge>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
     </div>
   )
 }
@@ -263,11 +322,11 @@ export function useFilteredData<T extends Record<string, any>>(
   return React.useMemo(() => {
     if (!data) return []
 
-    return data.filter((item) => {
+    return data.filter(item => {
       // Search filter
       if (filters.customFilters?.search) {
         const searchValue = filters.customFilters.search.value.toLowerCase()
-        const matchesSearch = searchFields.some((field) => {
+        const matchesSearch = searchFields.some(field => {
           const fieldValue = String(item[field] || '').toLowerCase()
           return fieldValue.includes(searchValue)
         })
@@ -277,7 +336,10 @@ export function useFilteredData<T extends Record<string, any>>(
       // Date range filter
       if (filters.dateRange && item.createdAt) {
         const itemDate = new Date(item.createdAt)
-        if (itemDate < filters.dateRange.start || itemDate > filters.dateRange.end) {
+        if (
+          itemDate < filters.dateRange.start ||
+          itemDate > filters.dateRange.end
+        ) {
           return false
         }
       }
@@ -320,7 +382,11 @@ export function useFilteredData<T extends Record<string, any>>(
               if (itemValue !== filter.value) return false
               break
             case 'contains':
-              if (!String(itemValue).toLowerCase().includes(String(filter.value).toLowerCase())) {
+              if (
+                !String(itemValue)
+                  .toLowerCase()
+                  .includes(String(filter.value).toLowerCase())
+              ) {
                 return false
               }
               break

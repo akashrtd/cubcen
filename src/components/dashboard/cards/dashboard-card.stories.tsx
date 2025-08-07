@@ -1,6 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { DashboardCard } from './dashboard-card'
-import { Activity, Users, TrendingUp, AlertCircle, BarChart3, PieChart } from 'lucide-react'
+import {
+  Activity,
+  Users,
+  TrendingUp,
+  AlertCircle,
+  BarChart3,
+  PieChart,
+} from 'lucide-react'
 import { Button } from '../../ui/button'
 
 const meta: Meta<typeof DashboardCard> = {
@@ -10,7 +17,8 @@ const meta: Meta<typeof DashboardCard> = {
     layout: 'padded',
     docs: {
       description: {
-        component: 'A versatile dashboard card component that supports metrics, icons, loading states, and interactive features. Forms the foundation of the dashboard UI system.',
+        component:
+          'A versatile dashboard card component that supports metrics, icons, loading states, and interactive features. Forms the foundation of the dashboard UI system.',
       },
     },
   },
@@ -54,7 +62,11 @@ type Story = StoryObj<typeof DashboardCard>
 export const Default: Story = {
   args: {
     title: 'Sample Card',
-    children: <p className="text-muted-foreground">This is a basic dashboard card with default styling.</p>,
+    children: (
+      <p className="text-muted-foreground">
+        This is a basic dashboard card with default styling.
+      </p>
+    ),
   },
 }
 
@@ -152,7 +164,8 @@ export const ExtraLargeSize: Story = {
           </div>
         </div>
         <p className="text-sm text-muted-foreground">
-          Comprehensive system overview with detailed metrics and status information.
+          Comprehensive system overview with detailed metrics and status
+          information.
         </p>
       </div>
     ),
@@ -241,9 +254,7 @@ export const WithActions: Story = {
         <Button size="sm" variant="outline">
           View
         </Button>
-        <Button size="sm">
-          Edit
-        </Button>
+        <Button size="sm">Edit</Button>
       </div>
     ),
   },

@@ -8,7 +8,10 @@ import { authenticate } from '../../middleware/auth'
 import { authService } from '@/services/auth'
 import { notificationPreferencesService } from '@/services/notification-preferences'
 import { auditLogger } from '@/lib/audit-logger'
-import { NotificationEventType, NotificationChannelType } from '@/types/notification'
+import {
+  NotificationEventType,
+  NotificationChannelType,
+} from '@/types/notification'
 
 // Mock dependencies
 jest.mock('../../middleware/auth')
@@ -24,9 +27,14 @@ jest.mock('@/lib/logger', () => ({
   },
 }))
 
-const mockAuthenticate = authenticate as jest.MockedFunction<typeof authenticate>
+const mockAuthenticate = authenticate as jest.MockedFunction<
+  typeof authenticate
+>
 const mockAuthService = authService as jest.Mocked<typeof authService>
-const mockNotificationPreferencesService = notificationPreferencesService as jest.Mocked<typeof notificationPreferencesService>
+const mockNotificationPreferencesService =
+  notificationPreferencesService as jest.Mocked<
+    typeof notificationPreferencesService
+  >
 const mockAuditLogger = auditLogger as jest.Mocked<typeof auditLogger>
 
 describe('Settings API Routes', () => {
@@ -89,9 +97,7 @@ describe('Settings API Routes', () => {
         })
       })
 
-      await request(app)
-        .get('/api/settings/profile')
-        .expect(401)
+      await request(app).get('/api/settings/profile').expect(401)
     })
   })
 
@@ -320,7 +326,11 @@ describe('Settings API Routes', () => {
         .expect(400)
 
       expect(response.body.error.code).toBe('VALIDATION_ERROR')
-      expect(response.body.error.details.some((d: any) => d.message === "Passwords don't match")).toBe(true)
+      expect(
+        response.body.error.details.some(
+          (d: any) => d.message === "Passwords don't match"
+        )
+      ).toBe(true)
     })
 
     it('should handle invalid current password', async () => {
@@ -330,7 +340,9 @@ describe('Settings API Routes', () => {
         confirmPassword: 'NewPassword123',
       }
 
-      mockAuthService.changePassword.mockRejectedValue(new Error('Invalid current password'))
+      mockAuthService.changePassword.mockRejectedValue(
+        new Error('Invalid current password')
+      )
 
       const response = await request(app)
         .post('/api/settings/change-password')
@@ -424,13 +436,18 @@ describe('Settings API Routes', () => {
           id: 'pref_1',
           userId: mockUser.id,
           eventType: NotificationEventType.AGENT_ERROR,
-          channels: [NotificationChannelType.EMAIL, NotificationChannelType.IN_APP],
+          channels: [
+            NotificationChannelType.EMAIL,
+            NotificationChannelType.IN_APP,
+          ],
           enabled: true,
           escalationDelay: 30,
         },
       ]
 
-      mockNotificationPreferencesService.getUserPreferences.mockResolvedValue(mockPreferences)
+      mockNotificationPreferencesService.getUserPreferences.mockResolvedValue(
+        mockPreferences
+      )
 
       const response = await request(app)
         .get('/api/settings/notifications')
@@ -442,11 +459,15 @@ describe('Settings API Routes', () => {
         message: 'Notification preferences retrieved successfully',
       })
 
-      expect(mockNotificationPreferencesService.getUserPreferences).toHaveBeenCalledWith(mockUser.id)
+      expect(
+        mockNotificationPreferencesService.getUserPreferences
+      ).toHaveBeenCalledWith(mockUser.id)
     })
 
     it('should handle service errors', async () => {
-      mockNotificationPreferencesService.getUserPreferences.mockRejectedValue(new Error('Database error'))
+      mockNotificationPreferencesService.getUserPreferences.mockRejectedValue(
+        new Error('Database error')
+      )
 
       const response = await request(app)
         .get('/api/settings/notifications')
@@ -460,7 +481,10 @@ describe('Settings API Routes', () => {
     it('should update notification preference successfully', async () => {
       const updateData = {
         eventType: NotificationEventType.AGENT_ERROR,
-        channels: [NotificationChannelType.EMAIL, NotificationChannelType.SLACK],
+        channels: [
+          NotificationChannelType.EMAIL,
+          NotificationChannelType.SLACK,
+        ],
         enabled: true,
         escalationDelay: 60,
       }
@@ -471,7 +495,9 @@ describe('Settings API Routes', () => {
         ...updateData,
       }
 
-      mockNotificationPreferencesService.updateUserPreference.mockResolvedValue(mockPreference)
+      mockNotificationPreferencesService.updateUserPreference.mockResolvedValue(
+        mockPreference
+      )
 
       const response = await request(app)
         .put('/api/settings/notifications')
@@ -484,15 +510,13 @@ describe('Settings API Routes', () => {
         message: 'Notification preference updated successfully',
       })
 
-      expect(mockNotificationPreferencesService.updateUserPreference).toHaveBeenCalledWith(
-        mockUser.id,
-        updateData.eventType,
-        {
-          channels: updateData.channels,
-          enabled: updateData.enabled,
-          escalationDelay: updateData.escalationDelay,
-        }
-      )
+      expect(
+        mockNotificationPreferencesService.updateUserPreference
+      ).toHaveBeenCalledWith(mockUser.id, updateData.eventType, {
+        channels: updateData.channels,
+        enabled: updateData.enabled,
+        escalationDelay: updateData.escalationDelay,
+      })
     })
 
     it('should validate notification preference data', async () => {
@@ -528,7 +552,9 @@ describe('Settings API Routes', () => {
         ],
       }
 
-      mockNotificationPreferencesService.bulkUpdatePreferences.mockResolvedValue(undefined)
+      mockNotificationPreferencesService.bulkUpdatePreferences.mockResolvedValue(
+        undefined
+      )
 
       const response = await request(app)
         .post('/api/settings/notifications/bulk')
@@ -540,10 +566,9 @@ describe('Settings API Routes', () => {
         message: 'Notification preferences updated successfully',
       })
 
-      expect(mockNotificationPreferencesService.bulkUpdatePreferences).toHaveBeenCalledWith(
-        mockUser.id,
-        bulkData.preferences
-      )
+      expect(
+        mockNotificationPreferencesService.bulkUpdatePreferences
+      ).toHaveBeenCalledWith(mockUser.id, bulkData.preferences)
     })
   })
 

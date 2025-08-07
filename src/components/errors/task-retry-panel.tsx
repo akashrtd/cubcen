@@ -128,12 +128,9 @@ export function TaskRetryPanel({ className }: TaskRetryPanelProps) {
       try {
         setRetryingTasks(prev => new Set(prev).add(taskId))
 
-        const response = await fetch(
-          `/api/errors/retry-task/${taskId}`,
-          {
-            method: 'POST',
-          }
-        )
+        const response = await fetch(`/api/errors/retry-task/${taskId}`, {
+          method: 'POST',
+        })
 
         if (!response.ok) {
           throw new Error('Failed to retry task')

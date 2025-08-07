@@ -14,7 +14,7 @@ import {
 
 // Mock PerformanceObserver
 const mockPerformanceObserver = jest.fn()
-mockPerformanceObserver.mockImplementation((callback) => ({
+mockPerformanceObserver.mockImplementation(callback => ({
   observe: jest.fn(),
   disconnect: jest.fn(),
 }))
@@ -72,7 +72,7 @@ describe('Core Web Vitals', () => {
   describe('useCoreWebVitals', () => {
     const TestComponent = () => {
       const metrics = useCoreWebVitals()
-      
+
       return (
         <div>
           <div data-testid="lcp">{metrics.lcp || 'N/A'}</div>
@@ -84,7 +84,7 @@ describe('Core Web Vitals', () => {
 
     it('should initialize with empty metrics', () => {
       render(<TestComponent />)
-      
+
       expect(screen.getByTestId('lcp')).toHaveTextContent('N/A')
       expect(screen.getByTestId('fid')).toHaveTextContent('N/A')
       expect(screen.getByTestId('cls')).toHaveTextContent('N/A')
@@ -92,7 +92,7 @@ describe('Core Web Vitals', () => {
 
     it('should set up performance observers', () => {
       render(<TestComponent />)
-      
+
       // Should attempt to create observers for different metrics
       expect(mockPerformanceObserver).toHaveBeenCalled()
     })
@@ -101,13 +101,13 @@ describe('Core Web Vitals', () => {
   describe('PerformanceMonitor', () => {
     it('should render children and monitor performance', () => {
       const onMetricsUpdate = jest.fn()
-      
+
       render(
         <PerformanceMonitor onMetricsUpdate={onMetricsUpdate}>
           <div data-testid="child">Child content</div>
         </PerformanceMonitor>
       )
-      
+
       expect(screen.getByTestId('child')).toHaveTextContent('Child content')
     })
   })
@@ -116,24 +116,24 @@ describe('Core Web Vitals', () => {
     it('should not render in production by default', () => {
       const originalEnv = process.env.NODE_ENV
       process.env.NODE_ENV = 'production'
-      
+
       render(<PerformanceDashboard />)
-      
+
       // Should not render dashboard in production
       expect(screen.queryByText('Core Web Vitals')).not.toBeInTheDocument()
-      
+
       process.env.NODE_ENV = originalEnv
     })
 
     it('should render in development', () => {
       const originalEnv = process.env.NODE_ENV
       process.env.NODE_ENV = 'development'
-      
+
       render(<PerformanceDashboard />)
-      
+
       // Should render dashboard in development
       expect(screen.getByText('Core Web Vitals')).toBeInTheDocument()
-      
+
       process.env.NODE_ENV = originalEnv
     })
   })
@@ -141,7 +141,7 @@ describe('Core Web Vitals', () => {
   describe('useComponentPerformance', () => {
     const TestComponent = ({ name }: { name: string }) => {
       const { renderCount, mountTime } = useComponentPerformance(name)
-      
+
       return (
         <div>
           <div data-testid="render-count">{renderCount}</div>
@@ -152,9 +152,9 @@ describe('Core Web Vitals', () => {
 
     it('should track component performance', () => {
       const { rerender } = render(<TestComponent name="TestComponent" />)
-      
+
       expect(screen.getByTestId('render-count')).toHaveTextContent('1')
-      
+
       // Re-render should increment count
       rerender(<TestComponent name="TestComponent" />)
       expect(screen.getByTestId('render-count')).toHaveTextContent('2')
@@ -164,7 +164,7 @@ describe('Core Web Vitals', () => {
   describe('usePerformanceBudget', () => {
     const TestComponent = ({ budgets }: { budgets: any }) => {
       const { violations, isWithinBudget } = usePerformanceBudget(budgets)
-      
+
       return (
         <div>
           <div data-testid="within-budget">{isWithinBudget.toString()}</div>
@@ -179,9 +179,9 @@ describe('Core Web Vitals', () => {
         fid: 100,
         cls: 0.1,
       }
-      
+
       render(<TestComponent budgets={budgets} />)
-      
+
       // Should start within budget (no metrics yet)
       expect(screen.getByTestId('within-budget')).toHaveTextContent('true')
       expect(screen.getByTestId('violations')).toHaveTextContent('0')
@@ -191,12 +191,10 @@ describe('Core Web Vitals', () => {
   describe('useRealUserMonitoring', () => {
     const TestComponent = () => {
       const rumData = useRealUserMonitoring()
-      
+
       return (
         <div>
-          <div data-testid="rum-data">
-            {rumData ? 'Has Data' : 'No Data'}
-          </div>
+          <div data-testid="rum-data">{rumData ? 'Has Data' : 'No Data'}</div>
         </div>
       )
     }
@@ -204,13 +202,15 @@ describe('Core Web Vitals', () => {
     it('should collect RUM data', () => {
       // Mock navigation timing
       Object.defineProperty(window.performance, 'getEntriesByType', {
-        value: jest.fn((type) => {
+        value: jest.fn(type => {
           if (type === 'navigation') {
-            return [{
-              navigationStart: 0,
-              loadEventEnd: 1000,
-              domContentLoadedEventEnd: 500,
-            }]
+            return [
+              {
+                navigationStart: 0,
+                loadEventEnd: 1000,
+                domContentLoadedEventEnd: 500,
+              },
+            ]
           }
           if (type === 'resource') {
             return [
@@ -222,9 +222,9 @@ describe('Core Web Vitals', () => {
         }),
         writable: true,
       })
-      
+
       render(<TestComponent />)
-      
+
       // Should collect RUM data
       expect(screen.getByTestId('rum-data')).toHaveTextContent('Has Data')
     })
@@ -234,10 +234,10 @@ describe('Core Web Vitals', () => {
     it('should have correct threshold values', () => {
       expect(PERFORMANCE_THRESHOLDS.lcp.good).toBe(2500)
       expect(PERFORMANCE_THRESHOLDS.lcp.needsImprovement).toBe(4000)
-      
+
       expect(PERFORMANCE_THRESHOLDS.fid.good).toBe(100)
       expect(PERFORMANCE_THRESHOLDS.fid.needsImprovement).toBe(300)
-      
+
       expect(PERFORMANCE_THRESHOLDS.cls.good).toBe(0.1)
       expect(PERFORMANCE_THRESHOLDS.cls.needsImprovement).toBe(0.25)
     })

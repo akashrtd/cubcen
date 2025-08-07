@@ -7,21 +7,25 @@ This guide helps you migrate existing dashboard components to use the new modula
 ## Migration Strategy
 
 ### Phase 1: Setup and Infrastructure
+
 1. Install and configure the dashboard theming system
 2. Update existing layouts to use DashboardLayout
 3. Migrate CSS variables and theming
 
 ### Phase 2: Component Migration
+
 1. Replace existing cards with DashboardCard components
 2. Migrate charts to use ChartWrapper
 3. Update grid layouts to use DashboardGrid
 
 ### Phase 3: Feature Enhancement
+
 1. Add accessibility features
 2. Implement mobile optimizations
 3. Add performance optimizations
 
 ### Phase 4: Cleanup
+
 1. Remove deprecated components
 2. Consolidate theming
 3. Update documentation
@@ -109,16 +113,10 @@ function NewDashboard() {
           </h1>
         </div>
       }
-      sidebar={
-        <nav className="p-4">
-          Navigation
-        </nav>
-      }
+      sidebar={<nav className="p-4">Navigation</nav>}
       showMobileNav={true}
     >
-      <DashboardGrid>
-        {/* Dashboard content */}
-      </DashboardGrid>
+      <DashboardGrid>{/* Dashboard content */}</DashboardGrid>
     </DashboardLayout>
   )
 }
@@ -136,10 +134,13 @@ function OldMetricCard({ title, value, trend }) {
       <h3 className="text-lg font-medium text-gray-900">{title}</h3>
       <div className="mt-2 flex items-baseline">
         <p className="text-2xl font-semibold text-gray-900">{value}</p>
-        <span className={`ml-2 text-sm ${
-          trend > 0 ? 'text-green-600' : 'text-red-600'
-        }`}>
-          {trend > 0 ? '+' : ''}{trend}%
+        <span
+          className={`ml-2 text-sm ${
+            trend > 0 ? 'text-green-600' : 'text-red-600'
+          }`}
+        >
+          {trend > 0 ? '+' : ''}
+          {trend}%
         </span>
       </div>
     </div>
@@ -149,7 +150,7 @@ function OldMetricCard({ title, value, trend }) {
 
 #### After: DashboardCard
 
-```tsx
+````tsx
 // New card component
 import { DashboardCard } from '@/components/dashboard/cards/dashboard-card'
 
@@ -191,7 +192,7 @@ function OldChart({ data }) {
     </div>
   )
 }
-```
+````
 
 #### After: ChartWrapper
 
@@ -201,10 +202,12 @@ import { ChartCard } from '@/components/dashboard/cards/chart-card'
 
 function NewChart({ data }) {
   const chartData = {
-    datasets: [{
-      label: 'Revenue',
-      data: data.map(item => ({ x: item.name, y: item.value }))
-    }]
+    datasets: [
+      {
+        label: 'Revenue',
+        data: data.map(item => ({ x: item.name, y: item.value })),
+      },
+    ],
   }
 
   return (
@@ -290,9 +293,9 @@ export const customTheme = {
     secondary: '#6b7280',
     background: '#f9fafb',
     text: {
-      primary: '#111827'
-    }
-  }
+      primary: '#111827',
+    },
+  },
 }
 
 // App.tsx
@@ -311,27 +314,27 @@ function App() {
 
 ### Layout Components
 
-| Old Component | New Component | Migration Notes |
-|---------------|---------------|-----------------|
-| Custom layout divs | `DashboardLayout` | Use props for header, sidebar, footer |
-| Flexbox layouts | `DashboardGrid` | Convert to CSS Grid with responsive props |
-| Custom navigation | `MobileNavigation` | Built-in mobile navigation support |
+| Old Component      | New Component      | Migration Notes                           |
+| ------------------ | ------------------ | ----------------------------------------- |
+| Custom layout divs | `DashboardLayout`  | Use props for header, sidebar, footer     |
+| Flexbox layouts    | `DashboardGrid`    | Convert to CSS Grid with responsive props |
+| Custom navigation  | `MobileNavigation` | Built-in mobile navigation support        |
 
 ### Card Components
 
-| Old Component | New Component | Migration Notes |
-|---------------|---------------|-----------------|
-| Custom card divs | `DashboardCard` | Use props for title, metric, actions |
-| Metric displays | `MetricCard` | Support for multiple metrics and trends |
-| Chart containers | `ChartCard` | Integrated chart wrapper with export |
+| Old Component    | New Component   | Migration Notes                         |
+| ---------------- | --------------- | --------------------------------------- |
+| Custom card divs | `DashboardCard` | Use props for title, metric, actions    |
+| Metric displays  | `MetricCard`    | Support for multiple metrics and trends |
+| Chart containers | `ChartCard`     | Integrated chart wrapper with export    |
 
 ### Chart Components
 
-| Old Component | New Component | Migration Notes |
-|---------------|---------------|-----------------|
-| Direct Recharts | `ChartWrapper` | Unified API for all chart types |
+| Old Component   | New Component     | Migration Notes                            |
+| --------------- | ----------------- | ------------------------------------------ |
+| Direct Recharts | `ChartWrapper`    | Unified API for all chart types            |
 | Custom tooltips | Built-in tooltips | Automatic accessibility and mobile support |
-| Export buttons | Built-in export | PNG, SVG, PDF export functionality |
+| Export buttons  | Built-in export   | PNG, SVG, PDF export functionality         |
 
 ## Accessibility Migration
 
@@ -341,11 +344,7 @@ function App() {
 // Old component with manual accessibility
 function OldCard({ title, value }) {
   return (
-    <div 
-      role="region" 
-      aria-label={`${title}: ${value}`}
-      tabIndex={0}
-    >
+    <div role="region" aria-label={`${title}: ${value}`} tabIndex={0}>
       <h3 id="card-title">{title}</h3>
       <p aria-labelledby="card-title">{value}</p>
     </div>
@@ -380,10 +379,8 @@ function NewCard({ title, value }) {
 ```tsx
 // Old component with manual optimization
 const OldChart = React.memo(({ data }) => {
-  const memoizedData = useMemo(() => 
-    processChartData(data), [data]
-  )
-  
+  const memoizedData = useMemo(() => processChartData(data), [data])
+
   return (
     <div>
       <Suspense fallback={<div>Loading...</div>}>
@@ -396,7 +393,7 @@ const OldChart = React.memo(({ data }) => {
 
 ### After: Built-in Optimization
 
-```tsx
+````tsx
 // New component with automatic optimization
 function NewChart({ data }) {
   return (
@@ -421,17 +418,17 @@ function NewChart({ data }) {
 // Old mobile handling
 function OldDashboard() {
   const [isMobile, setIsMobile] = useState(false)
-  
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768)
     }
-    
+
     checkMobile()
     window.addEventListener('resize', checkMobile)
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
-  
+
   return (
     <div>
       {isMobile ? (
@@ -442,7 +439,7 @@ function OldDashboard() {
     </div>
   )
 }
-```
+````
 
 ### After: Built-in Responsive Design
 
@@ -459,9 +456,7 @@ function NewDashboard() {
       // - Swipe gestures
       // - Responsive grid
     >
-      <DashboardGrid>
-        {/* Content adapts automatically */}
-      </DashboardGrid>
+      <DashboardGrid>{/* Content adapts automatically */}</DashboardGrid>
     </DashboardLayout>
   )
 }
@@ -501,9 +496,9 @@ test('renders dashboard with accessibility', async () => {
       <NewDashboard />
     </DashboardThemeProvider>
   )
-  
+
   expect(screen.getByText('Dashboard')).toBeInTheDocument()
-  
+
   // Test accessibility
   const results = await axe(container)
   expect(results).toHaveNoViolations()
@@ -561,27 +556,23 @@ function App() {
 // data-transformers.ts
 export function transformLegacyChartData(legacyData: LegacyData[]): ChartData {
   return {
-    datasets: [{
-      label: 'Data',
-      data: legacyData.map(item => ({
-        x: item.label,
-        y: item.value
-      }))
-    }]
+    datasets: [
+      {
+        label: 'Data',
+        data: legacyData.map(item => ({
+          x: item.label,
+          y: item.value,
+        })),
+      },
+    ],
   }
 }
 
 // Usage
 function MigratedChart({ legacyData }) {
   const chartData = transformLegacyChartData(legacyData)
-  
-  return (
-    <ChartCard
-      title="Migrated Chart"
-      chartType="line"
-      data={chartData}
-    />
-  )
+
+  return <ChartCard title="Migrated Chart" chartType="line" data={chartData} />
 }
 ```
 
@@ -595,11 +586,7 @@ function MigratedChart({ legacyData }) {
 // Custom styled component
 function CustomCard({ title, value }) {
   return (
-    <DashboardCard
-      title={title}
-      metric={{ value }}
-      className="custom-card"
-    />
+    <DashboardCard title={title} metric={{ value }} className="custom-card" />
   )
 }
 ```
@@ -607,7 +594,11 @@ function CustomCard({ title, value }) {
 ```css
 /* custom-card.css */
 .custom-card {
-  background: linear-gradient(135deg, var(--dashboard-primary), var(--dashboard-secondary));
+  background: linear-gradient(
+    135deg,
+    var(--dashboard-primary),
+    var(--dashboard-secondary)
+  );
   border: 2px solid var(--dashboard-accent);
 }
 
@@ -625,7 +616,7 @@ function CustomCard({ title, value }) {
 ```tsx
 function Dashboard() {
   const useNewDashboard = useFeatureFlag('new-dashboard')
-  
+
   return useNewDashboard ? <NewDashboard /> : <OldDashboard />
 }
 ```
@@ -672,27 +663,32 @@ function Dashboard() {
 ## Migration Timeline
 
 ### Week 1: Setup and Planning
+
 - Install dashboard system
 - Set up theming
 - Create migration plan
 - Set up testing environment
 
 ### Week 2-3: Layout Migration
+
 - Migrate main layout components
 - Update navigation
 - Test responsive behavior
 
 ### Week 4-5: Component Migration
+
 - Migrate card components
 - Update chart components
 - Migrate grid layouts
 
 ### Week 6: Enhancement and Testing
+
 - Add accessibility features
 - Implement mobile optimizations
 - Comprehensive testing
 
 ### Week 7: Cleanup and Documentation
+
 - Remove old components
 - Update documentation
 - Team training

@@ -103,9 +103,12 @@ export async function optionalAuthenticate(
     next()
   } catch (error) {
     // For optional auth, we don't fail on invalid tokens, just continue without user
-    structuredLogger.debug('Optional authentication failed, continuing without user', {
-      error: error instanceof Error ? error.message : 'Unknown error',
-    })
+    structuredLogger.debug(
+      'Optional authentication failed, continuing without user',
+      {
+        error: error instanceof Error ? error.message : 'Unknown error',
+      }
+    )
     next()
   }
 }

@@ -11,7 +11,7 @@ jest.mock('../theme-provider', () => ({
       typography: {
         fontFamily: {
           sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-          mono: ['JetBrains Mono', 'Monaco', 'Consolas', 'monospace']
+          mono: ['JetBrains Mono', 'Monaco', 'Consolas', 'monospace'],
         },
         fontSize: {
           xs: '0.75rem',
@@ -20,23 +20,23 @@ jest.mock('../theme-provider', () => ({
           lg: '1.125rem',
           xl: '1.25rem',
           '2xl': '1.5rem',
-          '3xl': '2rem'
+          '3xl': '2rem',
         },
         fontWeight: {
           normal: 400,
           medium: 500,
           semibold: 600,
-          bold: 700
+          bold: 700,
         },
         lineHeight: {
           tight: 1.25,
           normal: 1.5,
-          relaxed: 1.75
-        }
-      }
+          relaxed: 1.75,
+        },
+      },
     },
-    setDashboardTheme: mockSetDashboardTheme
-  })
+    setDashboardTheme: mockSetDashboardTheme,
+  }),
 }))
 
 describe('TypographyScale', () => {
@@ -48,7 +48,11 @@ describe('TypographyScale', () => {
     render(<TypographyScale />)
 
     expect(screen.getByText('Typography Scale')).toBeInTheDocument()
-    expect(screen.getByText(/Consistent typography hierarchy following WCAG accessibility guidelines/)).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        /Consistent typography hierarchy following WCAG accessibility guidelines/
+      )
+    ).toBeInTheDocument()
   })
 
   it('displays font family information', () => {
@@ -57,10 +61,14 @@ describe('TypographyScale', () => {
     expect(screen.getByText('Font Families')).toBeInTheDocument()
     expect(screen.getByText('Sans Serif (Primary)')).toBeInTheDocument()
     expect(screen.getByText('Monospace (Code)')).toBeInTheDocument()
-    
+
     // Should show font family lists
-    expect(screen.getByText('Inter, system-ui, -apple-system, sans-serif')).toBeInTheDocument()
-    expect(screen.getByText('JetBrains Mono, Monaco, Consolas, monospace')).toBeInTheDocument()
+    expect(
+      screen.getByText('Inter, system-ui, -apple-system, sans-serif')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('JetBrains Mono, Monaco, Consolas, monospace')
+    ).toBeInTheDocument()
   })
 
   it('renders all typography items', () => {
@@ -107,8 +115,12 @@ describe('TypographyScale', () => {
     render(<TypographyScale showSpecs={true} />)
 
     expect(screen.getByText('WCAG 2.1 AA Compliance')).toBeInTheDocument()
-    expect(screen.getByText(/All text sizes meet minimum size requirements/)).toBeInTheDocument()
-    expect(screen.getByText(/Line heights provide adequate spacing/)).toBeInTheDocument()
+    expect(
+      screen.getByText(/All text sizes meet minimum size requirements/)
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(/Line heights provide adequate spacing/)
+    ).toBeInTheDocument()
   })
 
   it('hides WCAG compliance information when showSpecs is false', () => {
@@ -127,10 +139,10 @@ describe('TypographyScale', () => {
 
   it('allows editing typography values in interactive mode', async () => {
     const mockOnTypographyChange = jest.fn()
-    
+
     render(
-      <TypographyScale 
-        interactive={true} 
+      <TypographyScale
+        interactive={true}
         onTypographyChange={mockOnTypographyChange}
       />
     )
@@ -188,11 +200,11 @@ describe('TypographyScale', () => {
 
     // Find font weight select - look for the select element with the bold option
     const weightSelects = screen.getAllByRole('combobox')
-    const weightSelect = weightSelects.find(select => 
+    const weightSelect = weightSelects.find(select =>
       select.querySelector('option[value="700"]')
     )
     expect(weightSelect).toBeInTheDocument()
-    
+
     fireEvent.change(weightSelect!, { target: { value: '600' } })
 
     // Save changes
@@ -212,11 +224,11 @@ describe('TypographyScale', () => {
 
     // Find line height input - look for number input with step="0.1"
     const lineHeightInputs = screen.getAllByRole('spinbutton')
-    const lineHeightInput = lineHeightInputs.find(input => 
-      input.getAttribute('step') === '0.1'
+    const lineHeightInput = lineHeightInputs.find(
+      input => input.getAttribute('step') === '0.1'
     )
     expect(lineHeightInput).toBeInTheDocument()
-    
+
     fireEvent.change(lineHeightInput!, { target: { value: '1.4' } })
 
     // Save changes
@@ -245,17 +257,25 @@ describe('TypographyScale', () => {
 
   it('applies custom className', () => {
     const { container } = render(<TypographyScale className="custom-class" />)
-    
+
     expect(container.firstChild).toHaveClass('custom-class')
   })
 
   it('shows proper descriptions for each typography level', () => {
     render(<TypographyScale />)
 
-    expect(screen.getByText('Main page headings and hero titles')).toBeInTheDocument()
-    expect(screen.getByText('Section headings and card titles')).toBeInTheDocument()
-    expect(screen.getByText('Default text for paragraphs and content')).toBeInTheDocument()
-    expect(screen.getByText('Form labels, captions, and secondary information')).toBeInTheDocument()
+    expect(
+      screen.getByText('Main page headings and hero titles')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Section headings and card titles')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Default text for paragraphs and content')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Form labels, captions, and secondary information')
+    ).toBeInTheDocument()
   })
 
   it('displays all WCAG compliance checkmarks', () => {
@@ -270,9 +290,11 @@ describe('TypographyScale', () => {
     render(<TypographyScale />)
 
     // Should show font examples with correct styling
-    const sansExample = screen.getByText('The quick brown fox jumps over the lazy dog')
+    const sansExample = screen.getByText(
+      'The quick brown fox jumps over the lazy dog'
+    )
     const monoExample = screen.getByText("const theme = 'dashboard'")
-    
+
     expect(sansExample).toBeInTheDocument()
     expect(monoExample).toBeInTheDocument()
   })

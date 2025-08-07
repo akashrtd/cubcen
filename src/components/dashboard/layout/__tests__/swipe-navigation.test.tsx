@@ -1,14 +1,18 @@
 import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { SwipeNavigation, useSwipeNavigation, createDashboardSections } from '../swipe-navigation'
+import {
+  SwipeNavigation,
+  useSwipeNavigation,
+  createDashboardSections,
+} from '../swipe-navigation'
 import { useIsMobile } from '../../mobile/touch-interactions'
 
 // Mock the mobile hook
 jest.mock('../../mobile/touch-interactions', () => ({
   useIsMobile: jest.fn(),
   TouchInteraction: ({ children, onSwipeLeft, onSwipeRight }: any) => (
-    <div 
+    <div
       data-testid="touch-wrapper"
       onTouchStart={() => {
         // Simulate swipe gestures for testing
@@ -53,10 +57,7 @@ describe('SwipeNavigation', () => {
 
   it('renders initial section correctly', () => {
     render(
-      <SwipeNavigation
-        sections={mockSections}
-        initialSection="section1"
-      />
+      <SwipeNavigation sections={mockSections} initialSection="section1" />
     )
 
     expect(screen.getByText('Content 1')).toBeInTheDocument()
@@ -64,12 +65,7 @@ describe('SwipeNavigation', () => {
   })
 
   it('shows section indicators when enabled', () => {
-    render(
-      <SwipeNavigation
-        sections={mockSections}
-        showIndicators={true}
-      />
-    )
+    render(<SwipeNavigation sections={mockSections} showIndicators={true} />)
 
     const indicators = screen.getAllByRole('tab')
     expect(indicators).toHaveLength(3)
@@ -77,19 +73,14 @@ describe('SwipeNavigation', () => {
   })
 
   it('hides section indicators when disabled', () => {
-    render(
-      <SwipeNavigation
-        sections={mockSections}
-        showIndicators={false}
-      />
-    )
+    render(<SwipeNavigation sections={mockSections} showIndicators={false} />)
 
     expect(screen.queryByRole('tablist')).not.toBeInTheDocument()
   })
 
   it('navigates to section when indicator is clicked', async () => {
     const onSectionChange = jest.fn()
-    
+
     render(
       <SwipeNavigation
         sections={mockSections}
@@ -108,7 +99,7 @@ describe('SwipeNavigation', () => {
 
   it('handles keyboard navigation', async () => {
     const user = userEvent.setup()
-    
+
     render(
       <SwipeNavigation
         sections={mockSections}
@@ -121,14 +112,14 @@ describe('SwipeNavigation', () => {
 
     // Navigate right
     await user.keyboard('{ArrowRight}')
-    
+
     await waitFor(() => {
       expect(screen.getByText('Content 2')).toBeInTheDocument()
     })
 
     // Navigate left
     await user.keyboard('{ArrowLeft}')
-    
+
     await waitFor(() => {
       expect(screen.getByText('Content 1')).toBeInTheDocument()
     })
@@ -136,7 +127,7 @@ describe('SwipeNavigation', () => {
 
   it('handles Home and End keys', async () => {
     const user = userEvent.setup()
-    
+
     render(
       <SwipeNavigation
         sections={mockSections}
@@ -150,14 +141,14 @@ describe('SwipeNavigation', () => {
 
     // Go to end
     await user.keyboard('{End}')
-    
+
     await waitFor(() => {
       expect(screen.getByText('Content 3')).toBeInTheDocument()
     })
 
     // Go to home
     await user.keyboard('{Home}')
-    
+
     await waitFor(() => {
       expect(screen.getByText('Content 1')).toBeInTheDocument()
     })
@@ -165,7 +156,7 @@ describe('SwipeNavigation', () => {
 
   it('skips disabled sections', async () => {
     const user = userEvent.setup()
-    
+
     render(
       <SwipeNavigation
         sections={mockSections}
@@ -179,7 +170,7 @@ describe('SwipeNavigation', () => {
 
     // Try to navigate to disabled section
     await user.keyboard('{ArrowRight}')
-    
+
     // Should stay on section2 since section3 is disabled
     expect(screen.getByText('Content 2')).toBeInTheDocument()
     expect(screen.queryByText('Content 3')).not.toBeInTheDocument()
@@ -187,7 +178,7 @@ describe('SwipeNavigation', () => {
 
   it('prevents navigation during transitions', async () => {
     const user = userEvent.setup()
-    
+
     render(
       <SwipeNavigation
         sections={mockSections}
@@ -201,10 +192,10 @@ describe('SwipeNavigation', () => {
 
     // Start navigation
     await user.keyboard('{ArrowRight}')
-    
+
     // Try to navigate again immediately (should be ignored)
     await user.keyboard('{ArrowRight}')
-    
+
     await waitFor(() => {
       expect(screen.getByText('Content 2')).toBeInTheDocument()
     })
@@ -212,12 +203,9 @@ describe('SwipeNavigation', () => {
 
   it('renders desktop version when not mobile', () => {
     mockUseIsMobile.mockReturnValue(false)
-    
+
     render(
-      <SwipeNavigation
-        sections={mockSections}
-        initialSection="section1"
-      />
+      <SwipeNavigation sections={mockSections} initialSection="section1" />
     )
 
     // Should render content directly without swipe functionality
@@ -227,19 +215,13 @@ describe('SwipeNavigation', () => {
 
   it('updates section when initialSection prop changes', async () => {
     const { rerender } = render(
-      <SwipeNavigation
-        sections={mockSections}
-        initialSection="section1"
-      />
+      <SwipeNavigation sections={mockSections} initialSection="section1" />
     )
 
     expect(screen.getByText('Content 1')).toBeInTheDocument()
 
     rerender(
-      <SwipeNavigation
-        sections={mockSections}
-        initialSection="section2"
-      />
+      <SwipeNavigation sections={mockSections} initialSection="section2" />
     )
 
     await waitFor(() => {
@@ -249,7 +231,7 @@ describe('SwipeNavigation', () => {
 
   it('shows section title during transitions', async () => {
     const user = userEvent.setup()
-    
+
     render(
       <SwipeNavigation
         sections={mockSections}
@@ -275,7 +257,7 @@ describe('useSwipeNavigation', () => {
         mockSections,
         'section1'
       )
-      
+
       return (
         <div>
           <div data-testid="current">{currentSectionId}</div>
@@ -287,21 +269,19 @@ describe('useSwipeNavigation', () => {
     }
 
     render(<TestComponent />)
-    
+
     expect(screen.getByTestId('current')).toHaveTextContent('section1')
-    
+
     fireEvent.click(screen.getByText('Navigate'))
-    
+
     expect(screen.getByTestId('current')).toHaveTextContent('section2')
   })
 
   it('maintains navigation history', () => {
     const TestComponent = () => {
-      const { currentSectionId, navigateToSection, goBack, canGoBack } = useSwipeNavigation(
-        mockSections,
-        'section1'
-      )
-      
+      const { currentSectionId, navigateToSection, goBack, canGoBack } =
+        useSwipeNavigation(mockSections, 'section1')
+
       return (
         <div>
           <div data-testid="current">{currentSectionId}</div>
@@ -317,18 +297,18 @@ describe('useSwipeNavigation', () => {
     }
 
     render(<TestComponent />)
-    
+
     expect(screen.getByTestId('can-go-back')).toHaveTextContent('false')
-    
+
     // Navigate to section 2
     fireEvent.click(screen.getByText('Navigate to 2'))
-    
+
     expect(screen.getByTestId('current')).toHaveTextContent('section2')
     expect(screen.getByTestId('can-go-back')).toHaveTextContent('true')
-    
+
     // Go back
     fireEvent.click(screen.getByText('Go Back'))
-    
+
     expect(screen.getByTestId('current')).toHaveTextContent('section1')
     expect(screen.getByTestId('can-go-back')).toHaveTextContent('false')
   })
@@ -337,7 +317,7 @@ describe('useSwipeNavigation', () => {
 describe('createDashboardSections', () => {
   it('creates sections from dashboard pages', () => {
     const TestComponent = () => <div>Test Component</div>
-    
+
     const pages = [
       {
         id: 'page1',

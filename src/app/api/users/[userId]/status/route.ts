@@ -10,7 +10,7 @@ export async function PUT(
 
     // Mock status update (since status isn't in the actual schema)
     // In a real implementation, this would update the user's status in the database
-    
+
     return NextResponse.json({
       success: true,
       data: {

@@ -6,7 +6,7 @@ import { ProtectedRoute } from '@/components/auth/protected-route'
 export default function AnalyticsPage() {
   return (
     <ProtectedRoute requiredResource="analytics">
-      <ErrorBoundary 
+      <ErrorBoundary
         fallback={AnalyticsErrorFallback}
         pageName="Analytics Dashboard"
         showDetails={false}

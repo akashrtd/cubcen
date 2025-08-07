@@ -146,31 +146,37 @@ export function MobileTooltip({
   }, [isTouchDevice, hideTooltip])
 
   // Handle touch/click events
-  const handleTouchStart = useCallback((event: React.TouchEvent) => {
-    if (!isTouchDevice || !tapToShow) return
-    
-    event.preventDefault()
-    
-    if (isVisible && tapToHide) {
-      hideTooltip()
-    } else {
-      showTooltip()
-    }
-  }, [isTouchDevice, tapToShow, tapToHide, isVisible, showTooltip, hideTooltip])
+  const handleTouchStart = useCallback(
+    (event: React.TouchEvent) => {
+      if (!isTouchDevice || !tapToShow) return
 
-  const handleClick = useCallback((event: React.MouseEvent) => {
-    if (isTouchDevice) return // Touch events handle this
-    
-    if (tapToShow) {
       event.preventDefault()
-      
+
       if (isVisible && tapToHide) {
         hideTooltip()
       } else {
         showTooltip()
       }
-    }
-  }, [isTouchDevice, tapToShow, tapToHide, isVisible, showTooltip, hideTooltip])
+    },
+    [isTouchDevice, tapToShow, tapToHide, isVisible, showTooltip, hideTooltip]
+  )
+
+  const handleClick = useCallback(
+    (event: React.MouseEvent) => {
+      if (isTouchDevice) return // Touch events handle this
+
+      if (tapToShow) {
+        event.preventDefault()
+
+        if (isVisible && tapToHide) {
+          hideTooltip()
+        } else {
+          showTooltip()
+        }
+      }
+    },
+    [isTouchDevice, tapToShow, tapToHide, isVisible, showTooltip, hideTooltip]
+  )
 
   // Handle focus events for keyboard accessibility
   const handleFocus = useCallback(() => {
@@ -182,11 +188,14 @@ export function MobileTooltip({
   }, [hideTooltip])
 
   // Handle escape key
-  const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
-    if (event.key === 'Escape' && isVisible) {
-      hideTooltip()
-    }
-  }, [isVisible, hideTooltip])
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent) => {
+      if (event.key === 'Escape' && isVisible) {
+        hideTooltip()
+      }
+    },
+    [isVisible, hideTooltip]
+  )
 
   // Close tooltip when clicking outside
   React.useEffect(() => {
@@ -274,15 +283,19 @@ export function MobileTooltip({
           aria-live="polite"
         >
           {content}
-          
+
           {/* Tooltip arrow */}
           <div
             className={cn(
               'absolute w-2 h-2 bg-gray-900 dark:bg-gray-100 rotate-45',
-              side === 'top' && 'bottom-[-4px] left-1/2 transform -translate-x-1/2',
-              side === 'bottom' && 'top-[-4px] left-1/2 transform -translate-x-1/2',
-              side === 'left' && 'right-[-4px] top-1/2 transform -translate-y-1/2',
-              side === 'right' && 'left-[-4px] top-1/2 transform -translate-y-1/2'
+              side === 'top' &&
+                'bottom-[-4px] left-1/2 transform -translate-x-1/2',
+              side === 'bottom' &&
+                'top-[-4px] left-1/2 transform -translate-x-1/2',
+              side === 'left' &&
+                'right-[-4px] top-1/2 transform -translate-y-1/2',
+              side === 'right' &&
+                'left-[-4px] top-1/2 transform -translate-y-1/2'
             )}
           />
         </div>
@@ -303,11 +316,11 @@ export function ChartMobileTooltip({
 }) {
   const content = React.useMemo(() => {
     if (!data) return null
-    
+
     if (formatter) {
       return formatter(data)
     }
-    
+
     // Default formatting for chart data
     if (typeof data === 'object' && data !== null) {
       return (
@@ -321,7 +334,7 @@ export function ChartMobileTooltip({
         </div>
       )
     }
-    
+
     return String(data)
   }, [data, formatter])
 

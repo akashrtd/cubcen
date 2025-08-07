@@ -1,7 +1,12 @@
 import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { FilterProvider, useFilters, useFilterValue, useIsFilterActive } from '../filter-context'
+import {
+  FilterProvider,
+  useFilters,
+  useFilterValue,
+  useIsFilterActive,
+} from '../filter-context'
 import { FilterState, FilterValue } from '@/types/dashboard'
 
 // Mock Next.js navigation
@@ -62,81 +67,88 @@ function TestComponent() {
       <div data-testid="search-value">{searchValue || 'none'}</div>
       <div data-testid="search-active">{isSearchActive.toString()}</div>
       <div data-testid="presets-count">{presets.length}</div>
-      
+
       <button
         data-testid="set-filter"
-        onClick={() => setFilter('search', { type: 'string', value: 'test', operator: 'contains' })}
+        onClick={() =>
+          setFilter('search', {
+            type: 'string',
+            value: 'test',
+            operator: 'contains',
+          })
+        }
       >
         Set Filter
       </button>
-      
+
       <button
         data-testid="remove-filter"
         onClick={() => removeFilter('search')}
       >
         Remove Filter
       </button>
-      
-      <button
-        data-testid="clear-filters"
-        onClick={clearFilters}
-      >
+
+      <button data-testid="clear-filters" onClick={clearFilters}>
         Clear Filters
       </button>
-      
+
       <button
         data-testid="set-date-range"
-        onClick={() => setDateRange(new Date('2023-01-01'), new Date('2023-12-31'))}
+        onClick={() =>
+          setDateRange(new Date('2023-01-01'), new Date('2023-12-31'))
+        }
       >
         Set Date Range
       </button>
-      
+
       <button
         data-testid="set-categories"
         onClick={() => setCategories(['category1', 'category2'])}
       >
         Set Categories
       </button>
-      
+
       <button
         data-testid="set-status"
         onClick={() => setStatus(['active', 'running'])}
       >
         Set Status
       </button>
-      
+
       <button
         data-testid="set-priority"
         onClick={() => setPriority(['high', 'critical'])}
       >
         Set Priority
       </button>
-      
+
       <button
         data-testid="set-platforms"
         onClick={() => setPlatforms(['n8n', 'make'])}
       >
         Set Platforms
       </button>
-      
+
       <button
         data-testid="set-agents"
         onClick={() => setAgents(['agent1', 'agent2'])}
       >
         Set Agents
       </button>
-      
+
       <button
         data-testid="apply-preset"
-        onClick={() => applyPreset({
-          id: 'test-preset',
-          name: 'Test Preset',
-          filters: { status: ['active'] }
-        })}
+        onClick={() =>
+          applyPreset({
+            id: 'test-preset',
+            name: 'Test Preset',
+            filters: { status: ['active'] },
+          })
+        }
       >
         Apply Preset
       </button>
-      
+
       <button
         data-testid="save-preset"
         onClick={() => savePreset('My Preset', 'Test description')}
@@ -190,7 +202,7 @@ describe('FilterProvider', () => {
 
     // Set a filter
     fireEvent.click(screen.getByTestId('set-filter'))
-    
+
     expect(screen.getByTestId('is-filtered')).toHaveTextContent('true')
     expect(screen.getByTestId('active-count')).toHaveTextContent('1')
     expect(screen.getByTestId('search-value')).toHaveTextContent('test')
@@ -198,7 +210,7 @@ describe('FilterProvider', () => {
 
     // Remove the filter
     fireEvent.click(screen.getByTestId('remove-filter'))
-    
+
     expect(screen.getByTestId('is-filtered')).toHaveTextContent('false')
     expect(screen.getByTestId('active-count')).toHaveTextContent('0')
     expect(screen.getByTestId('search-value')).toHaveTextContent('none')
@@ -213,11 +225,13 @@ describe('FilterProvider', () => {
     )
 
     fireEvent.click(screen.getByTestId('set-date-range'))
-    
+
     expect(screen.getByTestId('is-filtered')).toHaveTextContent('true')
     expect(screen.getByTestId('active-count')).toHaveTextContent('1')
-    
-    const filters = JSON.parse(screen.getByTestId('filters').textContent || '{}')
+
+    const filters = JSON.parse(
+      screen.getByTestId('filters').textContent || '{}'
+    )
     expect(filters.dateRange).toBeDefined()
     expect(new Date(filters.dateRange.start)).toEqual(new Date('2023-01-01'))
     expect(new Date(filters.dateRange.end)).toEqual(new Date('2023-12-31'))
@@ -233,24 +247,26 @@ describe('FilterProvider', () => {
     // Set categories
     fireEvent.click(screen.getByTestId('set-categories'))
     expect(screen.getByTestId('active-count')).toHaveTextContent('1')
-    
+
     // Set status
     fireEvent.click(screen.getByTestId('set-status'))
     expect(screen.getByTestId('active-count')).toHaveTextContent('2')
-    
+
     // Set priority
     fireEvent.click(screen.getByTestId('set-priority'))
     expect(screen.getByTestId('active-count')).toHaveTextContent('3')
-    
+
     // Set platforms
     fireEvent.click(screen.getByTestId('set-platforms'))
     expect(screen.getByTestId('active-count')).toHaveTextContent('4')
-    
+
     // Set agents
     fireEvent.click(screen.getByTestId('set-agents'))
     expect(screen.getByTestId('active-count')).toHaveTextContent('5')
 
-    const filters = JSON.parse(screen.getByTestId('filters').textContent || '{}')
+    const filters = JSON.parse(
+      screen.getByTestId('filters').textContent || '{}'
+    )
     expect(filters.categories).toEqual(['category1', 'category2'])
     expect(filters.status).toEqual(['active', 'running'])
     expect(filters.priority).toEqual(['high', 'critical'])
@@ -269,12 +285,12 @@ describe('FilterProvider', () => {
     fireEvent.click(screen.getByTestId('set-filter'))
     fireEvent.click(screen.getByTestId('set-categories'))
     fireEvent.click(screen.getByTestId('set-status'))
-    
+
     expect(screen.getByTestId('active-count')).toHaveTextContent('3')
 
     // Clear all filters
     fireEvent.click(screen.getByTestId('clear-filters'))
-    
+
     expect(screen.getByTestId('is-filtered')).toHaveTextContent('false')
     expect(screen.getByTestId('active-count')).toHaveTextContent('0')
     expect(screen.getByTestId('filters')).toHaveTextContent('{}')
@@ -288,11 +304,13 @@ describe('FilterProvider', () => {
     )
 
     fireEvent.click(screen.getByTestId('apply-preset'))
-    
+
     expect(screen.getByTestId('is-filtered')).toHaveTextContent('true')
     expect(screen.getByTestId('active-count')).toHaveTextContent('1')
-    
-    const filters = JSON.parse(screen.getByTestId('filters').textContent || '{}')
+
+    const filters = JSON.parse(
+      screen.getByTestId('filters').textContent || '{}'
+    )
     expect(filters.status).toEqual(['active'])
   })
 
@@ -306,10 +324,10 @@ describe('FilterProvider', () => {
     // Set some filters first
     fireEvent.click(screen.getByTestId('set-filter'))
     fireEvent.click(screen.getByTestId('set-categories'))
-    
+
     // Save as preset
     fireEvent.click(screen.getByTestId('save-preset'))
-    
+
     // Should have 5 presets now (4 default + 1 custom)
     expect(screen.getByTestId('presets-count')).toHaveTextContent('5')
   })
@@ -319,7 +337,7 @@ describe('FilterProvider', () => {
       categories: ['stored-category'],
       status: ['stored-status'],
     }
-    
+
     mockLocalStorage.getItem.mockReturnValue(JSON.stringify(storedFilters))
 
     render(
@@ -330,8 +348,10 @@ describe('FilterProvider', () => {
 
     expect(screen.getByTestId('is-filtered')).toHaveTextContent('true')
     expect(screen.getByTestId('active-count')).toHaveTextContent('2')
-    
-    const filters = JSON.parse(screen.getByTestId('filters').textContent || '{}')
+
+    const filters = JSON.parse(
+      screen.getByTestId('filters').textContent || '{}'
+    )
     expect(filters.categories).toEqual(['stored-category'])
     expect(filters.status).toEqual(['stored-status'])
   })
@@ -340,8 +360,10 @@ describe('FilterProvider', () => {
     const urlFilters: FilterState = {
       priority: ['url-priority'],
     }
-    
-    mockSearchParams.get.mockReturnValue(encodeURIComponent(JSON.stringify(urlFilters)))
+
+    mockSearchParams.get.mockReturnValue(
+      encodeURIComponent(JSON.stringify(urlFilters))
+    )
 
     render(
       <FilterProvider>
@@ -351,8 +373,10 @@ describe('FilterProvider', () => {
 
     expect(screen.getByTestId('is-filtered')).toHaveTextContent('true')
     expect(screen.getByTestId('active-count')).toHaveTextContent('1')
-    
-    const filters = JSON.parse(screen.getByTestId('filters').textContent || '{}')
+
+    const filters = JSON.parse(
+      screen.getByTestId('filters').textContent || '{}'
+    )
     expect(filters.priority).toEqual(['url-priority'])
   })
 
@@ -364,7 +388,7 @@ describe('FilterProvider', () => {
     )
 
     fireEvent.click(screen.getByTestId('set-filter'))
-    
+
     await waitFor(() => {
       expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
         'dashboard-filters',
@@ -381,7 +405,7 @@ describe('FilterProvider', () => {
     )
 
     fireEvent.click(screen.getByTestId('set-filter'))
-    
+
     await waitFor(() => {
       expect(mockRouter.replace).toHaveBeenCalledWith(
         expect.stringContaining('filters='),

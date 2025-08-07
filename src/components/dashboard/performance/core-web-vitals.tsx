@@ -49,21 +49,21 @@ export function useCoreWebVitals() {
 
     // Track Largest Contentful Paint (LCP)
     try {
-      const lcpObserver = new PerformanceObserver((list) => {
+      const lcpObserver = new PerformanceObserver(list => {
         const entries = list.getEntries()
         const lastEntry = entries[entries.length - 1] as PerformanceEntry & {
           startTime: number
         }
-        
+
         if (lastEntry) {
           const lcp = lastEntry.startTime
           setMetrics(prev => ({ ...prev, lcp }))
-          
+
           // Send to analytics
           sendToAnalytics('LCP', lcp)
         }
       })
-      
+
       lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] })
       observers.push(lcpObserver)
     } catch (e) {
@@ -72,17 +72,17 @@ export function useCoreWebVitals() {
 
     // Track First Input Delay (FID)
     try {
-      const fidObserver = new PerformanceObserver((list) => {
+      const fidObserver = new PerformanceObserver(list => {
         const entries = list.getEntries()
         entries.forEach((entry: any) => {
           const fid = entry.processingStart - entry.startTime
           setMetrics(prev => ({ ...prev, fid }))
-          
+
           // Send to analytics
           sendToAnalytics('FID', fid)
         })
       })
-      
+
       fidObserver.observe({ entryTypes: ['first-input'] })
       observers.push(fidObserver)
     } catch (e) {
@@ -92,7 +92,7 @@ export function useCoreWebVitals() {
     // Track Cumulative Layout Shift (CLS)
     try {
       let clsValue = 0
-      const clsObserver = new PerformanceObserver((list) => {
+      const clsObserver = new PerformanceObserver(list => {
         const entries = list.getEntries()
         entries.forEach((entry: any) => {
           if (!entry.hadRecentInput) {
@@ -100,11 +100,11 @@ export function useCoreWebVitals() {
             setMetrics(prev => ({ ...prev, cls: clsValue }))
           }
         })
-        
+
         // Send to analytics (debounced)
         debounce(() => sendToAnalytics('CLS', clsValue), 1000)()
       })
-      
+
       clsObserver.observe({ entryTypes: ['layout-shift'] })
       observers.push(clsObserver)
     } catch (e) {
@@ -113,19 +113,19 @@ export function useCoreWebVitals() {
 
     // Track First Contentful Paint (FCP)
     try {
-      const fcpObserver = new PerformanceObserver((list) => {
+      const fcpObserver = new PerformanceObserver(list => {
         const entries = list.getEntries()
-        entries.forEach((entry) => {
+        entries.forEach(entry => {
           if (entry.name === 'first-contentful-paint') {
             const fcp = entry.startTime
             setMetrics(prev => ({ ...prev, fcp }))
-            
+
             // Send to analytics
             sendToAnalytics('FCP', fcp)
           }
         })
       })
-      
+
       fcpObserver.observe({ entryTypes: ['paint'] })
       observers.push(fcpObserver)
     } catch (e) {
@@ -134,11 +134,14 @@ export function useCoreWebVitals() {
 
     // Track Time to First Byte (TTFB)
     try {
-      const navigationEntries = performance.getEntriesByType('navigation') as PerformanceNavigationTiming[]
+      const navigationEntries = performance.getEntriesByType(
+        'navigation'
+      ) as PerformanceNavigationTiming[]
       if (navigationEntries.length > 0) {
-        const ttfb = navigationEntries[0].responseStart - navigationEntries[0].requestStart
+        const ttfb =
+          navigationEntries[0].responseStart - navigationEntries[0].requestStart
         setMetrics(prev => ({ ...prev, ttfb }))
-        
+
         // Send to analytics
         sendToAnalytics('TTFB', ttfb)
       }
@@ -148,17 +151,17 @@ export function useCoreWebVitals() {
 
     // Track Interaction to Next Paint (INP) - newer metric
     try {
-      const inpObserver = new PerformanceObserver((list) => {
+      const inpObserver = new PerformanceObserver(list => {
         const entries = list.getEntries()
         entries.forEach((entry: any) => {
           const inp = entry.processingEnd - entry.startTime
           setMetrics(prev => ({ ...prev, inp }))
-          
+
           // Send to analytics
           sendToAnalytics('INP', inp)
         })
       })
-      
+
       // INP is still experimental
       if ('observe' in inpObserver) {
         inpObserver.observe({ entryTypes: ['event'] })
@@ -183,7 +186,7 @@ export function useCoreWebVitals() {
 function sendToAnalytics(metricName: string, value: number) {
   // Send to Google Analytics if available
   if (typeof window !== 'undefined' && 'gtag' in window) {
-    (window as any).gtag('event', 'web_vitals', {
+    ;(window as any).gtag('event', 'web_vitals', {
       metric_name: metricName,
       value: Math.round(value),
       rating: getPerformanceRating(
@@ -225,10 +228,10 @@ function debounce(func: (...args: any[]) => void, wait: number) {
 }
 
 // Performance monitoring component
-export function PerformanceMonitor({ 
+export function PerformanceMonitor({
   children,
   onMetricsUpdate,
-}: { 
+}: {
   children: React.ReactNode
   onMetricsUpdate?: (metrics: CoreWebVitalsMetrics) => void
 }) {
@@ -248,10 +251,10 @@ export function PerformanceDashboard() {
 
   // Only show in development or when explicitly enabled
   useEffect(() => {
-    const shouldShow = 
+    const shouldShow =
       process.env.NODE_ENV === 'development' ||
       localStorage.getItem('show-performance-dashboard') === 'true'
-    
+
     setIsVisible(shouldShow)
   }, [])
 
@@ -276,19 +279,21 @@ export function PerformanceDashboard() {
       <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>
         Core Web Vitals
       </div>
-      
+
       {Object.entries(metrics).map(([key, value]) => {
         if (value === undefined) return null
-        
+
         const rating = getPerformanceRating(
           key as keyof typeof PERFORMANCE_THRESHOLDS,
           value
         )
-        
-        const color = 
-          rating === 'good' ? '#4CAF50' :
-          rating === 'needs-improvement' ? '#FF9800' :
-          '#F44336'
+
+        const color =
+          rating === 'good'
+            ? '#4CAF50'
+            : rating === 'needs-improvement'
+              ? '#FF9800'
+              : '#F44336'
 
         return (
           <div key={key} style={{ marginBottom: '2px' }}>
@@ -300,7 +305,7 @@ export function PerformanceDashboard() {
           </div>
         )
       })}
-      
+
       <div style={{ marginTop: '10px', fontSize: '10px', opacity: 0.7 }}>
         Press F12 → Console for details
       </div>
@@ -317,32 +322,33 @@ export function useComponentPerformance(componentName: string) {
   // Track mount time
   useEffect(() => {
     mountTime.current = performance.now()
-    
+
     return () => {
       const unmountTime = performance.now()
       const totalLifetime = unmountTime - mountTime.current
-      
+
       console.log(
         `${componentName} lifecycle: ${totalLifetime.toFixed(2)}ms total, ` +
-        `${renderCount.current} renders`
+          `${renderCount.current} renders`
       )
     }
   }, [componentName])
 
   // Track render performance
   renderStartTime.current = performance.now()
-  
+
   useEffect(() => {
     const renderEndTime = performance.now()
     const renderTime = renderEndTime - renderStartTime.current
     renderCount.current += 1
-    
-    if (renderTime > 16) { // Flag slow renders
+
+    if (renderTime > 16) {
+      // Flag slow renders
       console.warn(
         `${componentName} slow render #${renderCount.current}: ${renderTime.toFixed(2)}ms`
       )
     }
-    
+
     // Send to analytics for production monitoring
     if (process.env.NODE_ENV === 'production' && renderTime > 50) {
       sendToAnalytics('component_render_time', renderTime)
@@ -362,19 +368,23 @@ export function usePerformanceBudget(budgets: Partial<CoreWebVitalsMetrics>) {
 
   useEffect(() => {
     const newViolations: string[] = []
-    
+
     Object.entries(budgets).forEach(([metric, budget]) => {
       const actualValue = metrics[metric as keyof CoreWebVitalsMetrics]
-      
-      if (actualValue !== undefined && budget !== undefined && actualValue > budget) {
+
+      if (
+        actualValue !== undefined &&
+        budget !== undefined &&
+        actualValue > budget
+      ) {
         newViolations.push(
           `${metric.toUpperCase()}: ${Math.round(actualValue)}ms exceeds budget of ${budget}ms`
         )
       }
     })
-    
+
     setViolations(newViolations)
-    
+
     // Log violations
     if (newViolations.length > 0) {
       console.warn('Performance budget violations:', newViolations)
@@ -402,13 +412,18 @@ export function useRealUserMonitoring() {
     if (typeof window === 'undefined') return
 
     // Collect page load metrics
-    const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming
+    const navigation = performance.getEntriesByType(
+      'navigation'
+    )[0] as PerformanceNavigationTiming
     if (navigation) {
       const pageLoadTime = navigation.loadEventEnd - navigation.navigationStart
-      const domContentLoaded = navigation.domContentLoadedEventEnd - navigation.navigationStart
-      
+      const domContentLoaded =
+        navigation.domContentLoadedEventEnd - navigation.navigationStart
+
       // Collect resource load times
-      const resources = performance.getEntriesByType('resource') as PerformanceResourceTiming[]
+      const resources = performance.getEntriesByType(
+        'resource'
+      ) as PerformanceResourceTiming[]
       const resourceLoadTimes = resources.map(resource => ({
         name: resource.name,
         duration: resource.duration,
@@ -427,18 +442,20 @@ export function useRealUserMonitoring() {
     let interactionCount = 0
     const trackInteraction = () => {
       interactionCount += 1
-      setRumData(prev => prev ? { ...prev, userInteractions: interactionCount } : null)
+      setRumData(prev =>
+        prev ? { ...prev, userInteractions: interactionCount } : null
+      )
     }
 
     // Track errors
     let errorCount = 0
     const trackError = () => {
       errorCount += 1
-      setRumData(prev => prev ? { ...prev, errors: errorCount } : null)
+      setRumData(prev => (prev ? { ...prev, errors: errorCount } : null))
     }
 
     // Add event listeners
-    ['click', 'keydown', 'scroll'].forEach(event => {
+    ;['click', 'keydown', 'scroll'].forEach(event => {
       window.addEventListener(event, trackInteraction, { passive: true })
     })
 
@@ -447,7 +464,7 @@ export function useRealUserMonitoring() {
 
     // Cleanup
     return () => {
-      ['click', 'keydown', 'scroll'].forEach(event => {
+      ;['click', 'keydown', 'scroll'].forEach(event => {
         window.removeEventListener(event, trackInteraction)
       })
       window.removeEventListener('error', trackError)

@@ -1,7 +1,11 @@
 import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { KeyboardNavigation, useFocusManagement, FocusTrap } from '../keyboard-navigation'
+import {
+  KeyboardNavigation,
+  useFocusManagement,
+  FocusTrap,
+} from '../keyboard-navigation'
 
 describe('KeyboardNavigation', () => {
   it('renders children correctly', () => {
@@ -10,14 +14,14 @@ describe('KeyboardNavigation', () => {
         <div>Test content</div>
       </KeyboardNavigation>
     )
-    
+
     expect(screen.getByText('Test content')).toBeInTheDocument()
   })
 
   it('renders skip links when provided', () => {
     const skipLinks = [
       { href: '#main', label: 'Skip to main content' },
-      { href: '#nav', label: 'Skip to navigation' }
+      { href: '#nav', label: 'Skip to navigation' },
     ]
 
     render(
@@ -43,7 +47,7 @@ describe('KeyboardNavigation', () => {
 
     const button = screen.getByRole('button')
     button.focus()
-    
+
     await user.keyboard('{Escape}')
     expect(onEscape).toHaveBeenCalled()
   })
@@ -154,7 +158,11 @@ describe('useFocusManagement', () => {
 
     return (
       <div>
-        <button onClick={() => setFocus(document.getElementById('target') as HTMLElement)}>
+        <button
+          onClick={() =>
+            setFocus(document.getElementById('target') as HTMLElement)
+          }
+        >
           Set Focus
         </button>
         <button onClick={restoreFocus}>Restore Focus</button>

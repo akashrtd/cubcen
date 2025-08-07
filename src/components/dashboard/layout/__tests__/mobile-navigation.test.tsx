@@ -1,6 +1,10 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { useRouter, usePathname } from 'next/navigation'
-import { MobileNavigation, defaultMobileNavItems, useMobileNavigation } from '../mobile-navigation'
+import {
+  MobileNavigation,
+  defaultMobileNavItems,
+  useMobileNavigation,
+} from '../mobile-navigation'
 import { useIsMobile } from '../../mobile/touch-interactions'
 
 // Mock Next.js navigation
@@ -13,10 +17,7 @@ jest.mock('next/navigation', () => ({
 jest.mock('../../mobile/touch-interactions', () => ({
   useIsMobile: jest.fn(),
   TouchInteraction: ({ children, onSwipeLeft, onSwipeRight }: any) => (
-    <div 
-      data-testid="touch-wrapper"
-      onTouchStart={() => onSwipeLeft?.()}
-    >
+    <div data-testid="touch-wrapper" onTouchStart={() => onSwipeLeft?.()}>
       {children}
     </div>
   ),
@@ -47,7 +48,7 @@ describe('MobileNavigation', () => {
 
   it('renders navigation items', () => {
     render(<MobileNavigation items={defaultMobileNavItems} />)
-    
+
     expect(screen.getByText('Dashboard')).toBeInTheDocument()
     expect(screen.getByText('Agents')).toBeInTheDocument()
     expect(screen.getByText('Tasks')).toBeInTheDocument()
@@ -57,9 +58,9 @@ describe('MobileNavigation', () => {
 
   it('highlights active item based on pathname', () => {
     mockUsePathname.mockReturnValue('/dashboard/agents')
-    
+
     render(<MobileNavigation items={defaultMobileNavItems} />)
-    
+
     // The component should render and the active state should be managed internally
     // We can test that the component renders without errors when pathname matches
     expect(screen.getByText('Agents')).toBeInTheDocument()
@@ -68,17 +69,17 @@ describe('MobileNavigation', () => {
 
   it('navigates when item is clicked', () => {
     const onItemClick = jest.fn()
-    
+
     render(
-      <MobileNavigation 
-        items={defaultMobileNavItems} 
+      <MobileNavigation
+        items={defaultMobileNavItems}
         onItemClick={onItemClick}
       />
     )
-    
+
     const agentsButton = screen.getByRole('button', { name: 'Agents' })
     fireEvent.click(agentsButton)
-    
+
     expect(mockRouter.push).toHaveBeenCalledWith('/dashboard/agents')
     expect(onItemClick).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -95,9 +96,9 @@ describe('MobileNavigation', () => {
         badge: 5,
       },
     ]
-    
+
     render(<MobileNavigation items={itemsWithBadge} />)
-    
+
     expect(screen.getByText('5')).toBeInTheDocument()
     expect(screen.getByLabelText('5 notifications')).toBeInTheDocument()
   })
@@ -109,12 +110,12 @@ describe('MobileNavigation', () => {
         disabled: true,
       },
     ]
-    
+
     render(<MobileNavigation items={itemsWithDisabled} />)
-    
+
     const disabledButton = screen.getByRole('button', { name: 'Dashboard' })
     expect(disabledButton).toBeDisabled()
-    
+
     fireEvent.click(disabledButton)
     expect(mockRouter.push).not.toHaveBeenCalled()
   })
@@ -126,33 +127,35 @@ describe('MobileNavigation', () => {
         badge: 150,
       },
     ]
-    
+
     render(<MobileNavigation items={itemsWithLargeBadge} />)
-    
+
     expect(screen.getByText('99+')).toBeInTheDocument()
   })
 
   it('does not render on desktop', () => {
     mockUseIsMobile.mockReturnValue(false)
-    
-    const { container } = render(<MobileNavigation items={defaultMobileNavItems} />)
-    
+
+    const { container } = render(
+      <MobileNavigation items={defaultMobileNavItems} />
+    )
+
     expect(container.firstChild).toBeNull()
   })
 
   it('handles swipe navigation between sections', async () => {
     const onItemClick = jest.fn()
-    
+
     render(
-      <MobileNavigation 
-        items={defaultMobileNavItems} 
+      <MobileNavigation
+        items={defaultMobileNavItems}
         onItemClick={onItemClick}
       />
     )
-    
+
     const touchWrapper = screen.getByTestId('touch-wrapper')
     fireEvent.touchStart(touchWrapper)
-    
+
     // Should navigate to next item
     await waitFor(() => {
       expect(onItemClick).toHaveBeenCalled()
@@ -161,20 +164,20 @@ describe('MobileNavigation', () => {
 
   it('prevents navigation during transitions', () => {
     render(<MobileNavigation items={defaultMobileNavItems} />)
-    
+
     const firstButton = screen.getByRole('button', { name: 'Dashboard' })
-    
+
     // Click rapidly
     fireEvent.click(firstButton)
     fireEvent.click(firstButton)
-    
+
     // Should only navigate once due to transition state
     expect(mockRouter.push).toHaveBeenCalledTimes(1)
   })
 
   it('shows swipe indicator', () => {
     render(<MobileNavigation items={defaultMobileNavItems} />)
-    
+
     // Should show the swipe indicator line
     const indicator = document.querySelector('.absolute.top-1')
     expect(indicator).toBeInTheDocument()
@@ -182,14 +185,16 @@ describe('MobileNavigation', () => {
 
   it('provides screen reader instructions', () => {
     render(<MobileNavigation items={defaultMobileNavItems} />)
-    
-    expect(screen.getByText(/Swipe left or right to navigate/)).toBeInTheDocument()
+
+    expect(
+      screen.getByText(/Swipe left or right to navigate/)
+    ).toBeInTheDocument()
     expect(screen.getByText(/Current section:/)).toBeInTheDocument()
   })
 
   it('applies touch-optimized styles', () => {
     render(<MobileNavigation items={defaultMobileNavItems} />)
-    
+
     const buttons = screen.getAllByRole('button')
     buttons.forEach(button => {
       expect(button).toHaveClass('min-h-[44px]') // Minimum touch target
@@ -203,9 +208,13 @@ describe('useMobileNavigation', () => {
   it('shows navigation by default', () => {
     const TestComponent = () => {
       const { isVisible } = useMobileNavigation()
-      return <div data-testid="nav-visibility">{isVisible ? 'visible' : 'hidden'}</div>
+      return (
+        <div data-testid="nav-visibility">
+          {isVisible ? 'visible' : 'hidden'}
+        </div>
+      )
     }
-    
+
     render(<TestComponent />)
     expect(screen.getByTestId('nav-visibility')).toHaveTextContent('visible')
   })
@@ -215,16 +224,18 @@ describe('useMobileNavigation', () => {
       const { isVisible, setIsVisible } = useMobileNavigation()
       return (
         <div>
-          <div data-testid="nav-visibility">{isVisible ? 'visible' : 'hidden'}</div>
+          <div data-testid="nav-visibility">
+            {isVisible ? 'visible' : 'hidden'}
+          </div>
           <button onClick={() => setIsVisible(false)}>Hide</button>
         </div>
       )
     }
-    
+
     render(<TestComponent />)
-    
+
     expect(screen.getByTestId('nav-visibility')).toHaveTextContent('visible')
-    
+
     fireEvent.click(screen.getByText('Hide'))
     expect(screen.getByTestId('nav-visibility')).toHaveTextContent('hidden')
   })

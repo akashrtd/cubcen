@@ -1,11 +1,7 @@
 import React from 'react'
 import { render, screen, waitFor } from '@testing-library/react'
 import { jest } from '@jest/globals'
-import {
-  LazyCard,
-  withLazyLoading,
-  useLazyLoading,
-} from '../lazy-card'
+import { LazyCard, withLazyLoading, useLazyLoading } from '../lazy-card'
 
 // Mock IntersectionObserver
 const mockIntersectionObserver = jest.fn()
@@ -40,8 +36,8 @@ describe('LazyCard', () => {
     mockObserve = jest.fn()
     mockDisconnect = jest.fn()
     mockCallback = jest.fn()
-    
-    mockIntersectionObserver.mockImplementation((callback) => {
+
+    mockIntersectionObserver.mockImplementation(callback => {
       mockCallback = callback
       return {
         observe: mockObserve,
@@ -72,10 +68,7 @@ describe('LazyCard', () => {
     const onLoad = jest.fn()
 
     render(
-      <LazyCard
-        onIntersect={onIntersect}
-        onLoad={onLoad}
-      >
+      <LazyCard onIntersect={onIntersect} onLoad={onLoad}>
         <TestComponent message="Lazy content" />
       </LazyCard>
     )
@@ -187,7 +180,9 @@ describe('LazyCard', () => {
   })
 
   it('should use custom fallback component', () => {
-    const customFallback = <div data-testid="custom-fallback">Custom loading...</div>
+    const customFallback = (
+      <div data-testid="custom-fallback">Custom loading...</div>
+    )
 
     render(
       <LazyCard fallback={customFallback}>
@@ -201,10 +196,7 @@ describe('LazyCard', () => {
 
   it('should apply custom root margin and threshold', () => {
     render(
-      <LazyCard
-        rootMargin="100px"
-        threshold={0.5}
-      >
+      <LazyCard rootMargin="100px" threshold={0.5}>
         <TestComponent message="Content" />
       </LazyCard>
     )
@@ -307,14 +299,16 @@ describe('withLazyLoading', () => {
 
     const LazyAnonymousComponent = withLazyLoading(AnonymousComponent)
 
-    expect(LazyAnonymousComponent.displayName).toBe('LazyLoaded(AnonymousComponent)')
+    expect(LazyAnonymousComponent.displayName).toBe(
+      'LazyLoaded(AnonymousComponent)'
+    )
   })
 })
 
 describe('useLazyLoading', () => {
   const TestHookComponent = ({ options = {} }: { options?: any }) => {
     const { elementRef, isIntersecting, hasLoaded } = useLazyLoading(options)
-    
+
     return (
       <div>
         <div ref={elementRef} data-testid="observed-element">

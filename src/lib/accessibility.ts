@@ -12,7 +12,10 @@ export function generateId(prefix: string = 'element'): string {
 /**
  * Announce content to screen readers
  */
-export function announceToScreenReader(message: string, priority: 'polite' | 'assertive' = 'polite') {
+export function announceToScreenReader(
+  message: string,
+  priority: 'polite' | 'assertive' = 'polite'
+) {
   if (typeof window === 'undefined') return
 
   const announcement = document.createElement('div')
@@ -81,7 +84,10 @@ export class FocusManager {
    */
   releaseFocusTrap() {
     if (this.trapElement) {
-      this.trapElement.removeEventListener('keydown', this.handleTrapKeydown.bind(this))
+      this.trapElement.removeEventListener(
+        'keydown',
+        this.handleTrapKeydown.bind(this)
+      )
       this.trapElement = null
     }
 
@@ -124,7 +130,9 @@ export class FocusManager {
       '[contenteditable="true"]',
     ].join(', ')
 
-    return Array.from(element.querySelectorAll(focusableSelectors)) as HTMLElement[]
+    return Array.from(
+      element.querySelectorAll(focusableSelectors)
+    ) as HTMLElement[]
   }
 }
 
@@ -244,9 +252,14 @@ export class ColorContrast {
   /**
    * Check if contrast ratio meets WCAG standards
    */
-  static meetsWCAG(color1: string, color2: string, level: 'AA' | 'AAA' = 'AA', size: 'normal' | 'large' = 'normal'): boolean {
+  static meetsWCAG(
+    color1: string,
+    color2: string,
+    level: 'AA' | 'AAA' = 'AA',
+    size: 'normal' | 'large' = 'normal'
+  ): boolean {
     const ratio = this.getContrastRatio(color1, color2)
-    
+
     if (level === 'AAA') {
       return size === 'large' ? ratio >= 4.5 : ratio >= 7
     } else {
@@ -254,13 +267,17 @@ export class ColorContrast {
     }
   }
 
-  private static hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+  private static hexToRgb(
+    hex: string
+  ): { r: number; g: number; b: number } | null {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-    return result ? {
-      r: parseInt(result[1], 16),
-      g: parseInt(result[2], 16),
-      b: parseInt(result[3], 16)
-    } : null
+    return result
+      ? {
+          r: parseInt(result[1], 16),
+          g: parseInt(result[2], 16),
+          b: parseInt(result[3], 16),
+        }
+      : null
   }
 }
 
@@ -310,7 +327,10 @@ export class AriaUtils {
   /**
    * Set ARIA live region
    */
-  static setLiveRegion(element: HTMLElement, politeness: 'polite' | 'assertive' | 'off' = 'polite') {
+  static setLiveRegion(
+    element: HTMLElement,
+    politeness: 'polite' | 'assertive' | 'off' = 'polite'
+  ) {
     element.setAttribute('aria-live', politeness)
     element.setAttribute('aria-atomic', 'true')
   }
@@ -330,9 +350,11 @@ export class AriaUtils {
   static associateDescription(control: HTMLElement, description: HTMLElement) {
     const descId = description.id || generateId('desc')
     description.id = descId
-    
+
     const existingDescribedBy = control.getAttribute('aria-describedby')
-    const describedBy = existingDescribedBy ? `${existingDescribedBy} ${descId}` : descId
+    const describedBy = existingDescribedBy
+      ? `${existingDescribedBy} ${descId}`
+      : descId
     control.setAttribute('aria-describedby', describedBy)
   }
 }
@@ -356,16 +378,21 @@ export class ScreenReaderUtils {
    */
   static isScreenReaderActive(): boolean {
     // This is a heuristic - not 100% reliable
-    return window.navigator.userAgent.includes('NVDA') ||
-           window.navigator.userAgent.includes('JAWS') ||
-           window.speechSynthesis?.speaking ||
-           false
+    return (
+      window.navigator.userAgent.includes('NVDA') ||
+      window.navigator.userAgent.includes('JAWS') ||
+      window.speechSynthesis?.speaking ||
+      false
+    )
   }
 
   /**
    * Announce status changes
    */
-  static announceStatus(message: string, priority: 'polite' | 'assertive' = 'polite') {
+  static announceStatus(
+    message: string,
+    priority: 'polite' | 'assertive' = 'polite'
+  ) {
     announceToScreenReader(message, priority)
   }
 }

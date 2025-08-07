@@ -1,7 +1,11 @@
 'use client'
 
 import React from 'react'
-import { DashboardLayout, DashboardHeader, DashboardFooter } from '../layout/dashboard-layout'
+import {
+  DashboardLayout,
+  DashboardHeader,
+  DashboardFooter,
+} from '../layout/dashboard-layout'
 import { DashboardSidebar } from '../layout/dashboard-sidebar'
 import { DashboardCard } from '../cards/dashboard-card'
 import { DashboardGrid, GridItem } from '../grid/dashboard-grid'
@@ -27,9 +31,7 @@ function ExampleHeader() {
 
 // Example sidebar content
 function ExampleSidebar() {
-  return (
-    <DashboardSidebar />
-  )
+  return <DashboardSidebar />
 }
 
 // Example footer component
@@ -39,9 +41,7 @@ function ExampleFooter() {
       <div className="text-dashboard-text-secondary">
         © 2025 Cubcen AI Agent Management Platform
       </div>
-      <div className="text-dashboard-text-secondary">
-        Version 1.0.0
-      </div>
+      <div className="text-dashboard-text-secondary">Version 1.0.0</div>
     </DashboardFooter>
   )
 }
@@ -76,7 +76,10 @@ function ExampleMainContent() {
 
       <DashboardGrid>
         {/* KPI Cards */}
-        <GridItem colSpan={{ desktop: 3, tablet: 2, mobile: 1 }} priority="critical">
+        <GridItem
+          colSpan={{ desktop: 3, tablet: 2, mobile: 1 }}
+          priority="critical"
+        >
           <DashboardCard
             title="Active Agents"
             metric={{
@@ -89,7 +92,10 @@ function ExampleMainContent() {
           />
         </GridItem>
 
-        <GridItem colSpan={{ desktop: 3, tablet: 2, mobile: 1 }} priority="high">
+        <GridItem
+          colSpan={{ desktop: 3, tablet: 2, mobile: 1 }}
+          priority="high"
+        >
           <DashboardCard
             title="Tasks Completed"
             metric={{
@@ -102,7 +108,10 @@ function ExampleMainContent() {
           />
         </GridItem>
 
-        <GridItem colSpan={{ desktop: 3, tablet: 2, mobile: 1 }} priority="medium">
+        <GridItem
+          colSpan={{ desktop: 3, tablet: 2, mobile: 1 }}
+          priority="medium"
+        >
           <DashboardCard
             title="Error Rate"
             metric={{
@@ -130,28 +139,14 @@ function ExampleMainContent() {
 
         {/* Chart Cards */}
         <GridItem colSpan={{ desktop: 6, tablet: 3, mobile: 1 }}>
-          <DashboardCard
-            title="Agent Performance"
-            subtitle="Last 30 days"
-          >
-            <ChartWrapper
-              type="line"
-              data={mockChartData}
-              height={300}
-            />
+          <DashboardCard title="Agent Performance" subtitle="Last 30 days">
+            <ChartWrapper type="line" data={mockChartData} height={300} />
           </DashboardCard>
         </GridItem>
 
         <GridItem colSpan={{ desktop: 6, tablet: 3, mobile: 1 }}>
-          <DashboardCard
-            title="Task Distribution"
-            subtitle="By platform"
-          >
-            <ChartWrapper
-              type="pie"
-              data={mockChartData}
-              height={300}
-            />
+          <DashboardCard title="Task Distribution" subtitle="By platform">
+            <ChartWrapper type="pie" data={mockChartData} height={300} />
           </DashboardCard>
         </GridItem>
 
@@ -164,8 +159,12 @@ function ExampleMainContent() {
             <div className="space-y-4">
               <div className="flex items-center justify-between p-3 bg-dashboard-background rounded-lg">
                 <div>
-                  <div className="font-medium">Agent-001 completed workflow</div>
-                  <div className="text-sm text-dashboard-text-secondary">2 minutes ago</div>
+                  <div className="font-medium">
+                    Agent-001 completed workflow
+                  </div>
+                  <div className="text-sm text-dashboard-text-secondary">
+                    2 minutes ago
+                  </div>
                 </div>
                 <div className="px-2 py-1 text-xs bg-dashboard-success text-white rounded">
                   Success
@@ -174,7 +173,9 @@ function ExampleMainContent() {
               <div className="flex items-center justify-between p-3 bg-dashboard-background rounded-lg">
                 <div>
                   <div className="font-medium">Agent-002 started new task</div>
-                  <div className="text-sm text-dashboard-text-secondary">5 minutes ago</div>
+                  <div className="text-sm text-dashboard-text-secondary">
+                    5 minutes ago
+                  </div>
                 </div>
                 <div className="px-2 py-1 text-xs bg-dashboard-info text-white rounded">
                   Running
@@ -183,7 +184,9 @@ function ExampleMainContent() {
               <div className="flex items-center justify-between p-3 bg-dashboard-background rounded-lg">
                 <div>
                   <div className="font-medium">Agent-003 encountered error</div>
-                  <div className="text-sm text-dashboard-text-secondary">10 minutes ago</div>
+                  <div className="text-sm text-dashboard-text-secondary">
+                    10 minutes ago
+                  </div>
                 </div>
                 <div className="px-2 py-1 text-xs bg-dashboard-error text-white rounded">
                   Error

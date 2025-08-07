@@ -23,11 +23,11 @@ import { useDashboardTheme } from '@/components/dashboard/theming/theme-provider
 
 function ContrastChecker() {
   const { validateContrast, getContrastRatio } = useDashboardTheme()
-  
+
   // Check if colors meet WCAG standards
   const isValid = validateContrast('#3F51B5', '#FFFFFF') // true
   const ratio = getContrastRatio('#3F51B5', '#FFFFFF')   // 8.59:1
-  
+
   return (
     <div>
       <p>Contrast ratio: {ratio.toFixed(2)}:1</p>
@@ -44,15 +44,15 @@ The typography system ensures optimal readability:
 ```css
 :root {
   /* WCAG compliant font sizes */
-  --dashboard-text-sm: 0.875rem;   /* 14px - Minimum for body text */
-  --dashboard-text-base: 1rem;     /* 16px - Recommended body text */
-  --dashboard-text-2xl: 1.5rem;    /* 24px - Large text threshold */
-  --dashboard-text-3xl: 2rem;      /* 32px - Heading text */
-  
+  --dashboard-text-sm: 0.875rem; /* 14px - Minimum for body text */
+  --dashboard-text-base: 1rem; /* 16px - Recommended body text */
+  --dashboard-text-2xl: 1.5rem; /* 24px - Large text threshold */
+  --dashboard-text-3xl: 2rem; /* 32px - Heading text */
+
   /* Optimal line heights for readability */
-  --dashboard-line-height-tight: 1.25;    /* Headings */
-  --dashboard-line-height-normal: 1.5;    /* Body text */
-  --dashboard-line-height-relaxed: 1.75;  /* Long-form content */
+  --dashboard-line-height-tight: 1.25; /* Headings */
+  --dashboard-line-height-normal: 1.5; /* Body text */
+  --dashboard-line-height-relaxed: 1.75; /* Long-form content */
 }
 ```
 
@@ -137,18 +137,16 @@ function AccessibleDashboard() {
   const skipLinks = [
     { href: '#main-content', label: 'Skip to main content' },
     { href: '#dashboard-sidebar', label: 'Skip to navigation' },
-    { href: '#dashboard-footer', label: 'Skip to footer' }
+    { href: '#dashboard-footer', label: 'Skip to footer' },
   ]
-  
+
   return (
     <DashboardLayout
       skipLinks={skipLinks}
       header={<DashboardHeader />}
       sidebar={<DashboardSidebar />}
     >
-      <main id="main-content">
-        {/* Dashboard content */}
-      </main>
+      <main id="main-content">{/* Dashboard content */}</main>
     </DashboardLayout>
   )
 }
@@ -173,7 +171,7 @@ function MetricCard() {
         value: 1234,
         unit: 'users',
         trend: 'up',
-        trendValue: '+12%'
+        trendValue: '+12%',
       }}
       // Automatically generates ARIA labels:
       // aria-label="Active Users: 1234 users, trending up by 12%"
@@ -193,16 +191,18 @@ import { ChartCard } from '@/components/dashboard/cards/chart-card'
 
 function AccessibleChart() {
   const data = {
-    datasets: [{
-      label: 'Revenue',
-      data: [
-        { x: 'Q1', y: 10000 },
-        { x: 'Q2', y: 12000 },
-        { x: 'Q3', y: 11000 }
-      ]
-    }]
+    datasets: [
+      {
+        label: 'Revenue',
+        data: [
+          { x: 'Q1', y: 10000 },
+          { x: 'Q2', y: 12000 },
+          { x: 'Q3', y: 11000 },
+        ],
+      },
+    ],
   }
-  
+
   return (
     <ChartCard
       title="Quarterly Revenue"
@@ -227,7 +227,7 @@ import { ScreenReaderAnnouncer } from '@/components/dashboard/accessibility/scre
 
 function DynamicContent() {
   const [data, setData] = useState(initialData)
-  
+
   return (
     <div>
       <ScreenReaderAnnouncer
@@ -247,12 +247,12 @@ function DynamicContent() {
 
 Chart interactions and data updates are announced:
 
-```tsx
+````tsx
 import { ChartAnnouncer } from '@/components/dashboard/accessibility/screen-reader-announcer'
 
 function InteractiveChart({ data }) {
   const [selectedPoint, setSelectedPoint] = useState(null)
-  
+
   return (
     <ChartAnnouncer
       chartType="line"
@@ -292,7 +292,7 @@ All interactive elements meet minimum touch target requirements:
   align-items: center;
   justify-content: center;
 }
-```
+````
 
 ### Touch Interactions
 
@@ -309,10 +309,7 @@ function TouchAccessibleCard() {
       // Provides haptic feedback and visual feedback
       // Announces actions to screen readers
     >
-      <DashboardCard
-        title="Touch-enabled Card"
-        interactive={true}
-      />
+      <DashboardCard title="Touch-enabled Card" interactive={true} />
     </TouchInteraction>
   )
 }
@@ -349,12 +346,12 @@ The system adapts to high contrast preferences:
     --dashboard-border: #000000;
     --dashboard-text-secondary: var(--dashboard-text-primary);
   }
-  
-  [data-theme="dark"] {
-    --dashboard-border: #FFFFFF;
+
+  [data-theme='dark'] {
+    --dashboard-border: #ffffff;
     --dashboard-text-secondary: var(--dashboard-text-primary);
   }
-  
+
   .dashboard-card {
     border: 2px solid var(--dashboard-border);
   }
@@ -372,11 +369,11 @@ Respects user preferences for reduced motion:
     --dashboard-transition-normal: 0ms;
     --dashboard-transition-slow: 0ms;
   }
-  
+
   .skeleton-shimmer::before {
     animation: none;
   }
-  
+
   .chart-animation {
     animation: none !important;
   }
@@ -407,11 +404,11 @@ describe('Dashboard Accessibility', () => {
         </DashboardLayout>
       </DashboardThemeProvider>
     )
-    
+
     const results = await axe(container)
     expect(results).toHaveNoViolations()
   })
-  
+
   test('interactive elements are keyboard accessible', async () => {
     const { container } = render(
       <DashboardThemeProvider>
@@ -422,7 +419,7 @@ describe('Dashboard Accessibility', () => {
         />
       </DashboardThemeProvider>
     )
-    
+
     const results = await axe(container)
     expect(results).toHaveNoViolations()
   })
@@ -432,6 +429,7 @@ describe('Dashboard Accessibility', () => {
 ### Manual Testing Checklist
 
 #### Keyboard Navigation
+
 - [ ] All interactive elements are reachable via Tab
 - [ ] Tab order is logical and intuitive
 - [ ] Focus indicators are clearly visible
@@ -440,6 +438,7 @@ describe('Dashboard Accessibility', () => {
 - [ ] Arrow keys work for component navigation
 
 #### Screen Reader Testing
+
 - [ ] All content is announced correctly
 - [ ] Headings create proper document structure
 - [ ] Form labels are associated with inputs
@@ -448,6 +447,7 @@ describe('Dashboard Accessibility', () => {
 - [ ] Charts have alternative text descriptions
 
 #### Visual Testing
+
 - [ ] Text meets contrast requirements
 - [ ] Focus indicators are visible
 - [ ] Content is readable at 200% zoom
@@ -455,6 +455,7 @@ describe('Dashboard Accessibility', () => {
 - [ ] Color is not the only way to convey information
 
 #### Mobile Testing
+
 - [ ] Touch targets are at least 44px
 - [ ] Content is accessible with screen readers
 - [ ] Gestures work with assistive technology
@@ -463,12 +464,14 @@ describe('Dashboard Accessibility', () => {
 ### Testing Tools
 
 #### Browser Extensions
+
 - **axe DevTools**: Automated accessibility scanning
 - **WAVE**: Web accessibility evaluation
 - **Lighthouse**: Accessibility auditing
 - **Color Contrast Analyzer**: Contrast ratio checking
 
 #### Screen Readers
+
 - **NVDA** (Windows): Free screen reader
 - **JAWS** (Windows): Professional screen reader
 - **VoiceOver** (macOS/iOS): Built-in screen reader
@@ -494,7 +497,7 @@ npm run test -- --testNamePattern="accessibility"
 ```tsx
 function AccessibleErrorCard() {
   const [error, setError] = useState(null)
-  
+
   return (
     <DashboardCard
       title="Data Card"
@@ -514,7 +517,7 @@ function AccessibleErrorCard() {
 ```tsx
 function AccessibleLoadingCard() {
   const [loading, setLoading] = useState(true)
-  
+
   return (
     <DashboardCard
       title="Loading Card"
@@ -548,10 +551,7 @@ function AccessibleDataTable() {
             <td>John Doe</td>
             <td>john@example.com</td>
             <td>
-              <span 
-                className="status-active"
-                aria-label="Status: Active"
-              >
+              <span className="status-active" aria-label="Status: Active">
                 Active
               </span>
             </td>
@@ -572,7 +572,7 @@ import { useAriaLabels } from '@/components/dashboard/accessibility/aria-labels'
 
 function ComponentWithARIA() {
   const ariaLabels = useAriaLabels()
-  
+
   return (
     <div
       role="region"
@@ -593,20 +593,26 @@ function ComponentWithARIA() {
 import { useScreenReaderAnnouncer } from '@/components/dashboard/accessibility/screen-reader-announcer'
 
 function AnnouncingComponent() {
-  const { announceError, announceSuccess, announceChartInteraction } = useScreenReaderAnnouncer()
-  
+  const { announceError, announceSuccess, announceChartInteraction } =
+    useScreenReaderAnnouncer()
+
   const handleDataUpdate = () => {
     announceSuccess('Data updated successfully')
   }
-  
-  const handleError = (error) => {
+
+  const handleError = error => {
     announceError(error.message, 'Data loading')
   }
-  
-  const handleChartClick = (dataPoint) => {
-    announceChartInteraction('Selected', 'data point', dataPoint.value, 'line chart')
+
+  const handleChartClick = dataPoint => {
+    announceChartInteraction(
+      'Selected',
+      'data point',
+      dataPoint.value,
+      'line chart'
+    )
   }
-  
+
   return (
     <ChartCard
       onDataClick={handleChartClick}
@@ -629,10 +635,7 @@ function FocusExample() {
       focusOnMount={true}
       focusSelector="[data-focus-target]"
     >
-      <DashboardCard
-        title="Auto-focused Card"
-        data-focus-target
-      />
+      <DashboardCard title="Auto-focused Card" data-focus-target />
     </FocusManagement>
   )
 }
@@ -648,7 +651,7 @@ function FocusExample() {
 ✅ **Test with screen readers**: Verify content is properly announced  
 ✅ **Use sufficient color contrast**: Meet WCAG AA standards  
 ✅ **Provide multiple ways to access information**: Visual, auditory, and tactile  
-✅ **Respect user preferences**: Honor reduced motion and high contrast settings  
+✅ **Respect user preferences**: Honor reduced motion and high contrast settings
 
 ### Don'ts
 
@@ -658,22 +661,25 @@ function FocusExample() {
 ❌ **Don't auto-play media**: Respect user control over audio and video  
 ❌ **Don't remove focus indicators**: Maintain visible focus states  
 ❌ **Don't use generic link text**: Provide descriptive link text  
-❌ **Don't ignore error states**: Provide clear error messages and recovery paths  
+❌ **Don't ignore error states**: Provide clear error messages and recovery paths
 
 ## Resources
 
 ### Documentation
+
 - [WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
 - [ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/)
 - [WebAIM Resources](https://webaim.org/resources/)
 
 ### Testing Tools
+
 - [axe-core](https://github.com/dequelabs/axe-core)
 - [jest-axe](https://github.com/nickcolley/jest-axe)
 - [Pa11y](https://pa11y.org/)
 - [Lighthouse](https://developers.google.com/web/tools/lighthouse)
 
 ### Screen Readers
+
 - [NVDA Download](https://www.nvaccess.org/download/)
 - [VoiceOver Guide](https://support.apple.com/guide/voiceover/)
 - [JAWS Information](https://www.freedomscientific.com/products/software/jaws/)

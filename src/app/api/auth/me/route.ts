@@ -8,15 +8,15 @@ const prisma = new PrismaClient()
 export async function GET(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization')
-    
+
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: { 
-            code: 'MISSING_TOKEN', 
-            message: 'Authorization token required' 
-          } 
+        {
+          success: false,
+          error: {
+            code: 'MISSING_TOKEN',
+            message: 'Authorization token required',
+          },
         },
         { status: 401 }
       )
@@ -34,12 +34,12 @@ export async function GET(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: { 
-            code: 'USER_NOT_FOUND', 
-            message: 'User not found' 
-          } 
+        {
+          success: false,
+          error: {
+            code: 'USER_NOT_FOUND',
+            message: 'User not found',
+          },
         },
         { status: 404 }
       )
@@ -60,16 +60,15 @@ export async function GET(request: NextRequest) {
       data: { user: userData },
       message: 'User information retrieved successfully',
     })
-
   } catch (error) {
     console.error('Auth me error:', error)
     return NextResponse.json(
-      { 
-        success: false, 
-        error: { 
-          code: 'INVALID_TOKEN', 
-          message: 'Invalid or expired token' 
-        } 
+      {
+        success: false,
+        error: {
+          code: 'INVALID_TOKEN',
+          message: 'Invalid or expired token',
+        },
       },
       { status: 401 }
     )

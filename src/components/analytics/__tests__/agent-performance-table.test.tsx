@@ -28,9 +28,9 @@ const mockData = [
 describe('AgentPerformanceTable', () => {
   it('renders loading state correctly', () => {
     render(<AgentPerformanceTable data={[]} loading={true} />)
-    
+
     expect(screen.getByText('Agent Performance')).toBeInTheDocument()
-    
+
     // Check for loading skeletons
     const skeletonElements = document.querySelectorAll('.animate-pulse')
     expect(skeletonElements.length).toBeGreaterThan(0)
@@ -38,12 +38,12 @@ describe('AgentPerformanceTable', () => {
 
   it('renders agent performance data correctly', () => {
     render(<AgentPerformanceTable data={mockData} loading={false} />)
-    
+
     expect(screen.getByText('Agent Performance')).toBeInTheDocument()
     expect(screen.getByText('Test Agent 1')).toBeInTheDocument()
     expect(screen.getByText('Test Agent 2')).toBeInTheDocument()
     expect(screen.getByText('Test Agent 3')).toBeInTheDocument()
-    
+
     // Check performance metrics
     expect(screen.getByText('100')).toBeInTheDocument() // Total tasks
     expect(screen.getByText('95%')).toBeInTheDocument() // Success rate
@@ -52,13 +52,15 @@ describe('AgentPerformanceTable', () => {
 
   it('displays empty state when no data', () => {
     render(<AgentPerformanceTable data={[]} loading={false} />)
-    
-    expect(screen.getByText('No agent performance data available')).toBeInTheDocument()
+
+    expect(
+      screen.getByText('No agent performance data available')
+    ).toBeInTheDocument()
   })
 
   it('sorts by agent name by default', () => {
     render(<AgentPerformanceTable data={mockData} loading={false} />)
-    
+
     const rows = screen.getAllByRole('row')
     // Skip header row, check data rows
     expect(rows[1]).toHaveTextContent('Test Agent 1')
@@ -68,10 +70,10 @@ describe('AgentPerformanceTable', () => {
 
   it('sorts by total tasks when column header is clicked', async () => {
     render(<AgentPerformanceTable data={mockData} loading={false} />)
-    
+
     const totalTasksHeader = screen.getByText('Total Tasks')
     fireEvent.click(totalTasksHeader)
-    
+
     await waitFor(() => {
       const rows = screen.getAllByRole('row')
       // Should be sorted by total tasks descending (200, 100, 50)
@@ -83,10 +85,10 @@ describe('AgentPerformanceTable', () => {
 
   it('sorts by success rate when column header is clicked', async () => {
     render(<AgentPerformanceTable data={mockData} loading={false} />)
-    
+
     const successRateHeader = screen.getByText('Success Rate')
     fireEvent.click(successRateHeader)
-    
+
     await waitFor(() => {
       const rows = screen.getAllByRole('row')
       // Should be sorted by success rate descending (95%, 90%, 80%)
@@ -98,10 +100,10 @@ describe('AgentPerformanceTable', () => {
 
   it('sorts by response time when column header is clicked', async () => {
     render(<AgentPerformanceTable data={mockData} loading={false} />)
-    
+
     const responseTimeHeader = screen.getByText('Avg Response Time')
     fireEvent.click(responseTimeHeader)
-    
+
     await waitFor(() => {
       const rows = screen.getAllByRole('row')
       // Should be sorted by response time ascending (120ms, 150ms, 300ms)
@@ -113,16 +115,16 @@ describe('AgentPerformanceTable', () => {
 
   it('toggles sort direction when clicking same column twice', async () => {
     render(<AgentPerformanceTable data={mockData} loading={false} />)
-    
+
     const totalTasksHeader = screen.getByText('Total Tasks')
-    
+
     // First click - descending
     fireEvent.click(totalTasksHeader)
     await waitFor(() => {
       const rows = screen.getAllByRole('row')
       expect(rows[1]).toHaveTextContent('Test Agent 3') // 200 tasks
     })
-    
+
     // Second click - ascending
     fireEvent.click(totalTasksHeader)
     await waitFor(() => {
@@ -137,9 +139,9 @@ describe('AgentPerformanceTable', () => {
       { ...mockData[1], successRate: 75 }, // Medium - yellow
       { ...mockData[2], successRate: 45 }, // Low - red
     ]
-    
+
     render(<AgentPerformanceTable data={dataWithVariedRates} loading={false} />)
-    
+
     // Check that success rates are displayed with appropriate styling
     expect(screen.getByText('95%')).toBeInTheDocument()
     expect(screen.getByText('75%')).toBeInTheDocument()
@@ -152,9 +154,9 @@ describe('AgentPerformanceTable', () => {
       { ...mockData[1], averageResponseTime: 500 }, // Medium - yellow
       { ...mockData[2], averageResponseTime: 1500 }, // Slow - red
     ]
-    
+
     render(<AgentPerformanceTable data={dataWithVariedTimes} loading={false} />)
-    
+
     // Check that response times are displayed
     expect(screen.getByText('100ms')).toBeInTheDocument()
     expect(screen.getByText('500ms')).toBeInTheDocument()
@@ -163,23 +165,27 @@ describe('AgentPerformanceTable', () => {
 
   it('applies custom className', () => {
     const { container } = render(
-      <AgentPerformanceTable data={mockData} loading={false} className="custom-class" />
+      <AgentPerformanceTable
+        data={mockData}
+        loading={false}
+        className="custom-class"
+      />
     )
-    
+
     expect(container.firstChild).toHaveClass('custom-class')
   })
 
   it('handles keyboard navigation for sorting', () => {
     render(<AgentPerformanceTable data={mockData} loading={false} />)
-    
+
     const totalTasksHeader = screen.getByText('Total Tasks')
-    
+
     // Test Enter key
     fireEvent.keyDown(totalTasksHeader, { key: 'Enter', code: 'Enter' })
-    
+
     // Test Space key
     fireEvent.keyDown(totalTasksHeader, { key: ' ', code: 'Space' })
-    
+
     // Should not throw errors and should be accessible
     expect(totalTasksHeader).toBeInTheDocument()
   })

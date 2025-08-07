@@ -8,7 +8,8 @@ const meta: Meta<typeof ChartWrapper> = {
     layout: 'padded',
     docs: {
       description: {
-        component: 'A universal chart container component that supports multiple chart types with lazy loading, export functionality, and interactive features.',
+        component:
+          'A universal chart container component that supports multiple chart types with lazy loading, export functionality, and interactive features.',
       },
     },
   },
@@ -410,11 +411,11 @@ export const InteractiveWithCallbacks: Story = {
     responsive: true,
     interactive: true,
     exportable: true,
-    onDataClick: (data) => {
+    onDataClick: data => {
       console.log('Data clicked:', data)
       alert(`Clicked: ${data.x} - ${data.y}`)
     },
-    onLegendClick: (legendItem) => {
+    onLegendClick: legendItem => {
       console.log('Legend clicked:', legendItem)
       alert(`Legend clicked: ${legendItem.label}`)
     },

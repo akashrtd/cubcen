@@ -20,13 +20,20 @@ const mockAgent = {
       uptime: '5 days',
     },
   },
-  capabilities: ['webhook', 'http-request', 'data-transformation', 'email', 'database'],
+  capabilities: [
+    'webhook',
+    'http-request',
+    'data-transformation',
+    'email',
+    'database',
+  ],
   configuration: {
     timeout: 30000,
     retries: 3,
     environment: 'production',
   },
-  description: 'Main automation agent for handling webhooks and data processing',
+  description:
+    'Main automation agent for handling webhooks and data processing',
   createdAt: new Date('2024-01-01T09:00:00Z'),
   updatedAt: new Date('2024-01-01T10:00:00Z'),
 }
@@ -50,7 +57,7 @@ describe('AgentDetailView', () => {
         onDelete={mockOnDelete}
       />
     )
-    
+
     // Check for loading skeletons
     const skeletonElements = document.querySelectorAll('.animate-pulse')
     expect(skeletonElements.length).toBeGreaterThan(0)
@@ -66,9 +73,13 @@ describe('AgentDetailView', () => {
         onDelete={mockOnDelete}
       />
     )
-    
+
     expect(screen.getByText('Test Agent')).toBeInTheDocument()
-    expect(screen.getByText('Main automation agent for handling webhooks and data processing')).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        'Main automation agent for handling webhooks and data processing'
+      )
+    ).toBeInTheDocument()
     expect(screen.getByText('n8n Instance')).toBeInTheDocument()
     expect(screen.getByText('Active')).toBeInTheDocument()
   })
@@ -83,7 +94,7 @@ describe('AgentDetailView', () => {
         onDelete={mockOnDelete}
       />
     )
-    
+
     expect(screen.getByText('Healthy')).toBeInTheDocument()
     expect(screen.getByText('150ms')).toBeInTheDocument()
     expect(screen.getByText('1.0.0')).toBeInTheDocument()
@@ -100,7 +111,7 @@ describe('AgentDetailView', () => {
         onDelete={mockOnDelete}
       />
     )
-    
+
     expect(screen.getByText('webhook')).toBeInTheDocument()
     expect(screen.getByText('http-request')).toBeInTheDocument()
     expect(screen.getByText('data-transformation')).toBeInTheDocument()
@@ -118,7 +129,7 @@ describe('AgentDetailView', () => {
         onDelete={mockOnDelete}
       />
     )
-    
+
     expect(screen.getByText('30000')).toBeInTheDocument() // timeout
     expect(screen.getByText('3')).toBeInTheDocument() // retries
     expect(screen.getByText('production')).toBeInTheDocument() // environment
@@ -134,7 +145,7 @@ describe('AgentDetailView', () => {
         onDelete={mockOnDelete}
       />
     )
-    
+
     // Should display relative time formats
     expect(screen.getByText(/ago/)).toBeInTheDocument()
   })
@@ -149,10 +160,10 @@ describe('AgentDetailView', () => {
         onDelete={mockOnDelete}
       />
     )
-    
+
     const closeButton = screen.getByRole('button', { name: /close/i })
     fireEvent.click(closeButton)
-    
+
     expect(mockOnClose).toHaveBeenCalledTimes(1)
   })
 
@@ -166,10 +177,10 @@ describe('AgentDetailView', () => {
         onDelete={mockOnDelete}
       />
     )
-    
+
     const editButton = screen.getByRole('button', { name: /edit/i })
     fireEvent.click(editButton)
-    
+
     expect(mockOnEdit).toHaveBeenCalledWith(mockAgent)
   })
 
@@ -183,19 +194,19 @@ describe('AgentDetailView', () => {
         onDelete={mockOnDelete}
       />
     )
-    
+
     const deleteButton = screen.getByRole('button', { name: /delete/i })
     fireEvent.click(deleteButton)
-    
+
     // Should show confirmation dialog
     await waitFor(() => {
       expect(screen.getByText(/are you sure/i)).toBeInTheDocument()
     })
-    
+
     // Confirm deletion
     const confirmButton = screen.getByRole('button', { name: /confirm/i })
     fireEvent.click(confirmButton)
-    
+
     expect(mockOnDelete).toHaveBeenCalledWith(mockAgent)
   })
 
@@ -211,7 +222,7 @@ describe('AgentDetailView', () => {
         details: {},
       },
     }
-    
+
     render(
       <AgentDetailView
         agent={agentWithError}
@@ -221,7 +232,7 @@ describe('AgentDetailView', () => {
         onDelete={mockOnDelete}
       />
     )
-    
+
     expect(screen.getByText('Error')).toBeInTheDocument()
     expect(screen.getByText('Unhealthy')).toBeInTheDocument()
     expect(screen.getByText('Connection timeout')).toBeInTheDocument()
@@ -238,7 +249,7 @@ describe('AgentDetailView', () => {
         details: {},
       },
     }
-    
+
     render(
       <AgentDetailView
         agent={agentInMaintenance}
@@ -248,7 +259,7 @@ describe('AgentDetailView', () => {
         onDelete={mockOnDelete}
       />
     )
-    
+
     expect(screen.getByText('Maintenance')).toBeInTheDocument()
     expect(screen.getByText('Degraded')).toBeInTheDocument()
   })
@@ -258,7 +269,7 @@ describe('AgentDetailView', () => {
       ...mockAgent,
       capabilities: [],
     }
-    
+
     render(
       <AgentDetailView
         agent={agentWithoutCapabilities}
@@ -268,7 +279,7 @@ describe('AgentDetailView', () => {
         onDelete={mockOnDelete}
       />
     )
-    
+
     expect(screen.getByText('No capabilities defined')).toBeInTheDocument()
   })
 
@@ -277,7 +288,7 @@ describe('AgentDetailView', () => {
       ...mockAgent,
       configuration: {},
     }
-    
+
     render(
       <AgentDetailView
         agent={agentWithoutConfig}
@@ -287,7 +298,7 @@ describe('AgentDetailView', () => {
         onDelete={mockOnDelete}
       />
     )
-    
+
     expect(screen.getByText('No configuration set')).toBeInTheDocument()
   })
 
@@ -296,7 +307,7 @@ describe('AgentDetailView', () => {
       ...mockAgent,
       description: undefined,
     }
-    
+
     render(
       <AgentDetailView
         agent={agentWithoutDescription}
@@ -306,7 +317,7 @@ describe('AgentDetailView', () => {
         onDelete={mockOnDelete}
       />
     )
-    
+
     expect(screen.getByText('No description provided')).toBeInTheDocument()
   })
 
@@ -320,7 +331,7 @@ describe('AgentDetailView', () => {
         onDelete={mockOnDelete}
       />
     )
-    
+
     expect(screen.getByText('n8n')).toBeInTheDocument()
   })
 
@@ -334,15 +345,15 @@ describe('AgentDetailView', () => {
         onDelete={mockOnDelete}
       />
     )
-    
+
     const editButton = screen.getByRole('button', { name: /edit/i })
-    
+
     // Test Enter key
     fireEvent.keyDown(editButton, { key: 'Enter', code: 'Enter' })
-    
+
     // Test Space key
     fireEvent.keyDown(editButton, { key: ' ', code: 'Space' })
-    
+
     // Should not throw errors
     expect(editButton).toBeInTheDocument()
   })
@@ -358,7 +369,7 @@ describe('AgentDetailView', () => {
         className="custom-class"
       />
     )
-    
+
     expect(container.firstChild).toHaveClass('custom-class')
   })
 
@@ -372,19 +383,19 @@ describe('AgentDetailView', () => {
         onDelete={mockOnDelete}
       />
     )
-    
+
     const deleteButton = screen.getByRole('button', { name: /delete/i })
     fireEvent.click(deleteButton)
-    
+
     // Should show confirmation dialog
     await waitFor(() => {
       expect(screen.getByText(/are you sure/i)).toBeInTheDocument()
     })
-    
+
     // Cancel deletion
     const cancelButton = screen.getByRole('button', { name: /cancel/i })
     fireEvent.click(cancelButton)
-    
+
     expect(mockOnDelete).not.toHaveBeenCalled()
   })
 })

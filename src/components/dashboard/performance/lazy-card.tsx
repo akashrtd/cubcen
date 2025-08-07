@@ -20,9 +20,12 @@ interface LazyCardSkeletonProps {
   className?: string
 }
 
-function LazyCardSkeleton({ minHeight = 200, className }: LazyCardSkeletonProps) {
+function LazyCardSkeleton({
+  minHeight = 200,
+  className,
+}: LazyCardSkeletonProps) {
   return (
-    <Card 
+    <Card
       className={cn('dashboard-card-skeleton', className)}
       style={{ minHeight: `${minHeight}px` }}
       role="status"
@@ -90,16 +93,16 @@ export function LazyCard({
 
     // Create intersection observer
     observerRef.current = new IntersectionObserver(
-      (entries) => {
+      entries => {
         const [entry] = entries
         if (entry.isIntersecting && !isIntersecting) {
           // Add priority-based delay
           const delay = getLoadingDelay(priority)
-          
+
           setTimeout(() => {
             setIsIntersecting(true)
             onIntersect?.()
-            
+
             // Disconnect observer after first intersection
             if (observerRef.current) {
               observerRef.current.disconnect()
@@ -136,10 +139,7 @@ export function LazyCard({
   }, [isIntersecting, hasLoaded, onLoad])
 
   const defaultFallback = fallback || (
-    <LazyCardSkeleton 
-      minHeight={minHeight} 
-      className={className}
-    />
+    <LazyCardSkeleton minHeight={minHeight} className={className} />
   )
 
   return (
@@ -158,9 +158,7 @@ export function LazyCard({
     >
       {isIntersecting ? (
         <Suspense fallback={defaultFallback}>
-          <div className="lazy-card-content">
-            {children}
-          </div>
+          <div className="lazy-card-content">{children}</div>
         </Suspense>
       ) : (
         defaultFallback
@@ -193,7 +191,7 @@ export function withLazyLoading<T extends object>(
   })
 
   LazyWrappedComponent.displayName = `LazyLoaded(${Component.displayName || Component.name})`
-  
+
   return LazyWrappedComponent
 }
 
@@ -214,12 +212,17 @@ export function useLazyLoading(
     if (!currentRef) return
 
     const observer = new IntersectionObserver(
-      (entries) => {
+      entries => {
         const [entry] = entries
         if (entry.isIntersecting && !isIntersecting) {
-          const delay = options.priority === 'critical' ? 0 : 
-                       options.priority === 'high' ? 50 :
-                       options.priority === 'medium' ? 100 : 200
+          const delay =
+            options.priority === 'critical'
+              ? 0
+              : options.priority === 'high'
+                ? 50
+                : options.priority === 'medium'
+                  ? 100
+                  : 200
 
           setTimeout(() => {
             setIsIntersecting(true)

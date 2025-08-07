@@ -1,8 +1,19 @@
 'use client'
 
-import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react'
+import React, {
+  createContext,
+  useContext,
+  useReducer,
+  useEffect,
+  useCallback,
+} from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { FilterState, FilterValue, FilterPreset, FilterConfiguration } from '@/types/dashboard'
+import {
+  FilterState,
+  FilterValue,
+  FilterPreset,
+  FilterConfiguration,
+} from '@/types/dashboard'
 
 // Filter Actions
 type FilterAction =
@@ -51,7 +62,8 @@ function filterReducer(state: FilterState, action: FilterAction): FilterState {
         },
       }
     case 'REMOVE_FILTER':
-      const { [action.key]: removed, ...remainingFilters } = state.customFilters || {}
+      const { [action.key]: removed, ...remainingFilters } =
+        state.customFilters || {}
       return {
         ...state,
         customFilters: remainingFilters,
@@ -217,7 +229,7 @@ export function FilterProvider({
 }: FilterProviderProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
-  
+
   // Merge configuration with defaults
   const config: FilterConfiguration = {
     ...defaultConfiguration,
@@ -227,7 +239,9 @@ export function FilterProvider({
 
   // Initialize state
   const [filters, dispatch] = useReducer(filterReducer, initialFilters)
-  const [presets, setPresets] = React.useState<FilterPreset[]>(config.presets || [])
+  const [presets, setPresets] = React.useState<FilterPreset[]>(
+    config.presets || []
+  )
 
   // Load filters from localStorage on mount
   useEffect(() => {
@@ -277,7 +291,7 @@ export function FilterProvider({
 
     const serialized = serializeFilters(filters)
     const currentParams = new URLSearchParams(searchParams.toString())
-    
+
     if (Object.keys(filters).length === 0) {
       currentParams.delete('filters')
     } else {
@@ -329,15 +343,18 @@ export function FilterProvider({
     dispatch({ type: 'APPLY_PRESET', preset })
   }, [])
 
-  const savePreset = useCallback((name: string, description?: string) => {
-    const newPreset: FilterPreset = {
-      id: `custom-${Date.now()}`,
-      name,
-      description,
-      filters: { ...filters },
-    }
-    setPresets(prev => [...prev, newPreset])
-  }, [filters])
+  const savePreset = useCallback(
+    (name: string, description?: string) => {
+      const newPreset: FilterPreset = {
+        id: `custom-${Date.now()}`,
+        name,
+        description,
+        filters: { ...filters },
+      }
+      setPresets(prev => [...prev, newPreset])
+    },
+    [filters]
+  )
 
   const deletePreset = useCallback((presetId: string) => {
     setPresets(prev => prev.filter(preset => preset.id !== presetId))

@@ -42,10 +42,13 @@ const WCAG_REQUIREMENTS = {
   AAA_NORMAL: 7.0,
   AAA_LARGE: 4.5,
   UI_COMPONENTS: 3.0,
-  GRAPHICAL: 3.0
+  GRAPHICAL: 3.0,
 }
 
-function getWCAGLevel(ratio: number, isLargeText: boolean = false): 'AAA' | 'AA' | 'FAIL' {
+function getWCAGLevel(
+  ratio: number,
+  isLargeText: boolean = false
+): 'AAA' | 'AA' | 'FAIL' {
   if (isLargeText) {
     if (ratio >= WCAG_REQUIREMENTS.AAA_LARGE) return 'AAA'
     if (ratio >= WCAG_REQUIREMENTS.AA_LARGE) return 'AA'
@@ -58,19 +61,19 @@ function getWCAGLevel(ratio: number, isLargeText: boolean = false): 'AAA' | 'AA'
 
 function generateRecommendation(result: ValidationResult): string {
   const { contrastRatio, wcagLevel } = result
-  
+
   if (wcagLevel === 'FAIL') {
     const needed = WCAG_REQUIREMENTS.AA_NORMAL
     const improvement = ((needed / contrastRatio - 1) * 100).toFixed(0)
     return `Increase contrast by approximately ${improvement}% to meet WCAG AA standards`
   }
-  
+
   if (wcagLevel === 'AA') {
     const needed = WCAG_REQUIREMENTS.AAA_NORMAL
     const improvement = ((needed / contrastRatio - 1) * 100).toFixed(0)
     return `Consider increasing contrast by ${improvement}% to achieve WCAG AAA level`
   }
-  
+
   return 'Excellent contrast - meets WCAG AAA standards'
 }
 
@@ -78,10 +81,12 @@ export function ContrastValidator({
   className = '',
   showDetails = true,
   autoValidate = true,
-  onValidationComplete
+  onValidationComplete,
 }: ContrastValidatorProps) {
   const { dashboardTheme, getContrastRatio } = useDashboardTheme()
-  const [validationResults, setValidationResults] = React.useState<ValidationResult[]>([])
+  const [validationResults, setValidationResults] = React.useState<
+    ValidationResult[]
+  >([])
   const [isValidating, setIsValidating] = React.useState(false)
 
   // Generate test pairs based on current theme
@@ -98,7 +103,7 @@ export function ContrastValidator({
         foregroundName: `Text ${textKey}`,
         backgroundName: 'Background',
         requiredRatio: WCAG_REQUIREMENTS.AA_NORMAL,
-        context: 'text'
+        context: 'text',
       })
 
       pairs.push({
@@ -108,7 +113,7 @@ export function ContrastValidator({
         foregroundName: `Text ${textKey}`,
         backgroundName: 'Surface',
         requiredRatio: WCAG_REQUIREMENTS.AA_NORMAL,
-        context: 'text'
+        context: 'text',
       })
     })
 
@@ -121,7 +126,7 @@ export function ContrastValidator({
         foregroundName: `Status ${statusKey}`,
         backgroundName: 'Background',
         requiredRatio: WCAG_REQUIREMENTS.UI_COMPONENTS,
-        context: 'ui'
+        context: 'ui',
       })
     })
 
@@ -133,7 +138,7 @@ export function ContrastValidator({
       foregroundName: 'Primary',
       backgroundName: 'Background',
       requiredRatio: WCAG_REQUIREMENTS.UI_COMPONENTS,
-      context: 'ui'
+      context: 'ui',
     })
 
     pairs.push({
@@ -143,7 +148,7 @@ export function ContrastValidator({
       foregroundName: 'Secondary',
       backgroundName: 'Background',
       requiredRatio: WCAG_REQUIREMENTS.UI_COMPONENTS,
-      context: 'ui'
+      context: 'ui',
     })
 
     pairs.push({
@@ -153,7 +158,7 @@ export function ContrastValidator({
       foregroundName: 'Accent',
       backgroundName: 'Background',
       requiredRatio: WCAG_REQUIREMENTS.UI_COMPONENTS,
-      context: 'ui'
+      context: 'ui',
     })
 
     return pairs
@@ -176,7 +181,7 @@ export function ContrastValidator({
           foreground: pair.foreground,
           background: pair.background,
           foregroundName: pair.foregroundName,
-          backgroundName: pair.backgroundName
+          backgroundName: pair.backgroundName,
         },
         contrastRatio: ratio,
         wcagLevel,
@@ -187,12 +192,12 @@ export function ContrastValidator({
             foreground: pair.foreground,
             background: pair.background,
             foregroundName: pair.foregroundName,
-            backgroundName: pair.backgroundName
+            backgroundName: pair.backgroundName,
           },
           contrastRatio: ratio,
           wcagLevel,
-          isValid
-        })
+          isValid,
+        }),
       }
 
       results.push(result)
@@ -215,7 +220,9 @@ export function ContrastValidator({
 
   const failedTests = validationResults.filter(result => !result.isValid)
   const passedTests = validationResults.filter(result => result.isValid)
-  const aaaTests = validationResults.filter(result => result.wcagLevel === 'AAA')
+  const aaaTests = validationResults.filter(
+    result => result.wcagLevel === 'AAA'
+  )
 
   return (
     <div className={`space-y-6 ${className}`}>
@@ -248,7 +255,7 @@ export function ContrastValidator({
               Passed Tests
             </div>
           </div>
-          
+
           <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
             <div className="text-2xl font-bold text-red-600 dark:text-red-400">
               {failedTests.length}
@@ -257,7 +264,7 @@ export function ContrastValidator({
               Failed Tests
             </div>
           </div>
-          
+
           <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
             <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
               {aaaTests.length}
@@ -275,14 +282,14 @@ export function ContrastValidator({
           <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100">
             Detailed Results
           </h4>
-          
+
           {/* Failed Tests First */}
           {failedTests.length > 0 && (
             <div className="space-y-3">
               <h5 className="text-sm font-medium text-red-600 dark:text-red-400">
                 Failed Tests ({failedTests.length})
               </h5>
-              {failedTests.map((result) => (
+              {failedTests.map(result => (
                 <div
                   key={result.id}
                   className="border border-red-200 dark:border-red-800 rounded-lg p-4 bg-red-50 dark:bg-red-900/10"
@@ -292,7 +299,9 @@ export function ContrastValidator({
                       <div className="flex items-center space-x-2">
                         <div
                           className="w-4 h-4 rounded border"
-                          style={{ backgroundColor: result.colorPair.foreground }}
+                          style={{
+                            backgroundColor: result.colorPair.foreground,
+                          }}
                         />
                         <span className="text-sm font-medium">
                           {result.colorPair.foregroundName}
@@ -300,7 +309,9 @@ export function ContrastValidator({
                         <span className="text-xs text-gray-500">on</span>
                         <div
                           className="w-4 h-4 rounded border"
-                          style={{ backgroundColor: result.colorPair.background }}
+                          style={{
+                            backgroundColor: result.colorPair.background,
+                          }}
                         />
                         <span className="text-sm font-medium">
                           {result.colorPair.backgroundName}
@@ -331,7 +342,7 @@ export function ContrastValidator({
                 Passed Tests ({passedTests.length})
               </h5>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {passedTests.map((result) => (
+                {passedTests.map(result => (
                   <div
                     key={result.id}
                     className="border border-green-200 dark:border-green-800 rounded-lg p-3 bg-green-50 dark:bg-green-900/10"
@@ -340,10 +351,13 @@ export function ContrastValidator({
                       <div className="flex items-center space-x-2">
                         <div
                           className="w-3 h-3 rounded border"
-                          style={{ backgroundColor: result.colorPair.foreground }}
+                          style={{
+                            backgroundColor: result.colorPair.foreground,
+                          }}
                         />
                         <span className="text-xs">
-                          {result.colorPair.foregroundName} / {result.colorPair.backgroundName}
+                          {result.colorPair.foregroundName} /{' '}
+                          {result.colorPair.backgroundName}
                         </span>
                       </div>
                       <div className="text-right">

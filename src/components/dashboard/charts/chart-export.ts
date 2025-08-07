@@ -38,7 +38,13 @@ export class ChartExporter {
           await this.exportToSVG(element, filename)
           break
         case 'pdf':
-          await this.exportToPDF(element, filename, width, height, backgroundColor)
+          await this.exportToPDF(
+            element,
+            filename,
+            width,
+            height,
+            backgroundColor
+          )
           break
         default:
           throw new Error(`Unsupported export format: ${format}`)
@@ -59,8 +65,7 @@ export class ChartExporter {
     backgroundColor: string
   ): Promise<void> {
     const canvas = await html2canvas(element, {
-      backgroundColor,
-      scale: quality,
+      background: backgroundColor,
       useCORS: true,
       allowTaint: true,
       logging: false,
@@ -70,7 +75,7 @@ export class ChartExporter {
     const link = document.createElement('a')
     link.download = `${filename}.png`
     link.href = canvas.toDataURL('image/png')
-    
+
     // Trigger download
     document.body.appendChild(link)
     link.click()
@@ -92,7 +97,7 @@ export class ChartExporter {
 
     // Clone the SVG to avoid modifying the original
     const clonedSvg = svgElement.cloneNode(true) as SVGElement
-    
+
     // Add XML namespace if not present
     if (!clonedSvg.getAttribute('xmlns')) {
       clonedSvg.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
@@ -101,19 +106,19 @@ export class ChartExporter {
     // Convert to string
     const serializer = new XMLSerializer()
     const svgString = serializer.serializeToString(clonedSvg)
-    
+
     // Create blob and download
     const blob = new Blob([svgString], { type: 'image/svg+xml' })
     const url = URL.createObjectURL(blob)
-    
+
     const link = document.createElement('a')
     link.download = `${filename}.svg`
     link.href = url
-    
+
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
-    
+
     URL.revokeObjectURL(url)
   }
 
@@ -128,24 +133,23 @@ export class ChartExporter {
     backgroundColor?: string
   ): Promise<void> {
     const canvas = await html2canvas(element, {
-      backgroundColor,
-      scale: 2, // Higher scale for better PDF quality
+      background: backgroundColor,
       useCORS: true,
       allowTaint: true,
       logging: false,
     })
 
     const imgData = canvas.toDataURL('image/png')
-    
+
     // Calculate dimensions
     const imgWidth = width || canvas.width
     const imgHeight = height || canvas.height
     const ratio = imgHeight / imgWidth
-    
+
     // Create PDF with appropriate size
     const pdfWidth = Math.min(imgWidth, 210) // A4 width in mm
     const pdfHeight = pdfWidth * ratio
-    
+
     const pdf = new jsPDF({
       orientation: pdfWidth > pdfHeight ? 'landscape' : 'portrait',
       unit: 'mm',
@@ -176,7 +180,7 @@ export class ChartExporter {
     }
 
     const formats: ExportFormat[] = ['png', 'svg']
-    
+
     // Check if PDF export is available (requires jsPDF)
     try {
       // This will throw if jsPDF is not available

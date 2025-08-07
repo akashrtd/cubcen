@@ -100,7 +100,9 @@ export function withCardFiltering<T extends DashboardCardProps>(
   WrappedComponent: React.ComponentType<T>,
   defaultFilterMappings?: FilterableCardProps['filterMappings']
 ) {
-  return function FilterableCardComponent(props: T & Partial<FilterableCardProps>) {
+  return function FilterableCardComponent(
+    props: T & Partial<FilterableCardProps>
+  ) {
     const {
       enableFiltering = true,
       filterMappings = defaultFilterMappings,

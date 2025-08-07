@@ -23,7 +23,7 @@
   z-index: 1;
 }
 
-.skeleton-shimmer[data-theme="dark"]::before {
+.skeleton-shimmer[data-theme='dark']::before {
   background: linear-gradient(
     90deg,
     transparent,
@@ -108,7 +108,7 @@
   .viewport-skeleton-grid {
     grid-template-columns: 1fr !important;
   }
-  
+
   .skeleton-shimmer::before {
     animation-duration: calc(var(--skeleton-animation-duration, 1.5s) * 0.8);
   }
@@ -118,11 +118,11 @@
   .dashboard-card-skeleton {
     @apply text-sm;
   }
-  
+
   .dashboard-card-skeleton .space-y-3 {
     @apply space-y-2;
   }
-  
+
   .dashboard-card-skeleton .space-y-2 {
     @apply space-y-1;
   }
@@ -133,7 +133,7 @@
   .skeleton-shimmer::before {
     animation: none;
   }
-  
+
   .dashboard-card-skeleton * {
     animation: none !important;
   }
@@ -144,7 +144,7 @@
   .dashboard-card-skeleton {
     @apply border-2 border-foreground/50;
   }
-  
+
   .skeleton-shimmer::before {
     background: linear-gradient(
       90deg,
@@ -153,8 +153,8 @@
       transparent
     );
   }
-  
-  [data-theme="dark"] .skeleton-shimmer::before {
+
+  [data-theme='dark'] .skeleton-shimmer::before {
     background: linear-gradient(
       90deg,
       transparent,
@@ -187,7 +187,8 @@
 
 /* Skeleton pulse animation for fallback */
 @keyframes skeleton-pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -296,7 +297,9 @@
 }
 
 @keyframes skeleton-dots {
-  0%, 80%, 100% {
+  0%,
+  80%,
+  100% {
     transform: scale(0);
   }
   40% {

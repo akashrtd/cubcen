@@ -1,22 +1,23 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
+import {
   LazyProfileSettingsWithSuspense,
   LazyNotificationSettingsWithSuspense,
-  LazySecuritySettingsWithSuspense
+  LazySecuritySettingsWithSuspense,
 } from '@/components/settings/lazy-components'
 import { ErrorBoundary } from '@/components/error-boundary'
 import { SettingsErrorFallback } from '@/components/error-boundary/page-error-fallbacks'
 import { toast } from 'sonner'
-import { 
-  User, 
-  Bell, 
-  Shield, 
-  Settings as SettingsIcon 
-} from 'lucide-react'
+import { User, Bell, Shield, Settings as SettingsIcon } from 'lucide-react'
 
 interface UserProfile {
   id: string
@@ -62,7 +63,8 @@ interface SecurityAuditLog {
 export default function SettingsPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
-  const [notificationPreferences, setNotificationPreferences] = useState<NotificationPreferences | null>(null)
+  const [notificationPreferences, setNotificationPreferences] =
+    useState<NotificationPreferences | null>(null)
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false)
   const [activeSessions, setActiveSessions] = useState<ActiveSession[]>([])
   const [auditLogs, setAuditLogs] = useState<SecurityAuditLog[]>([])
@@ -74,7 +76,7 @@ export default function SettingsPage() {
   const loadSettingsData = async () => {
     try {
       setIsLoading(true)
-      
+
       // Load user profile
       const profileResponse = await fetch('/api/cubcen/v1/users/profile')
       if (profileResponse.ok) {
@@ -83,7 +85,9 @@ export default function SettingsPage() {
       }
 
       // Load notification preferences
-      const notificationResponse = await fetch('/api/cubcen/v1/users/preferences/notifications')
+      const notificationResponse = await fetch(
+        '/api/cubcen/v1/users/preferences/notifications'
+      )
       if (notificationResponse.ok) {
         const notificationData = await notificationResponse.json()
         setNotificationPreferences(notificationData.data)
@@ -99,7 +103,7 @@ export default function SettingsPage() {
             taskUpdates: true,
             systemNotifications: true,
             securityAlerts: true,
-          }
+          },
         })
       }
 
@@ -122,7 +126,7 @@ export default function SettingsPage() {
             ipAddress: '127.0.0.1',
             lastActive: new Date(),
             current: true,
-          }
+          },
         ])
         setAuditLogs([])
       }
@@ -158,7 +162,10 @@ export default function SettingsPage() {
     }
   }
 
-  const handlePasswordChange = async (currentPassword: string, newPassword: string) => {
+  const handlePasswordChange = async (
+    currentPassword: string,
+    newPassword: string
+  ) => {
     try {
       const response = await fetch('/api/cubcen/v1/users/password', {
         method: 'PUT',
@@ -179,20 +186,27 @@ export default function SettingsPage() {
       }
     } catch (error) {
       console.error('Password change error:', error)
-      toast.error(error instanceof Error ? error.message : 'Failed to change password')
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to change password'
+      )
       throw error
     }
   }
 
-  const handleNotificationUpdate = async (preferences: NotificationPreferences) => {
+  const handleNotificationUpdate = async (
+    preferences: NotificationPreferences
+  ) => {
     try {
-      const response = await fetch('/api/cubcen/v1/users/preferences/notifications', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(preferences),
-      })
+      const response = await fetch(
+        '/api/cubcen/v1/users/preferences/notifications',
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(preferences),
+        }
+      )
 
       if (response.ok) {
         const updatedPreferences = await response.json()
@@ -233,12 +247,17 @@ export default function SettingsPage() {
 
   const handleTerminateSession = async (sessionId: string) => {
     try {
-      const response = await fetch(`/api/cubcen/v1/users/security/sessions/${sessionId}`, {
-        method: 'DELETE',
-      })
+      const response = await fetch(
+        `/api/cubcen/v1/users/security/sessions/${sessionId}`,
+        {
+          method: 'DELETE',
+        }
+      )
 
       if (response.ok) {
-        setActiveSessions(sessions => sessions.filter(session => session.id !== sessionId))
+        setActiveSessions(sessions =>
+          sessions.filter(session => session.id !== sessionId)
+        )
       } else {
         throw new Error('Failed to terminate session')
       }
@@ -255,7 +274,9 @@ export default function SettingsPage() {
       })
 
       if (response.ok) {
-        setActiveSessions(sessions => sessions.filter(session => session.current))
+        setActiveSessions(sessions =>
+          sessions.filter(session => session.current)
+        )
       } else {
         throw new Error('Failed to terminate sessions')
       }
@@ -268,7 +289,7 @@ export default function SettingsPage() {
   const handleDownloadBackupCodes = async () => {
     try {
       const response = await fetch('/api/cubcen/v1/users/security/backup-codes')
-      
+
       if (response.ok) {
         const result = await response.json()
         return result.data.codes
@@ -312,100 +333,103 @@ export default function SettingsPage() {
   }
 
   return (
-    <ErrorBoundary 
+    <ErrorBoundary
       fallback={SettingsErrorFallback}
       pageName="Settings"
       showDetails={false}
     >
       <div className="container mx-auto py-6">
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-            <SettingsIcon className="h-8 w-8" />
-            Settings
-          </h1>
-          <p className="text-muted-foreground">
-            Manage your account settings and preferences
-          </p>
-        </div>
+        <div className="space-y-6">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+              <SettingsIcon className="h-8 w-8" />
+              Settings
+            </h1>
+            <p className="text-muted-foreground">
+              Manage your account settings and preferences
+            </p>
+          </div>
 
-        <Tabs defaultValue="profile" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="profile" className="flex items-center gap-2">
-              <User className="h-4 w-4" />
-              Profile
-            </TabsTrigger>
-            <TabsTrigger value="notifications" className="flex items-center gap-2">
-              <Bell className="h-4 w-4" />
-              Notifications
-            </TabsTrigger>
-            <TabsTrigger value="security" className="flex items-center gap-2">
-              <Shield className="h-4 w-4" />
-              Security
-            </TabsTrigger>
-          </TabsList>
+          <Tabs defaultValue="profile" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="profile" className="flex items-center gap-2">
+                <User className="h-4 w-4" />
+                Profile
+              </TabsTrigger>
+              <TabsTrigger
+                value="notifications"
+                className="flex items-center gap-2"
+              >
+                <Bell className="h-4 w-4" />
+                Notifications
+              </TabsTrigger>
+              <TabsTrigger value="security" className="flex items-center gap-2">
+                <Shield className="h-4 w-4" />
+                Security
+              </TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="profile" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Profile Settings</CardTitle>
-                <CardDescription>
-                  Update your personal information and account details
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {userProfile && (
-                  <LazyProfileSettingsWithSuspense
-                    profile={userProfile}
-                    onProfileUpdate={handleProfileUpdate}
-                    onPasswordChange={handlePasswordChange}
+            <TabsContent value="profile" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Profile Settings</CardTitle>
+                  <CardDescription>
+                    Update your personal information and account details
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {userProfile && (
+                    <LazyProfileSettingsWithSuspense
+                      profile={userProfile}
+                      onProfileUpdate={handleProfileUpdate}
+                      onPasswordChange={handlePasswordChange}
+                    />
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="notifications" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Notification Preferences</CardTitle>
+                  <CardDescription>
+                    Configure how and when you receive notifications
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {notificationPreferences && (
+                    <LazyNotificationSettingsWithSuspense
+                      preferences={notificationPreferences}
+                      onPreferencesUpdate={handleNotificationUpdate}
+                    />
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="security" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Security Settings</CardTitle>
+                  <CardDescription>
+                    Manage your account security and authentication settings
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <LazySecuritySettingsWithSuspense
+                    twoFactorEnabled={twoFactorEnabled}
+                    activeSessions={activeSessions}
+                    auditLogs={auditLogs}
+                    onToggleTwoFactor={handleTwoFactorToggle}
+                    onTerminateSession={handleTerminateSession}
+                    onTerminateAllSessions={handleTerminateAllSessions}
+                    onDownloadBackupCodes={handleDownloadBackupCodes}
                   />
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="notifications" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Notification Preferences</CardTitle>
-                <CardDescription>
-                  Configure how and when you receive notifications
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {notificationPreferences && (
-                  <LazyNotificationSettingsWithSuspense
-                    preferences={notificationPreferences}
-                    onPreferencesUpdate={handleNotificationUpdate}
-                  />
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="security" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Security Settings</CardTitle>
-                <CardDescription>
-                  Manage your account security and authentication settings
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <LazySecuritySettingsWithSuspense
-                  twoFactorEnabled={twoFactorEnabled}
-                  activeSessions={activeSessions}
-                  auditLogs={auditLogs}
-                  onToggleTwoFactor={handleTwoFactorToggle}
-                  onTerminateSession={handleTerminateSession}
-                  onTerminateAllSessions={handleTerminateAllSessions}
-                  onDownloadBackupCodes={handleDownloadBackupCodes}
-                />
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </ErrorBoundary>

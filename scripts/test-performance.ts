@@ -45,22 +45,22 @@ async function testPerformanceFeatures() {
 
     // 3. Test Performance Monitoring
     console.log('\n3. Testing Performance Monitoring...')
-    
+
     // Test component tracking
     performanceMonitor.trackComponentRender('TestComponent', 25, 50)
     performanceMonitor.trackLazyComponentLoad('LazyTestComponent', 150)
-    
+
     // Get metrics
     const perfMetrics = performanceMonitor.getMetrics()
     const componentMetrics = performanceMonitor.getComponentMetrics()
     const coreWebVitals = performanceMonitor.getCoreWebVitals()
-    
+
     console.log('   📊 Performance metrics collected:', {
       totalMetrics: Object.keys(perfMetrics).length,
       componentMetrics: Object.keys(componentMetrics).length,
       coreWebVitals: coreWebVitals,
     })
-    
+
     // Log performance summary
     performanceMonitor.logPerformanceSummary()
 

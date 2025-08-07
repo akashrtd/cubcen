@@ -11,7 +11,7 @@ beforeAll(() => {
   Object.defineProperty(global, 'document', {
     value: {
       ...originalDocument,
-      createElement: jest.fn((tagName) => {
+      createElement: jest.fn(tagName => {
         if (tagName === 'a') {
           return mockLink
         }
@@ -31,11 +31,13 @@ beforeAll(() => {
 
 // Mock html2canvas
 jest.mock('html2canvas', () => {
-  return jest.fn(() => Promise.resolve({
-    toDataURL: jest.fn(() => 'data:image/png;base64,mock-image-data'),
-    width: 800,
-    height: 600,
-  }))
+  return jest.fn(() =>
+    Promise.resolve({
+      toDataURL: jest.fn(() => 'data:image/png;base64,mock-image-data'),
+      width: 800,
+      height: 600,
+    })
+  )
 })
 
 // Mock jsPDF
@@ -79,7 +81,7 @@ const mockLink = {
 
 Object.defineProperty(document, 'createElement', {
   writable: true,
-  value: jest.fn((tagName) => {
+  value: jest.fn(tagName => {
     if (tagName === 'a') {
       return mockLink
     }
@@ -103,7 +105,7 @@ describe('ChartExporter', () => {
   beforeEach(() => {
     // Create a proper mock element with querySelector
     mockElement = {
-      querySelector: jest.fn((selector) => {
+      querySelector: jest.fn(selector => {
         if (selector === 'svg') {
           return {
             cloneNode: jest.fn(() => ({
@@ -115,7 +117,7 @@ describe('ChartExporter', () => {
         return null
       }),
     } as any
-    
+
     // Reset mocks
     jest.clearAllMocks()
   })
@@ -168,7 +170,7 @@ describe('ChartExporter', () => {
       })
 
       expect(jsPDF).toHaveBeenCalled()
-      
+
       // Get the mock instance
       const mockPdfInstance = jsPDF.mock.results[0].value
       expect(mockPdfInstance.addImage).toHaveBeenCalled()
@@ -206,9 +208,12 @@ describe('ChartExporter', () => {
         quality: 2.0,
       })
 
-      expect(html2canvas).toHaveBeenCalledWith(mockElement, expect.objectContaining({
-        scale: 2.0,
-      }))
+      expect(html2canvas).toHaveBeenCalledWith(
+        mockElement,
+        expect.objectContaining({
+          scale: 2.0,
+        })
+      )
     })
 
     it('applies custom background color', async () => {
@@ -220,9 +225,12 @@ describe('ChartExporter', () => {
         backgroundColor: '#ff0000',
       })
 
-      expect(html2canvas).toHaveBeenCalledWith(mockElement, expect.objectContaining({
-        backgroundColor: '#ff0000',
-      }))
+      expect(html2canvas).toHaveBeenCalledWith(
+        mockElement,
+        expect.objectContaining({
+          backgroundColor: '#ff0000',
+        })
+      )
     })
   })
 })

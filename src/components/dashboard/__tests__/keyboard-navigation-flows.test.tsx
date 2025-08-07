@@ -1,5 +1,5 @@
 import './setup-accessibility-tests'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { DashboardLayout } from '../layout/dashboard-layout'
 import { DashboardCard } from '../cards/dashboard-card'
@@ -12,7 +12,9 @@ import { FilterProvider } from '../filters/filter-context'
 jest.mock('../mobile/touch-interactions', () => ({
   useIsMobile: jest.fn(() => false),
   useIsTouchDevice: jest.fn(() => false),
-  TouchInteraction: ({ children }: { children: React.ReactNode }) => <div>{children}</div>
+  TouchInteraction: ({ children }: { children: React.ReactNode }) => (
+    <div>{children}</div>
+  ),
 }))
 
 describe('Keyboard Navigation Flows', () => {
@@ -22,10 +24,10 @@ describe('Keyboard Navigation Flows', () => {
         label: 'Test Data',
         data: [
           { x: 'Jan', y: 100 },
-          { x: 'Feb', y: 150 }
-        ]
-      }
-    ]
+          { x: 'Feb', y: 150 },
+        ],
+      },
+    ],
   }
 
   describe('Dashboard Layout Navigation', () => {
@@ -43,8 +45,12 @@ describe('Keyboard Navigation Flows', () => {
             }
             sidebar={
               <nav>
-                <a href="#nav1" data-testid="nav-link-1">Navigation 1</a>
-                <a href="#nav2" data-testid="nav-link-2">Navigation 2</a>
+                <a href="#nav1" data-testid="nav-link-1">
+                  Navigation 1
+                </a>
+                <a href="#nav2" data-testid="nav-link-2">
+                  Navigation 2
+                </a>
               </nav>
             }
             footer={
@@ -87,7 +93,11 @@ describe('Keyboard Navigation Flows', () => {
         <DashboardThemeProvider>
           <DashboardLayout
             header={<button data-testid="header-btn">Header</button>}
-            sidebar={<a href="#nav" data-testid="nav-link">Nav</a>}
+            sidebar={
+              <a href="#nav" data-testid="nav-link">
+                Nav
+              </a>
+            }
           >
             <button data-testid="main-btn">Main</button>
           </DashboardLayout>
@@ -121,7 +131,7 @@ describe('Keyboard Navigation Flows', () => {
       )
 
       const toggleButton = screen.getByRole('button', { name: /sidebar/i })
-      
+
       // Focus and activate toggle with keyboard
       toggleButton.focus()
       expect(toggleButton).toHaveFocus()
@@ -215,7 +225,9 @@ describe('Keyboard Navigation Flows', () => {
 
       await user.tab()
       // Should skip non-interactive card and go to interactive card
-      expect(screen.getByRole('button', { name: /interactive card/i })).toHaveFocus()
+      expect(
+        screen.getByRole('button', { name: /interactive card/i })
+      ).toHaveFocus()
 
       await user.tab()
       expect(screen.getByTestId('after')).toHaveFocus()
@@ -329,10 +341,7 @@ describe('Keyboard Navigation Flows', () => {
                 data-testid="filter-input"
               />
               <button data-testid="apply-filter">Apply</button>
-              <DashboardCard
-                title="Filtered Content"
-                onFilter={() => {}}
-              >
+              <DashboardCard title="Filtered Content" onFilter={() => {}}>
                 <div>Content</div>
               </DashboardCard>
             </div>
@@ -364,10 +373,7 @@ describe('Keyboard Navigation Flows', () => {
         <DashboardThemeProvider>
           <div>
             <button data-testid="before-error">Before</button>
-            <DashboardCard
-              title="Error Card"
-              error="Something went wrong"
-            >
+            <DashboardCard title="Error Card" error="Something went wrong">
               <button data-testid="retry-btn">Retry</button>
             </DashboardCard>
             <button data-testid="after-error">After</button>
@@ -406,10 +412,7 @@ describe('Keyboard Navigation Flows', () => {
         <DashboardThemeProvider>
           <div>
             <button data-testid="focused-btn">Focused Button</button>
-            <DashboardCard
-              title="Dynamic Card"
-              error="Error occurred"
-            />
+            <DashboardCard title="Dynamic Card" error="Error occurred" />
           </div>
         </DashboardThemeProvider>
       )
@@ -430,10 +433,7 @@ describe('Keyboard Navigation Flows', () => {
         <DashboardThemeProvider>
           <div>
             <button data-testid="before-loading">Before</button>
-            <DashboardCard
-              title="Loading Card"
-              loading={true}
-            />
+            <DashboardCard title="Loading Card" loading={true} />
             <button data-testid="after-loading">After</button>
           </div>
         </DashboardThemeProvider>
@@ -454,10 +454,7 @@ describe('Keyboard Navigation Flows', () => {
         <DashboardThemeProvider>
           <div>
             <button data-testid="before">Before</button>
-            <DashboardCard
-              title="Transitioning Card"
-              loading={true}
-            />
+            <DashboardCard title="Transitioning Card" loading={true} />
             <button data-testid="after">After</button>
           </div>
         </DashboardThemeProvider>
@@ -484,7 +481,9 @@ describe('Keyboard Navigation Flows', () => {
 
       // Now card should be focusable
       await user.tab()
-      expect(screen.getByRole('button', { name: /transitioning card/i })).toHaveFocus()
+      expect(
+        screen.getByRole('button', { name: /transitioning card/i })
+      ).toHaveFocus()
 
       await user.tab()
       expect(screen.getByTestId('after')).toHaveFocus()

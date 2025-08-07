@@ -24,7 +24,9 @@ export class AccessibilityTester {
   /**
    * Run comprehensive accessibility audit
    */
-  async audit(container: HTMLElement = document.body): Promise<AccessibilityReport> {
+  async audit(
+    container: HTMLElement = document.body
+  ): Promise<AccessibilityReport> {
     this.issues = []
 
     // Run all accessibility checks
@@ -40,7 +42,8 @@ export class AccessibilityTester {
     this.checkLinkAccessibility(container)
 
     const totalChecks = 10
-    const passedChecks = totalChecks - this.issues.filter(issue => issue.type === 'error').length
+    const passedChecks =
+      totalChecks - this.issues.filter(issue => issue.type === 'error').length
     const score = Math.round((passedChecks / totalChecks) * 100)
 
     return {
@@ -61,7 +64,7 @@ export class AccessibilityTester {
 
     headings.forEach((heading, index) => {
       const level = parseInt(heading.tagName.charAt(1))
-      
+
       // Check for missing h1
       if (index === 0 && level !== 1) {
         this.addIssue({
@@ -104,12 +107,12 @@ export class AccessibilityTester {
    */
   private checkImageAltText(container: HTMLElement) {
     const images = container.querySelectorAll('img')
-    
+
     images.forEach(img => {
       const alt = img.getAttribute('alt')
       const ariaLabel = img.getAttribute('aria-label')
       const ariaLabelledBy = img.getAttribute('aria-labelledby')
-      
+
       // Check for missing alt text
       if (alt === null && !ariaLabel && !ariaLabelledBy) {
         this.addIssue({
@@ -122,7 +125,11 @@ export class AccessibilityTester {
       }
 
       // Check for redundant alt text
-      if (alt && (alt.toLowerCase().includes('image') || alt.toLowerCase().includes('picture'))) {
+      if (
+        alt &&
+        (alt.toLowerCase().includes('image') ||
+          alt.toLowerCase().includes('picture'))
+      ) {
         this.addIssue({
           type: 'warning',
           rule: 'image-alt',
@@ -139,13 +146,13 @@ export class AccessibilityTester {
    */
   private checkFormLabels(container: HTMLElement) {
     const formControls = container.querySelectorAll('input, select, textarea')
-    
+
     formControls.forEach(control => {
       const id = control.getAttribute('id')
       const ariaLabel = control.getAttribute('aria-label')
       const ariaLabelledBy = control.getAttribute('aria-labelledby')
       const label = id ? container.querySelector(`label[for="${id}"]`) : null
-      
+
       if (!label && !ariaLabel && !ariaLabelledBy) {
         this.addIssue({
           type: 'error',
@@ -162,16 +169,18 @@ export class AccessibilityTester {
    * Check color contrast (basic implementation)
    */
   private checkColorContrast(container: HTMLElement) {
-    const textElements = container.querySelectorAll('p, span, div, h1, h2, h3, h4, h5, h6, a, button, label')
-    
+    const textElements = container.querySelectorAll(
+      'p, span, div, h1, h2, h3, h4, h5, h6, a, button, label'
+    )
+
     textElements.forEach(element => {
       const styles = window.getComputedStyle(element)
       const color = styles.color
       const backgroundColor = styles.backgroundColor
-      
+
       // Skip if no text content
       if (!element.textContent?.trim()) return
-      
+
       // Basic check - this would need a proper contrast calculation in production
       if (color === backgroundColor) {
         this.addIssue({
@@ -189,11 +198,13 @@ export class AccessibilityTester {
    * Check keyboard navigation
    */
   private checkKeyboardNavigation(container: HTMLElement) {
-    const interactiveElements = container.querySelectorAll('button, a, input, select, textarea, [tabindex]')
-    
+    const interactiveElements = container.querySelectorAll(
+      'button, a, input, select, textarea, [tabindex]'
+    )
+
     interactiveElements.forEach(element => {
       const tabIndex = element.getAttribute('tabindex')
-      
+
       // Check for positive tabindex (anti-pattern)
       if (tabIndex && parseInt(tabIndex) > 0) {
         this.addIssue({
@@ -223,12 +234,14 @@ export class AccessibilityTester {
    * Check ARIA attributes
    */
   private checkAriaAttributes(container: HTMLElement) {
-    const elementsWithAria = container.querySelectorAll('[aria-labelledby], [aria-describedby]')
-    
+    const elementsWithAria = container.querySelectorAll(
+      '[aria-labelledby], [aria-describedby]'
+    )
+
     elementsWithAria.forEach(element => {
       const labelledBy = element.getAttribute('aria-labelledby')
       const describedBy = element.getAttribute('aria-describedby')
-      
+
       // Check if referenced elements exist
       if (labelledBy) {
         const labelElement = container.querySelector(`#${labelledBy}`)
@@ -262,13 +275,15 @@ export class AccessibilityTester {
    * Check focus management
    */
   private checkFocusManagement(container: HTMLElement) {
-    const modals = container.querySelectorAll('[role="dialog"], [role="alertdialog"]')
-    
+    const modals = container.querySelectorAll(
+      '[role="dialog"], [role="alertdialog"]'
+    )
+
     modals.forEach(modal => {
       const focusableElements = modal.querySelectorAll(
         'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
       )
-      
+
       if (focusableElements.length === 0) {
         this.addIssue({
           type: 'warning',
@@ -314,12 +329,16 @@ export class AccessibilityTester {
    */
   private checkTableAccessibility(container: HTMLElement) {
     const tables = container.querySelectorAll('table')
-    
+
     tables.forEach(table => {
       const caption = table.querySelector('caption')
       const headers = table.querySelectorAll('th')
-      
-      if (!caption && !table.getAttribute('aria-label') && !table.getAttribute('aria-labelledby')) {
+
+      if (
+        !caption &&
+        !table.getAttribute('aria-label') &&
+        !table.getAttribute('aria-labelledby')
+      ) {
         this.addIssue({
           type: 'warning',
           rule: 'table-caption',
@@ -346,11 +365,11 @@ export class AccessibilityTester {
    */
   private checkLinkAccessibility(container: HTMLElement) {
     const links = container.querySelectorAll('a')
-    
+
     links.forEach(link => {
       const href = link.getAttribute('href')
       const text = link.textContent?.trim()
-      
+
       // Check for empty links
       if (!text && !link.getAttribute('aria-label')) {
         this.addIssue({
@@ -363,7 +382,10 @@ export class AccessibilityTester {
       }
 
       // Check for generic link text
-      if (text && ['click here', 'read more', 'more'].includes(text.toLowerCase())) {
+      if (
+        text &&
+        ['click here', 'read more', 'more'].includes(text.toLowerCase())
+      ) {
         this.addIssue({
           type: 'warning',
           rule: 'link-text',
@@ -374,7 +396,11 @@ export class AccessibilityTester {
       }
 
       // Check for external links
-      if (href && (href.startsWith('http') || href.startsWith('//')) && !link.getAttribute('aria-label')?.includes('external')) {
+      if (
+        href &&
+        (href.startsWith('http') || href.startsWith('//')) &&
+        !link.getAttribute('aria-label')?.includes('external')
+      ) {
         this.addIssue({
           type: 'info',
           rule: 'external-links',
@@ -395,7 +421,7 @@ export class AccessibilityTester {
    */
   generateReport(report: AccessibilityReport): string {
     const { issues, score, totalChecks, passedChecks } = report
-    
+
     let reportText = `Accessibility Audit Report\n`
     reportText += `Generated: ${report.timestamp.toLocaleString()}\n`
     reportText += `Score: ${score}/100 (${passedChecks}/${totalChecks} checks passed)\n\n`
@@ -405,15 +431,18 @@ export class AccessibilityTester {
       return reportText
     }
 
-    const groupedIssues = issues.reduce((groups, issue) => {
-      const key = issue.severity
-      if (!groups[key]) groups[key] = []
-      groups[key].push(issue)
-      return groups
-    }, {} as Record<string, AccessibilityIssue[]>)
+    const groupedIssues = issues.reduce(
+      (groups, issue) => {
+        const key = issue.severity
+        if (!groups[key]) groups[key] = []
+        groups[key].push(issue)
+        return groups
+      },
+      {} as Record<string, AccessibilityIssue[]>
+    )
 
     const severityOrder = ['critical', 'serious', 'moderate', 'minor']
-    
+
     severityOrder.forEach(severity => {
       const severityIssues = groupedIssues[severity]
       if (!severityIssues) return
@@ -424,7 +453,8 @@ export class AccessibilityTester {
         if (issue.element) {
           reportText += `     Element: ${issue.element.tagName.toLowerCase()}`
           if (issue.element.id) reportText += `#${issue.element.id}`
-          if (issue.element.className) reportText += `.${issue.element.className.split(' ')[0]}`
+          if (issue.element.className)
+            reportText += `.${issue.element.className.split(' ')[0]}`
           reportText += '\n'
         }
       })

@@ -314,10 +314,12 @@ router.put(
   authenticate,
   requireSelfOrAdmin('id'),
   validateParams(idParamSchema),
-  validateBody(updateUserProfileSchema.extend({
-    auditTrail: z.boolean().optional(),
-    action: z.string().optional(),
-  })),
+  validateBody(
+    updateUserProfileSchema.extend({
+      auditTrail: z.boolean().optional(),
+      action: z.string().optional(),
+    })
+  ),
   async (req: Request, res: Response) => {
     try {
       const { id } = req.params
@@ -469,11 +471,12 @@ router.put(
 
       // Log audit trail if requested
       if (auditTrail) {
-        const eventType = status === 'suspended' 
-          ? AuditEventType.USER_DELETED 
-          : status === 'active' 
-            ? AuditEventType.USER_UPDATED 
-            : AuditEventType.USER_UPDATED
+        const eventType =
+          status === 'suspended'
+            ? AuditEventType.USER_DELETED
+            : status === 'active'
+              ? AuditEventType.USER_UPDATED
+              : AuditEventType.USER_UPDATED
 
         await auditLogger.logUserEvent(
           eventType,

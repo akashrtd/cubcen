@@ -7,17 +7,29 @@ import { ChartData, ChartConfiguration } from '@/types/dashboard'
 // Mock Recharts components
 jest.mock('recharts', () => ({
   LineChart: ({ children, data, ...props }: any) => (
-    <div data-testid="line-chart" data-chart-data={JSON.stringify(data)} {...props}>
+    <div
+      data-testid="line-chart"
+      data-chart-data={JSON.stringify(data)}
+      {...props}
+    >
       {children}
     </div>
   ),
   BarChart: ({ children, data, ...props }: any) => (
-    <div data-testid="bar-chart" data-chart-data={JSON.stringify(data)} {...props}>
+    <div
+      data-testid="bar-chart"
+      data-chart-data={JSON.stringify(data)}
+      {...props}
+    >
       {children}
     </div>
   ),
   PieChart: ({ children, data, ...props }: any) => (
-    <div data-testid="pie-chart" data-chart-data={JSON.stringify(data)} {...props}>
+    <div
+      data-testid="pie-chart"
+      data-chart-data={JSON.stringify(data)}
+      {...props}
+    >
       {children}
     </div>
   ),
@@ -26,26 +38,28 @@ jest.mock('recharts', () => ({
   Cell: (props: any) => <div data-testid="cell" {...props} />,
   XAxis: (props: any) => <div data-testid="x-axis" {...props} />,
   YAxis: (props: any) => <div data-testid="y-axis" {...props} />,
-  CartesianGrid: (props: any) => <div data-testid="cartesian-grid" {...props} />,
+  CartesianGrid: (props: any) => (
+    <div data-testid="cartesian-grid" {...props} />
+  ),
   Tooltip: (props: any) => <div data-testid="tooltip" {...props} />,
   Legend: (props: any) => <div data-testid="legend" {...props} />,
   ResponsiveContainer: ({ children, ...props }: any) => (
     <div data-testid="responsive-container" {...props}>
       {children}
     </div>
-  )
+  ),
 }))
 
 // Mock dynamic imports
 jest.mock('../chart-types/line-chart', () => ({
   LineChart: ({ data, config, onDataClick }: any) => (
-    <div 
+    <div
       data-testid="line-chart-component"
       onClick={() => onDataClick && onDataClick({ x: 1, y: 100 })}
     >
       Line Chart: {data.datasets.length} datasets
     </div>
-  )
+  ),
 }))
 
 jest.mock('../chart-types/bar-chart', () => ({
@@ -53,7 +67,7 @@ jest.mock('../chart-types/bar-chart', () => ({
     <div data-testid="bar-chart-component">
       Bar Chart: {data.datasets.length} datasets
     </div>
-  )
+  ),
 }))
 
 jest.mock('../chart-types/pie-chart', () => ({
@@ -61,7 +75,7 @@ jest.mock('../chart-types/pie-chart', () => ({
     <div data-testid="pie-chart-component">
       Pie Chart: {data.datasets.length} datasets
     </div>
-  )
+  ),
 }))
 
 jest.mock('../chart-types/heatmap-chart', () => ({
@@ -69,7 +83,7 @@ jest.mock('../chart-types/heatmap-chart', () => ({
     <div data-testid="heatmap-chart-component">
       Heatmap Chart: {data.datasets.length} datasets
     </div>
-  )
+  ),
 }))
 
 describe('Chart Integration Comprehensive Tests', () => {
@@ -80,12 +94,12 @@ describe('Chart Integration Comprehensive Tests', () => {
         data: [
           { x: 'Jan', y: 100 },
           { x: 'Feb', y: 150 },
-          { x: 'Mar', y: 120 }
+          { x: 'Mar', y: 120 },
         ],
-        color: '#3F51B5'
-      }
+        color: '#3F51B5',
+      },
     ],
-    labels: ['Jan', 'Feb', 'Mar']
+    labels: ['Jan', 'Feb', 'Mar'],
   }
 
   const mockBarData: ChartData = {
@@ -96,11 +110,11 @@ describe('Chart Integration Comprehensive Tests', () => {
           { x: 'Q1', y: 10000 },
           { x: 'Q2', y: 15000 },
           { x: 'Q3', y: 12000 },
-          { x: 'Q4', y: 18000 }
+          { x: 'Q4', y: 18000 },
         ],
-        color: '#B19ADA'
-      }
-    ]
+        color: '#B19ADA',
+      },
+    ],
   }
 
   const mockPieData: ChartData = {
@@ -110,10 +124,10 @@ describe('Chart Integration Comprehensive Tests', () => {
         data: [
           { label: 'Desktop', value: 60 },
           { label: 'Mobile', value: 30 },
-          { label: 'Tablet', value: 10 }
-        ]
-      }
-    ]
+          { label: 'Tablet', value: 10 },
+        ],
+      },
+    ],
   }
 
   const mockConfig: ChartConfiguration = {
@@ -123,31 +137,27 @@ describe('Chart Integration Comprehensive Tests', () => {
       accent: '#FF6B35',
       success: '#10B981',
       warning: '#F59E0B',
-      error: '#EF4444'
+      error: '#EF4444',
     },
     legend: {
       show: true,
       position: 'bottom',
-      align: 'center'
+      align: 'center',
     },
     tooltip: {
-      show: true
+      show: true,
     },
     animations: {
       enabled: true,
       duration: 300,
-      easing: 'ease-out'
-    }
+      easing: 'ease-out',
+    },
   }
 
   describe('ChartWrapper Component', () => {
     it('renders line chart with correct data', async () => {
       render(
-        <ChartWrapper
-          type="line"
-          data={mockLineData}
-          config={mockConfig}
-        />
+        <ChartWrapper type="line" data={mockLineData} config={mockConfig} />
       )
 
       await waitFor(() => {
@@ -157,13 +167,7 @@ describe('Chart Integration Comprehensive Tests', () => {
     })
 
     it('renders bar chart with correct data', async () => {
-      render(
-        <ChartWrapper
-          type="bar"
-          data={mockBarData}
-          config={mockConfig}
-        />
-      )
+      render(<ChartWrapper type="bar" data={mockBarData} config={mockConfig} />)
 
       await waitFor(() => {
         expect(screen.getByTestId('bar-chart-component')).toBeInTheDocument()
@@ -172,13 +176,7 @@ describe('Chart Integration Comprehensive Tests', () => {
     })
 
     it('renders pie chart with correct data', async () => {
-      render(
-        <ChartWrapper
-          type="pie"
-          data={mockPieData}
-          config={mockConfig}
-        />
-      )
+      render(<ChartWrapper type="pie" data={mockPieData} config={mockConfig} />)
 
       await waitFor(() => {
         expect(screen.getByTestId('pie-chart-component')).toBeInTheDocument()
@@ -188,30 +186,26 @@ describe('Chart Integration Comprehensive Tests', () => {
 
     it('renders heatmap chart with correct data', async () => {
       render(
-        <ChartWrapper
-          type="heatmap"
-          data={mockLineData}
-          config={mockConfig}
-        />
+        <ChartWrapper type="heatmap" data={mockLineData} config={mockConfig} />
       )
 
       await waitFor(() => {
-        expect(screen.getByTestId('heatmap-chart-component')).toBeInTheDocument()
-        expect(screen.getByText('Heatmap Chart: 1 datasets')).toBeInTheDocument()
+        expect(
+          screen.getByTestId('heatmap-chart-component')
+        ).toBeInTheDocument()
+        expect(
+          screen.getByText('Heatmap Chart: 1 datasets')
+        ).toBeInTheDocument()
       })
     })
 
     it('shows loading state', () => {
-      render(
-        <ChartWrapper
-          type="line"
-          data={mockLineData}
-          loading={true}
-        />
-      )
+      render(<ChartWrapper type="line" data={mockLineData} loading={true} />)
 
       expect(screen.getByText(/loading chart/i)).toBeInTheDocument()
-      expect(screen.queryByTestId('line-chart-component')).not.toBeInTheDocument()
+      expect(
+        screen.queryByTestId('line-chart-component')
+      ).not.toBeInTheDocument()
     })
 
     it('shows error state', () => {
@@ -224,7 +218,9 @@ describe('Chart Integration Comprehensive Tests', () => {
       )
 
       expect(screen.getByText('Failed to load chart data')).toBeInTheDocument()
-      expect(screen.queryByTestId('line-chart-component')).not.toBeInTheDocument()
+      expect(
+        screen.queryByTestId('line-chart-component')
+      ).not.toBeInTheDocument()
     })
 
     it('handles data click events', async () => {
@@ -255,7 +251,7 @@ describe('Chart Integration Comprehensive Tests', () => {
           onLegendClick={onLegendClick}
           config={{
             ...mockConfig,
-            legend: { show: true, position: 'bottom', align: 'center' }
+            legend: { show: true, position: 'bottom', align: 'center' },
           }}
         />
       )
@@ -275,13 +271,13 @@ describe('Chart Integration Comprehensive Tests', () => {
           breakpoints: {
             mobile: {
               legend: { show: false },
-              tooltip: { show: true }
+              tooltip: { show: true },
             },
             tablet: {
-              legend: { show: true, position: 'right' }
-            }
-          }
-        }
+              legend: { show: true, position: 'right' },
+            },
+          },
+        },
       }
 
       render(
@@ -298,26 +294,14 @@ describe('Chart Integration Comprehensive Tests', () => {
     })
 
     it('accepts height prop', () => {
-      render(
-        <ChartWrapper
-          type="line"
-          data={mockLineData}
-          height={400}
-        />
-      )
+      render(<ChartWrapper type="line" data={mockLineData} height={400} />)
 
       // Height prop is accepted without error
       expect(screen.getByTestId('line-chart-component')).toBeInTheDocument()
     })
 
     it('enables export functionality when exportable is true', async () => {
-      render(
-        <ChartWrapper
-          type="line"
-          data={mockLineData}
-          exportable={true}
-        />
-      )
+      render(<ChartWrapper type="line" data={mockLineData} exportable={true} />)
 
       await waitFor(() => {
         const exportButton = screen.queryByRole('button', { name: /export/i })
@@ -328,12 +312,7 @@ describe('Chart Integration Comprehensive Tests', () => {
 
   describe('Data Visualization Accuracy', () => {
     it('correctly processes line chart data', async () => {
-      render(
-        <ChartWrapper
-          type="line"
-          data={mockLineData}
-        />
-      )
+      render(<ChartWrapper type="line" data={mockLineData} />)
 
       await waitFor(() => {
         const chart = screen.getByTestId('line-chart-component')
@@ -349,23 +328,24 @@ describe('Chart Integration Comprehensive Tests', () => {
         datasets: [
           {
             label: 'Revenue',
-            data: [{ x: 'Q1', y: 10000 }, { x: 'Q2', y: 15000 }],
-            color: '#3F51B5'
+            data: [
+              { x: 'Q1', y: 10000 },
+              { x: 'Q2', y: 15000 },
+            ],
+            color: '#3F51B5',
           },
           {
             label: 'Profit',
-            data: [{ x: 'Q1', y: 2000 }, { x: 'Q2', y: 3000 }],
-            color: '#B19ADA'
-          }
-        ]
+            data: [
+              { x: 'Q1', y: 2000 },
+              { x: 'Q2', y: 3000 },
+            ],
+            color: '#B19ADA',
+          },
+        ],
       }
 
-      render(
-        <ChartWrapper
-          type="bar"
-          data={multiDatasetBarData}
-        />
-      )
+      render(<ChartWrapper type="bar" data={multiDatasetBarData} />)
 
       await waitFor(() => {
         expect(screen.getByText('Bar Chart: 2 datasets')).toBeInTheDocument()
@@ -380,18 +360,13 @@ describe('Chart Integration Comprehensive Tests', () => {
             data: [
               { label: 'Desktop', value: 60, metadata: { percentage: '60%' } },
               { label: 'Mobile', value: 30, metadata: { percentage: '30%' } },
-              { label: 'Tablet', value: 10, metadata: { percentage: '10%' } }
-            ]
-          }
-        ]
+              { label: 'Tablet', value: 10, metadata: { percentage: '10%' } },
+            ],
+          },
+        ],
       }
 
-      render(
-        <ChartWrapper
-          type="pie"
-          data={pieDataWithPercentages}
-        />
-      )
+      render(<ChartWrapper type="pie" data={pieDataWithPercentages} />)
 
       await waitFor(() => {
         expect(screen.getByTestId('pie-chart-component')).toBeInTheDocument()
@@ -400,15 +375,10 @@ describe('Chart Integration Comprehensive Tests', () => {
 
     it('handles empty datasets gracefully', async () => {
       const emptyData: ChartData = {
-        datasets: []
+        datasets: [],
       }
 
-      render(
-        <ChartWrapper
-          type="line"
-          data={emptyData}
-        />
-      )
+      render(<ChartWrapper type="line" data={emptyData} />)
 
       await waitFor(() => {
         expect(screen.getByText(/no data available/i)).toBeInTheDocument()
@@ -422,18 +392,13 @@ describe('Chart Integration Comprehensive Tests', () => {
             label: 'Invalid',
             data: [
               { x: null, y: undefined },
-              { x: 'valid', y: 100 }
-            ]
-          }
-        ]
+              { x: 'valid', y: 100 },
+            ],
+          },
+        ],
       }
 
-      render(
-        <ChartWrapper
-          type="line"
-          data={malformedData}
-        />
-      )
+      render(<ChartWrapper type="line" data={malformedData} />)
 
       await waitFor(() => {
         // Should render without crashing and show valid data
@@ -449,18 +414,13 @@ describe('Chart Integration Comprehensive Tests', () => {
             data: [
               { x: 'Jan', y: 100 },
               { x: 'Feb', y: '150' }, // String number
-              { x: 'Mar', y: 120 }
-            ]
-          }
-        ]
+              { x: 'Mar', y: 120 },
+            ],
+          },
+        ],
       }
 
-      render(
-        <ChartWrapper
-          type="line"
-          data={mixedTypeData}
-        />
-      )
+      render(<ChartWrapper type="line" data={mixedTypeData} />)
 
       await waitFor(() => {
         expect(screen.getByTestId('line-chart-component')).toBeInTheDocument()
@@ -477,16 +437,12 @@ describe('Chart Integration Comprehensive Tests', () => {
           accent: '#0000FF',
           success: '#00FFFF',
           warning: '#FFFF00',
-          error: '#FF00FF'
-        }
+          error: '#FF00FF',
+        },
       }
 
       render(
-        <ChartWrapper
-          type="line"
-          data={mockLineData}
-          config={colorConfig}
-        />
+        <ChartWrapper type="line" data={mockLineData} config={colorConfig} />
       )
 
       await waitFor(() => {
@@ -502,16 +458,12 @@ describe('Chart Integration Comprehensive Tests', () => {
         legend: {
           show: true,
           position: 'top',
-          align: 'start'
-        }
+          align: 'start',
+        },
       }
 
       render(
-        <ChartWrapper
-          type="line"
-          data={mockLineData}
-          config={legendConfig}
-        />
+        <ChartWrapper type="line" data={mockLineData} config={legendConfig} />
       )
 
       await waitFor(() => {
@@ -523,16 +475,12 @@ describe('Chart Integration Comprehensive Tests', () => {
       const tooltipConfig: ChartConfiguration = {
         tooltip: {
           show: true,
-          format: (value: any) => `$${value.toLocaleString()}`
-        }
+          format: (value: any) => `$${value.toLocaleString()}`,
+        },
       }
 
       render(
-        <ChartWrapper
-          type="line"
-          data={mockLineData}
-          config={tooltipConfig}
-        />
+        <ChartWrapper type="line" data={mockLineData} config={tooltipConfig} />
       )
 
       await waitFor(() => {
@@ -545,8 +493,8 @@ describe('Chart Integration Comprehensive Tests', () => {
         animations: {
           enabled: true,
           duration: 500,
-          easing: 'ease-in-out'
-        }
+          easing: 'ease-in-out',
+        },
       }
 
       render(
@@ -567,8 +515,8 @@ describe('Chart Integration Comprehensive Tests', () => {
         animations: {
           enabled: false,
           duration: 0,
-          easing: 'linear'
-        }
+          easing: 'linear',
+        },
       }
 
       render(
@@ -587,12 +535,7 @@ describe('Chart Integration Comprehensive Tests', () => {
 
   describe('Performance and Lazy Loading', () => {
     it('lazy loads chart components', async () => {
-      render(
-        <ChartWrapper
-          type="line"
-          data={mockLineData}
-        />
-      )
+      render(<ChartWrapper type="line" data={mockLineData} />)
 
       // Chart loads dynamically
       await waitFor(() => {
@@ -602,11 +545,7 @@ describe('Chart Integration Comprehensive Tests', () => {
 
     it('memoizes chart data to prevent unnecessary re-renders', async () => {
       const { rerender } = render(
-        <ChartWrapper
-          type="line"
-          data={mockLineData}
-          config={mockConfig}
-        />
+        <ChartWrapper type="line" data={mockLineData} config={mockConfig} />
       )
 
       await waitFor(() => {
@@ -615,11 +554,7 @@ describe('Chart Integration Comprehensive Tests', () => {
 
       // Re-render with same data
       rerender(
-        <ChartWrapper
-          type="line"
-          data={mockLineData}
-          config={mockConfig}
-        />
+        <ChartWrapper type="line" data={mockLineData} config={mockConfig} />
       )
 
       // Chart should not re-render if data hasn't changed
@@ -633,20 +568,15 @@ describe('Chart Integration Comprehensive Tests', () => {
             label: 'Large Dataset',
             data: Array.from({ length: 1000 }, (_, i) => ({
               x: i,
-              y: Math.random() * 100
-            }))
-          }
-        ]
+              y: Math.random() * 100,
+            })),
+          },
+        ],
       }
 
       const startTime = performance.now()
-      
-      render(
-        <ChartWrapper
-          type="line"
-          data={largeDataset}
-        />
-      )
+
+      render(<ChartWrapper type="line" data={largeDataset} />)
 
       await waitFor(() => {
         expect(screen.getByTestId('line-chart-component')).toBeInTheDocument()
@@ -663,11 +593,7 @@ describe('Chart Integration Comprehensive Tests', () => {
   describe('Accessibility', () => {
     it('provides proper ARIA labels for charts', async () => {
       render(
-        <ChartWrapper
-          type="line"
-          data={mockLineData}
-          config={mockConfig}
-        />
+        <ChartWrapper type="line" data={mockLineData} config={mockConfig} />
       )
 
       await waitFor(() => {
@@ -681,11 +607,7 @@ describe('Chart Integration Comprehensive Tests', () => {
 
     it('provides keyboard navigation for interactive charts', async () => {
       render(
-        <ChartWrapper
-          type="line"
-          data={mockLineData}
-          interactive={true}
-        />
+        <ChartWrapper type="line" data={mockLineData} interactive={true} />
       )
 
       await waitFor(() => {
@@ -696,10 +618,7 @@ describe('Chart Integration Comprehensive Tests', () => {
 
     it('announces data updates to screen readers', async () => {
       const { rerender } = render(
-        <ChartWrapper
-          type="line"
-          data={mockLineData}
-        />
+        <ChartWrapper type="line" data={mockLineData} />
       )
 
       const updatedData: ChartData = {
@@ -710,18 +629,13 @@ describe('Chart Integration Comprehensive Tests', () => {
             data: [
               { x: 'Jan', y: 200 },
               { x: 'Feb', y: 250 },
-              { x: 'Mar', y: 220 }
-            ]
-          }
-        ]
+              { x: 'Mar', y: 220 },
+            ],
+          },
+        ],
       }
 
-      rerender(
-        <ChartWrapper
-          type="line"
-          data={updatedData}
-        />
-      )
+      rerender(<ChartWrapper type="line" data={updatedData} />)
 
       await waitFor(() => {
         // Chart should re-render with updated data

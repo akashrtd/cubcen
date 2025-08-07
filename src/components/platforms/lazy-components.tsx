@@ -6,11 +6,11 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Zap, Settings } from 'lucide-react'
 
 // Lazy load platform components
-const LazyPlatformList = lazy(() => 
+const LazyPlatformList = lazy(() =>
   import('./platform-list').then(module => ({ default: module.PlatformList }))
 )
 
-const LazyPlatformForm = lazy(() => 
+const LazyPlatformForm = lazy(() =>
   import('./platform-form').then(module => ({ default: module.PlatformForm }))
 )
 
@@ -35,7 +35,10 @@ const PlatformListLoading = () => (
         </div>
         <div className="space-y-2">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="flex items-center space-x-4 p-4 border rounded">
+            <div
+              key={i}
+              className="flex items-center space-x-4 p-4 border rounded"
+            >
               <Skeleton className="h-12 w-12 rounded" />
               <div className="flex-1 space-y-2">
                 <Skeleton className="h-4 w-48" />
@@ -61,7 +64,7 @@ const PlatformFormLoading = () => (
       </div>
       <Skeleton className="h-4 w-80" />
     </div>
-    
+
     <div className="grid gap-4">
       <div className="space-y-2">
         <Skeleton className="h-4 w-20" />
@@ -80,7 +83,7 @@ const PlatformFormLoading = () => (
         <Skeleton className="h-10 w-full" />
       </div>
     </div>
-    
+
     <div className="flex justify-end gap-2">
       <Skeleton className="h-10 w-20" />
       <Skeleton className="h-10 w-20" />

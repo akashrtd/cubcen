@@ -5,7 +5,11 @@ interface VirtualizedListProps<T> {
   items: T[]
   itemHeight: number
   containerHeight: number
-  renderItem: (item: T, index: number, style: React.CSSProperties) => React.ReactNode
+  renderItem: (
+    item: T,
+    index: number,
+    style: React.CSSProperties
+  ) => React.ReactNode
   overscan?: number
   className?: string
   onScroll?: (scrollTop: number) => void
@@ -35,7 +39,11 @@ interface VirtualizedGridProps<T> {
   containerWidth: number
   containerHeight: number
   columnsCount: number
-  renderItem: (item: T, index: number, style: React.CSSProperties) => React.ReactNode
+  renderItem: (
+    item: T,
+    index: number,
+    style: React.CSSProperties
+  ) => React.ReactNode
   overscan?: number
   className?: string
   gap?: number
@@ -72,16 +80,19 @@ export function VirtualizedList<T>({
   }, [scrollTop, itemHeight, containerHeight, items.length, overscan])
 
   // Handle scroll events
-  const handleScroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {
-    const newScrollTop = event.currentTarget.scrollTop
-    setScrollTop(newScrollTop)
-    onScroll?.(newScrollTop)
-  }, [onScroll])
+  const handleScroll = useCallback(
+    (event: React.UIEvent<HTMLDivElement>) => {
+      const newScrollTop = event.currentTarget.scrollTop
+      setScrollTop(newScrollTop)
+      onScroll?.(newScrollTop)
+    },
+    [onScroll]
+  )
 
   // Render visible items
   const visibleItems = useMemo(() => {
     const items_to_render = []
-    
+
     for (let i = startIndex; i <= endIndex; i++) {
       const item = items[i]
       if (!item) continue
@@ -204,7 +215,7 @@ export function VirtualizedTable<T>({
   // Render visible rows
   const visibleRows = useMemo(() => {
     const rows = []
-    
+
     for (let i = startIndex; i <= endIndex; i++) {
       const item = data[i]
       if (!item) continue
@@ -229,14 +240,14 @@ export function VirtualizedTable<T>({
           onClick={() => onRowClick?.(item, i)}
           role="row"
           tabIndex={onRowClick ? 0 : -1}
-          onKeyDown={(e) => {
+          onKeyDown={e => {
             if (onRowClick && (e.key === 'Enter' || e.key === ' ')) {
               e.preventDefault()
               onRowClick(item, i)
             }
           }}
         >
-          {columns.map((column) => (
+          {columns.map(column => (
             <div
               key={column.key}
               className="table-cell"
@@ -250,10 +261,9 @@ export function VirtualizedTable<T>({
               }}
               role="cell"
             >
-              {column.render 
+              {column.render
                 ? column.render((item as any)[column.key], item, i)
-                : (item as any)[column.key]
-              }
+                : (item as any)[column.key]}
             </div>
           ))}
         </div>
@@ -336,12 +346,12 @@ export function VirtualizedGrid<T>({
   // Render visible items
   const visibleItems = useMemo(() => {
     const itemsToRender = []
-    
+
     for (let row = startRow; row <= endRow; row++) {
       for (let col = 0; col < columnsCount; col++) {
         const index = row * columnsCount + col
         const item = items[index]
-        
+
         if (!item) continue
 
         const style: React.CSSProperties = {
@@ -363,7 +373,17 @@ export function VirtualizedGrid<T>({
     }
 
     return itemsToRender
-  }, [items, startRow, endRow, columnsCount, itemWidth, itemHeight, gap, renderItem, getItemKey])
+  }, [
+    items,
+    startRow,
+    endRow,
+    columnsCount,
+    itemWidth,
+    itemHeight,
+    gap,
+    renderItem,
+    getItemKey,
+  ])
 
   return (
     <div
@@ -398,23 +418,28 @@ export function useDynamicSizing<T>(
   measureItem: (item: T, index: number) => number
 ) {
   const [itemHeights, setItemHeights] = useState<Map<number, number>>(new Map())
-  const [totalHeight, setTotalHeight] = useState(items.length * estimatedItemHeight)
+  const [totalHeight, setTotalHeight] = useState(
+    items.length * estimatedItemHeight
+  )
 
   // Measure items as they become visible
-  const measureItemHeight = useCallback((index: number) => {
-    const item = items[index]
-    if (!item) return estimatedItemHeight
+  const measureItemHeight = useCallback(
+    (index: number) => {
+      const item = items[index]
+      if (!item) return estimatedItemHeight
 
-    const height = measureItem(item, index)
-    
-    setItemHeights(prev => {
-      const newHeights = new Map(prev)
-      newHeights.set(index, height)
-      return newHeights
-    })
+      const height = measureItem(item, index)
 
-    return height
-  }, [items, measureItem, estimatedItemHeight])
+      setItemHeights(prev => {
+        const newHeights = new Map(prev)
+        newHeights.set(index, height)
+        return newHeights
+      })
+
+      return height
+    },
+    [items, measureItem, estimatedItemHeight]
+  )
 
   // Recalculate total height when item heights change
   useEffect(() => {
@@ -426,13 +451,16 @@ export function useDynamicSizing<T>(
   }, [items.length, itemHeights, estimatedItemHeight])
 
   // Get offset for a specific item
-  const getItemOffset = useCallback((index: number) => {
-    let offset = 0
-    for (let i = 0; i < index; i++) {
-      offset += itemHeights.get(i) || estimatedItemHeight
-    }
-    return offset
-  }, [itemHeights, estimatedItemHeight])
+  const getItemOffset = useCallback(
+    (index: number) => {
+      let offset = 0
+      for (let i = 0; i < index; i++) {
+        offset += itemHeights.get(i) || estimatedItemHeight
+      }
+      return offset
+    },
+    [itemHeights, estimatedItemHeight]
+  )
 
   return {
     itemHeights,
@@ -451,28 +479,34 @@ export function useVirtualizationPerformance(componentName: string) {
   const trackScroll = useCallback(() => {
     scrollEvents.current += 1
     const now = performance.now()
-    
+
     if (lastScrollTime.current > 0) {
       const scrollDelta = now - lastScrollTime.current
-      
+
       // Track scroll performance
-      if (scrollDelta < 16) { // Less than 16ms = good performance
-        console.log(`${componentName} smooth scroll: ${scrollDelta.toFixed(2)}ms`)
-      } else if (scrollDelta > 32) { // More than 32ms = poor performance
-        console.warn(`${componentName} janky scroll: ${scrollDelta.toFixed(2)}ms`)
+      if (scrollDelta < 16) {
+        // Less than 16ms = good performance
+        console.log(
+          `${componentName} smooth scroll: ${scrollDelta.toFixed(2)}ms`
+        )
+      } else if (scrollDelta > 32) {
+        // More than 32ms = poor performance
+        console.warn(
+          `${componentName} janky scroll: ${scrollDelta.toFixed(2)}ms`
+        )
       }
     }
-    
+
     lastScrollTime.current = now
   }, [componentName])
 
   useEffect(() => {
     renderCount.current += 1
-    
+
     if (renderCount.current % 10 === 0) {
       console.log(
         `${componentName} performance: ${renderCount.current} renders, ` +
-        `${scrollEvents.current} scroll events`
+          `${scrollEvents.current} scroll events`
       )
     }
   })

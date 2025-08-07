@@ -2,11 +2,11 @@
  * Tests for dashboard migration utilities
  */
 
-import { 
-  DashboardMigration, 
-  LegacyDataAdapter, 
+import {
+  DashboardMigration,
+  LegacyDataAdapter,
   MigrationRollback,
-  MigrationAnalytics 
+  MigrationAnalytics,
 } from '../dashboard-migration'
 
 // Mock environment variables
@@ -15,7 +15,7 @@ const originalEnv = process.env
 beforeEach(() => {
   jest.resetModules()
   process.env = { ...originalEnv }
-  
+
   // Clear any existing instances
   ;(DashboardMigration as any).instance = null
 })
@@ -50,7 +50,7 @@ describe('DashboardMigration', () => {
       process.env.NEXT_PUBLIC_USE_NEW_DASHBOARD = 'false'
       process.env.NEXT_PUBLIC_ROLLOUT_PERCENTAGE = '50'
       const migration = DashboardMigration.getInstance()
-      
+
       // Test with consistent user ID
       const result1 = migration.shouldUseNewComponents('user123')
       const result2 = migration.shouldUseNewComponents('user123')
@@ -63,7 +63,7 @@ describe('DashboardMigration', () => {
       process.env.NEXT_PUBLIC_USE_NEW_DASHBOARD = 'true'
       process.env.NEXT_PUBLIC_NEW_KPI_CARDS = 'true'
       const migration = DashboardMigration.getInstance()
-      
+
       const flags = migration.getFeatureFlags()
       expect(flags.DASHBOARD_V2).toBe(true)
       expect(flags.KPI_CARDS_V2).toBe(true)
@@ -79,7 +79,7 @@ describe('LegacyDataAdapter', () => {
         value: 100,
         unit: 'items',
         description: 'Test description',
-        color: 'text-blue-600'
+        color: 'text-blue-600',
       }
 
       const adapted = LegacyDataAdapter.adaptKPIData(legacyData)
@@ -98,7 +98,7 @@ describe('LegacyDataAdapter', () => {
     it('should adapt legacy chart data', () => {
       const legacyData = [
         { name: 'Jan', value: 100, count: 50 },
-        { name: 'Feb', value: 200, count: 75 }
+        { name: 'Feb', value: 200, count: 75 },
       ]
 
       const adapted = LegacyDataAdapter.adaptChartData(legacyData, 'bar')
@@ -119,16 +119,24 @@ describe('LegacyDataAdapter', () => {
       const validData = { totalAgents: 5, activeAgents: 3 }
       const invalidData = { foo: 'bar' }
 
-      expect(LegacyDataAdapter.validateDataCompatibility(validData, 'analytics')).toBe(true)
-      expect(LegacyDataAdapter.validateDataCompatibility(invalidData, 'analytics')).toBe(false)
+      expect(
+        LegacyDataAdapter.validateDataCompatibility(validData, 'analytics')
+      ).toBe(true)
+      expect(
+        LegacyDataAdapter.validateDataCompatibility(invalidData, 'analytics')
+      ).toBe(false)
     })
 
     it('should validate chart data format', () => {
       const validData = [{ name: 'test', value: 1 }]
       const invalidData = []
 
-      expect(LegacyDataAdapter.validateDataCompatibility(validData, 'chart')).toBe(true)
-      expect(LegacyDataAdapter.validateDataCompatibility(invalidData, 'chart')).toBe(false)
+      expect(
+        LegacyDataAdapter.validateDataCompatibility(validData, 'chart')
+      ).toBe(true)
+      expect(
+        LegacyDataAdapter.validateDataCompatibility(invalidData, 'chart')
+      ).toBe(false)
     })
   })
 })
@@ -142,13 +150,17 @@ describe('MigrationRollback', () => {
   describe('recordFailure', () => {
     it('should record component failures', () => {
       MigrationRollback.recordFailure('TestComponent', 'user123')
-      expect(MigrationRollback.shouldRollback('TestComponent', 'user123')).toBe(false)
-      
+      expect(MigrationRollback.shouldRollback('TestComponent', 'user123')).toBe(
+        false
+      )
+
       // Record more failures
       MigrationRollback.recordFailure('TestComponent', 'user123')
       MigrationRollback.recordFailure('TestComponent', 'user123')
-      
-      expect(MigrationRollback.shouldRollback('TestComponent', 'user123')).toBe(true)
+
+      expect(MigrationRollback.shouldRollback('TestComponent', 'user123')).toBe(
+        true
+      )
     })
   })
 
@@ -157,11 +169,15 @@ describe('MigrationRollback', () => {
       MigrationRollback.recordFailure('TestComponent', 'user123')
       MigrationRollback.recordFailure('TestComponent', 'user123')
       MigrationRollback.recordFailure('TestComponent', 'user123')
-      
-      expect(MigrationRollback.shouldRollback('TestComponent', 'user123')).toBe(true)
-      
+
+      expect(MigrationRollback.shouldRollback('TestComponent', 'user123')).toBe(
+        true
+      )
+
       MigrationRollback.clearFailures('TestComponent', 'user123')
-      expect(MigrationRollback.shouldRollback('TestComponent', 'user123')).toBe(false)
+      expect(MigrationRollback.shouldRollback('TestComponent', 'user123')).toBe(
+        false
+      )
     })
   })
 })
@@ -180,12 +196,12 @@ describe('MigrationAnalytics', () => {
   describe('trackComponentUsage', () => {
     it('should track component usage', () => {
       MigrationAnalytics.trackComponentUsage('TestComponent', 'new', 'user123')
-      
+
       expect(consoleSpy).toHaveBeenCalledWith('Component usage tracked', {
         component: 'TestComponent',
         version: 'new',
         userId: 'user123',
-        timestamp: expect.any(String)
+        timestamp: expect.any(String),
       })
     })
   })
@@ -194,9 +210,9 @@ describe('MigrationAnalytics', () => {
     it('should track errors and record failures', () => {
       const error = new Error('Test error')
       const errorSpy = jest.spyOn(console, 'error').mockImplementation()
-      
+
       MigrationAnalytics.trackError('TestComponent', error, 'user123')
-      
+
       expect(errorSpy).toHaveBeenCalled()
       errorSpy.mockRestore()
     })

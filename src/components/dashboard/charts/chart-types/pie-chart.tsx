@@ -7,7 +7,12 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts'
-import type { ChartData, ChartConfiguration, ChartDataPoint, LegendItem } from '@/types/dashboard'
+import type {
+  ChartData,
+  ChartConfiguration,
+  ChartDataPoint,
+  LegendItem,
+} from '@/types/dashboard'
 
 interface PieChartProps {
   data: ChartData
@@ -48,12 +53,17 @@ export function PieChart({
   }, [data, colors])
 
   // Handle pie slice click
-  const handleSliceClick = (data: any, index: number, event?: React.MouseEvent) => {
+  const handleSliceClick = (
+    data: any,
+    index: number,
+    event?: React.MouseEvent
+  ) => {
     if (!interactive || !onDataClick) return
-    
-    const totalValue = chartData.reduce((sum, item) => sum + item.value, 0)
-    const percentage = totalValue > 0 ? ((data.value / totalValue) * 100).toFixed(1) : '0'
-    
+
+    const totalValue = chartData.reduce((sum, item) => sum + Number(item.value), 0)
+    const percentage =
+      totalValue > 0 ? ((data.value / totalValue) * 100).toFixed(1) : '0'
+
     const chartDataPoint: ChartDataPoint = {
       x: data.name,
       y: data.value,
@@ -76,7 +86,7 @@ export function PieChart({
   // Handle legend click
   const handleLegendClick = (data: any, index: number) => {
     if (!interactive || !onLegendClick) return
-    
+
     const legendItem: LegendItem = {
       label: data.value,
       color: data.color,
@@ -95,31 +105,45 @@ export function PieChart({
     if (!active || !payload || !payload.length) return null
 
     const data = payload[0]
-    const percentage = ((data.value / chartData.reduce((sum, item) => sum + item.value, 0)) * 100).toFixed(1)
+    const percentage = (
+      (Number(data.value) / chartData.reduce((sum, item) => sum + Number(item.value), 0)) *
+      100
+    ).toFixed(1)
 
     return (
       <div className="bg-background border border-border rounded-lg shadow-lg p-3">
         <div className="flex items-center gap-2 text-sm">
-          <div 
-            className="w-3 h-3 rounded-full" 
+          <div
+            className="w-3 h-3 rounded-full"
             style={{ backgroundColor: data.payload.color }}
           />
           <span className="font-medium text-foreground">{data.name}</span>
         </div>
         <div className="mt-1 text-sm text-muted-foreground">
-          Value: <span className="font-medium text-foreground">
-            {config.tooltip?.format ? config.tooltip.format(data.value) : data.value}
+          Value:{' '}
+          <span className="font-medium text-foreground">
+            {config.tooltip?.format
+              ? config.tooltip.format(data.value)
+              : data.value}
           </span>
         </div>
         <div className="text-sm text-muted-foreground">
-          Percentage: <span className="font-medium text-foreground">{percentage}%</span>
+          Percentage:{' '}
+          <span className="font-medium text-foreground">{percentage}%</span>
         </div>
       </div>
     )
   }
 
   // Custom label renderer
-  const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
+  const renderCustomLabel = ({
+    cx,
+    cy,
+    midAngle,
+    innerRadius,
+    outerRadius,
+    percent,
+  }: any) => {
     if (percent < 0.05) return null // Don't show labels for slices smaller than 5%
 
     const RADIAN = Math.PI / 180
@@ -128,11 +152,11 @@ export function PieChart({
     const y = cy + radius * Math.sin(-midAngle * RADIAN)
 
     return (
-      <text 
-        x={x} 
-        y={y} 
-        fill="white" 
-        textAnchor={x > cx ? 'start' : 'end'} 
+      <text
+        x={x}
+        y={y}
+        fill="white"
+        textAnchor={x > cx ? 'start' : 'end'}
         dominantBaseline="central"
         fontSize={12}
         fontWeight="medium"
@@ -156,8 +180,8 @@ export function PieChart({
             }`}
             onClick={() => handleLegendClick(entry, index)}
           >
-            <div 
-              className="w-3 h-3 rounded-full" 
+            <div
+              className="w-3 h-3 rounded-full"
               style={{ backgroundColor: entry.color }}
             />
             <span className="text-foreground">{entry.value}</span>
@@ -181,15 +205,18 @@ export function PieChart({
           outerRadius={Math.min(containerHeight * 0.35, 120)}
           fill="#8884d8"
           dataKey="value"
-          onClick={interactive ? (data, index, event) => handleSliceClick(data, index, event) : undefined}
+          onClick={
+            interactive
+              ? (data, index, event) => handleSliceClick(data, index, event)
+              : undefined
+          }
           style={{ cursor: interactive ? 'pointer' : 'default' }}
-          animationDuration={config.animations?.enabled ? config.animations.duration : 0}
+          animationDuration={
+            config.animations?.enabled ? config.animations.duration : 0
+          }
         >
           {chartData.map((entry, index) => (
-            <Cell 
-              key={`cell-${index}`} 
-              fill={entry.color}
-            />
+            <Cell key={`cell-${index}`} fill={entry.color} />
           ))}
         </Pie>
         {config.tooltip?.show && <Tooltip content={<CustomTooltip />} />}

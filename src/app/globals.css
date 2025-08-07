@@ -178,7 +178,7 @@
     .border {
       border-width: 2px;
     }
-    
+
     .focus-visible\:ring-2:focus-visible {
       --tw-ring-width: 3px;
     }
@@ -189,11 +189,11 @@
     .animate-spin {
       animation: none;
     }
-    
+
     .transition-colors {
       transition: none;
     }
-    
+
     .transition-all {
       transition: none;
     }

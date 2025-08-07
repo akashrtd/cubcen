@@ -50,10 +50,22 @@ describe('API Error Handler', () => {
     })
 
     it('should set correct status codes for different error types', () => {
-      const validationError = new APIError(APIErrorCode.VALIDATION_ERROR, 'Validation failed')
-      const authError = new APIError(APIErrorCode.AUTHENTICATION_FAILED, 'Auth failed')
-      const notFoundError = new APIError(APIErrorCode.RESOURCE_NOT_FOUND, 'Not found')
-      const internalError = new APIError(APIErrorCode.INTERNAL_ERROR, 'Internal error')
+      const validationError = new APIError(
+        APIErrorCode.VALIDATION_ERROR,
+        'Validation failed'
+      )
+      const authError = new APIError(
+        APIErrorCode.AUTHENTICATION_FAILED,
+        'Auth failed'
+      )
+      const notFoundError = new APIError(
+        APIErrorCode.RESOURCE_NOT_FOUND,
+        'Not found'
+      )
+      const internalError = new APIError(
+        APIErrorCode.INTERNAL_ERROR,
+        'Internal error'
+      )
 
       expect(validationError.statusCode).toBe(400)
       expect(authError.statusCode).toBe(401)
@@ -117,7 +129,10 @@ describe('API Error Handler', () => {
     })
 
     it('should handle authentication errors', () => {
-      const authError = new AuthenticationError('Invalid token', 'INVALID_TOKEN')
+      const authError = new AuthenticationError(
+        'Invalid token',
+        'INVALID_TOKEN'
+      )
       const response = handleAuthError(authError, 'req_123')
 
       expect(response.success).toBe(false)
@@ -127,7 +142,10 @@ describe('API Error Handler', () => {
     })
 
     it('should handle authorization errors', () => {
-      const authzError = new AuthorizationError('Insufficient permissions', 'INSUFFICIENT_PERMISSIONS')
+      const authzError = new AuthorizationError(
+        'Insufficient permissions',
+        'INSUFFICIENT_PERMISSIONS'
+      )
       const response = handleAuthzError(authzError, 'req_123')
 
       expect(response.success).toBe(false)
@@ -147,7 +165,11 @@ describe('API Error Handler', () => {
 
     it('should handle external service errors', () => {
       const timeoutError = new Error('Connection timeout')
-      const response = handleExternalServiceError(timeoutError, 'TestService', 'req_123')
+      const response = handleExternalServiceError(
+        timeoutError,
+        'TestService',
+        'req_123'
+      )
 
       expect(response.success).toBe(false)
       expect(response.error.code).toBe(APIErrorCode.TIMEOUT_ERROR)
@@ -169,9 +191,7 @@ describe('API Error Handler', () => {
         res.json({ requestId: req.headers['x-request-id'] })
       })
 
-      const response = await request(app)
-        .get('/test')
-        .expect(200)
+      const response = await request(app).get('/test').expect(200)
 
       expect(response.body.requestId).toMatch(/^req_\d+_[a-z0-9]+$/)
       expect(response.headers['x-request-id']).toBeDefined()
@@ -180,9 +200,7 @@ describe('API Error Handler', () => {
     it('should handle 404 errors correctly', async () => {
       app.use(notFoundHandler)
 
-      const response = await request(app)
-        .get('/nonexistent')
-        .expect(404)
+      const response = await request(app).get('/nonexistent').expect(404)
 
       expect(response.body).toEqual({
         success: false,
@@ -196,15 +214,16 @@ describe('API Error Handler', () => {
     })
 
     it('should handle async errors with asyncHandler', async () => {
-      app.get('/error', asyncHandler(async (req, res) => {
-        throw new APIError(APIErrorCode.VALIDATION_ERROR, 'Test error')
-      }))
+      app.get(
+        '/error',
+        asyncHandler(async (req, res) => {
+          throw new APIError(APIErrorCode.VALIDATION_ERROR, 'Test error')
+        })
+      )
 
       app.use(errorHandler)
 
-      const response = await request(app)
-        .get('/error')
-        .expect(400)
+      const response = await request(app).get('/error').expect(400)
 
       expect(response.body).toEqual({
         success: false,
@@ -218,15 +237,16 @@ describe('API Error Handler', () => {
     })
 
     it('should handle generic errors', async () => {
-      app.get('/generic-error', asyncHandler(async (req, res) => {
-        throw new Error('Generic error')
-      }))
+      app.get(
+        '/generic-error',
+        asyncHandler(async (req, res) => {
+          throw new Error('Generic error')
+        })
+      )
 
       app.use(errorHandler)
 
-      const response = await request(app)
-        .get('/generic-error')
-        .expect(500)
+      const response = await request(app).get('/generic-error').expect(500)
 
       expect(response.body).toEqual({
         success: false,

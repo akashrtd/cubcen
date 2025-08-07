@@ -111,7 +111,7 @@ export function ChartExamples() {
   return (
     <div className="space-y-8 p-6">
       <h2 className="text-2xl font-bold text-foreground">Chart Examples</h2>
-      
+
       {/* Line Chart */}
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-foreground">Line Chart</h3>
@@ -201,7 +201,9 @@ export function ChartExamples() {
 
       {/* Custom Configuration Example */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-foreground">Custom Configuration</h3>
+        <h3 className="text-lg font-semibold text-foreground">
+          Custom Configuration
+        </h3>
         <div className="border border-border rounded-lg p-4">
           <ChartWrapper
             type="line"
@@ -209,11 +211,15 @@ export function ChartExamples() {
             config={ChartConfigUtils.builder()
               .withTheme('vibrant')
               .withLegend({ show: true, position: 'top', align: 'start' })
-              .withTooltip({ 
-                show: true, 
-                format: (value) => `$${value.toLocaleString()}` 
+              .withTooltip({
+                show: true,
+                format: value => `$${value.toLocaleString()}`,
               })
-              .withAnimations({ enabled: true, duration: 500, easing: 'ease-in-out' })
+              .withAnimations({
+                enabled: true,
+                duration: 500,
+                easing: 'ease-in-out',
+              })
               .build()}
             height={300}
             exportable={true}

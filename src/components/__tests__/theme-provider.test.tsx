@@ -4,7 +4,7 @@ import { ThemeProvider, useTheme } from '../theme-provider'
 // Test component that uses the theme context
 const TestComponent = () => {
   const { theme, setTheme } = useTheme()
-  
+
   return (
     <div>
       <span data-testid="current-theme">{theme}</span>
@@ -212,7 +212,10 @@ describe('ThemeProvider', () => {
     const lightButton = screen.getByText('Set Light')
     fireEvent.click(lightButton)
 
-    expect(mockLocalStorage.setItem).toHaveBeenCalledWith('custom-theme', 'light')
+    expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
+      'custom-theme',
+      'light'
+    )
   })
 
   it('handles localStorage errors gracefully', () => {
@@ -243,7 +246,7 @@ describe('ThemeProvider', () => {
     )
 
     const lightButton = screen.getByText('Set Light')
-    
+
     expect(() => {
       fireEvent.click(lightButton)
     }).not.toThrow()
@@ -312,7 +315,10 @@ describe('ThemeProvider', () => {
 
     unmount()
 
-    expect(removeEventListener).toHaveBeenCalledWith('change', expect.any(Function))
+    expect(removeEventListener).toHaveBeenCalledWith(
+      'change',
+      expect.any(Function)
+    )
   })
 
   it('handles invalid theme values gracefully', () => {

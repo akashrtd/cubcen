@@ -14,7 +14,8 @@ export async function GET(request: NextRequest) {
       },
       source: 'api-client',
       timestamp: new Date(Date.now() - 10 * 60 * 1000), // 10 minutes ago
-      stackTrace: 'Error: Connection timeout\n    at ApiClient.request (api-client.js:45)\n    at Agent.execute (agent.js:123)',
+      stackTrace:
+        'Error: Connection timeout\n    at ApiClient.request (api-client.js:45)\n    at Agent.execute (agent.js:123)',
       agentId: 'agent-1',
       taskId: 'task-1',
       platformId: 'platform-1',
@@ -44,7 +45,8 @@ export async function GET(request: NextRequest) {
       },
       source: 'email-service',
       timestamp: new Date(Date.now() - 45 * 60 * 1000), // 45 minutes ago
-      stackTrace: 'AuthenticationError: Invalid credentials\n    at SMTPClient.authenticate (smtp.js:78)',
+      stackTrace:
+        'AuthenticationError: Invalid credentials\n    at SMTPClient.authenticate (smtp.js:78)',
       agentId: 'agent-3',
       taskId: 'task-2',
     },
@@ -73,7 +75,8 @@ export async function GET(request: NextRequest) {
       },
       source: 'system',
       timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-      stackTrace: 'OutOfMemoryError: Java heap space\n    at DataProcessor.process (processor.java:234)',
+      stackTrace:
+        'OutOfMemoryError: Java heap space\n    at DataProcessor.process (processor.java:234)',
     },
   ]
 

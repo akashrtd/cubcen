@@ -2,7 +2,10 @@ import React, { useMemo } from 'react'
 import { cn } from '@/lib/utils'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { useIntersectionObserver, getViewportBasedPriority } from './intersection-observer'
+import {
+  useIntersectionObserver,
+  getViewportBasedPriority,
+} from './intersection-observer'
 
 interface ViewportSkeletonProps {
   children: React.ReactNode
@@ -77,7 +80,7 @@ export function ViewportSkeleton({
   // Determine priority automatically based on viewport position
   const effectivePriority = useMemo(() => {
     if (priority !== 'auto') return priority
-    
+
     // Get priority based on viewport position when element is available
     return 'medium' // Default fallback
   }, [priority])
@@ -114,7 +117,16 @@ export function ViewportSkeleton({
       default:
         return <CardSkeleton {...baseProps} height={height} />
     }
-  }, [variant, height, rows, columns, animated, showShimmer, config, adaptiveComplexity])
+  }, [
+    variant,
+    height,
+    rows,
+    columns,
+    animated,
+    showShimmer,
+    config,
+    adaptiveComplexity,
+  ])
 
   // Render content if in view
   if (inView) {
@@ -150,28 +162,30 @@ interface SkeletonComponentProps {
   adaptiveComplexity: boolean
 }
 
-function CardSkeleton({ 
-  animated, 
-  showShimmer, 
-  config, 
+function CardSkeleton({
+  animated,
+  showShimmer,
+  config,
   adaptiveComplexity,
-  height = 200 
+  height = 200,
 }: SkeletonComponentProps & { height?: number }) {
   const complexity = adaptiveComplexity ? config.complexityMultiplier : 1
   const elementCount = Math.max(1, Math.floor(3 * complexity))
 
   return (
-    <Card 
+    <Card
       className={cn(
         'dashboard-card-skeleton',
         showShimmer && 'skeleton-shimmer',
         !animated && 'skeleton-no-animation'
       )}
-      style={{ 
-        minHeight: `${height}px`,
-        '--skeleton-animation-duration': config.animationDuration,
-        '--skeleton-shimmer-intensity': config.shimmerIntensity,
-      } as React.CSSProperties}
+      style={
+        {
+          minHeight: `${height}px`,
+          '--skeleton-animation-duration': config.animationDuration,
+          '--skeleton-shimmer-intensity': config.shimmerIntensity,
+        } as React.CSSProperties
+      }
     >
       <CardHeader className="space-y-2">
         <div className="flex items-center justify-between">
@@ -195,13 +209,13 @@ function CardSkeleton({
         )}
         <div className="space-y-2">
           {Array.from({ length: elementCount }).map((_, i) => (
-            <Skeleton 
-              key={i} 
-              className="h-4 w-full" 
-              style={{ 
+            <Skeleton
+              key={i}
+              className="h-4 w-full"
+              style={{
                 width: `${Math.random() * 40 + 60}%`,
-                animationDelay: `${i * 100}ms`
-              }} 
+                animationDelay: `${i * 100}ms`,
+              }}
             />
           ))}
         </div>
@@ -211,28 +225,30 @@ function CardSkeleton({
   )
 }
 
-function ChartSkeleton({ 
-  animated, 
-  showShimmer, 
-  config, 
+function ChartSkeleton({
+  animated,
+  showShimmer,
+  config,
   adaptiveComplexity,
-  height = 300 
+  height = 300,
 }: SkeletonComponentProps & { height?: number }) {
   const complexity = adaptiveComplexity ? config.complexityMultiplier : 1
   const barCount = Math.max(3, Math.floor(8 * complexity))
   const legendCount = Math.max(1, Math.floor(3 * complexity))
 
   return (
-    <Card 
+    <Card
       className={cn(
         'dashboard-card-skeleton',
         showShimmer && 'skeleton-shimmer',
         !animated && 'skeleton-no-animation'
       )}
-      style={{
-        '--skeleton-animation-duration': config.animationDuration,
-        '--skeleton-shimmer-intensity': config.shimmerIntensity,
-      } as React.CSSProperties}
+      style={
+        {
+          '--skeleton-animation-duration': config.animationDuration,
+          '--skeleton-shimmer-intensity': config.shimmerIntensity,
+        } as React.CSSProperties
+      }
     >
       <CardHeader>
         <div className="flex items-center justify-between">
@@ -243,22 +259,22 @@ function ChartSkeleton({
       <CardContent>
         <div className="space-y-4">
           {/* Chart area */}
-          <div 
-            className="flex justify-between items-end" 
+          <div
+            className="flex justify-between items-end"
             style={{ height: `${height}px` }}
           >
             {Array.from({ length: barCount }).map((_, i) => (
               <Skeleton
                 key={i}
                 className="w-8"
-                style={{ 
+                style={{
                   height: `${Math.random() * 80 + 20}%`,
-                  animationDelay: `${i * 50}ms`
+                  animationDelay: `${i * 50}ms`,
                 }}
               />
             ))}
           </div>
-          
+
           {/* Legend */}
           {complexity > 0.5 && (
             <div className="flex justify-center space-x-4">
@@ -276,29 +292,31 @@ function ChartSkeleton({
   )
 }
 
-function TableSkeleton({ 
-  animated, 
-  showShimmer, 
-  config, 
+function TableSkeleton({
+  animated,
+  showShimmer,
+  config,
   adaptiveComplexity,
   rows = 5,
-  columns = 4 
+  columns = 4,
 }: SkeletonComponentProps & { rows?: number; columns?: number }) {
   const complexity = adaptiveComplexity ? config.complexityMultiplier : 1
   const effectiveRows = Math.max(1, Math.floor(rows * complexity))
   const effectiveColumns = Math.max(1, Math.floor(columns * complexity))
 
   return (
-    <Card 
+    <Card
       className={cn(
         'dashboard-card-skeleton',
         showShimmer && 'skeleton-shimmer',
         !animated && 'skeleton-no-animation'
       )}
-      style={{
-        '--skeleton-animation-duration': config.animationDuration,
-        '--skeleton-shimmer-intensity': config.shimmerIntensity,
-      } as React.CSSProperties}
+      style={
+        {
+          '--skeleton-animation-duration': config.animationDuration,
+          '--skeleton-shimmer-intensity': config.shimmerIntensity,
+        } as React.CSSProperties
+      }
     >
       <CardHeader>
         <Skeleton className="h-5 w-32" />
@@ -306,32 +324,34 @@ function TableSkeleton({
       <CardContent>
         <div className="space-y-3">
           {/* Table header */}
-          <div 
-            className="grid gap-4" 
+          <div
+            className="grid gap-4"
             style={{ gridTemplateColumns: `repeat(${effectiveColumns}, 1fr)` }}
           >
             {Array.from({ length: effectiveColumns }).map((_, i) => (
-              <Skeleton 
-                key={i} 
-                className="h-4 w-full" 
+              <Skeleton
+                key={i}
+                className="h-4 w-full"
                 style={{ animationDelay: `${i * 50}ms` }}
               />
             ))}
           </div>
-          
+
           {/* Table rows */}
           {Array.from({ length: effectiveRows }).map((_, rowIndex) => (
-            <div 
-              key={rowIndex} 
-              className="grid gap-4" 
-              style={{ gridTemplateColumns: `repeat(${effectiveColumns}, 1fr)` }}
+            <div
+              key={rowIndex}
+              className="grid gap-4"
+              style={{
+                gridTemplateColumns: `repeat(${effectiveColumns}, 1fr)`,
+              }}
             >
               {Array.from({ length: effectiveColumns }).map((_, colIndex) => (
-                <Skeleton 
-                  key={colIndex} 
-                  className="h-4 w-full" 
-                  style={{ 
-                    animationDelay: `${(rowIndex * effectiveColumns + colIndex) * 25}ms` 
+                <Skeleton
+                  key={colIndex}
+                  className="h-4 w-full"
+                  style={{
+                    animationDelay: `${(rowIndex * effectiveColumns + colIndex) * 25}ms`,
                   }}
                 />
               ))}
@@ -343,25 +363,27 @@ function TableSkeleton({
   )
 }
 
-function MetricSkeleton({ 
-  animated, 
-  showShimmer, 
-  config, 
-  adaptiveComplexity 
+function MetricSkeleton({
+  animated,
+  showShimmer,
+  config,
+  adaptiveComplexity,
 }: SkeletonComponentProps) {
   const complexity = adaptiveComplexity ? config.complexityMultiplier : 1
 
   return (
-    <Card 
+    <Card
       className={cn(
         'dashboard-card-skeleton',
         showShimmer && 'skeleton-shimmer',
         !animated && 'skeleton-no-animation'
       )}
-      style={{
-        '--skeleton-animation-duration': config.animationDuration,
-        '--skeleton-shimmer-intensity': config.shimmerIntensity,
-      } as React.CSSProperties}
+      style={
+        {
+          '--skeleton-animation-duration': config.animationDuration,
+          '--skeleton-shimmer-intensity': config.shimmerIntensity,
+        } as React.CSSProperties
+      }
     >
       <CardHeader>
         <div className="flex items-center space-x-2">
@@ -389,27 +411,29 @@ function MetricSkeleton({
   )
 }
 
-function ListSkeleton({ 
-  animated, 
-  showShimmer, 
-  config, 
+function ListSkeleton({
+  animated,
+  showShimmer,
+  config,
   adaptiveComplexity,
-  rows = 5 
+  rows = 5,
 }: SkeletonComponentProps & { rows?: number }) {
   const complexity = adaptiveComplexity ? config.complexityMultiplier : 1
   const effectiveRows = Math.max(1, Math.floor(rows * complexity))
 
   return (
-    <Card 
+    <Card
       className={cn(
         'dashboard-card-skeleton',
         showShimmer && 'skeleton-shimmer',
         !animated && 'skeleton-no-animation'
       )}
-      style={{
-        '--skeleton-animation-duration': config.animationDuration,
-        '--skeleton-shimmer-intensity': config.shimmerIntensity,
-      } as React.CSSProperties}
+      style={
+        {
+          '--skeleton-animation-duration': config.animationDuration,
+          '--skeleton-shimmer-intensity': config.shimmerIntensity,
+        } as React.CSSProperties
+      }
     >
       <CardHeader>
         <Skeleton className="h-5 w-32" />
@@ -418,21 +442,23 @@ function ListSkeleton({
         <div className="space-y-3">
           {Array.from({ length: effectiveRows }).map((_, i) => (
             <div key={i} className="flex items-center space-x-3">
-              {complexity > 0.5 && <Skeleton className="h-8 w-8 rounded-full" />}
+              {complexity > 0.5 && (
+                <Skeleton className="h-8 w-8 rounded-full" />
+              )}
               <div className="flex-1 space-y-2">
-                <Skeleton 
-                  className="h-4 w-full" 
-                  style={{ 
+                <Skeleton
+                  className="h-4 w-full"
+                  style={{
                     width: `${Math.random() * 40 + 60}%`,
-                    animationDelay: `${i * 100}ms`
+                    animationDelay: `${i * 100}ms`,
                   }}
                 />
                 {complexity > 0.7 && (
-                  <Skeleton 
-                    className="h-3 w-full" 
-                    style={{ 
+                  <Skeleton
+                    className="h-3 w-full"
+                    style={{
                       width: `${Math.random() * 30 + 40}%`,
-                      animationDelay: `${i * 100 + 50}ms`
+                      animationDelay: `${i * 100 + 50}ms`,
                     }}
                   />
                 )}
@@ -446,41 +472,43 @@ function ListSkeleton({
   )
 }
 
-function GridSkeleton({ 
-  animated, 
-  showShimmer, 
-  config, 
+function GridSkeleton({
+  animated,
+  showShimmer,
+  config,
   adaptiveComplexity,
   rows = 3,
-  columns = 3 
+  columns = 3,
 }: SkeletonComponentProps & { rows?: number; columns?: number }) {
   const complexity = adaptiveComplexity ? config.complexityMultiplier : 1
   const effectiveRows = Math.max(1, Math.floor(rows * complexity))
   const effectiveColumns = Math.max(1, Math.floor(columns * complexity))
 
   return (
-    <div 
+    <div
       className={cn(
         'grid gap-4',
         showShimmer && 'skeleton-shimmer',
         !animated && 'skeleton-no-animation'
       )}
-      style={{ 
-        gridTemplateColumns: `repeat(${effectiveColumns}, 1fr)`,
-        '--skeleton-animation-duration': config.animationDuration,
-        '--skeleton-shimmer-intensity': config.shimmerIntensity,
-      } as React.CSSProperties}
+      style={
+        {
+          gridTemplateColumns: `repeat(${effectiveColumns}, 1fr)`,
+          '--skeleton-animation-duration': config.animationDuration,
+          '--skeleton-shimmer-intensity': config.shimmerIntensity,
+        } as React.CSSProperties
+      }
     >
       {Array.from({ length: effectiveRows * effectiveColumns }).map((_, i) => (
         <Card key={i} className="dashboard-card-skeleton">
           <CardContent className="p-4">
             <div className="space-y-2">
-              <Skeleton 
-                className="h-4 w-3/4" 
+              <Skeleton
+                className="h-4 w-3/4"
                 style={{ animationDelay: `${i * 50}ms` }}
               />
-              <Skeleton 
-                className="h-16 w-full rounded" 
+              <Skeleton
+                className="h-16 w-full rounded"
                 style={{ animationDelay: `${i * 50 + 25}ms` }}
               />
             </div>
@@ -505,6 +533,6 @@ export function withViewportSkeleton<T extends object>(
   })
 
   WrappedComponent.displayName = `WithViewportSkeleton(${Component.displayName || Component.name})`
-  
+
   return WrappedComponent
 }

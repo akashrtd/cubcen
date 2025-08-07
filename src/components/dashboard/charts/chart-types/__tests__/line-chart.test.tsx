@@ -13,7 +13,10 @@ jest.mock('recharts', () => ({
     </div>
   ),
   Line: ({ dataKey, onClick }: any) => (
-    <div data-testid={`line-${dataKey}`} onClick={() => onClick?.({ value: 100 }, 0)}>
+    <div
+      data-testid={`line-${dataKey}`}
+      onClick={() => onClick?.({ value: 100 }, 0)}
+    >
       Line: {dataKey}
     </div>
   ),
@@ -22,7 +25,10 @@ jest.mock('recharts', () => ({
   CartesianGrid: () => <div data-testid="cartesian-grid">Grid</div>,
   Tooltip: ({ content }: any) => <div data-testid="tooltip">Tooltip</div>,
   Legend: ({ onClick }: any) => (
-    <div data-testid="legend" onClick={() => onClick?.({ value: 'Test', color: '#000' })}>
+    <div
+      data-testid="legend"
+      onClick={() => onClick?.({ value: 'Test', color: '#000' })}
+    >
       Legend
     </div>
   ),
@@ -30,7 +36,10 @@ jest.mock('recharts', () => ({
     <div data-testid="responsive-container">{children}</div>
   ),
   Area: ({ dataKey, onClick }: any) => (
-    <div data-testid={`area-${dataKey}`} onClick={() => onClick?.({ value: 100 }, 0)}>
+    <div
+      data-testid={`area-${dataKey}`}
+      onClick={() => onClick?.({ value: 100 }, 0)}
+    >
       Area: {dataKey}
     </div>
   ),
@@ -41,7 +50,10 @@ jest.mock('recharts', () => ({
     </div>
   ),
   Scatter: ({ dataKey, onClick }: any) => (
-    <div data-testid={`scatter-${dataKey}`} onClick={() => onClick?.({ value: 100 }, 0)}>
+    <div
+      data-testid={`scatter-${dataKey}`}
+      onClick={() => onClick?.({ value: 100 }, 0)}
+    >
       Scatter: {dataKey}
     </div>
   ),
@@ -234,7 +246,11 @@ describe('LineChart', () => {
   it('hides legend when configured', () => {
     const configWithHiddenLegend = {
       ...mockConfig,
-      legend: { show: false, position: 'bottom' as const, align: 'center' as const },
+      legend: {
+        show: false,
+        position: 'bottom' as const,
+        align: 'center' as const,
+      },
     }
 
     render(<LineChart {...defaultProps} config={configWithHiddenLegend} />)
@@ -248,7 +264,7 @@ describe('LineChart', () => {
     render(<LineChart {...defaultProps} data={emptyData} />)
 
     expect(screen.getByTestId('recharts-line-chart')).toBeInTheDocument()
-    
+
     const chartDataElement = screen.getByTestId('chart-data')
     const chartData = JSON.parse(chartDataElement.textContent || '[]')
     expect(chartData).toHaveLength(0)

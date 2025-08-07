@@ -555,7 +555,9 @@ describe('Users API Integration', () => {
 
   describe('Error Handling', () => {
     it('should handle database errors gracefully', async () => {
-      mockPrisma.user.findMany.mockRejectedValue(new Error('Database connection failed'))
+      mockPrisma.user.findMany.mockRejectedValue(
+        new Error('Database connection failed')
+      )
 
       const response = await request(app)
         .get('/api/cubcen/v1/users')

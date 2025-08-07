@@ -171,7 +171,12 @@ export const BasicExample: Story = {
             <GridItem colSpan={{ desktop: 3, tablet: 2, mobile: 1 }}>
               <DashboardCard
                 title="Active Agents"
-                metric={{ value: 24, unit: 'agents', trend: 'up', trendValue: '+12%' }}
+                metric={{
+                  value: 24,
+                  unit: 'agents',
+                  trend: 'up',
+                  trendValue: '+12%',
+                }}
                 icon={Activity}
                 priority="high"
               />
@@ -179,7 +184,12 @@ export const BasicExample: Story = {
             <GridItem colSpan={{ desktop: 3, tablet: 2, mobile: 1 }}>
               <DashboardCard
                 title="Total Users"
-                metric={{ value: 1247, unit: 'users', trend: 'up', trendValue: '+5%' }}
+                metric={{
+                  value: 1247,
+                  unit: 'users',
+                  trend: 'up',
+                  trendValue: '+5%',
+                }}
                 icon={Users}
                 priority="medium"
               />
@@ -202,9 +212,27 @@ export const BasicExample: Story = {
                 icon={TrendingUp}
                 layout="vertical"
                 metrics={[
-                  { label: 'CPU Usage', value: '45%', trend: 'up', trendValue: '+5%', color: '#3F51B5' },
-                  { label: 'Memory Usage', value: '67%', trend: 'down', trendValue: '-3%', color: '#B19ADA' },
-                  { label: 'Disk Usage', value: '23%', trend: 'neutral', trendValue: '0%', color: '#FF6B35' },
+                  {
+                    label: 'CPU Usage',
+                    value: '45%',
+                    trend: 'up',
+                    trendValue: '+5%',
+                    color: '#3F51B5',
+                  },
+                  {
+                    label: 'Memory Usage',
+                    value: '67%',
+                    trend: 'down',
+                    trendValue: '-3%',
+                    color: '#B19ADA',
+                  },
+                  {
+                    label: 'Disk Usage',
+                    value: '23%',
+                    trend: 'neutral',
+                    trendValue: '0%',
+                    color: '#FF6B35',
+                  },
                 ]}
               />
             </GridItem>

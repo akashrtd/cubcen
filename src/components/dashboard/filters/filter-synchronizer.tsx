@@ -48,7 +48,10 @@ export function FilterSynchronizer({
     if (currentFilters.customFilters) {
       Object.entries(currentFilters.customFilters).forEach(([key, value]) => {
         const previousValue = previousFilters.customFilters?.[key]
-        if (!previousValue || JSON.stringify(previousValue) !== JSON.stringify(value)) {
+        if (
+          !previousValue ||
+          JSON.stringify(previousValue) !== JSON.stringify(value)
+        ) {
           onFilterApplied?.(key, value)
         }
       })
@@ -56,7 +59,7 @@ export function FilterSynchronizer({
 
     // Check for removed filters
     if (previousFilters.customFilters) {
-      Object.keys(previousFilters.customFilters).forEach((key) => {
+      Object.keys(previousFilters.customFilters).forEach(key => {
         if (!currentFilters.customFilters?.[key]) {
           onFilterRemoved?.(key)
         }
@@ -73,10 +76,10 @@ export function FilterSynchronizer({
       'agents',
     ]
 
-    filterKeys.forEach((key) => {
+    filterKeys.forEach(key => {
       const currentValue = currentFilters[key]
       const previousValue = previousFilters[key]
-      
+
       if (JSON.stringify(currentValue) !== JSON.stringify(previousValue)) {
         if (currentValue && key !== 'dateRange') {
           // For array filters, create a filter value
@@ -150,7 +153,7 @@ export function useSyncedFilteredData<T extends Record<string, any>>(
   return React.useMemo(() => {
     if (!data) return []
 
-    return data.filter((item) => {
+    return data.filter(item => {
       // Custom filter logic takes precedence
       if (customFilterLogic) {
         return customFilterLogic(item, filters)
@@ -159,7 +162,7 @@ export function useSyncedFilteredData<T extends Record<string, any>>(
       // Search filter
       if (filters.customFilters?.search) {
         const searchValue = filters.customFilters.search.value.toLowerCase()
-        const matchesSearch = searchFields.some((field) => {
+        const matchesSearch = searchFields.some(field => {
           const fieldValue = String(item[field] || '').toLowerCase()
           return fieldValue.includes(searchValue)
         })
@@ -169,19 +172,23 @@ export function useSyncedFilteredData<T extends Record<string, any>>(
       // Date range filter
       if (filters.dateRange && item.createdAt) {
         const itemDate = new Date(item.createdAt)
-        if (itemDate < filters.dateRange.start || itemDate > filters.dateRange.end) {
+        if (
+          itemDate < filters.dateRange.start ||
+          itemDate > filters.dateRange.end
+        ) {
           return false
         }
       }
 
       // Array-based filters
-      const arrayFilters: Array<{ key: keyof FilterState; itemKey: keyof T }> = [
-        { key: 'categories', itemKey: 'category' },
-        { key: 'status', itemKey: 'status' },
-        { key: 'priority', itemKey: 'priority' },
-        { key: 'platforms', itemKey: 'platform' },
-        { key: 'agents', itemKey: 'agent' },
-      ]
+      const arrayFilters: Array<{ key: keyof FilterState; itemKey: keyof T }> =
+        [
+          { key: 'categories', itemKey: 'category' },
+          { key: 'status', itemKey: 'status' },
+          { key: 'priority', itemKey: 'priority' },
+          { key: 'platforms', itemKey: 'platform' },
+          { key: 'agents', itemKey: 'agent' },
+        ]
 
       for (const { key, itemKey } of arrayFilters) {
         const filterValues = filters[key] as string[] | undefined
@@ -203,7 +210,11 @@ export function useSyncedFilteredData<T extends Record<string, any>>(
               if (itemValue !== filter.value) return false
               break
             case 'contains':
-              if (!String(itemValue).toLowerCase().includes(String(filter.value).toLowerCase())) {
+              if (
+                !String(itemValue)
+                  .toLowerCase()
+                  .includes(String(filter.value).toLowerCase())
+              ) {
                 return false
               }
               break
@@ -217,7 +228,8 @@ export function useSyncedFilteredData<T extends Record<string, any>>(
               if (Array.isArray(filter.value) && filter.value.length === 2) {
                 const [min, max] = filter.value
                 const numValue = Number(itemValue)
-                if (numValue < Number(min) || numValue > Number(max)) return false
+                if (numValue < Number(min) || numValue > Number(max))
+                  return false
               }
               break
           }
@@ -234,7 +246,10 @@ export function useCrossCardFiltering<T extends Record<string, any>>(
   data: T[],
   options: {
     searchFields?: (keyof T)[]
-    filterMappings?: Record<string, (item: T, filterValue: FilterValue) => boolean>
+    filterMappings?: Record<
+      string,
+      (item: T, filterValue: FilterValue) => boolean
+    >
     enabledFilters?: string[]
     customLogic?: (item: T, filters: FilterState) => boolean
   } = {}
@@ -278,22 +293,30 @@ export function useCrossCardFiltering<T extends Record<string, any>>(
 
         // Default filtering logic
         const itemValue = item[filterKey as keyof T]
-        
+
         if (itemValue === undefined || itemValue === null) return true
 
         switch (filterValue.operator) {
           case 'equals':
             return itemValue === filterValue.value
           case 'contains':
-            return String(itemValue).toLowerCase().includes(String(filterValue.value).toLowerCase())
+            return String(itemValue)
+              .toLowerCase()
+              .includes(String(filterValue.value).toLowerCase())
           case 'greaterThan':
             return Number(itemValue) > Number(filterValue.value)
           case 'lessThan':
             return Number(itemValue) < Number(filterValue.value)
           case 'between':
-            if (Array.isArray(filterValue.value) && filterValue.value.length === 2) {
+            if (
+              Array.isArray(filterValue.value) &&
+              filterValue.value.length === 2
+            ) {
               const [min, max] = filterValue.value
-              return Number(itemValue) >= Number(min) && Number(itemValue) <= Number(max)
+              return (
+                Number(itemValue) >= Number(min) &&
+                Number(itemValue) <= Number(max)
+              )
             }
             return true
           default:
@@ -322,8 +345,12 @@ export function FilterStateIndicator({
   if (!filterValue) return null
 
   return (
-    <div className={`inline-flex items-center gap-1 px-2 py-1 bg-primary/10 text-primary text-xs rounded-full ${className}`}>
-      <span>{filterKey}: {String(filterValue.value)}</span>
+    <div
+      className={`inline-flex items-center gap-1 px-2 py-1 bg-primary/10 text-primary text-xs rounded-full ${className}`}
+    >
+      <span>
+        {filterKey}: {String(filterValue.value)}
+      </span>
       <button
         onClick={() => removeFilter(filterKey)}
         className="hover:bg-primary/20 rounded-full p-0.5"

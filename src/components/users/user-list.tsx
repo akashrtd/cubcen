@@ -1,7 +1,15 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Search, Filter, MoreHorizontal, UserPlus, Shield, Clock, Activity } from 'lucide-react'
+import {
+  Search,
+  Filter,
+  MoreHorizontal,
+  UserPlus,
+  Shield,
+  Clock,
+  Activity,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -92,13 +100,14 @@ export function UserList({
 
   // Filter users based on search and filters
   const filteredUsers = users.filter(user => {
-    const matchesSearch = !searchTerm || 
+    const matchesSearch =
+      !searchTerm ||
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase())
-    
+
     const matchesRole = roleFilter === 'all' || user.role === roleFilter
     const matchesStatus = statusFilter === 'all' || user.status === statusFilter
-    
+
     return matchesSearch && matchesRole && matchesStatus
   })
 
@@ -134,11 +143,11 @@ export function UserList({
 
   const formatLastLogin = (lastLogin: Date | null) => {
     if (!lastLogin) return 'Never'
-    
+
     const now = new Date()
     const diffMs = now.getTime() - lastLogin.getTime()
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-    
+
     if (diffDays === 0) return 'Today'
     if (diffDays === 1) return 'Yesterday'
     if (diffDays < 7) return `${diffDays} days ago`
@@ -189,19 +198,24 @@ export function UserList({
     )
   }
 
-
-
   return (
     <Card className={className}>
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <Shield className="h-5 w-5" />
-            Users ({filteredUsers.length}{filteredUsers.length !== users.length ? ` of ${users.length}` : ''})
+            Users ({filteredUsers.length}
+            {filteredUsers.length !== users.length ? ` of ${users.length}` : ''}
+            )
           </CardTitle>
           <div className="flex gap-2">
             {onRefresh && (
-              <Button onClick={onRefresh} variant="outline" size="sm" disabled={loading}>
+              <Button
+                onClick={onRefresh}
+                variant="outline"
+                size="sm"
+                disabled={loading}
+              >
                 Refresh
               </Button>
             )}
@@ -213,18 +227,18 @@ export function UserList({
             )}
           </div>
         </div>
-        
+
         <div className="flex gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
               placeholder="Search users..."
               value={searchTerm}
-              onChange={(e) => handleSearch(e.target.value)}
+              onChange={e => handleSearch(e.target.value)}
               className="pl-10"
             />
           </div>
-          
+
           <Select value={roleFilter} onValueChange={setRoleFilter}>
             <SelectTrigger className="w-32">
               <SelectValue placeholder="Role" />
@@ -236,7 +250,7 @@ export function UserList({
               <SelectItem value="VIEWER">Viewer</SelectItem>
             </SelectContent>
           </Select>
-          
+
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-32">
               <SelectValue placeholder="Status" />
@@ -250,7 +264,7 @@ export function UserList({
           </Select>
         </div>
       </CardHeader>
-      
+
       <CardContent>
         {filteredUsers.length === 0 ? (
           <div className="text-center py-8">
@@ -261,7 +275,11 @@ export function UserList({
                 : 'No users found'}
             </p>
             {onUserInvite && (
-              <Button onClick={onUserInvite} variant="outline" className="gap-2">
+              <Button
+                onClick={onUserInvite}
+                variant="outline"
+                className="gap-2"
+              >
                 <UserPlus className="h-4 w-4" />
                 Invite First User
               </Button>
@@ -280,7 +298,7 @@ export function UserList({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredUsers.map((user) => (
+              {filteredUsers.map(user => (
                 <TableRow
                   key={user.id}
                   className="cursor-pointer hover:bg-muted/50"
@@ -302,26 +320,26 @@ export function UserList({
                       </div>
                     </div>
                   </TableCell>
-                  
+
                   <TableCell>
                     <Badge variant={getRoleBadgeVariant(user.role)}>
                       {user.role}
                     </Badge>
                   </TableCell>
-                  
+
                   <TableCell>
                     <Badge variant={getStatusBadgeVariant(user.status)}>
                       {user.status}
                     </Badge>
                   </TableCell>
-                  
+
                   <TableCell>
                     <div className="flex items-center gap-2 text-sm">
                       <Clock className="h-3 w-3 text-muted-foreground" />
                       {formatLastLogin(user.lastLoginAt)}
                     </div>
                   </TableCell>
-                  
+
                   <TableCell>
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <div className="flex items-center gap-1">
@@ -334,7 +352,7 @@ export function UserList({
                       </div>
                     </div>
                   </TableCell>
-                  
+
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -342,7 +360,7 @@ export function UserList({
                           variant="ghost"
                           size="sm"
                           className="h-8 w-8 p-0"
-                          onClick={(e) => e.stopPropagation()}
+                          onClick={e => e.stopPropagation()}
                         >
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
@@ -361,9 +379,15 @@ export function UserList({
                         {onUserDelete && (
                           <DropdownMenuItem
                             onClick={() => onUserDelete(user)}
-                            className={user.status === 'suspended' ? 'text-green-600' : 'text-destructive'}
+                            className={
+                              user.status === 'suspended'
+                                ? 'text-green-600'
+                                : 'text-destructive'
+                            }
                           >
-                            {user.status === 'suspended' ? 'Reactivate User' : 'Suspend User'}
+                            {user.status === 'suspended'
+                              ? 'Reactivate User'
+                              : 'Suspend User'}
                           </DropdownMenuItem>
                         )}
                       </DropdownMenuContent>

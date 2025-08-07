@@ -9,7 +9,8 @@ const meta: Meta<typeof ChartCard> = {
     layout: 'padded',
     docs: {
       description: {
-        component: 'A specialized card component for displaying data visualizations with integrated chart wrapper, export functionality, and filtering capabilities.',
+        component:
+          'A specialized card component for displaying data visualizations with integrated chart wrapper, export functionality, and filtering capabilities.',
       },
     },
   },
@@ -375,9 +376,5 @@ export const InteractiveChart: Story = {
     icon: BarChart3,
     filterable: true,
     exportable: true,
-    onDataClick: (data) => {
-      console.log('Data clicked:', data)
-      alert(`Clicked: ${data.x} - ${data.y}`)
-    },
   },
 }

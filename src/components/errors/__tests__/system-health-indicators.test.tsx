@@ -57,13 +57,13 @@ describe('SystemHealthIndicators', () => {
 
   it('renders loading state initially', async () => {
     render(<SystemHealthIndicators />)
-    
+
     expect(screen.getByText('System Health')).toBeInTheDocument()
-    
+
     // Check for loading skeleton
     const skeletonElements = document.querySelectorAll('.animate-pulse')
     expect(skeletonElements.length).toBeGreaterThan(0)
-    
+
     // Wait for data to load
     await waitFor(() => {
       expect(screen.getByText('Database')).toBeInTheDocument()
@@ -72,20 +72,20 @@ describe('SystemHealthIndicators', () => {
 
   it('fetches and displays health data', async () => {
     render(<SystemHealthIndicators />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Database')).toBeInTheDocument()
       expect(screen.getByText('API Server')).toBeInTheDocument()
       expect(screen.getByText('Message Queue')).toBeInTheDocument()
       expect(screen.getByText('External Service')).toBeInTheDocument()
     })
-    
+
     expect(fetch).toHaveBeenCalledWith('/api/cubcen/v1/health')
   })
 
   it('displays overall health status', async () => {
     render(<SystemHealthIndicators />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Healthy')).toBeInTheDocument()
     })
@@ -93,7 +93,7 @@ describe('SystemHealthIndicators', () => {
 
   it('displays component health statuses with correct colors', async () => {
     render(<SystemHealthIndicators />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Healthy')).toBeInTheDocument() // Database and API Server
       expect(screen.getByText('Degraded')).toBeInTheDocument() // Message Queue
@@ -103,7 +103,7 @@ describe('SystemHealthIndicators', () => {
 
   it('displays response times', async () => {
     render(<SystemHealthIndicators />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('45ms')).toBeInTheDocument() // Database
       expect(screen.getByText('120ms')).toBeInTheDocument() // API Server
@@ -114,7 +114,7 @@ describe('SystemHealthIndicators', () => {
 
   it('displays error messages for unhealthy components', async () => {
     render(<SystemHealthIndicators />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('High latency detected')).toBeInTheDocument()
       expect(screen.getByText('Connection timeout')).toBeInTheDocument()
@@ -123,7 +123,7 @@ describe('SystemHealthIndicators', () => {
 
   it('displays system metrics', async () => {
     render(<SystemHealthIndicators />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('99.9%')).toBeInTheDocument() // Uptime
       expect(screen.getByText('15420')).toBeInTheDocument() // Total requests
@@ -138,43 +138,47 @@ describe('SystemHealthIndicators', () => {
       status: 500,
       statusText: 'Internal Server Error',
     })
-    
+
     render(<SystemHealthIndicators />)
-    
+
     await waitFor(() => {
-      expect(screen.getByText('Failed to load system health')).toBeInTheDocument()
+      expect(
+        screen.getByText('Failed to load system health')
+      ).toBeInTheDocument()
     })
   })
 
   it('handles network errors', async () => {
     ;(fetch as jest.Mock).mockRejectedValue(new Error('Network error'))
-    
+
     render(<SystemHealthIndicators />)
-    
+
     await waitFor(() => {
-      expect(screen.getByText('Failed to load system health')).toBeInTheDocument()
+      expect(
+        screen.getByText('Failed to load system health')
+      ).toBeInTheDocument()
     })
   })
 
   it('auto-refreshes at specified interval', async () => {
     jest.useFakeTimers()
-    
+
     render(<SystemHealthIndicators refreshInterval={5000} />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('Database')).toBeInTheDocument()
     })
-    
+
     // Clear the initial call
     jest.clearAllMocks()
-    
+
     // Fast-forward time
     jest.advanceTimersByTime(5000)
-    
+
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledTimes(1)
     })
-    
+
     jest.useRealTimers()
   })
 
@@ -182,13 +186,13 @@ describe('SystemHealthIndicators', () => {
     const { container } = render(
       <SystemHealthIndicators className="custom-class" />
     )
-    
+
     expect(container.firstChild).toHaveClass('custom-class')
   })
 
   it('displays last check times', async () => {
     render(<SystemHealthIndicators />)
-    
+
     await waitFor(() => {
       // Should show relative time formats
       const timeElements = screen.getAllByText(/ago/)
@@ -209,9 +213,9 @@ describe('SystemHealthIndicators', () => {
           },
         }),
     })
-    
+
     render(<SystemHealthIndicators />)
-    
+
     await waitFor(() => {
       expect(screen.getByText('No health data available')).toBeInTheDocument()
     })
@@ -219,7 +223,7 @@ describe('SystemHealthIndicators', () => {
 
   it('displays critical alerts for unhealthy components', async () => {
     render(<SystemHealthIndicators />)
-    
+
     await waitFor(() => {
       // Should show alert indicators for unhealthy components
       expect(screen.getByText('External Service')).toBeInTheDocument()

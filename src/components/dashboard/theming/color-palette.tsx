@@ -19,7 +19,13 @@ interface ColorSwatchProps {
   contrastRatio?: number
 }
 
-function ColorSwatch({ color, label, interactive = false, onColorChange, contrastRatio }: ColorSwatchProps) {
+function ColorSwatch({
+  color,
+  label,
+  interactive = false,
+  onColorChange,
+  contrastRatio,
+}: ColorSwatchProps) {
   const [isEditing, setIsEditing] = React.useState(false)
   const [tempColor, setTempColor] = React.useState(color)
   const inputRef = React.useRef<HTMLInputElement>(null)
@@ -65,7 +71,9 @@ function ColorSwatch({ color, label, interactive = false, onColorChange, contras
         onClick={handleClick}
         role={interactive ? 'button' : undefined}
         tabIndex={interactive ? 0 : undefined}
-        onKeyDown={interactive ? (e) => e.key === 'Enter' && handleClick() : undefined}
+        onKeyDown={
+          interactive ? e => e.key === 'Enter' && handleClick() : undefined
+        }
         aria-label={`${label} color: ${color}`}
       >
         {isEditing && (
@@ -94,7 +102,9 @@ function ColorSwatch({ color, label, interactive = false, onColorChange, contras
           {color.toUpperCase()}
         </div>
         {contrastRatio && (
-          <div className={`text-xs ${contrastWarning ? 'text-red-600' : 'text-green-600'}`}>
+          <div
+            className={`text-xs ${contrastWarning ? 'text-red-600' : 'text-green-600'}`}
+          >
             {contrastRatio.toFixed(2)}:1
           </div>
         )}
@@ -103,20 +113,21 @@ function ColorSwatch({ color, label, interactive = false, onColorChange, contras
   )
 }
 
-export function ColorPalette({ 
-  className = '', 
-  showLabels = true, 
+export function ColorPalette({
+  className = '',
+  showLabels = true,
   interactive = false,
-  onColorChange 
+  onColorChange,
 }: ColorPaletteProps) {
-  const { dashboardTheme, setDashboardTheme, getContrastRatio } = useDashboardTheme()
+  const { dashboardTheme, setDashboardTheme, getContrastRatio } =
+    useDashboardTheme()
 
   const handleColorChange = (colorPath: string, newColor: string) => {
     if (!onColorChange) return
 
     const pathParts = colorPath.split('.')
     const updatedTheme: Partial<DashboardTheme> = { ...dashboardTheme }
-    
+
     // Navigate to the nested property and update it
     let current: any = updatedTheme
     for (let i = 0; i < pathParts.length - 1; i++) {
@@ -147,21 +158,23 @@ export function ColorPalette({
             color={dashboardTheme.colors.primary}
             label="Primary"
             interactive={interactive}
-            onColorChange={(color) => handleColorChange('colors.primary', color)}
+            onColorChange={color => handleColorChange('colors.primary', color)}
             contrastRatio={getContrastForColor(dashboardTheme.colors.primary)}
           />
           <ColorSwatch
             color={dashboardTheme.colors.secondary}
             label="Secondary"
             interactive={interactive}
-            onColorChange={(color) => handleColorChange('colors.secondary', color)}
+            onColorChange={color =>
+              handleColorChange('colors.secondary', color)
+            }
             contrastRatio={getContrastForColor(dashboardTheme.colors.secondary)}
           />
           <ColorSwatch
             color={dashboardTheme.colors.accent}
             label="Accent"
             interactive={interactive}
-            onColorChange={(color) => handleColorChange('colors.accent', color)}
+            onColorChange={color => handleColorChange('colors.accent', color)}
             contrastRatio={getContrastForColor(dashboardTheme.colors.accent)}
           />
         </div>
@@ -177,13 +190,15 @@ export function ColorPalette({
             color={dashboardTheme.colors.background}
             label="Background"
             interactive={interactive}
-            onColorChange={(color) => handleColorChange('colors.background', color)}
+            onColorChange={color =>
+              handleColorChange('colors.background', color)
+            }
           />
           <ColorSwatch
             color={dashboardTheme.colors.surface}
             label="Surface"
             interactive={interactive}
-            onColorChange={(color) => handleColorChange('colors.surface', color)}
+            onColorChange={color => handleColorChange('colors.surface', color)}
           />
         </div>
       </div>
@@ -198,22 +213,34 @@ export function ColorPalette({
             color={dashboardTheme.colors.text.primary}
             label="Primary Text"
             interactive={interactive}
-            onColorChange={(color) => handleColorChange('colors.text.primary', color)}
-            contrastRatio={getContrastForColor(dashboardTheme.colors.text.primary)}
+            onColorChange={color =>
+              handleColorChange('colors.text.primary', color)
+            }
+            contrastRatio={getContrastForColor(
+              dashboardTheme.colors.text.primary
+            )}
           />
           <ColorSwatch
             color={dashboardTheme.colors.text.secondary}
             label="Secondary Text"
             interactive={interactive}
-            onColorChange={(color) => handleColorChange('colors.text.secondary', color)}
-            contrastRatio={getContrastForColor(dashboardTheme.colors.text.secondary)}
+            onColorChange={color =>
+              handleColorChange('colors.text.secondary', color)
+            }
+            contrastRatio={getContrastForColor(
+              dashboardTheme.colors.text.secondary
+            )}
           />
           <ColorSwatch
             color={dashboardTheme.colors.text.disabled}
             label="Disabled Text"
             interactive={interactive}
-            onColorChange={(color) => handleColorChange('colors.text.disabled', color)}
-            contrastRatio={getContrastForColor(dashboardTheme.colors.text.disabled)}
+            onColorChange={color =>
+              handleColorChange('colors.text.disabled', color)
+            }
+            contrastRatio={getContrastForColor(
+              dashboardTheme.colors.text.disabled
+            )}
           />
         </div>
       </div>
@@ -228,29 +255,45 @@ export function ColorPalette({
             color={dashboardTheme.colors.status.success}
             label="Success"
             interactive={interactive}
-            onColorChange={(color) => handleColorChange('colors.status.success', color)}
-            contrastRatio={getContrastForColor(dashboardTheme.colors.status.success)}
+            onColorChange={color =>
+              handleColorChange('colors.status.success', color)
+            }
+            contrastRatio={getContrastForColor(
+              dashboardTheme.colors.status.success
+            )}
           />
           <ColorSwatch
             color={dashboardTheme.colors.status.warning}
             label="Warning"
             interactive={interactive}
-            onColorChange={(color) => handleColorChange('colors.status.warning', color)}
-            contrastRatio={getContrastForColor(dashboardTheme.colors.status.warning)}
+            onColorChange={color =>
+              handleColorChange('colors.status.warning', color)
+            }
+            contrastRatio={getContrastForColor(
+              dashboardTheme.colors.status.warning
+            )}
           />
           <ColorSwatch
             color={dashboardTheme.colors.status.error}
             label="Error"
             interactive={interactive}
-            onColorChange={(color) => handleColorChange('colors.status.error', color)}
-            contrastRatio={getContrastForColor(dashboardTheme.colors.status.error)}
+            onColorChange={color =>
+              handleColorChange('colors.status.error', color)
+            }
+            contrastRatio={getContrastForColor(
+              dashboardTheme.colors.status.error
+            )}
           />
           <ColorSwatch
             color={dashboardTheme.colors.status.info}
             label="Info"
             interactive={interactive}
-            onColorChange={(color) => handleColorChange('colors.status.info', color)}
-            contrastRatio={getContrastForColor(dashboardTheme.colors.status.info)}
+            onColorChange={color =>
+              handleColorChange('colors.status.info', color)
+            }
+            contrastRatio={getContrastForColor(
+              dashboardTheme.colors.status.info
+            )}
           />
         </div>
       </div>
@@ -261,20 +304,22 @@ export function ColorPalette({
           Chart Palette
         </h3>
         <div className="grid grid-cols-5 gap-4">
-          {dashboardTheme.colors.chart.palette.slice(0, 10).map((color, index) => (
-            <ColorSwatch
-              key={index}
-              color={color}
-              label={`Chart ${index + 1}`}
-              interactive={interactive}
-              onColorChange={(newColor) => {
-                const newPalette = [...dashboardTheme.colors.chart.palette]
-                newPalette[index] = newColor
-                handleColorChange('colors.chart.palette', newPalette as any)
-              }}
-              contrastRatio={getContrastForColor(color)}
-            />
-          ))}
+          {dashboardTheme.colors.chart.palette
+            .slice(0, 10)
+            .map((color, index) => (
+              <ColorSwatch
+                key={index}
+                color={color}
+                label={`Chart ${index + 1}`}
+                interactive={interactive}
+                onColorChange={newColor => {
+                  const newPalette = [...dashboardTheme.colors.chart.palette]
+                  newPalette[index] = newColor
+                  handleColorChange('colors.chart.palette', newPalette as any)
+                }}
+                contrastRatio={getContrastForColor(color)}
+              />
+            ))}
         </div>
       </div>
 
@@ -287,10 +332,11 @@ export function ColorPalette({
           <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
             <p>• Colors with contrast ratios ≥4.5:1 meet WCAG AA standards</p>
             <p>• Colors with contrast ratios ≥7:1 meet WCAG AAA standards</p>
-            <p>• Red warning indicators show colors that don&apos;t meet AA standards</p>
-            {interactive && (
-              <p>• Click on any color swatch to edit it</p>
-            )}
+            <p>
+              • Red warning indicators show colors that don&apos;t meet AA
+              standards
+            </p>
+            {interactive && <p>• Click on any color swatch to edit it</p>}
           </div>
         </div>
       )}

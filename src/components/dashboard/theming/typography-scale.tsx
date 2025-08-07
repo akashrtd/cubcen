@@ -34,7 +34,7 @@ function TypographyItem({
   interactive = false,
   onSizeChange,
   onWeightChange,
-  onLineHeightChange
+  onLineHeightChange,
 }: TypographyItemProps) {
   const [isEditing, setIsEditing] = React.useState(false)
   const [tempSize, setTempSize] = React.useState(size)
@@ -44,7 +44,8 @@ function TypographyItem({
   const handleSave = () => {
     if (onSizeChange && tempSize !== size) onSizeChange(tempSize)
     if (onWeightChange && tempWeight !== weight) onWeightChange(tempWeight)
-    if (onLineHeightChange && tempLineHeight !== lineHeight) onLineHeightChange(tempLineHeight)
+    if (onLineHeightChange && tempLineHeight !== lineHeight)
+      onLineHeightChange(tempLineHeight)
     setIsEditing(false)
   }
 
@@ -103,7 +104,7 @@ function TypographyItem({
         style={{
           fontSize: size,
           fontWeight: weight,
-          lineHeight: lineHeight
+          lineHeight: lineHeight,
         }}
       >
         {example}
@@ -119,7 +120,7 @@ function TypographyItem({
             <input
               type="text"
               value={tempSize}
-              onChange={(e) => setTempSize(e.target.value)}
+              onChange={e => setTempSize(e.target.value)}
               className="w-full px-3 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               placeholder="e.g., 1rem"
             />
@@ -138,7 +139,7 @@ function TypographyItem({
           {isEditing ? (
             <select
               value={tempWeight}
-              onChange={(e) => setTempWeight(Number(e.target.value))}
+              onChange={e => setTempWeight(Number(e.target.value))}
               className="w-full px-3 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             >
               <option value={300}>Light (300)</option>
@@ -171,7 +172,7 @@ function TypographyItem({
             <input
               type="number"
               value={tempLineHeight}
-              onChange={(e) => setTempLineHeight(Number(e.target.value))}
+              onChange={e => setTempLineHeight(Number(e.target.value))}
               step="0.1"
               min="1"
               max="3"
@@ -197,11 +198,15 @@ export function TypographyScale({
   className = '',
   showSpecs = true,
   interactive = false,
-  onTypographyChange
+  onTypographyChange,
 }: TypographyScaleProps) {
   const { dashboardTheme, setDashboardTheme } = useDashboardTheme()
 
-  const handleTypographyChange = (category: string, key: string, value: string | number) => {
+  const handleTypographyChange = (
+    category: string,
+    key: string,
+    value: string | number
+  ) => {
     if (!onTypographyChange) return
 
     const updatedTheme: Partial<DashboardTheme> = {
@@ -209,10 +214,12 @@ export function TypographyScale({
       typography: {
         ...dashboardTheme.typography,
         [category]: {
-          ...dashboardTheme.typography[category as keyof typeof dashboardTheme.typography],
-          [key]: value
-        }
-      }
+          ...dashboardTheme.typography[
+            category as keyof typeof dashboardTheme.typography
+          ],
+          [key]: value,
+        },
+      },
     }
 
     setDashboardTheme(updatedTheme)
@@ -227,7 +234,7 @@ export function TypographyScale({
       example: 'Dashboard Overview',
       size: dashboardTheme.typography.fontSize['3xl'],
       weight: dashboardTheme.typography.fontWeight.bold,
-      lineHeight: dashboardTheme.typography.lineHeight.tight
+      lineHeight: dashboardTheme.typography.lineHeight.tight,
     },
     {
       key: '2xl',
@@ -236,7 +243,7 @@ export function TypographyScale({
       example: 'Performance Metrics',
       size: dashboardTheme.typography.fontSize['2xl'],
       weight: dashboardTheme.typography.fontWeight.semibold,
-      lineHeight: dashboardTheme.typography.lineHeight.tight
+      lineHeight: dashboardTheme.typography.lineHeight.tight,
     },
     {
       key: 'xl',
@@ -245,7 +252,7 @@ export function TypographyScale({
       example: 'Recent Activity',
       size: dashboardTheme.typography.fontSize.xl,
       weight: dashboardTheme.typography.fontWeight.semibold,
-      lineHeight: dashboardTheme.typography.lineHeight.normal
+      lineHeight: dashboardTheme.typography.lineHeight.normal,
     },
     {
       key: 'lg',
@@ -254,16 +261,17 @@ export function TypographyScale({
       example: '1,234 Active Agents',
       size: dashboardTheme.typography.fontSize.lg,
       weight: dashboardTheme.typography.fontWeight.medium,
-      lineHeight: dashboardTheme.typography.lineHeight.normal
+      lineHeight: dashboardTheme.typography.lineHeight.normal,
     },
     {
       key: 'base',
       label: 'Body Text',
       description: 'Default text for paragraphs and content',
-      example: 'This is the standard body text used throughout the dashboard for general content and descriptions.',
+      example:
+        'This is the standard body text used throughout the dashboard for general content and descriptions.',
       size: dashboardTheme.typography.fontSize.base,
       weight: dashboardTheme.typography.fontWeight.normal,
-      lineHeight: dashboardTheme.typography.lineHeight.normal
+      lineHeight: dashboardTheme.typography.lineHeight.normal,
     },
     {
       key: 'sm',
@@ -272,7 +280,7 @@ export function TypographyScale({
       example: 'Last updated 5 minutes ago',
       size: dashboardTheme.typography.fontSize.sm,
       weight: dashboardTheme.typography.fontWeight.medium,
-      lineHeight: dashboardTheme.typography.lineHeight.normal
+      lineHeight: dashboardTheme.typography.lineHeight.normal,
     },
     {
       key: 'xs',
@@ -281,8 +289,8 @@ export function TypographyScale({
       example: 'Created on March 15, 2024 at 2:30 PM',
       size: dashboardTheme.typography.fontSize.xs,
       weight: dashboardTheme.typography.fontWeight.normal,
-      lineHeight: dashboardTheme.typography.lineHeight.normal
-    }
+      lineHeight: dashboardTheme.typography.lineHeight.normal,
+    },
   ]
 
   return (
@@ -292,7 +300,8 @@ export function TypographyScale({
           Typography Scale
         </h2>
         <p className="text-gray-600 dark:text-gray-400">
-          Consistent typography hierarchy following WCAG accessibility guidelines
+          Consistent typography hierarchy following WCAG accessibility
+          guidelines
         </p>
       </div>
 
@@ -309,7 +318,13 @@ export function TypographyScale({
             <div className="font-mono text-sm text-gray-600 dark:text-gray-400">
               {dashboardTheme.typography.fontFamily.sans.join(', ')}
             </div>
-            <div className="mt-2 text-lg" style={{ fontFamily: dashboardTheme.typography.fontFamily.sans.join(', ') }}>
+            <div
+              className="mt-2 text-lg"
+              style={{
+                fontFamily:
+                  dashboardTheme.typography.fontFamily.sans.join(', '),
+              }}
+            >
               The quick brown fox jumps over the lazy dog
             </div>
           </div>
@@ -329,7 +344,7 @@ export function TypographyScale({
 
       {/* Typography Items */}
       <div className="space-y-6">
-        {typographyItems.map((item) => (
+        {typographyItems.map(item => (
           <TypographyItem
             key={item.key}
             size={item.size}
@@ -339,21 +354,37 @@ export function TypographyScale({
             description={item.description}
             example={item.example}
             interactive={interactive}
-            onSizeChange={(newSize) => handleTypographyChange('fontSize', item.key, newSize)}
-            onWeightChange={(newWeight) => {
-              const weightKey = Object.keys(dashboardTheme.typography.fontWeight).find(
-                key => dashboardTheme.typography.fontWeight[key as keyof typeof dashboardTheme.typography.fontWeight] === item.weight
+            onSizeChange={newSize =>
+              handleTypographyChange('fontSize', item.key, newSize)
+            }
+            onWeightChange={newWeight => {
+              const weightKey = Object.keys(
+                dashboardTheme.typography.fontWeight
+              ).find(
+                key =>
+                  dashboardTheme.typography.fontWeight[
+                    key as keyof typeof dashboardTheme.typography.fontWeight
+                  ] === item.weight
               )
               if (weightKey) {
                 handleTypographyChange('fontWeight', weightKey, newWeight)
               }
             }}
-            onLineHeightChange={(newLineHeight) => {
-              const lineHeightKey = Object.keys(dashboardTheme.typography.lineHeight).find(
-                key => dashboardTheme.typography.lineHeight[key as keyof typeof dashboardTheme.typography.lineHeight] === item.lineHeight
+            onLineHeightChange={newLineHeight => {
+              const lineHeightKey = Object.keys(
+                dashboardTheme.typography.lineHeight
+              ).find(
+                key =>
+                  dashboardTheme.typography.lineHeight[
+                    key as keyof typeof dashboardTheme.typography.lineHeight
+                  ] === item.lineHeight
               )
               if (lineHeightKey) {
-                handleTypographyChange('lineHeight', lineHeightKey, newLineHeight)
+                handleTypographyChange(
+                  'lineHeight',
+                  lineHeightKey,
+                  newLineHeight
+                )
               }
             }}
           />
@@ -368,24 +399,48 @@ export function TypographyScale({
           </h3>
           <div className="space-y-3 text-sm text-blue-800 dark:text-blue-200">
             <div className="flex items-start space-x-2">
-              <span className="text-green-600 dark:text-green-400 font-bold">✓</span>
-              <span>All text sizes meet minimum size requirements (≥12px for body text)</span>
+              <span className="text-green-600 dark:text-green-400 font-bold">
+                ✓
+              </span>
+              <span>
+                All text sizes meet minimum size requirements (≥12px for body
+                text)
+              </span>
             </div>
             <div className="flex items-start space-x-2">
-              <span className="text-green-600 dark:text-green-400 font-bold">✓</span>
-              <span>Line heights provide adequate spacing for readability (1.5x minimum for body text)</span>
+              <span className="text-green-600 dark:text-green-400 font-bold">
+                ✓
+              </span>
+              <span>
+                Line heights provide adequate spacing for readability (1.5x
+                minimum for body text)
+              </span>
             </div>
             <div className="flex items-start space-x-2">
-              <span className="text-green-600 dark:text-green-400 font-bold">✓</span>
-              <span>Font weights provide sufficient contrast between hierarchy levels</span>
+              <span className="text-green-600 dark:text-green-400 font-bold">
+                ✓
+              </span>
+              <span>
+                Font weights provide sufficient contrast between hierarchy
+                levels
+              </span>
             </div>
             <div className="flex items-start space-x-2">
-              <span className="text-green-600 dark:text-green-400 font-bold">✓</span>
-              <span>Typography scales proportionally and maintains readability at 200% zoom</span>
+              <span className="text-green-600 dark:text-green-400 font-bold">
+                ✓
+              </span>
+              <span>
+                Typography scales proportionally and maintains readability at
+                200% zoom
+              </span>
             </div>
             <div className="flex items-start space-x-2">
-              <span className="text-green-600 dark:text-green-400 font-bold">✓</span>
-              <span>Font families include fallbacks for system compatibility</span>
+              <span className="text-green-600 dark:text-green-400 font-bold">
+                ✓
+              </span>
+              <span>
+                Font families include fallbacks for system compatibility
+              </span>
             </div>
           </div>
         </div>
