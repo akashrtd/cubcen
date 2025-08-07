@@ -98,7 +98,6 @@ interface PageErrorFallbackProps {
 
 ```tsx
 import { AnalyticsErrorFallback } from '@/components/error-boundary/page-error-fallbacks'
-
 ;<ErrorBoundary fallback={AnalyticsErrorFallback}>
   <AnalyticsContent />
 </ErrorBoundary>
